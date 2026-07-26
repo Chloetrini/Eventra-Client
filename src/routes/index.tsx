@@ -30,6 +30,13 @@ const routes = [
                             const { default: Component } = await import("@/routes/main/home");
                             return { Component };
                         }
+                    },
+                    {
+                        path: "events",
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/main/events");
+                            return { Component };
+                        }
                     }
                 ]
             },

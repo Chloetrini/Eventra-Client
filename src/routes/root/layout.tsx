@@ -3,7 +3,7 @@ import { Seo, type SeoHandle, } from "@/components/seo";
 
 const DEFAULT_SEO: SeoHandle = {
     seo: {
-        title: "EventPulse",
+        title: "Eventra",
         description: "Event management platform for organizers and attendees.",
     },
 };

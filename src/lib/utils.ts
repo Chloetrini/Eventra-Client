@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { QueryClient} from '@tanstack/react-query'
+import {format} from "date-fns"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -14,3 +15,14 @@ export const queryClient = new QueryClient({
     },
   },
 })
+
+export const formatDateTime = (eventDateTime: string, displayFormat:string) => {
+
+  const [hours, minutes] = eventDateTime.split(":").map(Number);
+
+  const date = new Date();
+  date.setHours(hours, minutes);
+
+  return format(new Date(eventDateTime), displayFormat);
+
+}

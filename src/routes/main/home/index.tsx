@@ -1,13 +1,9 @@
 import React from 'react'
 
-const Home
-  = () => {
-    return (
-      <div>Home
-
-      </div>
-    )
-  }
-
-export default Home
-
+export default function Home() {
+  return (
+    <div>
+      <h1>Welcome to EventPulse</h1>
+    </div>
+  )
+}

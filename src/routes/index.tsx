@@ -54,6 +54,20 @@ const routes = [
                 ],
             },
 
+            {
+                path: "tickets",
+                handle: {
+                    seo: {
+                        title: "My Tickets",
+                        description: "View and manage your event tickets.",
+                    },
+                },
+                lazy: async () => {
+                    const { default: Component } = await import("@/routes/tickets");
+                    return { Component };
+                }
+            }
+
 
         ]
     }

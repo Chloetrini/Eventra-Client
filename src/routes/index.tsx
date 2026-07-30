@@ -61,6 +61,41 @@ const routes = [
                 ],
             },
 
+            {
+                path: "payment",
+                Component: RootLayout,
+                children: [
+                    {
+                        path: "checkout",
+                        handle: {
+                            seo: {
+                                title: "Checkout",
+                                description: "Complete your purchase.",
+                            }
+                        },
+
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/payment/checkout");
+                            return { Component };
+                        }
+                    },
+                    {
+                        path: "ticket-confirmation",
+                        handle: {
+                            seo: {
+                                title: "Ticket confirmation",
+                                description: "View your completed ticket purchase.",
+                            }
+                        },
+
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/payment/ticket-confirmation");
+                            return { Component };
+                        }
+                    },
+                ],
+            },
+
 
         ]
     }

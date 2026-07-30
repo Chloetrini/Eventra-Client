@@ -5,6 +5,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
+* {
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+
 @theme{
   --font-space: 'Space Mono', monospace;
   --font-grotesk: 'Schibsted Grotesk', sans-serif;

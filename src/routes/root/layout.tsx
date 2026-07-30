@@ -1,5 +1,4 @@
 import { Outlet, ScrollRestoration, useMatches, useNavigation } from "react-router";
-
 import { Seo, type SeoHandle, } from "@/components/seo";
 
 const DEFAULT_SEO: SeoHandle = {
@@ -25,8 +24,8 @@ export default function RootLayout() {
                     <div className="h-full bg-[#0F6E56] animate-progress transition-all duration-500 ease-out" />
                 </div>
             )}
-            <ScrollRestoration/>
+            <ScrollRestoration />
             <Outlet />
-            </>
+        </>
     )
 }

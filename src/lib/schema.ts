@@ -2,12 +2,12 @@ import { z } from 'zod'
 import { STATES , CATEGORIES} from '@/types/event-types';
 
 export const registerSchema = z.object({
-  fullname: z
+  fullName: z
     .string({
       message: 'Complete this field to continue',
     })
     .min(3, {
-      message: 'Full name must be at least 3 characters long',
+      message: 'Name must be at least 3 characters long',
     }),
   email: z.email({ message: 'Complete this field to continue' }),
   password: z
@@ -31,6 +31,18 @@ export const registerSchema = z.object({
     }),
   companyName: z.string({
     message: 'Company name is required',
+  }),
+  phoneNumber: z.string({
+    message: 'Phone number is required',
+  })
+  .min(11, {
+    message: 'Phone number must be at least 11 digits long',
+  })
+  .max(11, {
+    message: 'Phone number must be at most 11 digits long',
+  })
+  .regex(/^\+?[0-9\s\-()]+$/, {
+    message: 'Invalid phone number',
   }),
 })
 

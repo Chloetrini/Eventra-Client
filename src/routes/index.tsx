@@ -44,7 +44,7 @@ const routes = [
             },
             lazy: async () => {
               const { default: Component } =
-                await import("@/routes/main/register");
+                await import("@/routes/auth/register");
               return { Component };
             },
           },
@@ -58,7 +58,7 @@ const routes = [
             },
             lazy: async () => {
               const { default: Component } =
-                await import("@/routes/main/login");
+                await import("@/routes/auth/login");
               return { Component };
             },
           },
@@ -72,7 +72,7 @@ const routes = [
             },
             lazy: async () => {
               const { default: Component } =
-                await import("@/routes/main/forgot-password");
+                await import("@/routes/auth/forgot-password");
               return { Component };
             },
           },
@@ -87,7 +87,7 @@ const routes = [
             },
             lazy: async () => {
               const { default: Component } =
-                await import("@/routes/main/check-email");
+                await import("@/routes/auth/check-email");
               return { Component };
             },
           },
@@ -101,7 +101,7 @@ const routes = [
             },
             lazy: async () => {
               const { default: Component } =
-                await import("@/routes/main/reset-password");
+                await import("@/routes/auth/reset-password");
               return { Component };
             },
           },
@@ -115,7 +115,7 @@ const routes = [
             },
             lazy: async () => {
               const { default: Component } =
-                await import("@/routes/main/verify-otp");
+                await import("@/routes/auth/verify-otp");
               return { Component };
             },
           },

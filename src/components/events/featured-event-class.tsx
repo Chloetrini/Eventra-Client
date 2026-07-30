@@ -8,7 +8,7 @@ type FeaturedEventCardProps = {
 };
 
 export function FeaturedEventCard({ event, onGetTickets }: FeaturedEventCardProps) {
-  const date = new Date(event.startsAt);
+  const date = new Date(event.createdAt);
   const dateLabel = date.toLocaleString("en-NG", {
     weekday: "short",
     day: "numeric",
@@ -24,7 +24,7 @@ export function FeaturedEventCard({ event, onGetTickets }: FeaturedEventCardProp
     <article className="flex flex-col md:flex-row overflow-hidden rounded-2xl border border-orange-200 gap-6 md:gap-[35px] w-full max-w-[946px] md:h-[231px]">
       <div className="relative aspect-[4/3] md:aspect-auto w-full md:w-[314px] md:shrink-0">
         <img
-          src={event.imageUrl}
+          src={event.coverImage}
           alt={event.title}
           className="h-full w-full object-cover"
         />
@@ -47,7 +47,7 @@ export function FeaturedEventCard({ event, onGetTickets }: FeaturedEventCardProp
         </p>
 
         <div className="mt-2 flex flex-wrap items-center gap-[24px]">
-          <span className="md:text-[20px] text-[18px] font-[700] font-mono text-[#4A4451]">{event.price === 0 ? "Free" : formatNaira(event.price)}</span>
+          <span className="md:text-[20px] text-[18px] font-[700] font-mono text-[#4A4451]">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice)}</span>
           <Button
             onClick={() => onGetTickets?.(event.id)}
             className="bg-[#0F6E56] hover:bg-emerald-800 w-[122px] h-[42px] font-[700] text-[15px]"

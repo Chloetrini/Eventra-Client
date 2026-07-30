@@ -51,15 +51,15 @@ function matchesCategories(e: Event, cats: EventFilters["categories"]) {
 function matchesWhen(e: Event, when: EventFilters["when"]) {
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  return DATE_WINDOWS[when].test(new Date(e.startsAt), startOfToday);
+  return DATE_WINDOWS[when].test(new Date(e.createdAt), startOfToday);
 }
 function matchesPrice(e: Event, price: EventFilters["price"]) {
-  return PRICE_TIERS[price].test(e.price);
+  return PRICE_TIERS[price].test(e.minPrice);
 }
 function matchesAccess(e: Event, access: EventFilters["access"]) {
   if (access === "all") return true;
-  if (access === "free") return e.price === 0;
-  return e.price > 0; // "paid"
+  if (access === "free") return e.minPrice === 0;
+  return e.minPrice > 0; // "paid"
 }
 
 
@@ -98,8 +98,8 @@ async function fetchEventsMock(filters: EventFilters): Promise<EventsResponse> {
   // Copy before sorting — sort() mutates, and MOCK_EVENTS is shared.
   const sorted = [...results].sort((a, b) => {
     if (filters.sort === "date")
-      return new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime();
-    if (filters.sort === "price") return a.price - b.price;
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    if (filters.sort === "price") return a.minPrice - b.minPrice;
     return b.trendingScore - a.trendingScore; // "trending" default
   });
 

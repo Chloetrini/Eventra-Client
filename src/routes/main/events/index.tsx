@@ -16,8 +16,8 @@ export default function EventsPage() {
   const { data, isLoading, isFetching, isError, refetch } = useEvents(filters);
 
   const events = data?.events ?? [];
-  const featured = events.find((e) => e.featured);
-  const rest = events.filter((e) => !e.featured);
+  const featured = events.find((e) => e.promotion);
+  const rest = events.filter((e) => !e.promotion);
    const [savedIds, setSavedIds] = useState<string[]>([]);
 
 const toggleSave = (id: string) => {

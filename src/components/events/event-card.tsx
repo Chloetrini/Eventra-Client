@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { Heart, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event-types";
-import { formatNaira } from "@/lib/utils";
+import { formatNaira } from "@/lib/utils"
 
 type EventCardProps = {
   event: Event;
@@ -17,7 +17,7 @@ export function EventCard({
   onToggleSave,
   className,
 }: EventCardProps) {
-  const date = new Date(event.startsAt);
+  const date = new Date(event.createdAt);
   const dateLabel = date.toLocaleString("en-NG", {
     weekday: "short",
     day: "numeric",
@@ -38,7 +38,7 @@ export function EventCard({
     >
       <div className="relative overflow-hidden max-h-[189px]">
         <img
-          src={event.imageUrl}
+          src={event.coverImage}
           alt={event.title}
           loading="lazy"
           className="aspect-[294/189] w-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -83,7 +83,7 @@ export function EventCard({
         </p>
 
         <div className="flex items-center justify-between pt-8 pb-2">
-          <span className="font-[16px] font-mono text-[#4A4451] font-[700]">{event.price === 0 ? "Free" : formatNaira(event.price)} </span>
+          <span className="font-[16px] font-mono text-[#4A4451] font-[700]">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice)} </span>
           <Link
             to={`/events/${event.id}`}
             aria-label={`View ${event.title}`}

@@ -75,7 +75,7 @@ const routes = [
                         },
 
                         lazy: async () => {
-                            const { default: Component } = await import("@/routes/payment/checkout");
+                            const { default: Component } = await import("@/routes/main/checkout");
                             return { Component };
                         }
                     },
@@ -89,7 +89,7 @@ const routes = [
                         },
 
                         lazy: async () => {
-                            const { default: Component } = await import("@/routes/payment/ticket-confirmation");
+                            const { default: Component } = await import("@/routes/main/ticket-confirmation");
                             return { Component };
                         }
                     },

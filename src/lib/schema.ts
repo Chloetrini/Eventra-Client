@@ -56,10 +56,10 @@ export const eventSchema = z.object({
   city: z.string(), 
   no:z.string()  ,         
   state: z.enum(STATES),       
-  startsAt: z.string(),        
-  price: z.number().min(0),    
-  imageUrl: z.string(),
-  featured: z.boolean().default(false),
+  createdAt: z.string(),        
+  minPrice: z.number().min(0),    
+  coverImage: z.string(),
+  promotion: z.boolean().default(false),
   trendingScore: z.number().default(0),
 });
 

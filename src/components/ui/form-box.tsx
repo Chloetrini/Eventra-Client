@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { Eye, EyeClosed } from 'lucide-react'
-import type { Control, FieldErrors, FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form'
+import type { Control, FieldError as FieldErrorType, FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form'
 import { Field, FieldError, FieldLabel, FieldLegend, FieldSet } from './field'
 import { Input } from './input'
 import { Textarea } from './textarea'
@@ -10,7 +10,7 @@ type FormFieldProps<T extends FieldValues> = {
   type: string
   id: string
   register: UseFormRegister<T>
-  errors?: FieldErrors<T> | undefined
+  errors?: FieldErrorType| undefined
   placeholder?: string
   isVisible?: boolean
   setIsVisible?: (visible: boolean | ((prev: boolean) => boolean)) => void

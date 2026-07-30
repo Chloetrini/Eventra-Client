@@ -37,7 +37,35 @@ const routes = [
                             const { default: Component } = await import("@/routes/main/events");
                             return { Component };
                         }
-                    }
+                    },
+                    {
+                        path: "checkout",
+                        handle: {
+                            seo: {
+                                title: "Checkout",
+                                description: "Complete your purchase.",
+                            }
+                        },
+
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/main/payment/checkout");
+                            return { Component };
+                        }
+                    },
+                    {
+                        path: "ticket-confirmation",
+                        handle: {
+                            seo: {
+                                title: "Ticket confirmation",
+                                description: "View your completed ticket purchase.",
+                            }
+                        },
+
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/main/payment/ticket-confirmation");
+                            return { Component };
+                        }
+                    },
                 ]
             },
             {
@@ -61,40 +89,6 @@ const routes = [
                 ],
             },
 
-            {
-                path: "payment",
-                Component: RootLayout,
-                children: [
-                    {
-                        path: "checkout",
-                        handle: {
-                            seo: {
-                                title: "Checkout",
-                                description: "Complete your purchase.",
-                            }
-                        },
-
-                        lazy: async () => {
-                            const { default: Component } = await import("@/routes/main/checkout");
-                            return { Component };
-                        }
-                    },
-                    {
-                        path: "ticket-confirmation",
-                        handle: {
-                            seo: {
-                                title: "Ticket confirmation",
-                                description: "View your completed ticket purchase.",
-                            }
-                        },
-
-                        lazy: async () => {
-                            const { default: Component } = await import("@/routes/main/ticket-confirmation");
-                            return { Component };
-                        }
-                    },
-                ],
-            },
 
 
         ]

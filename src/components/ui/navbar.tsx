@@ -5,7 +5,7 @@ import { Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const NAV_LINKS = [
-  { to: "/explore", label: "Explore" },
+  { to: "/events", label: "Events" },
   { to: "/organizers", label: "For Organizers" },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },

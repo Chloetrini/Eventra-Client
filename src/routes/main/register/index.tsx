@@ -8,7 +8,6 @@ import { api } from "@/lib/api"
 import { useMutation } from "@tanstack/react-query"
 import { FormBox } from "@/components/ui/form-box"
 import { toast } from "react-hot-toast"
-import { formatDateTime } from "@/lib/utils"
 
 type registerSchemaType = z.infer<typeof registerSchema>
 
@@ -40,11 +39,6 @@ export default function Register() {
     mutation.mutate(data)
   }
 
-  const handleTestTime = () => {
-    let testTime = "2026-08-15T18:00:00.000Z"
-    console.log("time", formatDateTime(testTime));
-  }
-
   return (
     <form onSubmit={handleSubmit(onFormSubmit)}>
       <FormBox
@@ -64,11 +58,6 @@ export default function Register() {
         loading={mutation.isPending}
         size="lg"
         classname="w-full h-14 border bg-purple-700  text-white hover:bg-purple-700/90"
-      />
-      <ActionBtn
-        text="format time"
-        type="button"
-        onClick={handleTestTime}
       />
     </form>
   )

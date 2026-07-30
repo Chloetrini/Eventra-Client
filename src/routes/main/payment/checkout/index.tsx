@@ -42,7 +42,7 @@ const Checkout = () => {
 
 
     return (
-        <div className='px-4 sm:px-8 lg:px-20 py-10 mx-auto container'>
+        <div className='px-4 sm:px-8 lg:px-4 py-10 mx-auto container'>
             <div className='flex items-center gap-3 mb-4'>
                 <div className='w-14.5 h-14.5 bg-[#E4F1EB] rounded-full flex items-center justify-center' >
                     <img src={bag} alt="Shopping Bag" className="w-7.5 h-7.5" />

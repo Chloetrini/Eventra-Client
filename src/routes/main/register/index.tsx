@@ -12,21 +12,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
 import { registerSchema } from "@/lib/schema";
+import { EventraLogo } from "@/components/icons/eventra-logo";
 
-/**
- * Attendee sign-up form schema.
- *
- * - `companyName` is omitted here — that field belongs to the organizer
- *   register flow (phase 2), not attendee. The shared `registerSchema` in
- *   lib/schema.ts is left untouched so organizer signup can still use it
- *   in full later.
- * - `confirmPassword` is a form-only concern (the API never needs it), so
- *   it's added here rather than in the shared schema.
- */
 const attendeeRegisterSchema = registerSchema
-  .omit({ companyName: true })
   .extend({
-    confirmPassword: z.string({ message: "Complete this field to continue" }),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -37,6 +27,7 @@ type AttendeeRegisterValues = z.infer<typeof attendeeRegisterSchema>;
 
 export default function Register() {
   const navigate = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -47,93 +38,139 @@ export default function Register() {
   } = useForm<AttendeeRegisterValues>({
     resolver: zodResolver(attendeeRegisterSchema),
     mode: "onBlur",
+    defaultValues: {
+      role: "attendee",
+    },
   });
 
   const { mutate, isPending } = useMutation({
     mutationFn: (values: Omit<AttendeeRegisterValues, "confirmPassword">) =>
       api.post("/auth/register", values),
+
     onSuccess: (data, variables) => {
-      toast.success(data.message || "Account created — check your email to verify.");
-      navigate("/auth/verify-email", { state: { email: variables.email } });
+      toast.success(data.message || "Account created successfully.");
+
+      navigate("/verify-email", {
+        state: { email: variables.email },
+      });
     },
+
     onError: (error: Error) => {
-      toast.error(error.message || "Something went wrong. Please try again.");
+      toast.error(error.message || "Something went wrong.");
     },
   });
 
   const onSubmit = (values: AttendeeRegisterValues) => {
-    const { confirmPassword: _confirmPassword, ...payload } = values;
+    const { confirmPassword, ...payload } = values;
     mutate(payload);
   };
 
   return (
     <>
-      <h1 className="text-[34px] font-extrabold text-foreground text-3xl mb-2">
+      <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
+        <EventraLogo className="h-6 w-auto" />
+        <span className="text-[22.8px] font-extrabold text-[#1A1523] tracking-[-0.02em]">
+          Eventra
+        </span>
+      </Link>
+      <h1 className="text-[34px] font-extrabold mb-2 tracking-[-0.02em] text-[#000000]">
         Create your account
       </h1>
-      <p className="text-subtext mb-8 leading-6 text-[17px] font-normal">
+
+      <p className="text-[#4A4451] text-[17px] leading-6 mb-8">
         Join thousands of people discovering and creating unforgettable events
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
         {/* Full Name */}
         <div className="space-y-1.5">
-          <Label htmlFor="fullname" className="font-medium text-[16px] text-[#232323]">
+          <Label
+            htmlFor="fullname"
+            className="font-medium text-[16px] text-[#232323] tracking-[-0.03em]"
+          >
             Full Name
           </Label>
+
           <Input
             id="fullname"
-            type="text"
             placeholder="eg. Ada Okafor"
-            autoComplete="name"
-            aria-invalid={!!errors.fullname}
             className="h-12 w-full placeholder:text-[16px]"
             {...register("fullname")}
           />
+
           {errors.fullname && (
-            <p className="text-sm text-destructive">{errors.fullname.message}</p>
+            <p className="text-sm text-destructive">
+              {errors.fullname.message}
+            </p>
           )}
         </div>
 
         {/* Email */}
-        <div className="space-y-1.5 ">
-          <Label htmlFor="email" className="font-medium text-[16px] text-[#232323]">
+        <div className="space-y-1.5">
+          <Label
+            htmlFor="email"
+            className="font-medium text-[16px] text-[#232323] tracking-[-0.03em]"
+          >
             Email
           </Label>
+
           <Input
             id="email"
             type="email"
-            placeholder="eg you@email.com"
-            autoComplete="email"
-            aria-invalid={!!errors.email}
+            placeholder="eg. ada@email.com"
             className="h-12 w-full placeholder:text-[16px]"
             {...register("email")}
           />
+
           {errors.email && (
             <p className="text-sm text-destructive">{errors.email.message}</p>
           )}
         </div>
 
+        {/* Phone */}
+        <div className="space-y-1.5">
+          <Label
+            htmlFor="phone"
+            className="font-medium text-[16px] text-[#232323] tracking-[-0.03em]"
+          >
+            Phone Number
+          </Label>
+
+          <Input
+            id="phone"
+            type="tel"
+            placeholder="08012345678"
+            className="h-12 w-full placeholder:text-[16px]"
+            {...register("phone")}
+          />
+
+          {errors.phone && (
+            <p className="text-sm text-destructive">{errors.phone.message}</p>
+          )}
+        </div>
+
         {/* Password */}
         <div className="space-y-1.5">
-          <Label htmlFor="password" className="font-medium text-[16px] text-[#232323]">
+          <Label
+            htmlFor="password"
+            className="font-medium text-[16px] text-[#232323] tracking-[-0.03em]"
+          >
             Password
           </Label>
+
           <div className="relative">
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
-              placeholder="create password"
-              autoComplete="new-password"
-              aria-invalid={!!errors.password}
+              placeholder="Create password"
               className="h-12 w-full pr-10 placeholder:text-[16px]"
               {...register("password")}
             />
+
             <button
               type="button"
-              onClick={() => setShowPassword((v) => !v)}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 text-black hover:opacity-70"
-              aria-label={showPassword ? "Hide password" : "Show password"}
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-black"
             >
               {showPassword ? (
                 <EyeOff className="h-5 w-5" />
@@ -142,31 +179,36 @@ export default function Register() {
               )}
             </button>
           </div>
+
           {errors.password && (
-            <p className="text-sm text-destructive">{errors.password.message}</p>
+            <p className="text-sm text-destructive">
+              {errors.password.message}
+            </p>
           )}
         </div>
 
         {/* Confirm Password */}
         <div className="space-y-1.5">
-          <Label htmlFor="confirmPassword" className="font-medium text-[16px] text-[#232323]">
-            Confirm password
+          <Label
+            htmlFor="confirmPassword"
+            className="font-medium text-[16px] text-[#232323] tracking-[-0.03em]"
+          >
+            Confirm Password
           </Label>
+
           <div className="relative">
             <Input
               id="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
-              placeholder="confirm password"
-              autoComplete="new-password"
-              aria-invalid={!!errors.confirmPassword}
+              placeholder="Confirm password"
               className="h-12 w-full pr-10 placeholder:text-[16px]"
               {...register("confirmPassword")}
             />
+
             <button
               type="button"
-              onClick={() => setShowConfirmPassword((v) => !v)}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 text-black hover:opacity-70"
-              aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-black"
             >
               {showConfirmPassword ? (
                 <EyeOff className="h-5 w-5" />
@@ -175,6 +217,7 @@ export default function Register() {
               )}
             </button>
           </div>
+
           {errors.confirmPassword && (
             <p className="text-sm text-destructive">
               {errors.confirmPassword.message}
@@ -185,35 +228,30 @@ export default function Register() {
         <Button
           type="submit"
           disabled={isPending}
-          className="w-full h-12.75 font-bold text-[18px]"
+          className="w-full h-12 font-bold text-[18px] tracking-[-0.025em] text-[#FFFFFF] bg-[#0F6E56] hover:bg-primary/90"
         >
-          {isPending ? "Creating account..." : "Create Account"}
+          {isPending ? "Creating Account..." : "Create Account"}
         </Button>
       </form>
 
-      {/* Divider */}
       <div className="flex items-center gap-4 my-6">
         <div className="h-px flex-1 bg-border" />
-        <span className="text-sm text-[#4A4451] leading-[21px] font-medium">or</span>
+        <span className="text-sm text-[#4A4451]">or</span>
         <div className="h-px flex-1 bg-border" />
       </div>
 
-      {/* Google sign in */}
       <Button
         type="button"
         variant="outline"
-        onClick={() => {
-          window.location.href = "/api/v1/auth/google";
-        }}
-        className="w-full h-12 border-[#E8E6E0] hover:border-[#E8E6E0] font-medium"
+        className="w-full h-12 border-[#E8E6E0] hover:border-[#E8E6E0] text-[#1A1523] font-bold text-[18px] leading-[29px]"
       >
         <GoogleIcon className="h-4 w-4 mr-2" />
-        Sign in with Google
+        Sign up with Google
       </Button>
 
-      <p className="text-center text-sm text-subtext mt-6">
-        Already have an account?{" "}
-        <Link to="/auth/login" className="text-primary font-medium hover:underline">
+      <p className="text-center text-sm text-[#4A4451] mt-6">
+        Already have an account?
+        <Link to="/login" className="text-[#0F6E56] font-medium hover:underline">
           Sign in
         </Link>
       </p>
@@ -221,13 +259,13 @@ export default function Register() {
   );
 }
 
-/**
- * Inline Google "G" mark — avoids pulling in a whole icon package
- * for a single brand icon.
- */
 function GoogleIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
         d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"
         fill="#4285F4"

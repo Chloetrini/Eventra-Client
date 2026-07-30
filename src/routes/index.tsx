@@ -13,7 +13,7 @@ const routes = [
     ErrorBoundary: ErrorBoundary,
     handle: {
       seo: {
-        title: "EventPulse",
+        title: "Eventra",
         description: "Event management platform for organizers and attendees.",
       },
     },
@@ -31,39 +31,96 @@ const routes = [
           },
         ],
       },
-     {
-  Component: AuthLayout,
-  children: [
-    {
-      path: "register",
-      handle: {
-        seo: {
-          title: "Create account",
-          description: "Sign up for an account.",
-        },
+      {
+        Component: AuthLayout,
+        children: [
+          {
+            path: "register",
+            handle: {
+              seo: {
+                title: "Create account",
+                description: "Sign up for an account.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/main/register");
+              return { Component };
+            },
+          },
+          {
+            path: "login",
+            handle: {
+              seo: {
+                title: "Sign in",
+                description: "Sign in to your account.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/main/login");
+              return { Component };
+            },
+          },
+          {
+            path: "forgot-password",
+            handle: {
+              seo: {
+                title: "Forgot password",
+                description: "Reset your password.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/main/forgot-password");
+              return { Component };
+            },
+          },
+          {
+            path: "check-email",
+            handle: {
+              seo: {
+                title: "Check your email",
+                description:
+                  "Verify your email for password reset instructions.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/main/check-email");
+              return { Component };
+            },
+          },
+          {
+            path: "reset-password",
+            handle: {
+              seo: {
+                title: "Set a new password",
+                description: "Choose a new password for your account.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/main/reset-password");
+              return { Component };
+            },
+          },
+          {
+            path: "verify-otp",
+            handle: {
+              seo: {
+                title: "Verify code",
+                description: "Enter the code we sent to your email.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/main/verify-otp");
+              return { Component };
+            },
+          },
+        ],
       },
-      lazy: async () => {
-        const { default: Component } =
-          await import("@/routes/main/register");
-        return { Component };
-      },
-    },
-    {
-      path: "login",
-      handle: {
-        seo: {
-          title: "Sign in",
-          description: "Sign in to your account.",
-        },
-      },
-      // lazy: async () => {
-      //   const { default: Component } =
-      //     await import("@/routes/main/login");
-      //   return { Component };
-      // },
-    },
-  ],
-},
     ],
   },
 ] satisfies RouteObject[];

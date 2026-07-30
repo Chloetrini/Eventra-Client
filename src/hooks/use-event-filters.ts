@@ -1,15 +1,15 @@
 import { useSearchParams } from "react-router";
 import { useCallback, useMemo } from "react";
-import type { Category, EventFilters } from "@/lib/schema";
-
+import type {  EventFilters } from "@/types/event-types";
+import type { Category } from "@/types/event-types";
 export function useEventFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Read: the URL is the single source of truth. Every read is independent,
-  // so a missing param just falls back to its default.
+
   const filters: EventFilters = useMemo(
     () => ({
-      q: searchParams.get("q") ?? "",
+      // read from "search" to match what setFilter("search", ...) writes
+      search: searchParams.get("search") ?? "",
       state: (searchParams.get("state") ?? "") as EventFilters["state"],
       categories: (searchParams.get("categories")?.split(",").filter(Boolean) ??
         []) as Category[],

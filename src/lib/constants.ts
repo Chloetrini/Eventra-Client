@@ -1,37 +1,19 @@
-import type { Event } from "@/lib/schema";
+import type { Event } from "@/types/event-types";
+import { daysFromNow } from "@/lib/utils";
+import { thisWeekend } from "@/lib/utils";
 
-// ---------------------------------------------------------------------
-// Dates are generated relative to today, never hardcoded. Two reasons:
-//   1. "Today" and "This weekend" filters need something to match.
-//   2. The mock data never goes stale — run this in a year, still works.
-// ---------------------------------------------------------------------
-const DAY_MS = 86_400_000;
-const now = new Date();
-const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-/** N days from today at the given hour, as an ISO string. */
-function daysFromNow(days: number, hour: number): string {
-  const d = new Date(startOfToday.getTime() + days * DAY_MS);
-  d.setHours(hour, 0, 0, 0);
-  return d.toISOString();
-}
-
-/** The coming Saturday at the given hour — for the "This weekend" window. */
-function thisWeekend(hour: number): string {
-  const daysUntilSat = (6 - startOfToday.getDay() + 7) % 7;
-  return daysFromNow(daysUntilSat, hour);
-}
 
 export const MOCK_EVENTS: Event[] = [
-  // ---- TODAY ----------------------------------------------------------
   {
-    id: "evt-001",
+    id: "1",
     title: "Afrobeats Night Market",
     category: "Concerts",
     subcategory: "Afrobeats",
     venue: "Muri Okunola Park",
     city: "Victoria Island",
     state: "Lagos",
+    no:"0210",
     startsAt: daysFromNow(0, 18),
     price: 15_000,
     imageUrl: "https://picsum.photos/seed/afrobeats/600/450",
@@ -39,12 +21,13 @@ export const MOCK_EVENTS: Event[] = [
     trendingScore: 98,
   },
   {
-    id: "evt-002",
+    id: "2",
     title: "Amapiano All Night",
     category: "Parties",
     venue: "Hard Rock Cafe",
     city: "Victoria Island",
     state: "Lagos",
+     no:"0210",
     startsAt: daysFromNow(0, 22),
     price: 8_000,
     imageUrl: "https://picsum.photos/seed/amapiano/600/450",
@@ -52,13 +35,14 @@ export const MOCK_EVENTS: Event[] = [
     trendingScore: 91,
   },
   {
-    id: "evt-003",
+    id: "3",
     title: "Jos Plateau Jazz Evening",
     category: "Concerts",
     subcategory: "Jazz",
     venue: "Hill Station Hotel",
     city: "Jos",
     state: "Plateau",
+      no:"0210",
     startsAt: daysFromNow(0, 19),
     price: 0,
     imageUrl: "https://picsum.photos/seed/jazz/600/450",
@@ -66,14 +50,14 @@ export const MOCK_EVENTS: Event[] = [
     trendingScore: 61,
   },
 
-  // ---- THIS WEEKEND ---------------------------------------------------
   {
-    id: "evt-004",
+    id: "4",
     title: "Sunset Rooftop Party",
     category: "Parties",
     venue: "Eko Hotel",
     city: "Victoria Island",
     state: "Lagos",
+    no:"0210",
     startsAt: thisWeekend(17),
     price: 12_500,
     imageUrl: "https://picsum.photos/seed/rooftop/600/450",
@@ -81,12 +65,13 @@ export const MOCK_EVENTS: Event[] = [
     trendingScore: 88,
   },
   {
-    id: "evt-005",
-    title: "Calabar Carnival Warm-Up",
+    id: "5",
+    title: "Calabar Carnival",
     category: "Arts & Theatre",
     venue: "Cultural Centre",
     city: "Calabar",
     state: "Cross River",
+    no:"0210",
     startsAt: thisWeekend(16),
     price: 3_000,
     imageUrl: "https://picsum.photos/seed/carnival/600/450",
@@ -94,12 +79,13 @@ export const MOCK_EVENTS: Event[] = [
     trendingScore: 84,
   },
   {
-    id: "evt-006",
-    title: "Detty December Boat Party",
+    id: "6",
+    title: "Detty December Party",
     category: "Parties",
     venue: "Five Cowries Terminal",
     city: "Ikoyi",
     state: "Lagos",
+    no:"0210",
     startsAt: thisWeekend(22),
     price: 25_000,
     imageUrl: "https://picsum.photos/seed/boat/600/450",
@@ -107,15 +93,15 @@ export const MOCK_EVENTS: Event[] = [
     trendingScore: 86,
   },
 
-  // ---- THIS WEEK ------------------------------------------------------
   {
-    id: "evt-007",
+    id: "7",
     title: "Abuja Tech Week",
     category: "Conferences",
     subcategory: "Tech",
     venue: "Transcorp Hilton",
     city: "Maitama",
     state: "FCT - Abuja",
+    no:"0210",
     startsAt: daysFromNow(4, 9),
     price: 45_000,
     imageUrl: "https://picsum.photos/seed/techweek/600/450",
@@ -123,12 +109,13 @@ export const MOCK_EVENTS: Event[] = [
     trendingScore: 80,
   },
   {
-    id: "evt-008",
+    id: "8",
     title: "Comedy Central Live",
     category: "Comedy",
     venue: "Genesis Centre",
     city: "Port Harcourt",
     state: "Rivers",
+    no:"0210",
     startsAt: daysFromNow(6, 20),
     price: 5_000,
     imageUrl: "https://picsum.photos/seed/comedy/600/450",
@@ -136,12 +123,13 @@ export const MOCK_EVENTS: Event[] = [
     trendingScore: 76,
   },
   {
-    id: "evt-009",
+    id: "9",
     title: "Kano Startup Mixer",
     category: "Tech",
     venue: "Kano Innovation Hub",
     city: "Kano",
     state: "Kano",
+    no:"0210",
     startsAt: daysFromNow(5, 16),
     price: 0,
     imageUrl: "https://picsum.photos/seed/startup/600/450",
@@ -149,14 +137,15 @@ export const MOCK_EVENTS: Event[] = [
     trendingScore: 70,
   },
 
-  // ---- THIS MONTH -----------------------------------------------------
+ 
   {
-    id: "evt-010",
+    id: "10",
     title: "Lagos Jollof Festival",
     category: "Food & Drink",
     venue: "Landmark Beach",
     city: "Oniru",
     state: "Lagos",
+    no:"0210",
     startsAt: daysFromNow(15, 12),
     price: 0,
     imageUrl: "https://picsum.photos/seed/jollof/600/450",
@@ -164,12 +153,13 @@ export const MOCK_EVENTS: Event[] = [
     trendingScore: 74,
   },
   {
-    id: "evt-011",
+    id: "11",
     title: "High Life and Chill",
     category: "Parties",
     venue: "Ojez Restaurant",
     city: "Surulere",
     state: "Lagos",
+    no:"0210",
     startsAt: daysFromNow(18, 21),
     price: 3_000,
     imageUrl: "https://picsum.photos/seed/highlife/600/450",
@@ -177,13 +167,14 @@ export const MOCK_EVENTS: Event[] = [
     trendingScore: 68,
   },
   {
-    id: "evt-012",
+    id: "12",
     title: "Enugu Coal City Marathon",
     category: "Sports",
     subcategory: "Athletics",
     venue: "Nnamdi Azikiwe Stadium",
     city: "Enugu",
     state: "Enugu",
+    no:"0210",
     startsAt: daysFromNow(21, 7),
     price: 2_500,
     imageUrl: "https://picsum.photos/seed/marathon/600/450",
@@ -191,30 +182,28 @@ export const MOCK_EVENTS: Event[] = [
     trendingScore: 66,
   },
   {
-    id: "evt-013",
+    id: "13",
     title: "Ibadan Book & Arts Fair",
     category: "Arts & Theatre",
     venue: "Cultural Centre Mokola",
     city: "Ibadan",
     state: "Oyo",
+    no:"0210",
     startsAt: daysFromNow(24, 10),
     price: 1_500,
     imageUrl: "https://picsum.photos/seed/bookfair/600/450",
     featured: false,
     trendingScore: 58,
   },
-
-  // ---- BEYOND A MONTH -------------------------------------------------
-  // These exist so "This month" and "Any time" return different counts.
-  // Without them you can't tell whether the date filter is working at all.
   {
-    id: "evt-014",
+    id: "14",
     title: "Sunday League Final",
     category: "Sports",
     subcategory: "Football",
     venue: "Lekan Salami Stadium",
     city: "Ibadan",
     state: "Oyo",
+    no:"0210",
     startsAt: daysFromNow(45, 16),
     price: 2_000,
     imageUrl: "https://picsum.photos/seed/football/600/450",
@@ -222,12 +211,13 @@ export const MOCK_EVENTS: Event[] = [
     trendingScore: 64,
   },
   {
-    id: "evt-015",
+    id: "15",
     title: "Kaduna Food Festival",
     category: "Food & Drink",
     venue: "Murtala Square",
     city: "Kaduna",
     state: "Kaduna",
+    no:"0210",
     startsAt: daysFromNow(52, 11),
     price: 0,
     imageUrl: "https://picsum.photos/seed/kadunafood/600/450",
@@ -235,12 +225,13 @@ export const MOCK_EVENTS: Event[] = [
     trendingScore: 55,
   },
   {
-    id: "evt-016",
+    id: "16",
     title: "Benin Bronze Exhibition",
     category: "Arts & Theatre",
     venue: "National Museum",
     city: "Benin City",
     state: "Edo",
+    no:"0210",
     startsAt: daysFromNow(60, 10),
     price: 18_000,
     imageUrl: "https://picsum.photos/seed/bronze/600/450",

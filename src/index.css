@@ -8,6 +8,7 @@
 @theme{
   --font-space: 'Space Mono', monospace;
   --font-grotesk: 'Schibsted Grotesk', sans-serif;
+
 }
 @theme inline {
     --font-heading: var(--font-sans);
@@ -161,4 +162,36 @@
     66%  {transform:scale(var(--s,1)) translate(10px,-20px) rotate(-90deg)}
     90%,
     100% {transform:scale(var(--s,1)) translate(10px,-10px) rotate(-90deg)}
+}
+
+@keyframes l31 {
+  0%,
+  20% {
+    width: 15px;
+    height: 15px;
+  }
+  90%,
+  100% {
+    width: 25px;
+    height: 25px;
+  }
+}
+
+@keyframes progress {
+  0% {
+    width: 0%;
+    margin-left: 0;
+  }
+  30% {
+    width: 40%;
+    margin-left: 0;
+  }
+  60% {
+    width: 70%;
+    margin-left: 15%;
+  }
+  100% {
+    width: 85%;
+    margin-left: 15%;
+  }
 }

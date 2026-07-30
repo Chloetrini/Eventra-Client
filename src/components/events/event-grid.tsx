@@ -1,6 +1,6 @@
 import { EventCard } from "./event-card";
 import { EventCardSkeleton } from "./event-card-skeleton";
-import type { Event } from "@/lib/schema";
+import type { Event } from "@/types/event-types";
 
 type EventGridProps = {
   events: Event[];
@@ -38,7 +38,7 @@ export function EventGrid({
   }
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-[32px] sm:grid-cols-2 lg:grid-cols-3 w-full xl:w-[946px]">
       {events.map((event) => (
         <EventCard
           key={event.id}

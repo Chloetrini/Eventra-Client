@@ -1,6 +1,6 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { fetchEvents } from "@/lib/events-api";
-import type { EventFilters } from "@/lib/schema";
+import type { EventFilters } from "@/types/event-types";
 
 // The whole filters object is the query key. Change any filter → new key →
 // TanStack refetches and caches that exact combination.

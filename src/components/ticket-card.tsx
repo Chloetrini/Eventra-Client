@@ -1,7 +1,7 @@
 import React from "react";
 import type { Ticket } from "@/types/ticket";
 import { CalendarDays, Clock, MapPinIcon, Music4 } from "lucide-react";
-import shieldTick from "@/assets/shieldTick.png"
+import shieldTick from "@/assets/shieldTick.png";
 import calendar from "@/assets/calendar.png";
 import rightArrow from "@/assets/rightArrow.png";
 import backward from "@/assets/backward.png";
@@ -15,21 +15,44 @@ interface TicketProps {
 export function TicketCard({ ticket }: TicketProps) {
   const {
     category,
-    title,
-    status,
-    // date,
-    // time,
     eventDateTime,
-    entryPoint,
-    venue,
+    eventEntrance,
     holderName,
-    ticketId,
+    eventName,
     referenceCode,
-    admits,
+    orderID,
+    ticketDetails,
     qrImageUrl,
-    // transferable,
     refundPolicy,
+    eventVenue,
   } = ticket;
+
+  const totalTickets = ticketDetails.reduce(
+    (sum, item) => sum + item.quantity,
+    0,
+  );
+
+  const ticketTypeConfig: Record<string, { bg: string; text: string }> = {
+    Free: {
+      bg: "bg-[#F5A524]",
+      text: "text-white",
+    },
+    Regular: {
+      bg: "bg-[#0A4F41]",
+      text: "text-[#96E2B5]",
+    },
+    VIP: {
+      bg: "bg-[#0A4F41]",
+      text: "text-[#E8D8FF]",
+    },
+  };
+
+  const ticketType = ticketDetails[0].type;
+
+  const { bg: ticketBg, text: ticketText } = ticketTypeConfig[ticketType] ?? {
+    bg: "bg-gray-200",
+    text: "text-gray-700",
+  };
 
   return (
     <div className="px-4 sm:px-6 lg:px-0">
@@ -38,18 +61,20 @@ export function TicketCard({ ticket }: TicketProps) {
         <div className="flex flex-col justify-between w-full lg:w-[811px] h-auto lg:h-[404px] bg-linear-to-br from-black from-10% via-[#021713] via-40% to-[#0C5C48] p-4 min-[400px]:p-5 lg:p-8 rounded-[20px] shadow-[8px_0_30px_rgba(0,0,0,1)]">
           <div className="flex flex-col gap-2">
             <div className="flex justify-between gap-2">
-              <div className="bg-[#0A4F41] w-fit py-1.5 px-3 min-[400px]:py-2 min-[400px]:px-5 flex gap-1.5 min-[400px]:gap-2 text-[#96E2B5] rounded-[10px] text-xs min-[400px]:text-sm">
+              <div className="bg-[#0A4F41] w-fit py-1.5 px-3 min-[400px]:py-2 min-[400px]:px-5 uppercase flex gap-1.5 min-[400px]:gap-2 text-[#96E2B5] rounded-[10px] text-xs min-[400px]:text-sm">
                 <Music4 className="size-4" />
-                <p>{category.toUpperCase()}</p>
+                <p>{category}</p>
               </div>
 
-              <div className="bg-[#0A4F41] w-fit py-1.5 px-3 min-[400px]:py-2 min-[400px]:px-5 flex gap-2 text-[#96E2B5] rounded-[10px] text-xs min-[400px]:text-sm">
-                <p>{status.toUpperCase()}</p>
+              <div
+                className={`${ticketBg} ${ticketText} w-fit py-2 px-5 rounded-[10px] text-sm`}
+              >
+                <p>{ticketDetails.map((t) => t.type).join(", ")}</p>
               </div>
             </div>
             <div className="text-white pt-[4px] text-xl min-[400px]:text-2xl sm:text-[23px] lg:text-[54px] font-bold font-grotesk">
               <h1 className="w-full lg:w-[428px] leading-tight lg:leading-[50px] h-auto lg:h-[98px]">
-                {title}
+                {eventName}
               </h1>
             </div>
           </div>
@@ -90,7 +115,7 @@ export function TicketCard({ ticket }: TicketProps) {
                   ENTRY
                 </p>
                 <p className="text-white font-medium text-xs min-[400px]:text-sm sm:text-base lg:text-lg">
-                  {entryPoint}
+                  {eventEntrance}
                 </p>
               </div>
             </div>
@@ -108,8 +133,9 @@ export function TicketCard({ ticket }: TicketProps) {
               className="hidden min-[400px]:block"
             />
             <p className="text-white text-xs min-[400px]:text-sm lg:text-base">
-              {venue}. {status.toUpperCase()}. ADMITS{" "}
-              {admits.replace(/\D/g, "")}
+              {eventVenue}. {holderName}.{" "}
+              {ticketDetails.map((ticket) => ticket.type).join(", ")}. ADMITS{" "}
+              {totalTickets}
             </p>
           </div>
         </div>
@@ -118,14 +144,14 @@ export function TicketCard({ ticket }: TicketProps) {
         <div className="shadow-2xl flex flex-col items-center lg:w-[397px] lg:h-[390px] rounded-lg text-center justify-between p-3 min-[400px]:p-4">
           <div className="rounded-full border px-4 min-[400px]:px-6 py-1 mb-2 border-[#0F6E56]">
             <p className="text-[#0F6E56] text-xs min-[400px]:text-sm">
-              {admits.toUpperCase()}
+              ADMITS {totalTickets}
             </p>
           </div>
 
           <div className="bg-white border-2 shadow-lg p-3 rounded-xl mb-4">
             <img
               src={qrImageUrl}
-              alt={`QR code for ticket ${ticketId}`}
+              alt={`QR code for ticket ${orderID}`}
               className="w-[100px] h-[100px] min-[400px]:w-[120px] min-[400px]:h-[120px] lg:w-[150px] lg:h-[150px]"
             />
           </div>
@@ -137,7 +163,7 @@ export function TicketCard({ ticket }: TicketProps) {
               </p>
 
               <p className="font-space font-bold text-xl min-[400px]:text-2xl text-[#1A1523]">
-                {ticketId}
+                {orderID}
               </p>
               <p className="font-space w-full h-[18px] text-xs text-[#0F6E56]">
                 {referenceCode}
@@ -146,9 +172,7 @@ export function TicketCard({ ticket }: TicketProps) {
               {/* {!transferable && (
               )} */}
 
-                 <p className="text-xs text-[#4A4451] italic">
-                  Non-transferable
-                </p>
+              <p className="text-xs text-[#4A4451] italic">Non-transferable</p>
             </div>
             <div className="text-xs min-[400px]:text-[14px] font-[500] leading-[21px] w-full max-w-[316px] mx-auto text-[#0F6E56]">
               <p className="">Eventra</p>
@@ -161,7 +185,11 @@ export function TicketCard({ ticket }: TicketProps) {
       <div className="flex flex-col sm:flex-row mt-5 justify-between mx-5 lg:mx-8 my-8 gap-3 min-[400px]:gap-4">
         <div className="flex items-center gap-2">
           <p className="flex items-center text-xs min-[400px]:text-sm lg:text-[15px] text-[#4A4451]">
-            <img src={shieldTick} alt="ShieldTick" className="size-3.5 text-emerald-600 shrink-0" />
+            <img
+              src={shieldTick}
+              alt="ShieldTick"
+              className="size-3.5 text-emerald-600 shrink-0"
+            />
             <span className="truncate">{refundPolicy.note}</span>
           </p>
         </div>

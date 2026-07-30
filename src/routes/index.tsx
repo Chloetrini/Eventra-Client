@@ -6,71 +6,103 @@ import RootLayout from "./root/layout";
 import MainLayout from "./main/layout";
 import AuthLayout from "./auth/layout";
 
-
 const routes = [
-    {
-        path: "/",
-        Component: RootLayout,
-        ErrorBoundary: ErrorBoundary,
-        handle: {
-            seo: {
-                title: "EventPulse",
-                description: "Event management platform for organizers and attendees.",
-
-            }
-        },
-        hydrateFallbackElement: <SuspenseUI />,
+  {
+    path: "/",
+    Component: RootLayout,
+    ErrorBoundary: ErrorBoundary,
+    handle: {
+      seo: {
+        title: "EventPulse",
+        description: "Event management platform for organizers and attendees.",
+      },
+    },
+    hydrateFallbackElement: <SuspenseUI />,
+    children: [
+      {
+        Component: MainLayout,
         children: [
-            {
-                Component: MainLayout,
-                children: [
-                    {
-                        index: true,
-                        lazy: async () => {
-                            const { default: Component } = await import("@/routes/main/home");
-                            return { Component };
-                        }
-                    }
-                ]
+          {
+            index: true,
+            lazy: async () => {
+              const { default: Component } = await import("@/routes/main/home");
+              return { Component };
             },
-            {
-                path: "auth",
-                Component: AuthLayout,
-                children: [
-                    {
-                        path: "register",
-                        handle: {
-                            seo: {
-                                title: "create account",
-                                description: "sign up for an account.",
-                            }
-                        },
-
-                        lazy: async () => {
-                            const { default: Component } = await import("@/routes/main/register");
-                            return { Component };
-                        }
-                    },
-                ],
+          },
+        ],
+      },
+      {
+        path: "auth",
+        Component: AuthLayout,
+        children: [
+          {
+            path: "register",
+            handle: {
+              seo: {
+                title: "create account",
+                description: "sign up for an account.",
+              },
             },
 
-            {
-                path: "tickets",
-                handle: {
-                    seo: {
-                        title: "My Tickets",
-                        description: "View and manage your event tickets.",
-                    },
-                },
-                lazy: async () => {
-                    const { default: Component } = await import("@/routes/tickets");
-                    return { Component };
-                }
-            }
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/main/register");
+              return { Component };
+            },
+          },
+        ],
+      },
 
+      {
+        path: "tickets",
+        handle: {
+          seo: {
+            title: "My Tickets",
+            description: "View and manage your event tickets.",
+          },
+        },
+        lazy: async () => {
+          const { default: Component } = await import("@/routes/tickets");
+          return { Component };
+        },
+      },
+      {
+        path: "payment",
+        children: [
+          {
+            path: "checkout",
+            handle: {
+              seo: {
+                title: "Checkout",
+                description: "Complete your purchase.",
+              },
+            },
 
-        ]
-    }
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/payment/checkout");
+              return { Component };
+            },
+          },
+          {
+            path: "ticket-confirmation",
+            handle: {
+              seo: {
+                title: "Ticket confirmation",
+                description: "View your completed ticket purchase.",
+              },
+            },
+
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/payment/ticket-confirmation");
+              return { Component };
+            },
+          },
+        ],
+      },
+    ],
+  },
 ] satisfies RouteObject[];
 
-export const router = createBrowserRouter(routes)
+export const router = createBrowserRouter(routes);

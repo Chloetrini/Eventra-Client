@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router";
 import { TicketCard } from "@/components/ticket-card";
-import { tickets } from "@/lib/dummy-ticket";
+import { dummyTicket} from "@/lib/dummy-ticket";
 import { cn } from "@/lib/utils";
 
 const TABS = [
@@ -16,7 +16,7 @@ export default function Tickets() {
     setSearchParams({ tab });
   };
 
-  const filteredTickets = activeTab === "upcoming" ? tickets : [];
+  const filteredTickets = activeTab === "upcoming" ? dummyTicket : [];
 
   return (
     <div className="max-w-[1280px] mx-auto">
@@ -57,7 +57,7 @@ export default function Tickets() {
       <div className="space-y-6">
         {filteredTickets.length > 0 ? (
           filteredTickets.map((ticket) => (
-            <TicketCard key={ticket.id} ticket={ticket} />
+            <TicketCard key={ticket._id} ticket={ticket} />
           ))
         ) : (
           <p className="text-sm text-center py-12 text-muted-foreground">

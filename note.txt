@@ -1,0 +1,155 @@
+<div className="min-h-screen bg-black text-white">
+      {/* 1. HERO HEADER BANNER SECTION */}
+      <div className="relative h-100 w-full border-b border-neutral-900">
+        <img 
+          src={event.coverImageUrl} 
+          alt={event.name} 
+          className="w-full h-full object-cover opacity-60"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+        
+        <div className="absolute bottom-0 left-0 w-full max-w-7xl mx-auto px-6 pb-8">
+          <div className="flex gap-2 mb-3">
+            <span className="bg-amber-500/10 text-amber-500 text-xs font-semibold px-2.5 py-1 rounded-full border border-amber-500/20">
+              {event.category}
+            </span>
+            {event.tags.map((tag, idx) => (
+              <span key={idx} className="bg-neutral-900 text-neutral-300 text-xs px-2.5 py-1 rounded-full border border-neutral-800">
+                {tag}
+              </span>
+            ))}
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tight">{event.name}</h1>
+          <p className="text-neutral-400 text-sm mt-2 font-medium">{event.startDate}</p>
+        </div>
+      </div>
+
+      {/* 2. MAIN CONTENT SPLIT LAYOUT (70% Content / 30% Checkout Sidebar) */}
+      <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
+        
+        {/* LEFT COLUMN: EVENT METADATA */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* About Section */}
+          <section>
+            <h2 className="text-xl font-bold mb-3">About Event</h2>
+            <p className="text-neutral-400 leading-relaxed text-sm">
+              {event.description || "No description provided for this event. Gather with others and enjoy an immersive experience under the best atmospheres in town."}
+            </p>
+          </section>
+
+          {/* Lineup Block */}
+          {event.lineUp && event.lineUp.length > 0 && (
+            <section className="border-t border-neutral-900 pt-6">
+              <h2 className="text-xl font-bold mb-4">Lineup Performance</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {event.lineUp.map((artist, idx) => (
+                  <div key={idx} className="flex items-center gap-3 p-3 bg-neutral-950 border border-neutral-900 rounded-xl">
+                    <div className="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-bold text-neutral-400">
+                      {artist.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm">{artist.name}</p>
+                      <p className="text-xs text-neutral-500">{artist.role}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Organizer Details */}
+          {event.organizer && (
+            <section className="border-t border-neutral-900 pt-6">
+              <h2 className="text-xl font-bold mb-3">Organized By</h2>
+              <div className="flex items-center justify-between p-4 bg-neutral-950 border border-neutral-900 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-amber-500 text-black font-black flex items-center justify-center text-lg">
+                    {event.organizer.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-bold text-sm">{event.organizer.name}</p>
+                      {event.organizer.isVerified && (
+                        <span className="text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Verified</span>
+                      )}
+                    </div>
+                    <p className="text-xs text-neutral-500 mt-0.5">{event.organizer.followersCount || "0"} Followers</p>
+                  </div>
+                </div>
+                <button className="text-xs font-semibold bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-800 px-4 py-2 rounded-lg transition">
+                  Follow
+                </button>
+              </div>
+            </section>
+          )}
+
+          {/* Guidelines / Good to Know */}
+          {event.goodToKnow && event.goodToKnow.length > 0 && (
+            <section className="border-t border-neutral-900 pt-6">
+              <h2 className="text-xl font-bold mb-3">Good to Know</h2>
+              <ul className="space-y-2.5">
+                {event.goodToKnow.map((rule, idx) => (
+                  <li key={idx} className="flex gap-2.5 text-sm text-neutral-400 items-start">
+                    <span className="text-amber-500 font-bold">•</span>
+                    <span>{rule}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </div>
+
+        {/* RIGHT COLUMN: STICKY CHECKOUT ACTIONS */}
+        <div className="lg:col-span-1">
+          <div className="bg-neutral-950 border border-neutral-900 rounded-2xl p-6 lg:sticky lg:top-6 space-y-6">
+            <div>
+              <p className="text-xs text-neutral-500 font-semibold uppercase tracking-wider">Location & Venue</p>
+              <h3 className="font-bold text-base mt-1">{event.location}</h3>
+              {event.address && <p className="text-xs text-neutral-400 mt-0.5">{event.address}</p>}
+              <p className="text-xs text-neutral-500 mt-1">{event.city}</p>
+            </div>
+
+            <div className="border-t border-neutral-900 pt-4">
+              <p className="text-xs text-neutral-500 font-semibold uppercase tracking-wider mb-3">Available Tickets</p>
+              
+              {event.tickets && event.tickets.length > 0 ? (
+                <div className="space-y-3">
+                  {event.tickets.map((t, idx) => (
+                    <div key={idx} className="flex justify-between items-center p-3 bg-neutral-900/50 border border-neutral-900 rounded-xl">
+                      <div>
+                        <p className="font-medium text-xs text-neutral-200">{t.name}</p>
+                        <p className="text-sm font-black text-amber-500 mt-0.5">
+                          {event.currency} {t.price.toLocaleString()}
+                        </p>
+                      </div>
+                      <button className="bg-white hover:bg-neutral-200 text-black text-xs font-bold px-3 py-1.5 rounded-lg transition">
+                        Select
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex justify-between items-center p-4 bg-neutral-900/40 border border-neutral-900 rounded-xl">
+                  <div>
+                    <p className="text-xs text-neutral-400">General Entry Admission</p>
+                    <p className="text-base font-black text-amber-500 mt-0.5">
+                      {event.basePrice === 0 ? "FREE ACCESS" : `${event.currency} ${event.basePrice.toLocaleString()}`}
+                    </p>
+                  </div>
+                  <button className="bg-amber-500 hover:bg-amber-600 text-black text-xs font-bold px-4 py-2 rounded-lg transition">
+                    Get Access
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {event.tickets && event.tickets.length > 0 && (
+              <button className="w-full bg-amber-500 hover:bg-amber-600 text-black font-black text-sm py-3.5 rounded-xl transition shadow-lg shadow-amber-500/5">
+                Proceed to Purchase
+              </button>
+            )}
+          </div>
+        </div>
+
+      </div>
+    </div>

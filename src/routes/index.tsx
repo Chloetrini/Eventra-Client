@@ -53,8 +53,20 @@ const routes = [
                     },
                 ],
             },
+            {
+                path: "events/:id",
+                handle: {
+                    seo: {
+                        title: "Event",
+                        description: "View your favorite event",
+                    }
+                },
 
-
+                lazy: async () => {
+                    const { default: Component } = await import("@/routes/event/event.id");
+                    return { Component };
+                }
+            },
         ]
     }
 ] satisfies RouteObject[];

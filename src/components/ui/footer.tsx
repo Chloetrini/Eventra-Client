@@ -1,129 +1,120 @@
-import { Link, NavLink } from "react-router";
+import { NavLink } from "react-router"
+
+const DISCOVER_LINKS = [
+    { to: "/explore", label: "Explore events" },
+    { to: "/explore?category=concerts", label: "Concerts" },
+    { to: "/explore?when=weekend", label: "This weekend" },
+    { to: "/explore?price=free", label: "Free events" },
+] as const
+
+const ORGANIZER_LINKS = [
+    { to: "/organizers", label: "Sell tickets" },
+    { to: "/organizers/pricing", label: "Pricing" },
+    { to: "/organizers/dashboard", label: "Dashboard" },
+    { to: "/organizers/promote", label: "Promote an event" },
+] as const
+
+const COMPANY_LINKS = [
+    { to: "/about", label: "About" },
+    { to: "/contact", label: "Contact" },
+    { to: "/terms", label: "Terms" },
+    { to: "/privacy", label: "Privacy" },
+] as const
+
+function FooterColumn({
+    heading,
+    links,
+}: {
+    heading: string
+    links: readonly { to: string; label: string }[]
+}) {
+    return (
+        <div className="flex flex-col gap-4">
+            <h3 className="font-mono font-bold uppercase tracking-widest text-[#1A1523]/70">
+                {heading}
+            </h3>
+            <ul className="flex flex-col gap-3">
+                {links.map((link) => (
+                    <li key={link.to}>
+                        <NavLink
+                            to={link.to}
+                            className="text-[15px] text-[#1A1523]/80 transition-colors hover:text-[#1A1523]"
+                        >
+                            {link.label}
+                        </NavLink>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    )
+}
 
 export default function Footer() {
-  return (
-    <footer className="bg-[#EAF5F2] text-gray-700">
-      {/* Newsletter */}
-      <div className="mx-auto max-w-7xl px-6 py-12">
-        <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900">
-              Never miss a good one.
-            </h2>
-            <p className="mt-2 text-gray-500">
-              Get the week's best events in your inbox. No spam.
-            </p>
-          </div>
+    return (
+        <footer className="relative overflow-hidden bg-[#E4F1EB]">
+            <div className="mx-auto w-full py-4 px-[101.5px]">
+                {/* Newsletter CTA */}
+                <div className="flex flex-col gap-6 py-14 md:flex-row md:items-center md:justify-between md:gap-10">
+                    <div>
+                        <h2 className="text-3xl font-bold tracking-tight text-[#1A1523]">
+                            Never miss a good one.
+                        </h2>
+                        <p className="mt-2 text-[15px] text-[#1A1523]/70">
+                            Get the week&apos;s best events in your inbox. No spam
+                        </p>
+                    </div>
 
-          <form className="flex w-full max-w-lg flex-col gap-3 sm:flex-row">
-            <input
-              type="email"
-              placeholder="eventra@gmail.com"
-              className="flex-1 rounded-md border border-gray-300 bg-white px-4 py-3 outline-none focus:border-emerald-600"
-            />
+                    <form
+                        className="flex w-full max-w-md shrink-0 items-center gap-3"
+                        onSubmit={(e) => e.preventDefault()}
+                    >
+                        <input
+                            type="email"
+                            placeholder="eventra@gmail.com"
+                            className="h-12 w-full min-w-0 rounded-[7px] border border-[#1A1523]/10 bg-white px-4 text-[15px] text-[#1A1523] placeholder:text-[#1A1523]/40 focus:outline-none focus:ring-2 focus:ring-[#0F6E56]/40"
+                        />
+                        <button
+                            type="submit"
+                            className="inline-flex shrink-0 items-center justify-center rounded-[7px] bg-[#0F6E56] px-6 py-3 text-[15px] font-bold text-white transition-colors hover:bg-[#0F6E56]/90"
+                        >
+                            Subscribe
+                        </button>
+                    </form>
+                </div>
+                {/* Link columns */}
+                <div className="grid grid-cols-2 gap-x-8 gap-y-10 border-t border-[#1A1523]/10 py-12 sm:grid-cols-4">
+                    <div className="col-span-2 flex flex-col gap-4 sm:col-span-1">
+                        <NavLink to="/" className="flex items-center gap-2">
+                            <img className="h-8 w-6" src="/src/assets/Eventra-logo.png" alt="Eventra" />
+                            <span className="text-xl font-bold tracking-tight text-[#1A1523]">
+                                Eventra
+                            </span>
+                        </NavLink>
+                        <p className="max-w-[26ch] text-[15px] text-[#1A1523]/70">
+                            The trusted way to discover events and buy tickets in Nigeria.
+                        </p>
+                    </div>
 
-            <button className="rounded-md bg-emerald-700 px-6 py-3 font-medium text-white transition hover:bg-emerald-800">
-              Subscribe
-            </button>
-          </form>
-        </div>
-      </div>
+                    <FooterColumn heading="Discover" links={DISCOVER_LINKS} />
+                    <FooterColumn heading="Organizers" links={ORGANIZER_LINKS} />
+                    <FooterColumn heading="Company" links={COMPANY_LINKS} />
+                </div>
 
-      <div className="border-t border-gray-300" />
+                {/* Bottom bar */}
+                <div className="flex flex-col gap-3 border-t border-[#1A1523]/10 py-6 font-Geist text-xs uppercase tracking-widest text-[#1A1523]/50 font-medium sm:flex-row sm:items-center sm:justify-between">
+                    <span>© 2026 Eventra · Lagos, Nigeria</span>
+                    <span className="inline-flex items-center gap-1.5">
+                        Made for the culture <span aria-hidden="true">◇</span>
+                    </span>
+                </div>
+            </div>
 
-      {/* Main Footer */}
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 md:grid-cols-2 lg:grid-cols-4">
-        {/* Logo */}
-        <div>
-          <h3 className="text-3xl font-bold text-gray-900">Eventra</h3>
 
-          <p className="mt-4 max-w-xs text-sm leading-6 text-gray-600">
-            The trusted way to discover and buy tickets in Nigeria.
-          </p>
+            {/* Watermark */}
+            <div className="overflow-hidden">
+                <img src="footer-eventra.svg" alt="" />
+            </div>
 
-        
-        </div>
-
-        {/* Discover */}
-        <div>
-          <h4 className="mb-5 text-sm font-semibold uppercase tracking-wider text-gray-900">
-            Discover
-          </h4>
-
-          <ul className="space-y-3">
-            <li>
-              <NavLink to="/explore">Explore events</NavLink>
-            </li>
-            <li>
-              <NavLink to="/concerts">Concerts</NavLink>
-            </li>
-            <li>
-              <NavLink to="/weekend">This weekend</NavLink>
-            </li>
-            <li>
-              <NavLink to="/free-events">Free events</NavLink>
-            </li>
-          </ul>
-        </div>
-
-        {/* Organizers */}
-        <div>
-          <h4 className="mb-5 text-sm font-semibold uppercase tracking-wider text-gray-900">
-            Organizers
-          </h4>
-
-          <ul className="space-y-3">
-            <li>
-              <Link to="/">Sell tickets</Link>
-            </li>
-            <li>
-              <Link to="/">Pricing</Link>
-            </li>
-            <li>
-              <Link to="/">Dashboard</Link>
-            </li>
-            <li>
-              <Link to="/">Promote an event</Link>
-            </li>
-          </ul>
-        </div>
-
-        {/* Company */}
-        <div>
-          <h4 className="mb-5 text-sm font-semibold uppercase tracking-wider text-gray-900">
-            Company
-          </h4>
-
-          <ul className="space-y-3">
-            <li>
-              <NavLink to="/about">About</NavLink>
-            </li>
-            <li>
-              <NavLink to="/contact">Contact</NavLink>
-            </li>
-            <li>
-              <NavLink to="/terms">Terms</NavLink>
-            </li>
-            <li>
-              <NavLink to="/privacy">Privacy</NavLink>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <div className="border-t border-gray-300" />
-
-      {/* Bottom */}
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-6 text-sm text-gray-500 md:flex-row">
-        <p>© 2026 EVENTRA · LAGOS, NIGERIA</p>
-
-        <p>MADE FOR THE CULTURE ◇</p>
-      </div>
-
-      {/* Watermark */}
-      <div className="overflow-hidden">
-       <img src="footer-eventra.svg" alt="" />
-      </div>
-    </footer>
-  );
+        </footer>
+    )
 }

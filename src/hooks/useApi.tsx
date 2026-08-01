@@ -1,10 +1,10 @@
-import { useQuery } from '@tanstack/react-query'
-import { getEventById } from '@/lib/dummy-ticket';
+// import { useQuery } from '@tanstack/react-query'
+// import { getTicketById } from '@/lib/dummy-ticket';
 
 
 // const { data: event } = useQuery({
 //   queryKey: ["event", eventId],
-//   queryFn: () => getEventById(eventId),
+//   queryFn: () => getTicketById(eventId),
 //   initialData: () => {
 //     return queryClient.getQueryData(["event", eventId]);
 //   }

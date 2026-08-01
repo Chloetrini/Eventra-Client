@@ -6,7 +6,6 @@ import RootLayout from "./root/layout";
 import MainLayout from "./main/layout";
 import AuthLayout from "./auth/layout";
 
-
 const routes = [
     {
         path: "/",
@@ -32,39 +31,78 @@ const routes = [
                         }
                     },
                     {
-                        path: "events",
+                        path: "explore",
+                        handle: {
+                            seo: {
+                                title: "Explore Events",
+                                description: "View and filter your event ",
+                            },
+                        },
                         lazy: async () => {
-                            const { default: Component } = await import("@/routes/main/events");
+                            const { default: Component } = await import("@/routes/main/explore");
                             return { Component };
                         }
                     },
                     {
-                        path: "checkout",
+                        path: "saved-events",
                         handle: {
                             seo: {
-                                title: "Checkout",
-                                description: "Complete your purchase.",
-                            }
+                                title: "Saved Events",
+                                description: "Save your event ",
+                            },
                         },
-
                         lazy: async () => {
-                            const { default: Component } = await import("@/routes/main/payment/checkout");
+                            const { default: Component } = await import("@/routes/main/saved-events");
                             return { Component };
                         }
                     },
                     {
-                        path: "ticket-confirmation",
+                        path: "tickets",
                         handle: {
                             seo: {
-                                title: "Ticket confirmation",
-                                description: "View your completed ticket purchase.",
-                            }
+                                title: "My Tickets",
+                                description: "View and manage your event tickets.",
+                            },
                         },
-
                         lazy: async () => {
-                            const { default: Component } = await import("@/routes/main/payment/ticket-confirmation");
+                            const { default: Component } = await import("@/routes/main/tickets");
                             return { Component };
-                        }
+                        },
+                    },
+                    {
+                        path: "payment",
+                        children: [
+                            {
+                                path: "checkout",
+                                handle: {
+                                    seo: {
+                                        title: "Checkout",
+                                        description: "Complete your purchase.",
+                                    },
+                                },
+
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/payment/checkout");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "ticket-confirmation",
+                                handle: {
+                                    seo: {
+                                        title: "Ticket confirmation",
+                                        description: "View your completed ticket purchase.",
+                                    },
+                                },
+
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/payment/ticket-confirmation");
+                                    return { Component };
+                                },
+                            },
+                        ],
                     },
                 ]
             },
@@ -82,17 +120,17 @@ const routes = [
                         },
 
                         lazy: async () => {
-                            const { default: Component } = await import("@/routes/main/register");
+                            const { default: Component } =
+                                await import("@/routes/auth/register");
                             return { Component };
-                        }
+                        },
                     },
                 ],
             },
 
 
-
-        ]
-    }
+        ],
+    },
 ] satisfies RouteObject[];
 
-export const router = createBrowserRouter(routes)
+export const router = createBrowserRouter(routes);

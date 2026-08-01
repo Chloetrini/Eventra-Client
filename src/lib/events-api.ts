@@ -1,16 +1,17 @@
 import { z } from "zod";
 import { api } from "@/lib/api";
-import { MOCK_EVENTS } from "@/lib/constants"
+import { MOCK_EVENTS } from "@/lib/constants";
 import {
   eventSchema,
 } from "@/lib/schema";
-import type { EventFilters , Event} from "@/types/event-types";
-import { PRICE_TIERS, DATE_WINDOWS } from "@/types/event-types";
+import {DATE_WINDOWS, PRICE_TIERS, type Event, type EventFilters } from "@/types/event-types";
+
 const PAGE_SIZE = 9;
 
+// ---------------------------------------------------------------------
 // The shape the "server" returns. This is the contract every layer above
 // depends on — mock and real backend both produce exactly this.
-
+// ---------------------------------------------------------------------
 export type EventsResponse = {
   events: Event[];
   total: number;
@@ -32,9 +33,9 @@ const eventsResponseSchema = z.object({
 // One small predicate per filter. Each returns TRUE when its own filter
 // is switched off — that's what lets them compose with && independently.
 // ---------------------------------------------------------------------
-function matchesSearch(e: Event, search: string) {
-  if (!search.trim()) return true;
-  const n = search.toLowerCase();
+function matchesSearch(e: Event, q: string) {
+  if (!q.trim()) return true;
+  const n = q.toLowerCase();
   return (
     e.title.toLowerCase().includes(n) ||
     e.venue.toLowerCase().includes(n) ||
@@ -62,9 +63,9 @@ function matchesAccess(e: Event, access: EventFilters["access"]) {
   return e.minPrice > 0; // "paid"
 }
 
-
+// ---------------------------------------------------------------------
 // MOCK implementation — used while there's no backend.
-
+// ---------------------------------------------------------------------
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function fetchEventsMock(filters: EventFilters): Promise<EventsResponse> {
@@ -112,11 +113,9 @@ async function fetchEventsMock(filters: EventFilters): Promise<EventsResponse> {
   };
 }
 
-// REAL implementation — talks to the backend through your Axios client.
-
 function buildParams(filters: EventFilters): string {
   const p = new URLSearchParams();
-  if (filters.search) p.set("search", filters.search);
+  if (filters.search) p.set("q", filters.search);
   if (filters.state) p.set("state", filters.state);
   if (filters.categories.length) p.set("categories", filters.categories.join(","));
   if (filters.when !== "any") p.set("when", filters.when);
@@ -134,10 +133,8 @@ async function fetchEventsReal(filters: EventFilters): Promise<EventsResponse> {
   return eventsResponseSchema.parse(res.body);
 }
 
-// The seam. Everything above the app calls THIS. Flip one env var to
-// switch between mock and real — no component, hook, or page changes.
+
 export function fetchEvents(filters: EventFilters): Promise<EventsResponse> {
-  console.log("USE_MOCKS is:", import.meta.env.VITE_USE_MOCKS);
   if (import.meta.env.VITE_USE_MOCKS === "true") return fetchEventsMock(filters);
   return fetchEventsReal(filters);
 }

@@ -9,8 +9,9 @@ import { Button } from "@/components/ui/button";
 import { TopBarFilter } from "@/components/filters/filter-topbar";
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
+import { useSavedEvents } from "@/hooks/use-saved-events";
 
-export default function EventsPage() {
+export default function ExplorePage() {
   const { filters, setFilter, toggleCategory, clearAll, loadMore } =
     useEventFilters();
   const { data, isLoading, isFetching, isError, refetch } = useEvents(filters);
@@ -18,13 +19,7 @@ export default function EventsPage() {
   const events = data?.events ?? [];
   const featured = events.find((e) => e.promotion);
   const rest = events.filter((e) => !e.promotion);
-   const [savedIds, setSavedIds] = useState<string[]>([]);
-
-const toggleSave = (id: string) => {
-  setSavedIds((prev) =>
-    prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-  );
-};
+   const { savedIds, toggleSave } = useSavedEvents();
 
   const stateLabel = filters.state || "All Nigeria";
   const monthLabel = new Date().toLocaleString("en-NG", {
@@ -96,8 +91,8 @@ const toggleSave = (id: string) => {
           <EventGrid
             events={rest}
             isLoading={isLoading}
-            savedIds={savedIds}
-            onToggleSave={toggleSave}
+            savedIds={[...savedIds]}      // Set → array, because EventGrid wants string[]
+           onToggleSave={toggleSave}
           />
 
           {data?.hasMore && (

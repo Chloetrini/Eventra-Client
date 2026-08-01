@@ -1,5 +1,5 @@
+import { CATEGORIES, STATES } from '@/types/event-types';
 import { z } from 'zod'
-import { STATES , CATEGORIES} from '@/types/event-types';
 
 export const registerSchema = z.object({
   fullName: z
@@ -62,4 +62,3 @@ export const eventSchema = z.object({
   promotion: z.boolean().default(false),
   trendingScore: z.number().default(0),
 });
-

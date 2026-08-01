@@ -1,11 +1,10 @@
 import { useState } from "react"
 import { NavLink } from "react-router"
 import { Menu, X } from "lucide-react"
-
 import { cn } from "@/lib/utils"
 
 const NAV_LINKS = [
-  { to: "/events", label: "Events" },
+  { to: "/explore", label: "Events" },
   { to: "/organizers", label: "For Organizers" },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
@@ -40,7 +39,7 @@ function NavItem({
       className={({ isActive }) =>
         cn(
           "text-[#1A1523]",
-          isActive ? "opacity-100" : "opacity-80 hover:opacity-100"
+          isActive ? "opacity-100 text-[#0F6E56] font-semibold" : "opacity-80 hover:opacity-100"
         )
       }
     >
@@ -75,8 +74,7 @@ function Navbar() {
       <div className="flex w-full items-center p-4">
         {/* Logo */}
         <NavLink to="/" className="flex items-center" onClick={closeMenu}>
-          <img className="pl-[clamp(24px,6vw,101.5px)]" src="/Eventra-logo.svg" alt="Logo" />
-          <h1 className="pl-[7px] text-[#1A1A1A] font-bold text-[20px]">Eventra</h1>
+          <img className="pl-[clamp(24px,6vw,101.5px)]" src="/logo.svg" alt="Logo" />
         </NavLink>
 
         {/* Navigation Links */}

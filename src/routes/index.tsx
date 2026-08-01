@@ -6,7 +6,6 @@ import RootLayout from "./root/layout";
 import MainLayout from "./main/layout";
 import AuthLayout from "./auth/layout";
 
-
 const routes = [
     {
         path: "/",
@@ -30,9 +29,96 @@ const routes = [
                             const { default: Component } = await import("@/routes/main/home");
                             return { Component };
                         }
-                    }
+                    },
+                    {
+                        path: "explore",
+                        handle: {
+                            seo: {
+                                title: "Explore Events",
+                                description: "View and filter your event ",
+                            },
+                        },
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/main/explore");
+                            return { Component };
+                        }
+                    },
+                    {
+                        path: "saved-events",
+                        handle: {
+                            seo: {
+                                title: "Saved Events",
+                                description: "Save your event ",
+                            },
+                        },
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/main/saved-events");
+                            return { Component };
+                        }
+                    },
+                    {
+                        path: "tickets",
+                        handle: {
+                            seo: {
+                                title: "My Tickets",
+                                description: "View and manage your event tickets.",
+                            },
+                        },
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/main/tickets");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "payment",
+                        children: [
+                            {
+                                path: "checkout",
+                                handle: {
+                                    seo: {
+                                        title: "Checkout",
+                                        description: "Complete your purchase.",
+                                    },
+                                },
+
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/payment/checkout");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "ticket-confirmation",
+                                handle: {
+                                    seo: {
+                                        title: "Ticket confirmation",
+                                        description: "View your completed ticket purchase.",
+                                    },
+                                },
+
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/payment/ticket-confirmation");
+                                    return { Component };
+                                },
+                            },
+                        ],
+                    },
                 ]
             },
+             {
+                        path: "contact",
+                        handle: {
+                            seo: {
+                                title: "Contact",
+                                description: "Get in touch with the Eventra team.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/main/contact");
+                            return { Component };
+                        }
+                    },
             {
                 path: "auth",
                 Component: AuthLayout,
@@ -47,9 +133,10 @@ const routes = [
                         },
 
                         lazy: async () => {
-                            const { default: Component } = await import("@/routes/main/register");
+                            const { default: Component } =
+                                await import("@/routes/auth/register");
                             return { Component };
-                        }
+                        },
                     },
                 ],
             },
@@ -62,13 +149,9 @@ const routes = [
                     }
                 },
 
-                lazy: async () => {
-                    const { default: Component } = await import("@/routes/event/event.id");
-                    return { Component };
-                }
-            },
-        ]
-    }
+
+        ],
+    },
 ] satisfies RouteObject[];
 
-export const router = createBrowserRouter(routes)
+export const router = createBrowserRouter(routes);

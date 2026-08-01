@@ -1,12 +1,13 @@
 import { cn } from '@/lib/utils'
 import { Eye, EyeClosed } from 'lucide-react'
 import type { Control, FieldError as FieldErrorType, FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form'
+import type { Control, FieldError as FieldErrorType, FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form'
 import { Field, FieldError, FieldLabel, FieldLegend, FieldSet } from './field'
 import { Input } from './input'
 import { Textarea } from './textarea'
 
 type FormFieldProps<T extends FieldValues> = {
-  label: string
+  label?: string
   type: string
   id: string
   register: UseFormRegister<T>
@@ -21,6 +22,7 @@ type FormFieldProps<T extends FieldValues> = {
   inputType?: 'input' | 'textarea' | 'select' | 'switch'
   registerOptions?: RegisterOptions<T>
   control?: Control<T>
+  borderStyle?: 'checkout' | 'auth'
 }
 
 export function FormBox<T extends FieldValues>({
@@ -38,6 +40,7 @@ export function FormBox<T extends FieldValues>({
   defaultValue,
   inputType,
   registerOptions,
+  borderStyle,
   // control,
 }: FormFieldProps<T>) {
   const toggleVisibility = () => setIsVisible?.((prev: boolean) => !prev)
@@ -68,7 +71,7 @@ export function FormBox<T extends FieldValues>({
             <Input
               type={isVisible ? 'text' : type}
               placeholder={placeholder}
-              className={cn('focus:outline-blue-500 focus:ring-blue-500 py-5.5', errors ? 'border-red-600' : '')}
+              className={cn('focus:outline-blue-500 focus:ring-blue-500 py-5.5', errors ? 'border-red-600' : ''  , borderStyle === 'checkout' ? ' border-[#AEAEB2] h-17.5 px-5 text-black': borderStyle === 'auth' ? 'border-[#C3C9D3] h-14' : '')}
               id={id}
               {...register(name, registerOptions)}
               disabled={disabled}

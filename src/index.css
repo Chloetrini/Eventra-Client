@@ -11,6 +11,19 @@
   --color-organizer-bar: #f5f3ef;
   --color-tag: #f5f3ef;
   /* --color-good-to-know: #4a4451; */
+* {
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+
+@theme{
+  --font-space: 'Space Mono', monospace;
+  --font-grotesk: 'Schibsted Grotesk', sans-serif;
 }
 
 @theme inline {

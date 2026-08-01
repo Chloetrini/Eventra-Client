@@ -21,7 +21,7 @@ const TicketConfirmation = () => {
     if (isError || !ticket) return <div className='w-full'>Event not found.</div>
 
     return (
-        <div className='flex flex-col justify-center items-center mx-auto container px-4 sm:px-8 lg:px-20 pt-10 pb-2 gap-10'>
+        <div className='flex flex-col justify-center items-center mx-auto container px-20 pt-10 pb-2 gap-10'>
 
             <div className='flex justify-center items-center w-full'>
 

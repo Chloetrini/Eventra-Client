@@ -32,7 +32,7 @@ export function EventCard({
   return (
     <article
       className={cn(
-        "group overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md w-full md:max-w-[294px] max-h-[398px]",
+       "group overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md w-full md:max-w-[var(--card-w,294px)] max-h-[398px]",
         className
       )}
     >

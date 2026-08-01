@@ -88,12 +88,13 @@ export default function ExplorePage() {
             />
           )}
 
-          <EventGrid
-            events={rest}
-            isLoading={isLoading}
-            savedIds={[...savedIds]}      // Set → array, because EventGrid wants string[]
-           onToggleSave={toggleSave}
-          />
+         <EventGrid
+  events={rest}
+  isLoading={isLoading}
+  className="grid-cols-[repeat(auto-fill,294px)]"
+  savedIds={[...savedIds]}      // Set → array, because EventGrid wants string[]
+  onToggleSave={toggleSave}
+/>
 
           {data?.hasMore && (
             <div className="mt-10 flex justify-center  mx-auto">

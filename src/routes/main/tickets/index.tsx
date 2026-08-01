@@ -22,14 +22,14 @@ export default function Tickets() {
     <div className="max-w-[1280px] mx-auto">
       {/* Header */}
       <div className="pt-[10px] pb-[10px]">
-        <div className="flex items-center pl-4 min-[400px]:pl-[33px]">
+        <div className="flex items-center pl-4 min-[400px]:pl-[33px] mt-8">
           <div className="h-0.5 w-6 bg-[#F5A524] rounded-full" />
-          <p className="text-[10px] min-[400px]:text-[12px] font-[400] leading-[16px] text-[#0F6E56] tracking-wide uppercase ml-2">
+          <p className="text-[10px] min-[400px]:text-[12px] font-[400] leading-[16px] text-[#0F6E56] tracking-wide uppercase ml-2 mb-2">
             Your account
           </p>
         </div>
         <div className="pl-4 min-[400px]:pl-[33px]">
-          <h1 className="text-2xl min-[400px]:text-4xl lg:text-[54px] font-bold text-[#1A1523] lg:font-[700]">
+          <h1 className="text-2xl min-[400px]:text-4xl lg:text-[54px] font-bold text-[#1A1523] lg:font-[700] mb-6">
             My tickets
           </h1>
         </div>

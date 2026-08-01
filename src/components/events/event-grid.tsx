@@ -1,5 +1,6 @@
 import { EventCard } from "./event-card";
 import { EventCardSkeleton } from "./event-card-skeleton";
+import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event-types";
 
 type EventGridProps = {
@@ -7,6 +8,7 @@ type EventGridProps = {
   isLoading?: boolean;
   skeletonCount?: number;
   savedIds?: string[];
+  className?: string;
   onToggleSave?: (id: string) => void;
   emptyMessage?: string;
 };
@@ -17,11 +19,12 @@ export function EventGrid({
   skeletonCount = 9,
   savedIds = [],
   onToggleSave,
+  className,
   emptyMessage = "No events match your filters. Try clearing a few.",
 }: EventGridProps) {
   if (isLoading) {
     return (
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className={cn("grid gap-6 sm:grid-cols-2 lg:grid-cols-3 w-full xl:w-[946px]", className)}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <EventCardSkeleton key={i} />
         ))}
@@ -38,7 +41,7 @@ export function EventGrid({
   }
 
   return (
-    <div className="grid gap-[32px] sm:grid-cols-2 lg:grid-cols-3 w-full xl:w-[946px]">
+    <div className={cn("grid gap-[32px] sm:grid-cols-2 lg:grid-cols-3 w-full xl:w-[946px]", className)}>
       {events.map((event) => (
         <EventCard
           key={event.id}

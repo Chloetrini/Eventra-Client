@@ -16,32 +16,29 @@ export const queryClient = new QueryClient({
   },
 })
 
-
-export const formatDateTime = (eventDateTime: string, displayFormat:string) => {
-
-  const [hours, minutes] = eventDateTime.split(":").map(Number);
-
-  const date = new Date();
-  date.setHours(hours, minutes);
-
-  return format(new Date(eventDateTime), displayFormat);
-
+export const formatDate = (iso: string) => {
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(new Date(iso))
 }
 
-export const formatNaira = (amount: number): string =>
-  `₦${amount.toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
-const DAY_MS = 86_400_000;
-const now = new Date();
-const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-/** N days from today at the given hour, as an ISO string. */
-export function daysFromNow(days: number, hour: number): string {
-  const d = new Date(startOfToday.getTime() + days * DAY_MS);
-  d.setHours(hour, 0, 0, 0);
-  return d.toISOString();
+export const formatTime = (iso: string) => {
+  return new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }).format(new Date(iso))
 }
 
-/** The coming Saturday at the given hour — for the "This weekend" window. */
- export function thisWeekend(hour: number): string {
-  const daysUntilSat = (6 - startOfToday.getDay() + 7) % 7;
-  return daysFromNow(daysUntilSat, hour)};
+export const formatPrice = (price: number) => {
+  if (price === 0) return 'Free'
+  return `₦${price.toLocaleString()}`
+}
+
+// export const formatFollowers = (n: number) => {
+//   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`
+//   return String(n)
+// }

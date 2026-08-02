@@ -1,0 +1,2038 @@
+{
+  "events": [
+    {
+      "id": 1,
+      "name": "Afrobeats Night Market",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "CONCERTS",
+      "subTags": [
+        "CONCERT",
+        "AFROBEATS"
+      ],
+      "featured": true,
+      "startDate": "2026-02-14T18:00:00.000Z",
+      "location": {
+        "venueName": "Muri Okunola Park",
+        "address": "Ozumba Mbadiwe Ave, Victoria Island, Lagos",
+        "area": "Victoria Island",
+        "city": "Lagos",
+        "parkingNote": "Ample parking • 5 min from Eko Hotel",
+        "coordinates": {
+          "lat": 6.4281,
+          "lng": 3.4219
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 15000,
+      "description": "Afrobeats Night Market returns to Victoria Island for one unforgettable night under the sky. Expect back-to-back live sets, a curated food-and-drinks market and the best sound system in the city — all in one place.\n\nWhether you're coming with your crew or flying solo, this is where Lagos comes to dance. Early sets kick off at 6PM, headliners take the stage from 9 and the vibe run till 2AM.",
+      "musicType": "Live music",
+      "gatesOpenTime": "5:00 PM",
+      "doorsCloseTime": "2:00 AM",
+      "tags": [
+        "Afrobeats",
+        "Amapiano",
+        "Live band",
+        "Food market",
+        "Outdoor",
+        "18+"
+      ],
+      "lineupCount": 3,
+      "lineup": [
+        {
+          "id": 1,
+          "name": "DJ Spinall",
+          "role": "Headline set",
+          "imageUrl": "/src/assets/Dj Spinall.png"
+        },
+        {
+          "id": 2,
+          "name": "Ayra Live Band",
+          "role": "Live performance",
+          "imageUrl": "/src/assets/Ayra.png"
+        },
+        {
+          "id": 3,
+          "name": "Amapiano Collective",
+          "role": "Special guests",
+          "imageUrl": "/src/assets/Amapiano.png"
+        }
+      ],
+      "organizer": {
+        "id": 1,
+        "name": "Eko Live",
+        "initials": "EL",
+        "imageUrl": null,
+        "isVerified": true,
+        "totalEvents": 42
+      },
+      "serviceFeePercent": 5,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "18+ event. Valid ID may be required at the gate.",
+        "Rain or shine — the event goes on."
+      ],
+      "relatedEventIds": [
+        2,
+        3,
+        4
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 0,
+          "quantity": 100,
+          "originalPrice": 10000,
+          "availability": "sold out",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Reserved table • bottle serving",
+          "unitPrice": 15000,
+          "quantity": 50,
+          "originalPrice": null,
+          "availability": "scarce",
+          "quantityLeft": 12,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Lounge access • 1 free drink",
+          "unitPrice": 35000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Afrobeats Night Market",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "CONCERTS",
+      "subTags": [
+        "CONCERT",
+        "AFROBEATS"
+      ],
+      "featured": false,
+      "startDate": "2026-04-12T18:00:00.000Z",
+      "location": {
+        "venueName": "Eko Convention Centre",
+        "address": "Adetokunbo Ademola St, Victoria Island, Lagos",
+        "area": "Victoria Island",
+        "city": "Lagos",
+        "parkingNote": "Valet parking available",
+        "coordinates": {
+          "lat": 6.4241,
+          "lng": 3.4219
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 5000,
+      "description": "Afrobeats Night Market brings a night to remember in Lagos. Join us at Eko Convention Centre for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": "Live music",
+      "gatesOpenTime": "18:00 PM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Afrobeats",
+        "Amapiano",
+        "Live band",
+        "Food market",
+        "Outdoor",
+        "18+"
+      ],
+      "lineupCount": 3,
+      "lineup": [
+        {
+          "id": 1,
+          "name": "Amapiano Collective",
+          "role": "Headline set",
+          "imageUrl": null
+        },
+        {
+          "id": 2,
+          "name": "Falz",
+          "role": "Headline set",
+          "imageUrl": null
+        },
+        {
+          "id": 3,
+          "name": "Tems Tribute Band",
+          "role": "Special guests",
+          "imageUrl": null
+        }
+      ],
+      "organizer": {
+        "id": 3,
+        "name": "Lagos Sounds",
+        "initials": "LS",
+        "imageUrl": null,
+        "isVerified": true,
+        "totalEvents": 48
+      },
+      "serviceFeePercent": 7,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        1,
+        3,
+        3
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 0,
+          "quantity": 100,
+          "originalPrice": 10000,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 5000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 25000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Lagos Comedy Jam",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "COMEDY",
+      "subTags": [
+        "COMEDY",
+        "STANDUP"
+      ],
+      "featured": false,
+      "startDate": "2026-05-14T19:00:00.000Z",
+      "location": {
+        "venueName": "Terra Kulture",
+        "address": "Tiamiyu Savage St, Victoria Island, Lagos",
+        "area": "Victoria Island",
+        "city": "Lagos",
+        "parkingNote": "Limited street parking",
+        "coordinates": {
+          "lat": 6.4298,
+          "lng": 3.4211
+        }
+      },
+      "priceType": "free",
+      "startingPrice": 0,
+      "description": "Lagos Comedy Jam brings a night to remember in Lagos. Join us at Terra Kulture for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": null,
+      "gatesOpenTime": "19:00 PM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Stand-up",
+        "Live show",
+        "Indoor",
+        "18+"
+      ],
+      "lineupCount": 3,
+      "lineup": [
+        {
+          "id": 1,
+          "name": "Falz",
+          "role": "Headline set",
+          "imageUrl": null
+        },
+        {
+          "id": 2,
+          "name": "Tems Tribute Band",
+          "role": "Opening act",
+          "imageUrl": null
+        },
+        {
+          "id": 3,
+          "name": "Kizz Daniel Cover Act",
+          "role": "Headline set",
+          "imageUrl": null
+        }
+      ],
+      "organizer": {
+        "id": 4,
+        "name": "The Guild Events",
+        "initials": "GE",
+        "imageUrl": null,
+        "isVerified": false,
+        "totalEvents": 37
+      },
+      "serviceFeePercent": 7,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        2,
+        4,
+        4
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 0,
+          "quantity": 100,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 5000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": 15,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 20000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Tech Founders Summit",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "TECH",
+      "subTags": [
+        "TECH",
+        "STARTUPS"
+      ],
+      "featured": true,
+      "startDate": "2026-06-18T20:00:00.000Z",
+      "location": {
+        "venueName": "Freedom Park",
+        "address": "Broad St, Lagos Island, Lagos",
+        "area": "Lagos Island",
+        "city": "Lagos",
+        "parkingNote": "Paid parking on-site",
+        "coordinates": {
+          "lat": 6.4531,
+          "lng": 3.3958
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 20000,
+      "description": "Tech Founders Summit brings a night to remember in Lagos. Join us at Freedom Park for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": null,
+      "gatesOpenTime": "20:00 PM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Networking",
+        "Panels",
+        "Startups",
+        "Indoor"
+      ],
+      "lineupCount": 0,
+      "lineup": [],
+      "organizer": {
+        "id": 5,
+        "name": "Ventures Africa",
+        "initials": "VA",
+        "imageUrl": null,
+        "isVerified": true,
+        "totalEvents": 33
+      },
+      "serviceFeePercent": 7,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        3,
+        5,
+        5
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 15000,
+          "quantity": 100,
+          "originalPrice": 25000,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 20000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "scarce",
+          "quantityLeft": 15,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 40000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Island Rooftop Party",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "PARTIES",
+      "subTags": [
+        "PARTY",
+        "ROOFTOP"
+      ],
+      "featured": false,
+      "startDate": "2026-07-21T10:00:00.000Z",
+      "location": {
+        "venueName": "The Good Beach Club",
+        "address": "Alpha Beach Rd, Lekki, Lagos",
+        "area": "Lekki",
+        "city": "Lagos",
+        "parkingNote": "Beachside parking • arrive early",
+        "coordinates": {
+          "lat": 6.4392,
+          "lng": 3.4779
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 25000,
+      "description": "Island Rooftop Party brings a night to remember in Lagos. Join us at The Good Beach Club for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": "DJ sets",
+      "gatesOpenTime": "10:00 AM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "DJ",
+        "Rooftop",
+        "Cocktails",
+        "18+"
+      ],
+      "lineupCount": 2,
+      "lineup": [
+        {
+          "id": 1,
+          "name": "Kizz Daniel Cover Act",
+          "role": "Headline set",
+          "imageUrl": null
+        },
+        {
+          "id": 2,
+          "name": "Show Dem Camp",
+          "role": "Live performance",
+          "imageUrl": null
+        }
+      ],
+      "organizer": {
+        "id": 6,
+        "name": "Culture Collective",
+        "initials": "CC",
+        "imageUrl": null,
+        "isVerified": true,
+        "totalEvents": 14
+      },
+      "serviceFeePercent": 3,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        4,
+        6,
+        6
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 20000,
+          "quantity": 100,
+          "originalPrice": 30000,
+          "availability": "sold out",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 25000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "scarce",
+          "quantityLeft": 8,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 45000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Naija Business Conference",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "CONFERENCES",
+      "subTags": [
+        "CONFERENCE",
+        "BUSINESS"
+      ],
+      "featured": false,
+      "startDate": "2026-02-25T12:00:00.000Z",
+      "location": {
+        "venueName": "Civic Centre",
+        "address": "Ozumba Mbadiwe Ave, Victoria Island, Lagos",
+        "area": "Victoria Island",
+        "city": "Lagos",
+        "parkingNote": "Secure parking available",
+        "coordinates": {
+          "lat": 6.4268,
+          "lng": 3.4227
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 15000,
+      "description": "Naija Business Conference brings a night to remember in Lagos. Join us at Civic Centre for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": null,
+      "gatesOpenTime": "12:00 PM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Business",
+        "Keynotes",
+        "Networking",
+        "Indoor"
+      ],
+      "lineupCount": 2,
+      "lineup": [
+        {
+          "id": 1,
+          "name": "Show Dem Camp",
+          "role": "Headline set",
+          "imageUrl": null
+        },
+        {
+          "id": 2,
+          "name": "Reekado Banks Live",
+          "role": "Headline set",
+          "imageUrl": null
+        }
+      ],
+      "organizer": {
+        "id": 1,
+        "name": "Eko Live",
+        "initials": "EL",
+        "imageUrl": null,
+        "isVerified": false,
+        "totalEvents": 43
+      },
+      "serviceFeePercent": 5,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        5,
+        7,
+        7
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 10000,
+          "quantity": 100,
+          "originalPrice": 20000,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 15000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "scarce",
+          "quantityLeft": 8,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 35000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Lagos Derby Showdown",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "SPORTS",
+      "subTags": [
+        "SPORTS",
+        "FOOTBALL"
+      ],
+      "featured": false,
+      "startDate": "2026-03-28T18:00:00.000Z",
+      "location": {
+        "venueName": "Muson Centre",
+        "address": "Marina, Onikan, Lagos",
+        "area": "Onikan",
+        "city": "Lagos",
+        "parkingNote": "On-site parking • gets full early",
+        "coordinates": {
+          "lat": 6.4512,
+          "lng": 3.3963
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 25000,
+      "description": "Lagos Derby Showdown brings a night to remember in Lagos. Join us at Muson Centre for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": null,
+      "gatesOpenTime": "18:00 PM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Football",
+        "Live match",
+        "Family friendly",
+        "Outdoor"
+      ],
+      "lineupCount": 0,
+      "lineup": [],
+      "organizer": {
+        "id": 2,
+        "name": "Naija Nights",
+        "initials": "NN",
+        "imageUrl": null,
+        "isVerified": true,
+        "totalEvents": 10
+      },
+      "serviceFeePercent": 7,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        6,
+        8,
+        8
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 20000,
+          "quantity": 100,
+          "originalPrice": 30000,
+          "availability": "sold out",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 25000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": 20,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 45000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Contemporary Art Exhibition",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "ARTS AND THEATRE",
+      "subTags": [
+        "ARTS",
+        "EXHIBITION"
+      ],
+      "featured": true,
+      "startDate": "2026-04-05T19:00:00.000Z",
+      "location": {
+        "venueName": "Muri Okunola Park",
+        "address": "Ozumba Mbadiwe Ave, Victoria Island, Lagos",
+        "area": "Victoria Island",
+        "city": "Lagos",
+        "parkingNote": "Ample parking • 5 min from Eko Hotel",
+        "coordinates": {
+          "lat": 6.4281,
+          "lng": 3.4219
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 25000,
+      "description": "Contemporary Art Exhibition brings a night to remember in Lagos. Join us at Muri Okunola Park for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": null,
+      "gatesOpenTime": "19:00 PM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Art",
+        "Exhibition",
+        "Indoor",
+        "Family friendly"
+      ],
+      "lineupCount": 2,
+      "lineup": [
+        {
+          "id": 1,
+          "name": "Comedy Central Crew",
+          "role": "Special guests",
+          "imageUrl": null
+        },
+        {
+          "id": 2,
+          "name": "Local Legends Band",
+          "role": "Live performance",
+          "imageUrl": null
+        }
+      ],
+      "organizer": {
+        "id": 3,
+        "name": "Lagos Sounds",
+        "initials": "LS",
+        "imageUrl": null,
+        "isVerified": true,
+        "totalEvents": 54
+      },
+      "serviceFeePercent": 5,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        7,
+        9,
+        9
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 20000,
+          "quantity": 100,
+          "originalPrice": 30000,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 25000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": 15,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 45000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Street Food & Suya Festival",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "FOOD AND DRINKS",
+      "subTags": [
+        "FOOD",
+        "FESTIVAL"
+      ],
+      "featured": false,
+      "startDate": "2026-05-08T20:00:00.000Z",
+      "location": {
+        "venueName": "Landmark Event Centre",
+        "address": "Water Corporation Rd, Oniru, Lagos",
+        "area": "Oniru",
+        "city": "Lagos",
+        "parkingNote": "On-site parking available",
+        "coordinates": {
+          "lat": 6.4324,
+          "lng": 3.4432
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 5000,
+      "description": "Street Food & Suya Festival brings a night to remember in Lagos. Join us at Landmark Event Centre for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": "Live music",
+      "gatesOpenTime": "20:00 PM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Street food",
+        "Suya",
+        "Live music",
+        "Outdoor"
+      ],
+      "lineupCount": 0,
+      "lineup": [],
+      "organizer": {
+        "id": 4,
+        "name": "The Guild Events",
+        "initials": "GE",
+        "imageUrl": null,
+        "isVerified": false,
+        "totalEvents": 34
+      },
+      "serviceFeePercent": 7,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        8,
+        10,
+        10
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 0,
+          "quantity": 100,
+          "originalPrice": 10000,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 5000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "scarce",
+          "quantityLeft": 8,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 25000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Amapiano Sunset Sessions",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "CONCERTS",
+      "subTags": [
+        "CONCERT",
+        "AMAPIANO"
+      ],
+      "featured": false,
+      "startDate": "2026-06-12T10:00:00.000Z",
+      "location": {
+        "venueName": "Eko Convention Centre",
+        "address": "Adetokunbo Ademola St, Victoria Island, Lagos",
+        "area": "Victoria Island",
+        "city": "Lagos",
+        "parkingNote": "Valet parking available",
+        "coordinates": {
+          "lat": 6.4241,
+          "lng": 3.4219
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 10000,
+      "description": "Amapiano Sunset Sessions brings a night to remember in Lagos. Join us at Eko Convention Centre for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": "Live music",
+      "gatesOpenTime": "10:00 AM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Amapiano",
+        "Sunset",
+        "Outdoor",
+        "18+"
+      ],
+      "lineupCount": 2,
+      "lineup": [
+        {
+          "id": 1,
+          "name": "DJ Spinall",
+          "role": "Live performance",
+          "imageUrl": null
+        },
+        {
+          "id": 2,
+          "name": "Ayra Live Band",
+          "role": "Special guests",
+          "imageUrl": null
+        }
+      ],
+      "organizer": {
+        "id": 5,
+        "name": "Ventures Africa",
+        "initials": "VA",
+        "imageUrl": null,
+        "isVerified": true,
+        "totalEvents": 43
+      },
+      "serviceFeePercent": 7,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        9,
+        11,
+        11
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 5000,
+          "quantity": 100,
+          "originalPrice": 15000,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 10000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "scarce",
+          "quantityLeft": null,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 30000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Startup Pitch Night",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "TECH",
+      "subTags": [
+        "TECH",
+        "PITCH"
+      ],
+      "featured": false,
+      "startDate": "2026-07-14T12:00:00.000Z",
+      "location": {
+        "venueName": "Terra Kulture",
+        "address": "Tiamiyu Savage St, Victoria Island, Lagos",
+        "area": "Victoria Island",
+        "city": "Lagos",
+        "parkingNote": "Limited street parking",
+        "coordinates": {
+          "lat": 6.4298,
+          "lng": 3.4211
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 20000,
+      "description": "Startup Pitch Night brings a night to remember in Lagos. Join us at Terra Kulture for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": null,
+      "gatesOpenTime": "12:00 PM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Pitch",
+        "Investors",
+        "Networking",
+        "Indoor"
+      ],
+      "lineupCount": 0,
+      "lineup": [],
+      "organizer": {
+        "id": 6,
+        "name": "Culture Collective",
+        "initials": "CC",
+        "imageUrl": null,
+        "isVerified": true,
+        "totalEvents": 34
+      },
+      "serviceFeePercent": 5,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        10,
+        12,
+        12
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 15000,
+          "quantity": 100,
+          "originalPrice": 25000,
+          "availability": "scarce",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 20000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": 15,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 40000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Laugh Factory Live",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "COMEDY",
+      "subTags": [
+        "COMEDY",
+        "STANDUP"
+      ],
+      "featured": true,
+      "startDate": "2026-02-18T18:00:00.000Z",
+      "location": {
+        "venueName": "Freedom Park",
+        "address": "Broad St, Lagos Island, Lagos",
+        "area": "Lagos Island",
+        "city": "Lagos",
+        "parkingNote": "Paid parking on-site",
+        "coordinates": {
+          "lat": 6.4531,
+          "lng": 3.3958
+        }
+      },
+      "priceType": "free",
+      "startingPrice": 0,
+      "description": "Laugh Factory Live brings a night to remember in Lagos. Join us at Freedom Park for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": null,
+      "gatesOpenTime": "18:00 PM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Stand-up",
+        "Live show",
+        "18+"
+      ],
+      "lineupCount": 2,
+      "lineup": [
+        {
+          "id": 1,
+          "name": "Amapiano Collective",
+          "role": "Live performance",
+          "imageUrl": null
+        },
+        {
+          "id": 2,
+          "name": "Falz",
+          "role": "Special guests",
+          "imageUrl": null
+        }
+      ],
+      "organizer": {
+        "id": 1,
+        "name": "Eko Live",
+        "initials": "EL",
+        "imageUrl": null,
+        "isVerified": false,
+        "totalEvents": 30
+      },
+      "serviceFeePercent": 5,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        11,
+        13,
+        13
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 0,
+          "quantity": 100,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 5000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": 8,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 20000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "name": "White Party Lagos",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "PARTIES",
+      "subTags": [
+        "PARTY",
+        "WHITE PARTY"
+      ],
+      "featured": false,
+      "startDate": "2026-03-21T19:00:00.000Z",
+      "location": {
+        "venueName": "The Good Beach Club",
+        "address": "Alpha Beach Rd, Lekki, Lagos",
+        "area": "Lekki",
+        "city": "Lagos",
+        "parkingNote": "Beachside parking • arrive early",
+        "coordinates": {
+          "lat": 6.4392,
+          "lng": 3.4779
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 5000,
+      "description": "White Party Lagos brings a night to remember in Lagos. Join us at The Good Beach Club for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": "DJ sets",
+      "gatesOpenTime": "19:00 PM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "DJ",
+        "Dress code",
+        "Cocktails",
+        "18+"
+      ],
+      "lineupCount": 0,
+      "lineup": [],
+      "organizer": {
+        "id": 2,
+        "name": "Naija Nights",
+        "initials": "NN",
+        "imageUrl": null,
+        "isVerified": true,
+        "totalEvents": 46
+      },
+      "serviceFeePercent": 5,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        12,
+        14,
+        14
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 0,
+          "quantity": 100,
+          "originalPrice": 10000,
+          "availability": "scarce",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 5000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "scarce",
+          "quantityLeft": 15,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 25000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Fintech Leaders Conference",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "CONFERENCES",
+      "subTags": [
+        "CONFERENCE",
+        "FINTECH"
+      ],
+      "featured": false,
+      "startDate": "2026-04-25T20:00:00.000Z",
+      "location": {
+        "venueName": "Civic Centre",
+        "address": "Ozumba Mbadiwe Ave, Victoria Island, Lagos",
+        "area": "Victoria Island",
+        "city": "Lagos",
+        "parkingNote": "Secure parking available",
+        "coordinates": {
+          "lat": 6.4268,
+          "lng": 3.4227
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 10000,
+      "description": "Fintech Leaders Conference brings a night to remember in Lagos. Join us at Civic Centre for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": null,
+      "gatesOpenTime": "20:00 PM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Fintech",
+        "Panels",
+        "Networking",
+        "Indoor"
+      ],
+      "lineupCount": 2,
+      "lineup": [
+        {
+          "id": 1,
+          "name": "Tems Tribute Band",
+          "role": "Opening act",
+          "imageUrl": null
+        },
+        {
+          "id": 2,
+          "name": "Kizz Daniel Cover Act",
+          "role": "Live performance",
+          "imageUrl": null
+        }
+      ],
+      "organizer": {
+        "id": 3,
+        "name": "Lagos Sounds",
+        "initials": "LS",
+        "imageUrl": null,
+        "isVerified": true,
+        "totalEvents": 52
+      },
+      "serviceFeePercent": 7,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        13,
+        15,
+        15
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 5000,
+          "quantity": 100,
+          "originalPrice": 15000,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 10000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": 8,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 30000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Basketball Classic",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "SPORTS",
+      "subTags": [
+        "SPORTS",
+        "BASKETBALL"
+      ],
+      "featured": false,
+      "startDate": "2026-05-28T10:00:00.000Z",
+      "location": {
+        "venueName": "Muson Centre",
+        "address": "Marina, Onikan, Lagos",
+        "area": "Onikan",
+        "city": "Lagos",
+        "parkingNote": "On-site parking • gets full early",
+        "coordinates": {
+          "lat": 6.4512,
+          "lng": 3.3963
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 5000,
+      "description": "Basketball Classic brings a night to remember in Lagos. Join us at Muson Centre for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": null,
+      "gatesOpenTime": "10:00 AM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Basketball",
+        "Live match",
+        "Family friendly",
+        "Indoor"
+      ],
+      "lineupCount": 2,
+      "lineup": [
+        {
+          "id": 1,
+          "name": "Kizz Daniel Cover Act",
+          "role": "Opening act",
+          "imageUrl": null
+        },
+        {
+          "id": 2,
+          "name": "Show Dem Camp",
+          "role": "Special guests",
+          "imageUrl": null
+        }
+      ],
+      "organizer": {
+        "id": 4,
+        "name": "The Guild Events",
+        "initials": "GE",
+        "imageUrl": null,
+        "isVerified": false,
+        "totalEvents": 53
+      },
+      "serviceFeePercent": 3,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        14,
+        16,
+        16
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 0,
+          "quantity": 100,
+          "originalPrice": 10000,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 5000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "scarce",
+          "quantityLeft": null,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 25000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "name": "Theatre Under the Stars",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "ARTS AND THEATRE",
+      "subTags": [
+        "THEATRE",
+        "OUTDOOR"
+      ],
+      "featured": true,
+      "startDate": "2026-06-05T12:00:00.000Z",
+      "location": {
+        "venueName": "Muri Okunola Park",
+        "address": "Ozumba Mbadiwe Ave, Victoria Island, Lagos",
+        "area": "Victoria Island",
+        "city": "Lagos",
+        "parkingNote": "Ample parking • 5 min from Eko Hotel",
+        "coordinates": {
+          "lat": 6.4281,
+          "lng": 3.4219
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 5000,
+      "description": "Theatre Under the Stars brings a night to remember in Lagos. Join us at Muri Okunola Park for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": "Live band",
+      "gatesOpenTime": "12:00 PM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Theatre",
+        "Live band",
+        "Outdoor"
+      ],
+      "lineupCount": 0,
+      "lineup": [],
+      "organizer": {
+        "id": 5,
+        "name": "Ventures Africa",
+        "initials": "VA",
+        "imageUrl": null,
+        "isVerified": true,
+        "totalEvents": 43
+      },
+      "serviceFeePercent": 3,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        15,
+        17,
+        17
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 0,
+          "quantity": 100,
+          "originalPrice": 10000,
+          "availability": "scarce",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 5000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": 20,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 25000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "name": "Wine & Dine Experience",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "FOOD AND DRINKS",
+      "subTags": [
+        "FOOD",
+        "WINE"
+      ],
+      "featured": false,
+      "startDate": "2026-07-08T18:00:00.000Z",
+      "location": {
+        "venueName": "Landmark Event Centre",
+        "address": "Water Corporation Rd, Oniru, Lagos",
+        "area": "Oniru",
+        "city": "Lagos",
+        "parkingNote": "On-site parking available",
+        "coordinates": {
+          "lat": 6.4324,
+          "lng": 3.4432
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 20000,
+      "description": "Wine & Dine Experience brings a night to remember in Lagos. Join us at Landmark Event Centre for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": null,
+      "gatesOpenTime": "18:00 PM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Wine tasting",
+        "Fine dining",
+        "Indoor",
+        "18+"
+      ],
+      "lineupCount": 2,
+      "lineup": [
+        {
+          "id": 1,
+          "name": "Reekado Banks Live",
+          "role": "Opening act",
+          "imageUrl": null
+        },
+        {
+          "id": 2,
+          "name": "Comedy Central Crew",
+          "role": "Opening act",
+          "imageUrl": null
+        }
+      ],
+      "organizer": {
+        "id": 6,
+        "name": "Culture Collective",
+        "initials": "CC",
+        "imageUrl": null,
+        "isVerified": true,
+        "totalEvents": 48
+      },
+      "serviceFeePercent": 7,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        16,
+        18,
+        18
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 15000,
+          "quantity": 100,
+          "originalPrice": 25000,
+          "availability": "sold out",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 20000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 40000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "name": "Afrobeats to the World",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "CONCERTS",
+      "subTags": [
+        "CONCERT",
+        "AFROBEATS"
+      ],
+      "featured": false,
+      "startDate": "2026-02-12T19:00:00.000Z",
+      "location": {
+        "venueName": "Eko Convention Centre",
+        "address": "Adetokunbo Ademola St, Victoria Island, Lagos",
+        "area": "Victoria Island",
+        "city": "Lagos",
+        "parkingNote": "Valet parking available",
+        "coordinates": {
+          "lat": 6.4241,
+          "lng": 3.4219
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 10000,
+      "description": "Afrobeats to the World brings a night to remember in Lagos. Join us at Eko Convention Centre for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": "Live music",
+      "gatesOpenTime": "19:00 PM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Afrobeats",
+        "Live band",
+        "Outdoor",
+        "18+"
+      ],
+      "lineupCount": 2,
+      "lineup": [
+        {
+          "id": 1,
+          "name": "Comedy Central Crew",
+          "role": "Special guests",
+          "imageUrl": null
+        },
+        {
+          "id": 2,
+          "name": "Local Legends Band",
+          "role": "Headline set",
+          "imageUrl": null
+        }
+      ],
+      "organizer": {
+        "id": 1,
+        "name": "Eko Live",
+        "initials": "EL",
+        "imageUrl": null,
+        "isVerified": false,
+        "totalEvents": 5
+      },
+      "serviceFeePercent": 7,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        17,
+        19,
+        19
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 5000,
+          "quantity": 100,
+          "originalPrice": 15000,
+          "availability": "sold out",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 10000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": 20,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 30000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "name": "AI & Innovation Expo",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "TECH",
+      "subTags": [
+        "TECH",
+        "AI"
+      ],
+      "featured": false,
+      "startDate": "2026-03-14T20:00:00.000Z",
+      "location": {
+        "venueName": "Terra Kulture",
+        "address": "Tiamiyu Savage St, Victoria Island, Lagos",
+        "area": "Victoria Island",
+        "city": "Lagos",
+        "parkingNote": "Limited street parking",
+        "coordinates": {
+          "lat": 6.4298,
+          "lng": 3.4211
+        }
+      },
+      "priceType": "paid",
+      "startingPrice": 25000,
+      "description": "AI & Innovation Expo brings a night to remember in Lagos. Join us at Terra Kulture for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": null,
+      "gatesOpenTime": "20:00 PM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "AI",
+        "Innovation",
+        "Networking",
+        "Indoor"
+      ],
+      "lineupCount": 3,
+      "lineup": [
+        {
+          "id": 1,
+          "name": "Local Legends Band",
+          "role": "Special guests",
+          "imageUrl": null
+        },
+        {
+          "id": 2,
+          "name": "DJ Spinall",
+          "role": "Live performance",
+          "imageUrl": null
+        },
+        {
+          "id": 3,
+          "name": "Ayra Live Band",
+          "role": "Headline set",
+          "imageUrl": null
+        }
+      ],
+      "organizer": {
+        "id": 2,
+        "name": "Naija Nights",
+        "initials": "NN",
+        "imageUrl": null,
+        "isVerified": true,
+        "totalEvents": 28
+      },
+      "serviceFeePercent": 3,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        18,
+        20,
+        20
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 20000,
+          "quantity": 100,
+          "originalPrice": 30000,
+          "availability": "sold out",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 25000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": 15,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 45000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "name": "Beach Party Weekender",
+      "coverImageUrl": "/src/assets/landing.png",
+      "category": "PARTIES",
+      "subTags": [
+        "PARTY",
+        "BEACH"
+      ],
+      "featured": true,
+      "startDate": "2026-04-18T10:00:00.000Z",
+      "location": {
+        "venueName": "Freedom Park",
+        "address": "Broad St, Lagos Island, Lagos",
+        "area": "Lagos Island",
+        "city": "Lagos",
+        "parkingNote": "Paid parking on-site",
+        "coordinates": {
+          "lat": 6.4531,
+          "lng": 3.3958
+        }
+      },
+      "priceType": "free",
+      "startingPrice": 0,
+      "description": "Beach Party Weekender brings a night to remember in Lagos. Join us at Freedom Park for an experience packed with energy, community and unforgettable moments from start to finish.\n\nDoors open early so come through, grab your spot and settle in before things really get going.",
+      "musicType": "DJ sets",
+      "gatesOpenTime": "10:00 AM",
+      "doorsCloseTime": "11:00 PM",
+      "tags": [
+        "Beach",
+        "DJ",
+        "Outdoor",
+        "18+"
+      ],
+      "lineupCount": 3,
+      "lineup": [
+        {
+          "id": 1,
+          "name": "DJ Spinall",
+          "role": "Headline set",
+          "imageUrl": null
+        },
+        {
+          "id": 2,
+          "name": "Ayra Live Band",
+          "role": "Special guests",
+          "imageUrl": null
+        },
+        {
+          "id": 3,
+          "name": "Amapiano Collective",
+          "role": "Opening act",
+          "imageUrl": null
+        }
+      ],
+      "organizer": {
+        "id": 3,
+        "name": "Lagos Sounds",
+        "initials": "LS",
+        "imageUrl": null,
+        "isVerified": true,
+        "totalEvents": 20
+      },
+      "serviceFeePercent": 3,
+      "goodToKnow": [
+        "Refunds available until 3 days before the event.",
+        "Each ticket has a unique QR code - one entry per ticket.",
+        "Valid ID may be required at the gate."
+      ],
+      "relatedEventIds": [
+        19,
+        1
+      ],
+      "published": true,
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "updatedAt": "2026-01-10T00:00:00.000Z",
+      "ticketTiers": [
+        {
+          "id": 1,
+          "description": "General admission",
+          "unitPrice": 0,
+          "quantity": 100,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "Early Bird"
+        },
+        {
+          "id": 2,
+          "description": "Standard entry",
+          "unitPrice": 5000,
+          "quantity": 80,
+          "originalPrice": null,
+          "availability": "scarce",
+          "quantityLeft": 8,
+          "type": "Regular"
+        },
+        {
+          "id": 3,
+          "description": "Premium access • extra perks",
+          "unitPrice": 20000,
+          "quantity": 30,
+          "originalPrice": null,
+          "availability": "available",
+          "quantityLeft": null,
+          "type": "VIP"
+        }
+      ]
+    }
+  ]
+}

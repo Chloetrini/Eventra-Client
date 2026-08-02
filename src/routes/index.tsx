@@ -70,6 +70,19 @@ const routes = [
                         },
                     },
                     {
+                        path: "contact",
+                        handle: {
+                            seo: {
+                                title: "Contact",
+                                description: "Get in touch with the Eventra team.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/main/contact");
+                            return { Component };
+                        }
+                    },
+                    {
                         path: "payment",
                         children: [
                             {
@@ -87,6 +100,7 @@ const routes = [
                                     return { Component };
                                 },
                             },
+
                             {
                                 path: "ticket-confirmation",
                                 handle: {
@@ -119,6 +133,7 @@ const routes = [
                             return { Component };
                         }
                     },
+
             {
                 path: "auth",
                 Component: AuthLayout,
@@ -140,6 +155,14 @@ const routes = [
                     },
                 ],
             },
+            {
+                path: "events/:id",
+                handle: {
+                    seo: {
+                        title: "Event",
+                        description: "View your favorite event",
+                    }
+                },
 
 
         ],

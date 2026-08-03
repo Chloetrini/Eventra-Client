@@ -70,6 +70,19 @@ const routes = [
                         },
                     },
                     {
+                        path: "events/:slug",
+                        handle: {
+                            seo: {
+                                title: "Event",
+                                description: "View your favorite event",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/main/event.id");
+                            return { Component };
+                        },
+                    },
+                    {
                         path: "contact",
                         handle: {
                             seo: {
@@ -155,15 +168,6 @@ const routes = [
                     },
                 ],
             },
-            {
-                path: "events/:id",
-                handle: {
-                    seo: {
-                        title: "Event",
-                        description: "View your favorite event",
-                    }
-                },
-
 
         ],
     },

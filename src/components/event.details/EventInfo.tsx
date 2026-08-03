@@ -1,4 +1,4 @@
-import { type Event } from "@/types/event"
+import { type Event } from "@/types/event-types"
 import { formatDate, formatTime } from "@/lib/utils"
 import { MapPin, Users } from "lucide-react"
 import { Clock } from "lucide-react"
@@ -24,8 +24,8 @@ export const EventInfo = ({ event }: { event: Event }) => {
         </div>
         <div className="flex flex-col justify-center gap-1">
           <p className="text-[11px] font-light tracking-wider">LOCATION</p>
-          <p className="text-sm font-medium">{event.location.venueName}</p>
-          <p className="text-xs font-light">{event.location.area}, {event.location.city}</p>
+          <p className="text-sm font-medium">{event.venue.name}</p>
+          <p className="text-xs font-light">{event.venue.city}, {event.venue.state}</p>
         </div>
       </div>
 

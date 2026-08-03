@@ -120,6 +120,19 @@ const routes = [
                     },
                 ]
             },
+             {
+                        path: "contact",
+                        handle: {
+                            seo: {
+                                title: "Contact",
+                                description: "Get in touch with the Eventra team.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/main/contact");
+                            return { Component };
+                        }
+                    },
 
             {
                 path: "auth",

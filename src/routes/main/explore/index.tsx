@@ -17,8 +17,8 @@ export default function ExplorePage() {
   const { data, isLoading, isFetching, isError, refetch } = useEvents(filters);
 
   const events = data?.events ?? [];
-  const featured = events.find((e) => e.promotion);
-  const rest = events.filter((e) => !e.promotion);
+  const featured = events.find((e) => e.isPromoted);
+const rest = events.filter((e) => !e.isPromoted);
    const { savedIds, toggleSave } = useSavedEvents();
 
   const stateLabel = filters.state || "All Nigeria";

@@ -1,5 +1,4 @@
 import React from 'react'
-import type { TicketCheckout } from '@/lib/dummy-ticket-checkout'
 import { formatDateTime, formatNaira } from '@/lib/utils'
 import { CalendarDays, MapPin } from 'lucide-react'
 import PaymentBtn from './ui/pay-method-btn'
@@ -8,7 +7,13 @@ import yellowLock from '@/assets/yellow lock.png'
 
 
 interface TicketPreviewProps {
-  ticketCheckout: TicketCheckout
+  ticketCheckout: {
+    eventName: string
+    eventImage: string | null
+    eventDateTime: string
+    eventVenue: string
+    ticketDetails: { type: string; unitPrice: number; quantity: number }[]
+  }
 }
 
 const TicketPreview = ({ ticketCheckout }: TicketPreviewProps) => {
@@ -26,7 +31,9 @@ const TicketPreview = ({ ticketCheckout }: TicketPreviewProps) => {
   return (
     <div className='flex flex-col w-full'>
       <div>
-        <img src={ticketCheckout.eventImage} alt={ticketCheckout.eventName} className='w-full rounded-t-2xl' />
+        {ticketCheckout.eventImage && (
+          <img src={ticketCheckout.eventImage} alt={ticketCheckout.eventName} className='w-full rounded-t-2xl' />
+        )}
       </div>
       <div className='flex flex-col gap-5 px-5 py-5 shadow-2xl rounded-b-2xl'>
 
@@ -73,16 +80,16 @@ const TicketPreview = ({ ticketCheckout }: TicketPreviewProps) => {
             </p>
           </div>
         </div>
-      <PaymentBtn classname='bg-[#0A4F41] hover:bg-[#083b31] text-white hover:text-white h-11.5'
-      text={`Pay ${formatNaira(total)}`}
-      icon={lock}
-      editIcon='w-4 h-4'
-      // onClick={}
-      // loading={}
-      />
-      <p className='text-xs flex justify-center md:items-center gap-0.5 md:gap-1 mt-[-15px] text-center md:text-start'>
-        <span><img src={yellowLock} alt="" className='w-3 h-3'/></span>
-        Secured by Paystack - Money held until the event</p>
+        <PaymentBtn classname='bg-[#0A4F41] hover:bg-[#083b31] text-white hover:text-white h-11.5'
+          text={`Pay ${formatNaira(total)}`}
+          icon={lock}
+          editIcon='w-4 h-4'
+        // onClick={}
+        // loading={}
+        />
+        <p className='text-xs flex justify-center md:items-center gap-0.5 md:gap-1 mt-[-15px] text-center md:text-start'>
+          <span><img src={yellowLock} alt="" className='w-3 h-3' /></span>
+          Secured by Paystack - Money held until the event</p>
       </div>
     </div>
   )

@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { type Event, type ticketDetails } from "@/types/event";
+import { useNavigate } from "react-router";
+import { type Event , type TicketTier} from "@/types/event-types";
 import { formatPrice } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-
 
 const TierRow = ({
   tier,
@@ -13,19 +13,22 @@ const TierRow = ({
   onIncrement,
   onDecrement,
 }: {
-  tier: ticketDetails;
+  tier: TicketTier;
   quantity: number;
   onIncrement: () => void;
   onDecrement: () => void;
 }) => {
   const isSoldOut = tier.availability === "sold out";
+  
   return (
     <div className={cn("space-y-1", isSoldOut && "opacity-60")}>
       <div className="flex items-start justify-between gap-2">
         <div>
           <p className="text-sm font-semibold">{tier.type}</p>
-          <p className="text-xs text-[#6E6577]">{tier.description}</p>
-          {tier.quantityLeft && (
+          {tier.description && (
+            <p className="text-xs text-[#6E6577]">{tier.description}</p>
+          )}
+          {tier.quantityLeft  && (
             <p className="mt-0.5 text-xs font-semibold tracking-wider text-[#7A4E02]">
               only {tier.quantityLeft} left
             </p>
@@ -37,7 +40,7 @@ const TierRow = ({
               {formatPrice(tier.originalPrice)}
             </p>
           )}
-          <p className="text-sm font-bold ">
+          <p className="text-sm font-bold">
             {isSoldOut ? (
               <span className="text-[#FFC4C4]">Sold out</span>
             ) : (
@@ -46,12 +49,14 @@ const TierRow = ({
           </p>
         </div>
       </div>
+      
       {!isSoldOut && (
         <div className="flex items-center justify-end gap-2">
           <button
+            type="button"
             onClick={onDecrement}
             disabled={quantity === 0}
-            className="flex h-7 w-7 items-center justify-center rounded-full border text-sm transition hover:scale-120 disabled:opacity-40"
+            className="flex h-7 w-7 items-center justify-center rounded-full border text-sm transition hover:scale-110 disabled:opacity-40 cursor-pointer"
           >
             −
           </button>
@@ -59,8 +64,9 @@ const TierRow = ({
             {quantity}
           </span>
           <button
+            type="button"
             onClick={onIncrement}
-            className="flex h-7 w-7 items-center justify-center rounded-full border text-sm transition hover:scale-120"
+            className="flex h-7 w-7 items-center justify-center rounded-full border text-sm transition hover:scale-110 cursor-pointer"
           >
             +
           </button>
@@ -78,41 +84,80 @@ const TierRow = ({
 };
 
 export const PaidEventTicket = ({ event }: { event: Event }) => {
-  // 1. Safely initialize state with a fallback empty array if ticketTiers is missing
-  const [quantities, setQuantities] = useState<Record<number, number>>(() =>
-    Object.fromEntries((event?.ticketTiers ?? []).map((t) => [t.id, 0])),
+  const navigate = useNavigate();
+
+  // Helper to ensure a consistent tier key (_id or id)
+  const getTierId = (tier: any, index: number): string | number =>
+    tier.id ?? tier._id ?? index;
+
+  const ticketTiers = event?.ticketTiers ?? [];
+  const feePercent = event?.serviceFeePercent ?? 0;
+
+  // 1. Safely initialize state
+  const [quantities, setQuantities] = useState<Record<string | number, number>>(() =>
+    Object.fromEntries(ticketTiers.map((t, idx) => [getTierId(t, idx), 0]))
   );
 
-  // 2. Safe reduction with fallback array
-  const subtotal = (event?.ticketTiers ?? []).reduce(
-    (sum, tier) => sum + tier.unitPrice * (quantities[tier.id] ?? 0),
-    0,
+  // 2. Calculate subtotal safely
+  const subtotal = ticketTiers.reduce(
+    (sum, tier, idx) => sum + tier.unitPrice * (quantities[getTierId(tier, idx)] ?? 0),
+    0
   );
 
-  // 3. Fallback to 0 if serviceFeePercent doesn't exist yet
-  const serviceFee = Math.round(
-    subtotal * ((event?.serviceFeePercent ?? 0) / 100),
-  );
+  // 3. Service fee calculation
+  const serviceFee = Math.round(subtotal * (feePercent / 100));
   const total = subtotal + serviceFee;
 
   // 4. Safe check for scarce availability
-  const isSelling = (event?.ticketTiers ?? []).some(
-    (t) => t.availability === "scarce",
-  );
+  const isSelling = ticketTiers.some((t) => t.availability === "scarce");
 
-  const increment = (tierId: number) => {
-    setQuantities((prev) => ({ ...prev, [tierId]: (prev[tierId] ?? 0) + 1 }));
+  const increment = (tierKey: string | number) => {
+    setQuantities((prev) => ({ ...prev, [tierKey]: (prev[tierKey] ?? 0) + 1 }));
   };
-  const decrement = (tierId: number) => {
+
+  const decrement = (tierKey: string | number) => {
     setQuantities((prev) => ({
       ...prev,
-      [tierId]: Math.max(0, (prev[tierId] ?? 0) - 1),
+      [tierKey]: Math.max(0, (prev[tierKey] ?? 0) - 1),
     }));
   };
 
-  if (!event || !event.ticketTiers) {
+  const handleSelectTickets = () => {
+    const selectedTiers = ticketTiers
+      .filter((t, idx) => (quantities[getTierId(t, idx)] ?? 0) > 0)
+      .map((t, idx) => ({
+        id: getTierId(t, idx),
+        type: t.type,
+        unitPrice: t.unitPrice,
+        quantity: quantities[getTierId(t, idx)],
+      }));
+
+    // Property fallback aliases for name, date, and image
+    const eventName = event.title || (event as any).name;
+    const eventImage = event.coverImage || event.coverImageUrl || (event as any).image;
+    const eventDateTime = event.startDate || (event as any).date;
+    const eventVenue = event.location?.venueName || event.location?.address || "";
+
+    navigate("/payment/checkout", {
+      state: {
+        eventId: event._id || (event as any)._id,
+        eventName,
+        eventImage,
+        eventDateTime,
+        eventVenue,
+        ticketDetails: selectedTiers,
+        subtotal,
+        serviceFee,
+        total,
+      },
+    });
+  };
+
+  if (!event || !event.ticketTiers || event.ticketTiers.length === 0) {
     return (
-      <div className="rounded-2xl border p-6 shadow-sm">Loading tickets...</div>
+      <div className="rounded-2xl border p-6 shadow-sm text-center text-sm text-muted-foreground">
+        No ticket options available for this event.
+      </div>
     );
   }
 
@@ -127,15 +172,18 @@ export const PaidEventTicket = ({ event }: { event: Event }) => {
         )}
       </div>
       <div className="mt-6 space-y-5">
-        {event.ticketTiers.map((tier) => (
-          <TierRow
-            key={tier.id}
-            tier={tier}
-            quantity={quantities[tier.id] ?? 0}
-            onIncrement={() => increment(tier.id)}
-            onDecrement={() => decrement(tier.id)}
-          />
-        ))}
+        {ticketTiers.map((tier, idx) => {
+          const key = getTierId(tier, idx);
+          return (
+            <TierRow
+              key={key}
+              tier={tier}
+              quantity={quantities[key] ?? 0}
+              onIncrement={() => increment(key)}
+              onDecrement={() => decrement(key)}
+            />
+          );
+        })}
       </div>
       <Separator className="my-5" />
       <div className="space-y-2 text-sm">
@@ -144,7 +192,7 @@ export const PaidEventTicket = ({ event }: { event: Event }) => {
           <span>{formatPrice(subtotal)}</span>
         </div>
         <div className="flex items-center justify-between text-[#4A4451]">
-          <span>Service fee ({event.serviceFeePercent}%)</span>
+          <span>Service fee ({feePercent}%)</span>
           <span>{formatPrice(serviceFee)}</span>
         </div>
         <div className="flex items-center justify-between font-bold">
@@ -153,7 +201,8 @@ export const PaidEventTicket = ({ event }: { event: Event }) => {
         </div>
       </div>
       <Button
-        className="mt-5 w-full bg-[#0F6E56] text-white hover:bg-emerald-900"
+        onClick={handleSelectTickets}
+        className="mt-5 w-full bg-[#0F6E56] text-white hover:bg-emerald-900 cursor-pointer"
         disabled={total === 0}
       >
         Select tickets

@@ -1,4 +1,4 @@
-import { type Event } from "@/types/event"
+import { type Event } from "@/types/event-types"
 import { Dot } from "lucide-react"
 
 

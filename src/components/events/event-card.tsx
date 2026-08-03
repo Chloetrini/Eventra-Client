@@ -17,7 +17,7 @@ export function EventCard({
   onToggleSave,
   className,
 }: EventCardProps) {
-  const date = new Date(event.createdAt);
+  const date = new Date(event.startDate);
   const dateLabel = date.toLocaleString("en-NG", {
     weekday: "short",
     day: "numeric",
@@ -26,8 +26,6 @@ export function EventCard({
     minute: "2-digit",
     hour12: true,
   });
-
-  
 
   return (
     <article
@@ -44,11 +42,11 @@ export function EventCard({
           className="aspect-[294/189] w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
         <div className="flex items-center justify-center " >
-          <p className="absolute left-3 top-6 text-[12px] font-[700]  text-white font-mono drop-shadow tracking-wider">No {event.no}</p>
+          <p className="absolute left-3 top-6 text-[12px] font-[700]  text-white font-mono drop-shadow tracking-wider">No {event.no ?? ""}</p>
            {onToggleSave && (
           <button
             type="button"
-            onClick={() => onToggleSave(event.id)}
+            onClick={() => onToggleSave(event.slug)}
             aria-label={isSaved ? "Remove from saved" : "Save event"}
             aria-pressed={isSaved}
             className={cn(
@@ -79,13 +77,13 @@ export function EventCard({
         <h3 className="font-[700] leading-snug font-grotesk md:text-[20px] text-[19px]">{event.title}</h3>
 
         <p className="text-[14px] text-muted-foreground text-[#6E6577] font-[500] font-sans ">
-          {dateLabel} · {event.venue}, {event.city}
+          {dateLabel} · {event.venue.name}, {event.venue.city}
         </p>
 
         <div className="flex items-center justify-between pt-8 pb-2">
           <span className="font-[16px] font-mono text-[#4A4451] font-[700]">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice)} </span>
           <Link
-            to={`/events/${event.id}`}
+            to={`/events/${event.slug}`}
             aria-label={`View ${event.title}`}
             className="grid h-[35px] w-[35px] place-items-center rounded-full bg-[#E4F1EB] text-[#0A4F41] transition hover:bg-emerald-100"
           >

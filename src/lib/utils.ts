@@ -6,6 +6,7 @@ import { format } from "date-fns";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -16,6 +17,7 @@ export const queryClient = new QueryClient({
   },
 })
 
+// --- Ozcar-dev's formatters (event details) ---
 export const formatDate = (iso: string) => {
   return new Intl.DateTimeFormat('en-US', {
     weekday: 'short',
@@ -38,7 +40,27 @@ export const formatPrice = (price: number) => {
   return `₦${price.toLocaleString()}`
 }
 
-// export const formatFollowers = (n: number) => {
-//   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`
-//   return String(n)
-// }
+// --- Chloe's formatters (restored after merge) ---
+export const formatDateTime = (eventDateTime: string, displayFormat: string) => {
+  return format(new Date(eventDateTime), displayFormat);
+}
+
+export const formatNaira = (amount: number): string =>
+  `₦${amount.toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
+
+const DAY_MS = 86_400_000;
+const now = new Date();
+const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+/** N days from today at the given hour, as an ISO string. */
+export function daysFromNow(days: number, hour: number): string {
+  const d = new Date(startOfToday.getTime() + days * DAY_MS);
+  d.setHours(hour, 0, 0, 0);
+  return d.toISOString();
+}
+
+/** The coming Saturday at the given hour — for the "This weekend" window. */
+export function thisWeekend(hour: number): string {
+  const daysUntilSat = (6 - startOfToday.getDay() + 7) % 7;
+  return daysFromNow(daysUntilSat, hour);
+}

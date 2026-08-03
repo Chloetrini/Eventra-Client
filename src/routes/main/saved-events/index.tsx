@@ -9,7 +9,7 @@ export default function SavedEvent() {
     const events = data?.events ?? [];
     const { savedIds, toggleSave } = useSavedEvents();
 
-    const savedEvents = events.filter((e) => savedIds.has(e.id));
+    const savedEvents = events.filter((e) => savedIds.has(e.slug));
 
     return (
         <PageWrapper className="py-8 px-8 " >

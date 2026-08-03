@@ -12,22 +12,25 @@ import bank from '@/assets/bank.png'
 import hashTag from '@/assets/hash.png'
 import qrcode from '@/assets/qrcode2.png'
 import TicketPreview from '@/components/ticket-preview'
-import { useQuery } from '@tanstack/react-query'
-import { useParams } from 'react-router'
-import { getEventById } from '@/lib/dummy-ticket-checkout'
-
+import { useLocation, useNavigate } from 'react-router'
 
 const Checkout = () => {
 
-    // const { id } = useParams<{ id: string }>()
-    const id = "1"
+   const location = useLocation()
+    const navigate = useNavigate()
 
-    const { data: ticket, isLoading, isError } = useQuery({
-        queryKey: ['event', id],
-        queryFn: () => getEventById(id!),
-        enabled: !!id,
-    })
-
+    // Order details passed from the event's "Select tickets" button
+    const ticket = location.state as {
+    eventId: number
+    eventName: string
+    eventImage: string | null
+    eventDateTime: string
+    eventVenue: string
+    ticketDetails: { id: number; type: string; unitPrice: number; quantity: number }[]
+    subtotal: number
+    serviceFee: number
+    total: number
+} | null
     const { register,
         handleSubmit,
         formState: { errors }
@@ -36,9 +39,19 @@ const Checkout = () => {
         mode: "onChange",
     })
 
-    if (isLoading) return <div className='w-full'>Loading…</div>
-    if (isError || !ticket) return <div className='w-full'>Event not found.</div>
-
+   if (!ticket) {
+        return (
+            <div className='px-4 py-20 text-center'>
+                <p className='mb-4 text-[#6E6577]'>No tickets selected yet.</p>
+                <button
+                    onClick={() => navigate('/explore')}
+                    className='text-[#6e6e6e] font-semibold underline'
+                >
+                    Browse events
+                </button>
+            </div>
+        )
+    }
 
 
     return (

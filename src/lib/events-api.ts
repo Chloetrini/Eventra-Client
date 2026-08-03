@@ -38,13 +38,13 @@ function matchesSearch(e: Event, q: string) {
   const n = q.toLowerCase();
   return (
     e.title.toLowerCase().includes(n) ||
-    e.venue.toLowerCase().includes(n) ||
-    e.city.toLowerCase().includes(n) ||
+    e.venue.name.toLowerCase().includes(n) ||
+    e.venue.city.toLowerCase().includes(n) ||
     e.category.toLowerCase().includes(n)
   );
 }
 function matchesState(e: Event, state: EventFilters["state"]) {
-  return state === "" ? true : e.state === state;
+  return state === "" ? true : e.venue.state === state;
 }
 function matchesCategories(e: Event, cats: EventFilters["categories"]) {
   return cats.length === 0 ? true : cats.includes(e.category);
@@ -137,4 +137,27 @@ async function fetchEventsReal(filters: EventFilters): Promise<EventsResponse> {
 export function fetchEvents(filters: EventFilters): Promise<EventsResponse> {
   if (import.meta.env.VITE_USE_MOCKS === "true") return fetchEventsMock(filters);
   return fetchEventsReal(filters);
+}
+
+async function fetchEventBySlugMock(slug: string): Promise<Event | null> {
+  await delay(200); // Simulate network latency
+  const found = MOCK_EVENTS.find((e) => e.slug === slug);
+  return found ?? null;
+}
+
+async function fetchEventBySlugReal(slug: string): Promise<Event | null> {
+  try {
+    const res = await api.get(`/events/${slug}`);
+    // Validate single event payload with zod
+    return eventSchema.parse(res.body);
+  } catch (error) {
+    return null;
+  }
+}
+
+export function fetchEventBySlug(slug: string): Promise<Event | null> {
+  if (import.meta.env.VITE_USE_MOCKS === "true") {
+    return fetchEventBySlugMock(slug);
+  }
+  return fetchEventBySlugReal(slug);
 }

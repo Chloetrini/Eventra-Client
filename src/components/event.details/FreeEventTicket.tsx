@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { type Event } from "@/types/event"
+import { type Event } from "@/types/event-types"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Check, Mail } from "lucide-react"
@@ -10,7 +10,7 @@ export const FreeEventTicket = ({ event }: { event: Event }) => {
   const [guests, setGuests] = useState(1)
 
   const capacityTier = (event?.ticketTiers ?? [])[0]
-  const totalSpots = capacityTier?.quantity ?? 0
+  const totalSpots = capacityTier?.quantityLeft ?? 0
   const spotsLeft = capacityTier?.quantityLeft ?? totalSpots
   const percentFilled = totalSpots > 0 ? ((totalSpots - spotsLeft) / totalSpots) * 100 : 0
   const isFull = spotsLeft <= 0

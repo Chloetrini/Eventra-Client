@@ -42,7 +42,7 @@ export default function Register() {
 
   const handleTestTime = () => {
     let testTime = "2026-08-15T18:00:00.000Z"
-    console.log("time", formatDateTime(testTime));
+    // console.log("time", formatDateTime(testTime));
   }
 
   return (

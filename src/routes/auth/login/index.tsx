@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -33,7 +33,7 @@ export default function Login() {
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (values: AttendeeLoginValues) => api.post("/login", values),
+    mutationFn: (values: AttendeeLoginValues) => api.post("/auth/login", values),
 
     onSuccess: (data) => {
       toast.success(data.message || "Logged in successfully.");

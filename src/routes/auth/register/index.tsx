@@ -13,21 +13,11 @@ import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
 import { registerSchema } from "@/lib/schema";
 import { EventraLogo } from "@/components/icons/eventra-logo";
-
-const attendeeRegisterSchema = registerSchema
-  .extend({
-    confirmPassword: z.string().min(1, "Please confirm your password"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-
-type AttendeeRegisterValues = z.infer<typeof attendeeRegisterSchema>;
+  
+type AttendeeRegisterValues = z.infer<typeof registerSchema>;
 
 export default function Register() {
   const navigate = useNavigate();
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -36,7 +26,7 @@ export default function Register() {
     handleSubmit,
     formState: { errors },
   } = useForm<AttendeeRegisterValues>({
-    resolver: zodResolver(attendeeRegisterSchema),
+    resolver: zodResolver(registerSchema),
     mode: "onBlur",
   });
 
@@ -45,14 +35,15 @@ export default function Register() {
       api.post("/auth/register", values),
 
     onSuccess: (data, variables) => {
+      import.meta.env.DEV && console.log(data)
       toast.success(data.message || "Account created successfully.");
-
       navigate("/verify-email", {
         state: { email: variables.email },
       });
     },
 
     onError: (error: Error) => {
+      import.meta.env.DEV && console.error(error)
       toast.error(error.message || "Something went wrong.");
     },
   });
@@ -78,7 +69,7 @@ export default function Register() {
         Join thousands of people discovering and creating unforgettable events
       </p>
 
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* Full Name */}
         <div className="space-y-1.5">
           <Label

@@ -1,4 +1,4 @@
-import { Outlet, ScrollRestoration, useMatches, useNavigation } from "react-router";
+import { Outlet, ScrollRestoration, useMatches, useNavigation } from "react-router-dom";
 import { Seo, type SeoHandle, } from "@/components/seo";
 
 const DEFAULT_SEO: SeoHandle = {
@@ -20,17 +20,12 @@ export default function RootLayout() {
         <>
             <Seo {...seo} />
             {isNavigating && (
-<<<<<<< HEAD
-                <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-transparent">
-                    <div className="h-full bg-primary animate-pulse transition-all duration-300 ease-in-out animate-progress" />
-=======
                 <div className="fixed top-0 left-0 right-0 z-100 h-1.5 bg-transparent">
-                    <div className="h-full bg-primary animate-pulse transition-all duration-300" />
->>>>>>> af5ef94b5b57e015e48b88334f7c3ba563c6a40b
+                    <div className="h-full bg-[#0f6e56] animate-progress transition-all duration-300 ease-out" />
                 </div>
             )}
-            <ScrollRestoration/>
+            <ScrollRestoration />
             <Outlet />
-            </>
+        </>
     )
 }

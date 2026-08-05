@@ -1,12 +1,11 @@
 import ErrorBoundary from "@/components/error-boundary";
 import SuspenseUI from "@/components/ui/suspense-ui";
-import { createBrowserRouter } from "react-router";
-import { type RouteObject } from "react-router";
+import { createBrowserRouter, type RouteObject } from "react-router-dom";
 import RootLayout from "./root/layout";
 import MainLayout from "./main/layout";
 import AuthLayout from "./auth/layout";
 
-const routes = [
+const routes: RouteObject[] = [
   {
     path: "/",
     Component: RootLayout,
@@ -29,6 +28,101 @@ const routes = [
               return { Component };
             },
           },
+          // profile-settings route 
+          {
+            path: "profile-settings",
+            handle: {
+              seo: {
+                title: "Profile & Settings",
+                description: "Update your profile, notifications, and more.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } = await import("@/routes/profile-settings");
+              return { Component };
+            },
+          },
+          // organizer-dashboard (Parent)
+          {
+            path: "organizer-dashboard",
+            handle: {
+              seo: {
+                title: "Dashboard | EVENTRA",
+                description: "Manage your events and track performance.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } = await import("@/routes/main/organizer-dashboard");
+              return { Component };
+            },
+            children: [
+              {
+                path: "events",
+                handle: {
+                  seo: {
+                    title: "Events",
+                    description: "Manage your events.",
+                  },
+                },
+                // lazy: async () => {
+                //   const { default: Component } = await import("@/routes/organizer-dashboard/events");
+                //   return { Component };
+                // },
+              },
+              {
+                path: "attendees",
+                handle: {
+                  seo: {
+                    title: "Attendees",
+                    description: "View your event attendees.",
+                  },
+                },
+                // lazy: async () => {
+                //   const { default: Component } = await import("@/routes/organizer-dashboard/attendees");
+                //   return { Component };
+                // },
+              },
+              {
+                path: "checkin",
+                handle: {
+                  seo: {
+                    title: "Check-in",
+                    description: "Check in attendees.",
+                  },
+                },
+                // lazy: async () => {
+                //   const { default: Component } = await import("@/routes/organizer-dashboard/checkin");
+                //   return { Component };
+                // },
+              },
+              {
+                path: "payouts",
+                handle: {
+                  seo: {
+                    title: "Payouts",
+                    description: "Manage your payouts.",
+                  },
+                },
+                // lazy: async () => {
+                //   const { default: Component } = await import("@/routes/organizer-dashboard/payouts");
+                //   return { Component };
+                // },
+              },
+              {
+                path: "promotions",
+                handle: {
+                  seo: {
+                    title: "Promotions",
+                    description: "Manage your promotions.",
+                  },
+                },
+                // lazy: async () => {
+                //   const { default: Component } = await import("@/routes/organizer-dashboard/promotions");
+                //   return { Component };
+                // },
+              },
+            ],
+          },
         ],
       },
       {
@@ -43,8 +137,7 @@ const routes = [
               },
             },
             lazy: async () => {
-              const { default: Component } =
-                await import("@/routes/auth/register");
+              const { default: Component } = await import("@/routes/auth/register");
               return { Component };
             },
           },
@@ -57,8 +150,7 @@ const routes = [
               },
             },
             lazy: async () => {
-              const { default: Component } =
-                await import("@/routes/auth/login");
+              const { default: Component } = await import("@/routes/auth/login");
               return { Component };
             },
           },
@@ -71,8 +163,7 @@ const routes = [
               },
             },
             lazy: async () => {
-              const { default: Component } =
-                await import("@/routes/auth/forgot-password");
+              const { default: Component } = await import("@/routes/auth/forgot-password");
               return { Component };
             },
           },
@@ -81,13 +172,11 @@ const routes = [
             handle: {
               seo: {
                 title: "Check your email",
-                description:
-                  "Verify your email for password reset instructions.",
+                description: "Verify your email for password reset instructions.",
               },
             },
             lazy: async () => {
-              const { default: Component } =
-                await import("@/routes/auth/check-email");
+              const { default: Component } = await import("@/routes/auth/check-email");
               return { Component };
             },
           },
@@ -100,8 +189,7 @@ const routes = [
               },
             },
             lazy: async () => {
-              const { default: Component } =
-                await import("@/routes/auth/reset-password");
+              const { default: Component } = await import("@/routes/auth/reset-password");
               return { Component };
             },
           },
@@ -114,8 +202,7 @@ const routes = [
               },
             },
             lazy: async () => {
-              const { default: Component } =
-                await import("@/routes/auth/verify-otp");
+              const { default: Component } = await import("@/routes/auth/verify-otp");
               return { Component };
             },
           },
@@ -123,6 +210,8 @@ const routes = [
       },
     ],
   },
-] satisfies RouteObject[];
+];
+
+console.log("🔥 DEBUG: Routes Array =", routes);
 
 export const router = createBrowserRouter(routes);

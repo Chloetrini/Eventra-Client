@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
-import { getEventById } from '@/lib/dummy-ticket';
+// import { useQuery } from '@tanstack/react-query'
+// import { getEventById } from '@/lib/dummy-ticket';
 
 
 // const { data: event } = useQuery({

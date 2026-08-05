@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router";
+import { Link, Outlet } from "react-router-dom";
 import { EventraLogo } from "@/components/icons/eventra-logo";
 
 /**

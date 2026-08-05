@@ -80,7 +80,7 @@ const TicketPreview = ({ ticketCheckout }: TicketPreviewProps) => {
       // onClick={}
       // loading={}
       />
-      <p className='text-xs flex justify-center md:items-center gap-0.5 md:gap-1 mt-[-15px] text-center md:text-start'>
+      <p className='text-xs flex justify-center md:items-center gap-0.5 md:gap-1 mt-3.75 text-center md:text-start'>
         <span><img src={yellowLock} alt="" className='w-3 h-3'/></span>
         Secured by Paystack - Money held until the event</p>
       </div>

@@ -5,24 +5,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
-<<<<<<< HEAD
-* {
-  scrollbar-width: none;
-}
-
-*::-webkit-scrollbar {
-  display: none;
-}
-
-
-@theme{
-  --font-space: 'Space Mono', monospace;
-  --font-grotesk: 'Schibsted Grotesk', sans-serif;
-=======
 @theme {
   --font-space: "Space Mono", monospace;
   --font-grotesk: "Schibsted Grotesk", sans-serif;
->>>>>>> af5ef94b5b57e015e48b88334f7c3ba563c6a40b
 }
 @theme inline {
   --font-heading: var(--font-sans);

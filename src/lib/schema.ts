@@ -1,57 +1,15 @@
 import { z } from "zod";
 
 export const registerSchema = z.object({
-<<<<<<< HEAD
-  fullName: z
-    .string({
-      message: 'Complete this field to continue',
-    })
-    .min(3, {
-      message: 'Name must be at least 3 characters long',
-    }),
-  email: z.email({ message: 'Complete this field to continue' }),
-  password: z
-    .string({
-      message: 'Complete this field to continue',
-    })
-    .min(8, {
-      message: 'Password must be at least 8 characters long',
-    })
-    .regex(/[A-Z]/, {
-      message: 'Password must contain at least one uppercase letter',
-    })
-    .regex(/[a-z]/, {
-      message: 'Password must contain at least one lowercase letter',
-    })
-    .regex(/[!@#$%^&*(),.?":{}|<>]/, {
-      message: 'Password must contain at least one special character',
-    })
-    .regex(/\d/, {
-      message: 'Password must contain at least one number',
-    }),
-  companyName: z.string({
-    message: 'Company name is required',
-  }),
-  phoneNumber: z.string({
-    message: 'Phone number is required',
-  })
-  .min(11, {
-    message: 'Phone number must be at least 11 digits long',
-  })
-  .max(11, {
-    message: 'Phone number must be at most 11 digits long',
-  })
-  .regex(/^\+?[0-9\s\-()]+$/, {
-    message: 'Invalid phone number',
-  }),
-})
-=======
   fullname: z.string().trim().min(2, "Fullname must be at least 2 characters"),
-  email: z.string().trim().toLowerCase().email("Invalid email address"),
+  email: z.email("Invalid email address").trim().toLowerCase(),
   password: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string().min(8, "Password must be at least 8 characters"),
   phone: z.string().trim().min(7, "Invalid phone number"),
-  role: z.enum(["attendee", "organizer"]).optional(),
-});
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});;
 
 export const verifyEmailSchema = z.object({
   email: z.string().trim().toLowerCase().email("Invalid email address"),
@@ -180,4 +138,3 @@ export const requestPromotionSchema = z.object({
 export const postponeEventSchema = z.object({
   newStartDate: z.coerce.date(),
 });
->>>>>>> af5ef94b5b57e015e48b88334f7c3ba563c6a40b

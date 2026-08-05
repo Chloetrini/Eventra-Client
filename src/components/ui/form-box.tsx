@@ -1,30 +1,3 @@
-<<<<<<< HEAD
-import { cn } from '@/lib/utils'
-import { Eye, EyeClosed } from 'lucide-react'
-import type { Control, FieldError as FieldErrorType, FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form'
-import { Field, FieldError, FieldLabel, FieldLegend, FieldSet } from './field'
-import { Input } from './input'
-import { Textarea } from './textarea'
-
-type FormFieldProps<T extends FieldValues> = {
-  label?: string
-  type: string
-  id: string
-  register: UseFormRegister<T>
-  errors?: FieldErrorType | undefined
-  placeholder?: string
-  isVisible?: boolean
-  setIsVisible?: (visible: boolean | ((prev: boolean) => boolean)) => void
-  name: Path<T>
-  classname?: string
-  disabled?: boolean
-  defaultValue?: string | Date | number | boolean
-  inputType?: 'input' | 'textarea' | 'select' | 'switch'
-  registerOptions?: RegisterOptions<T>
-  control?: Control<T>
-  borderStyle?: 'checkout' | 'auth'
-}
-=======
 import { cn } from "@/lib/utils";
 import { Eye, EyeClosed } from "lucide-react";
 import type {
@@ -56,7 +29,6 @@ type FormFieldProps<T extends FieldValues> = {
   registerOptions?: RegisterOptions<T>;
   control?: Control<T>;
 };
->>>>>>> af5ef94b5b57e015e48b88334f7c3ba563c6a40b
 
 export function FormBox<T extends FieldValues>({
   isVisible,
@@ -73,7 +45,6 @@ export function FormBox<T extends FieldValues>({
   defaultValue,
   inputType,
   registerOptions,
-  borderStyle,
   // control,
 }: FormFieldProps<T>) {
   const toggleVisibility = () => setIsVisible?.((prev: boolean) => !prev);
@@ -107,14 +78,10 @@ export function FormBox<T extends FieldValues>({
             <Input
               type={isVisible ? "text" : type}
               placeholder={placeholder}
-<<<<<<< HEAD
-              className={cn('focus:outline-blue-500 focus:ring-blue-500 py-5.5', errors ? 'border-red-600' : ''  , borderStyle === 'checkout' ? ' border-[#AEAEB2] h-17.5 px-5 text-black': borderStyle === 'auth' ? 'border-[#C3C9D3] h-14' : '')}
-=======
               className={cn(
                 "focus:outline-blue-500 focus:ring-blue-500 py-5.5",
                 errors ? "border-red-600" : "",
               )}
->>>>>>> af5ef94b5b57e015e48b88334f7c3ba563c6a40b
               id={id}
               {...register(name, registerOptions)}
               disabled={disabled}

@@ -45,7 +45,37 @@ export const registerSchema = z.object({
     message: 'Invalid phone number',
   }),
 })
-
+export const contactSchema = z.object({
+  fullName: z
+    .string({
+      message: 'Please enter your full name',
+    })
+    .trim()
+    .min(2, {
+      message: 'Full name must be at least 2 characters long',
+    }),
+  email: z
+    .string({
+      message: 'Please enter your email address',
+    })
+    .trim()
+    .email({
+      message: 'Please enter a valid email address',
+    }),
+  subject: z
+    .string()
+    .trim()
+    .optional()
+    .or(z.literal('')),
+  message: z
+    .string({
+      message: 'Please enter a message',
+    })
+    .trim()
+    .min(10, {
+      message: 'Message must be at least 10 characters long',
+    }),
+})
 
 // Event venue — nested, matching the backend
 export const eventVenueSchema = z.object({
@@ -75,7 +105,12 @@ export const ticketTierSchema = z.object({
   availability: z.enum(["available", "scarce", "sold out"]).optional(),
   quantityLeft: z.number().nullable().optional(),
 });
-
+// The ticket-tier group for one event — its own backend collection, keyed by slug.
+export const eventTicketsSchema = z.object({
+  eventSlug: z.string(),
+  serviceFeePercent: z.number().default(0),
+  tiers: z.array(ticketTierSchema),
+});
 
 export const eventSchema = z.object({
   // --- backend fields ---
@@ -108,8 +143,6 @@ export const eventSchema = z.object({
   gatesOpenTime: z.string().optional(),
   doorsCloseTime: z.string().optional(),
   goodToKnow: z.array(z.string()).optional(),
-  serviceFeePercent: z.number().optional(),
-  ticketTiers: z.array(ticketTierSchema).optional(),
   relatedEventSlugs: z.array(z.string()).optional(),
   location: z.any().optional(),              // Ozcar's nested location, kept until migrated
   organizer: z.any().optional(),             // kept flexible (backend = id, dummy = object)

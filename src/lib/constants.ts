@@ -46,36 +46,6 @@ export const MOCK_EVENTS: Event[] = [
         "followers": 12800
       }
     ],
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 10000,
-        "description": "Limited early bird",
-        "originalPrice": 15000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 15000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 30000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -132,36 +102,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 48,
       "followers": 9600
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 3000,
-        "description": "Limited early bird",
-        "originalPrice": 8000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 8000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 16000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -211,18 +151,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 37,
       "followers": 4200
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Free",
-        "unitPrice": 0,
-        "description": "Free admission",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -275,36 +203,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 33,
       "followers": 7100
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 7500,
-        "description": "Limited early bird",
-        "originalPrice": 12500,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 12500,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 25000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -361,36 +259,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 14,
       "followers": 3300
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 0,
-        "description": "Limited early bird",
-        "originalPrice": 3000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 3000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 6000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -451,36 +319,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 10,
       "followers": 2100
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 20000,
-        "description": "Limited early bird",
-        "originalPrice": 25000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 25000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 50000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -535,36 +373,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 42,
       "followers": 12800
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 40000,
-        "description": "Limited early bird",
-        "originalPrice": 45000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 45000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 90000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -621,36 +429,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 48,
       "followers": 9600
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 0,
-        "description": "Limited early bird",
-        "originalPrice": 5000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 5000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 10000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -698,18 +476,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 37,
       "followers": 4200
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Free",
-        "unitPrice": 0,
-        "description": "Free admission",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -757,18 +523,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 33,
       "followers": 7100
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Free",
-        "unitPrice": 0,
-        "description": "Free admission",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -825,36 +579,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 14,
       "followers": 3300
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 0,
-        "description": "Limited early bird",
-        "originalPrice": 3000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 3000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 6000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -917,36 +641,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 10,
       "followers": 2100
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 0,
-        "description": "Limited early bird",
-        "originalPrice": 2500,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 2500,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 5000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -999,36 +693,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 42,
       "followers": 12800
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 0,
-        "description": "Limited early bird",
-        "originalPrice": 1500,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 1500,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 3000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -1087,36 +751,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 48,
       "followers": 9600
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 0,
-        "description": "Limited early bird",
-        "originalPrice": 2000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 2000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 4000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -1164,18 +798,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 37,
       "followers": 4200
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Free",
-        "unitPrice": 0,
-        "description": "Free admission",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -1228,36 +850,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 33,
       "followers": 7100
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 13000,
-        "description": "Limited early bird",
-        "originalPrice": 18000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 18000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 36000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",

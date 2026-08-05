@@ -1,9 +1,18 @@
 import { type Event } from "@/types/event-types"
 import { Heart, MoveUpRight, MapPin, Calendar } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
-import { formatDate, formatTime } from "@/lib/utils"
+import { cn, formatDate, formatTime } from "@/lib/utils"
 
-export const EventHero = ({ event }: { event: Event }) => {
+type EventHeroProps = {
+  event: Event;
+  isSaved?: boolean;
+  onToggleSave?: (id: string) => void;
+  className?: string;
+};
+export const EventHero = ({ event,
+  isSaved = false,
+  onToggleSave,
+  className,}: EventHeroProps) => {
   return (
     <div className="relative rounded-2xl">
         <img className="rounded-2xl h-74 md:h-131.75 w-full" src={event.coverImage ?? undefined} alt={event.title}/>
@@ -12,9 +21,27 @@ export const EventHero = ({ event }: { event: Event }) => {
           <Badge className="md:p-4 p-2 bg-[#F5A524] text-[#3A3A3A] hover:bg-[#F5A524] h-7.5 md:w-30 w-28">★ Featured concert</Badge>
         )}
         <div className="flex gap-2 ml-auto">
-          <button className="flex h-8 w-8 md:h-12 md:w-12 items-center justify-center border rounded-md bg-transparent transition hover:bg-white/30">
-            <Heart className="md:h-8 md:w-8 w-5 h-5 text-white"/>
-          </button>
+          {onToggleSave && (
+            <button
+              type="button"
+              onClick={() => onToggleSave(event.slug)}
+              aria-label={isSaved ? "Remove from saved" : "Save event"}
+              aria-pressed={isSaved}
+              className={cn(
+                "flex h-8 w-8 md:h-12 md:w-12 items-center justify-center border rounded-md bg-transparent transition hover:bg-white/30",
+                isSaved
+                  ? "bg-[#F5A524] hover:bg-[#F5A524]"
+                  : "bg-[#6E6577] hover:[#6E6577]"
+              )}
+            >
+              <Heart
+                className={cn(
+                  "md:h-8 md:w-8 w-5 h-5 text-white",
+                  isSaved ? "fill-[#7A4E02] text-[#7A4E02]" : "fill-none text-white"
+                )}
+              />
+            </button>
+          )}
           <button className="flex h-8 w-8 md:h-12 md:w-12 items-center justify-center border rounded-md bg-[#5A4C6AA3] transition hover:bg-white/30">
             <MoveUpRight className="md:h-8 md:w-8 w-5 h-5 text-white"/>
           </button>

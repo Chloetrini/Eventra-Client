@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { type Event , type TicketTier} from "@/types/event-types";
+import { type Event } from "@/types/event-types";
+import { type TicketTier } from "@/types/ticket-tiers";
 import { formatPrice } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +20,7 @@ const TierRow = ({
   onDecrement: () => void;
 }) => {
   const isSoldOut = tier.availability === "sold out";
-  
+
   return (
     <div className={cn("space-y-1", isSoldOut && "opacity-60")}>
       <div className="flex items-start justify-between gap-2">
@@ -28,7 +29,7 @@ const TierRow = ({
           {tier.description && (
             <p className="text-xs text-[#6E6577]">{tier.description}</p>
           )}
-          {tier.quantityLeft  && (
+          {tier.quantityLeft && (
             <p className="mt-0.5 text-xs font-semibold tracking-wider text-[#7A4E02]">
               only {tier.quantityLeft} left
             </p>
@@ -49,7 +50,7 @@ const TierRow = ({
           </p>
         </div>
       </div>
-      
+
       {!isSoldOut && (
         <div className="flex items-center justify-end gap-2">
           <button
@@ -83,15 +84,23 @@ const TierRow = ({
   );
 };
 
-export const PaidEventTicket = ({ event }: { event: Event }) => {
+export const PaidEventTicket = ({
+  event,
+  tiers,
+  serviceFeePercent,
+}: {
+  event: Event;
+  tiers: TicketTier[];
+  serviceFeePercent: number;
+}) => {
   const navigate = useNavigate();
 
   // Helper to ensure a consistent tier key (_id or id)
   const getTierId = (tier: any, index: number): string | number =>
     tier.id ?? tier._id ?? index;
 
-  const ticketTiers = event?.ticketTiers ?? [];
-  const feePercent = event?.serviceFeePercent ?? 0;
+  const ticketTiers = tiers ?? [];
+  const feePercent = serviceFeePercent ?? 0;
 
   // 1. Safely initialize state
   const [quantities, setQuantities] = useState<Record<string | number, number>>(() =>
@@ -132,19 +141,13 @@ export const PaidEventTicket = ({ event }: { event: Event }) => {
         quantity: quantities[getTierId(t, idx)],
       }));
 
-    // Property fallback aliases for name, date, and image
-    const eventName = event.title || (event as any).name;
-    const eventImage = event.coverImage || event.coverImageUrl || (event as any).image;
-    const eventDateTime = event.startDate || (event as any).date;
-    const eventVenue = event.location?.venueName || event.location?.address || "";
-
     navigate("/payment/checkout", {
       state: {
-        eventId: event._id || (event as any)._id,
-        eventName,
-        eventImage,
-        eventDateTime,
-        eventVenue,
+        eventId: event._id,
+        eventName: event.title,
+        eventImage: event.coverImage,
+        eventDateTime: event.startDate,
+        eventVenue: `${event.venue.name}, ${event.venue.city}`,
         ticketDetails: selectedTiers,
         subtotal,
         serviceFee,
@@ -153,7 +156,7 @@ export const PaidEventTicket = ({ event }: { event: Event }) => {
     });
   };
 
-  if (!event || !event.ticketTiers || event.ticketTiers.length === 0) {
+  if (!ticketTiers || ticketTiers.length === 0) {
     return (
       <div className="rounded-2xl border p-6 shadow-sm text-center text-sm text-muted-foreground">
         No ticket options available for this event.

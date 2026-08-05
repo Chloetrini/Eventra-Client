@@ -1,15 +1,22 @@
 import { useState } from "react"
 import { type Event } from "@/types/event-types"
+import { type TicketTier } from "@/types/ticket-tiers"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Check, Mail } from "lucide-react"
 
 const MAX_GUESTS_PER_RESERVATION = 4
 
-export const FreeEventTicket = ({ event }: { event: Event }) => {
+export const FreeEventTicket = ({
+  event,
+  tiers,
+}: {
+  event: Event;
+  tiers: TicketTier[];
+}) => {
   const [guests, setGuests] = useState(1)
 
-  const capacityTier = (event?.ticketTiers ?? [])[0]
+  const capacityTier = (tiers ?? [])[0]
   const totalSpots = capacityTier?.quantityLeft ?? 0
   const spotsLeft = capacityTier?.quantityLeft ?? totalSpots
   const percentFilled = totalSpots > 0 ? ((totalSpots - spotsLeft) / totalSpots) * 100 : 0

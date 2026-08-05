@@ -30,7 +30,7 @@ export function EventCard({
   return (
     <article
       className={cn(
-       "group overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md w-full md:max-w-[var(--card-w,294px)] max-h-[398px]",
+        "group overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md w-full md:max-w-[var(--card-w,294px)] max-h-[398px]",
         className
       )}
     >
@@ -43,29 +43,29 @@ export function EventCard({
         />
         <div className="flex items-center justify-center " >
           <p className="absolute left-3 top-6 text-[12px] font-[700]  text-white font-mono drop-shadow tracking-wider">No {event.no ?? ""}</p>
-           {onToggleSave && (
-          <button
-            type="button"
-            onClick={() => onToggleSave(event.slug)}
-            aria-label={isSaved ? "Remove from saved" : "Save event"}
-            aria-pressed={isSaved}
-            className={cn(
-              "absolute right-3 top-3 grid h-[37px] w-[37px] place-items-center rounded-full backdrop-blur transition",
-              isSaved
-                ? "bg-[#F5A524] hover:bg-[#F5A524]"
-                : "bg-[#6E6577] hover:[#6E6577]"
-            )}
-          >
-            <Heart
+          {onToggleSave && (
+            <button
+              type="button"
+              onClick={() => onToggleSave(event.slug)}
+              aria-label={isSaved ? "Remove from saved" : "Save event"}
+              aria-pressed={isSaved}
               className={cn(
-                "h-[10.49px] w-[12.33px]",
-                isSaved ? "fill-[#7A4E02] text-[#7A4E02]" : "fill-none text-white"
+                "absolute right-3 top-3 grid h-[37px] w-[37px] place-items-center rounded-full backdrop-blur transition",
+                isSaved
+                  ? "bg-[#F5A524] hover:bg-[#F5A524]"
+                  : "bg-[#6E6577] hover:[#6E6577]"
               )}
-            />
-          </button>
-        )}
+            >
+              <Heart
+                className={cn(
+                  "h-[10.49px] w-[12.33px]",
+                  isSaved ? "fill-[#7A4E02] text-[#7A4E02]" : "fill-none text-white"
+                )}
+              />
+            </button>
+          )}
         </div>
-        
+
       </div>
 
       <div className="space-y-1 p-4 max-h-[209px]">

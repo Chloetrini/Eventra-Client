@@ -10,8 +10,10 @@ import { TopBarFilter } from "@/components/filters/filter-topbar";
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { useSavedEvents } from "@/hooks/use-saved-events";
+import { useNavigate } from "react-router";
 
 export default function ExplorePage() {
+  const navigate = useNavigate();
   const { filters, setFilter, toggleCategory, clearAll, loadMore } =
     useEventFilters();
   const { data, isLoading, isFetching, isError, refetch } = useEvents(filters);
@@ -84,7 +86,7 @@ const rest = events.filter((e) => !e.isPromoted);
           {featured && (
             <FeaturedEventCard
               event={featured}
-              onGetTickets={(id) => console.log("tickets", id)}
+              onGetTickets={(slug) => navigate(`/events/${slug}`)}
             />
           )}
 

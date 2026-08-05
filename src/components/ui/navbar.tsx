@@ -71,10 +71,10 @@ function Navbar() {
 
   return (
     <div className="w-full bg-white border-b-2 border-[#E8E6E0]">
-      <div className="flex w-full items-center p-4">
+      <div className="flex w-full items-center p-[20px] md:px-[100px] md:py-[20px] ">
         {/* Logo */}
         <NavLink to="/" className="flex items-center" onClick={closeMenu}>
-          <img className="pl-[clamp(24px,6vw,101.5px)]" src="/logo.svg" alt="Logo" />
+          <img  src="/logo.svg" alt="Logo" />
         </NavLink>
 
         {/* Navigation Links */}
@@ -85,7 +85,7 @@ function Navbar() {
         </div>
 
         {/* Auth Links */}
-        <div className="hidden lg:flex ml-auto mr-[clamp(24px,6vw,101.5px)] gap-[13px] items-center">
+        <div className="hidden lg:flex ml-auto gap-[13px] items-center">
           {AUTH_LINKS.map((link) => (
             <AuthLink key={link.to} {...link} />
           ))}

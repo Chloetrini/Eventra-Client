@@ -1,4 +1,4 @@
-import { NavLink } from "react-router"
+import { NavLink } from "react-router-dom"
 
 const DISCOVER_LINKS = [
     { to: "/explore", label: "Explore events" },

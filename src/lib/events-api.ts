@@ -1,16 +1,24 @@
 import { z } from "zod";
 import { api } from "@/lib/api";
 import { MOCK_EVENTS } from "@/lib/constants";
-import {
-  eventSchema,
-} from "@/lib/schema";
-import {DATE_WINDOWS, PRICE_TIERS, type Event, type EventFilters } from "@/types/event-types";
+import { eventSchema } from "@/lib/schema";
+import { DATE_WINDOWS, PRICE_TIERS, type Event, type EventFilters } from "@/types/event-types";
+
+// ---------------------------------------------------------------------
+// HeroData interface – extended with avatars (already done)
+// ---------------------------------------------------------------------
+export interface HeroData {
+  title: string;
+  subtitle: string;
+  ctaText: string;
+  ctaLink?: string;
+  avatars?: { id: string; image: string }[];
+}
 
 const PAGE_SIZE = 9;
 
 // ---------------------------------------------------------------------
-// The shape the "server" returns. This is the contract every layer above
-// depends on — mock and real backend both produce exactly this.
+// Server response shape (both mock and real)
 // ---------------------------------------------------------------------
 export type EventsResponse = {
   events: Event[];
@@ -19,9 +27,7 @@ export type EventsResponse = {
   categoryCounts: Record<string, number>;
 };
 
-// A zod version of that shape, so we can validate the REAL backend's reply
-// at runtime. res.body comes back as `unknown` from the shared client —
-// .parse() both checks it and hands back a correctly typed EventsResponse.
+// Zod schema for the real backend response
 const eventsResponseSchema = z.object({
   events: z.array(eventSchema),
   total: z.number(),
@@ -30,8 +36,7 @@ const eventsResponseSchema = z.object({
 });
 
 // ---------------------------------------------------------------------
-// One small predicate per filter. Each returns TRUE when its own filter
-// is switched off — that's what lets them compose with && independently.
+// Filter predicates (composable with &&)
 // ---------------------------------------------------------------------
 function matchesSearch(e: Event, q: string) {
   if (!q.trim()) return true;
@@ -43,20 +48,27 @@ function matchesSearch(e: Event, q: string) {
     e.category.toLowerCase().includes(n)
   );
 }
+
 function matchesState(e: Event, state: EventFilters["state"]) {
   return state === "" ? true : e.state === state;
 }
+
 function matchesCategories(e: Event, cats: EventFilters["categories"]) {
   return cats.length === 0 ? true : cats.includes(e.category);
 }
+
 function matchesWhen(e: Event, when: EventFilters["when"]) {
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  return DATE_WINDOWS[when].test(new Date(e.createdAt), startOfToday);
+  // Ensure DATE_WINDOWS[when] has a .test method
+  return DATE_WINDOWS[when]?.test(new Date(e.createdAt), startOfToday) ?? true;
 }
+
 function matchesPrice(e: Event, price: EventFilters["price"]) {
-  return PRICE_TIERS[price].test(e.minPrice);
+  // Ensure PRICE_TIERS[price] has a .test method
+  return PRICE_TIERS[price]?.test(e.minPrice) ?? true;
 }
+
 function matchesAccess(e: Event, access: EventFilters["access"]) {
   if (access === "all") return true;
   if (access === "free") return e.minPrice === 0;
@@ -64,14 +76,17 @@ function matchesAccess(e: Event, access: EventFilters["access"]) {
 }
 
 // ---------------------------------------------------------------------
-// MOCK implementation — used while there's no backend.
+// MOCK implementation
 // ---------------------------------------------------------------------
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function fetchEventsMock(filters: EventFilters): Promise<EventsResponse> {
-  await delay(400); // lets your loading skeletons actually show up in dev
+  await delay(400);
 
-  const results = MOCK_EVENTS.filter(
+  // Ensure MOCK_EVENTS exists
+  const events = Array.isArray(MOCK_EVENTS) ? MOCK_EVENTS : [];
+
+  const results = events.filter(
     (e) =>
       matchesSearch(e, filters.search) &&
       matchesState(e, filters.state) &&
@@ -81,9 +96,8 @@ async function fetchEventsMock(filters: EventFilters): Promise<EventsResponse> {
       matchesAccess(e, filters.access)
   );
 
-  // Sidebar counts ignore the category filter itself, so ticking one
-  // category doesn't zero out every other row.
-  const forCounts = MOCK_EVENTS.filter(
+  // Category counts (ignore category filter itself)
+  const forCounts = events.filter(
     (e) =>
       matchesSearch(e, filters.search) &&
       matchesState(e, filters.state) &&
@@ -96,7 +110,7 @@ async function fetchEventsMock(filters: EventFilters): Promise<EventsResponse> {
     return acc;
   }, {});
 
-  // Copy before sorting — sort() mutates, and MOCK_EVENTS is shared.
+  // Sort
   const sorted = [...results].sort((a, b) => {
     if (filters.sort === "date")
       return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
@@ -104,7 +118,7 @@ async function fetchEventsMock(filters: EventFilters): Promise<EventsResponse> {
     return b.trendingScore - a.trendingScore; // "trending" default
   });
 
-  const end = filters.page * PAGE_SIZE; // "load more": page 2 = items 1–18
+  const end = filters.page * PAGE_SIZE;
   return {
     events: sorted.slice(0, end),
     total: sorted.length,
@@ -113,6 +127,9 @@ async function fetchEventsMock(filters: EventFilters): Promise<EventsResponse> {
   };
 }
 
+// ---------------------------------------------------------------------
+// Real API helpers
+// ---------------------------------------------------------------------
 function buildParams(filters: EventFilters): string {
   const p = new URLSearchParams();
   if (filters.search) p.set("q", filters.search);
@@ -127,14 +144,27 @@ function buildParams(filters: EventFilters): string {
 }
 
 async function fetchEventsReal(filters: EventFilters): Promise<EventsResponse> {
-  // No <EventsResponse> here — the shared api.get isn't generic, so body is
-  // `unknown`. We validate it with zod instead, which also types it for us.
-  const res = await api.get(`/events?${buildParams(filters)}`);
-  return eventsResponseSchema.parse(res.body);
+  try {
+    const res = await api.get(`/events?${buildParams(filters)}`);
+    return eventsResponseSchema.parse(res.body);
+  } catch (error) {
+    console.error("Real API fetch failed:", error);
+    // Fallback to empty response so UI doesn't crash
+    return {
+      events: [],
+      total: 0,
+      hasMore: false,
+      categoryCounts: {},
+    };
+  }
 }
 
-
+// ---------------------------------------------------------------------
+// Public fetch function – switches between mock and real
+// ---------------------------------------------------------------------
 export function fetchEvents(filters: EventFilters): Promise<EventsResponse> {
-  if (import.meta.env.VITE_USE_MOCKS === "true") return fetchEventsMock(filters);
+  if (import.meta.env.VITE_USE_MOCKS === "true") {
+    return fetchEventsMock(filters);
+  }
   return fetchEventsReal(filters);
 }

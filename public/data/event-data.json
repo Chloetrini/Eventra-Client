@@ -1,0 +1,103 @@
+{
+  "hero": [
+    { 
+      "id": "1",
+      "image": "/src/assets/avatar-old-woman.jpg"
+    },
+    {
+       "id": "3",
+      "image": "/src/assets/avatar-old-man.jpg"
+    },
+    {
+       "id": "3",
+      "image": "/src/assets/avatar-young-woman.jpg"
+    },
+    {
+       "id": "4",
+      "image": "/src/assets/avatar-young-man.jpg"
+    }
+  ],
+  "stats": {
+    "title": "Ticket selling in 1 hour",
+    "items": [
+      { "id": 1, "value": "1,000", "label": "Total Tickets Sold", "trend": "+12%" },
+      { "id": 2, "value": "$50K+", "label": "Revenue Generated", "trend": "+8%" },
+      { "id": 3, "value": "500+", "label": "Events Hosted", "trend": "+15%" },
+      { "id": 4, "value": "95%", "label": "Customer Satisfaction", "trend": "+2%" }
+    ]
+  },
+  "features": {
+    "title": "One dashboard, end to end",
+    "subtitle": "Everything you need to manage your event from start to finish",
+    "items": [
+      {
+        "id": 1,
+        "icon": "🎫",
+        "title": "Create tickets",
+        "description": "Create tickets and get paid instantly.",
+        "isActive": true
+      },
+      {
+        "id": 2,
+        "icon": "💳",
+        "title": "Road payments",
+        "description": "Road payments and get paid securely.",
+        "isActive": true
+      },
+      {
+        "id": 3,
+        "icon": "⚽",
+        "title": "Score at the gate",
+        "description": "Score at the gate and get paid in real-time.",
+        "isActive": true
+      },
+      {
+        "id": 4,
+        "icon": "💰",
+        "title": "Get paid",
+        "description": "Get paid and get paid faster than ever.",
+        "isActive": true
+      },
+      {
+        "id": 5,
+        "icon": "🛡️",
+        "title": "Only pay when you sell",
+        "description": "Only pay when you sell with zero risk.",
+        "isActive": true
+      },
+      {
+        "id": 6,
+        "icon": "🤖",
+        "title": "Automatic payments",
+        "description": "Automatic payments and get paid seamlessly.",
+        "isActive": true
+      }
+    ]
+  },
+  "bonus": {
+    "title": "Get a bonus if alternative ticket included",
+    "description": "Get a bonus if alternative ticket included. Share your free bonus and get paid with 5% bonus.",
+    "percentage": "5%",
+    "imageAlt": "1105 × 515 Hug illustration",
+    "ctaText": "Claim Your Bonus",
+    "ctaLink": "/claim-bonus"
+  },
+  "cta": {
+    "title": "Your event, live today.",
+    "subtitle": "Your event, live today. Book now or register.",
+    "buttonText": "Book now or register",
+    "buttonLink": "/register"
+  },
+  "seo": {
+    "title": "Sell Tickets. Get Paid. No Stress.",
+    "description": "Start selling tickets for your events today. Complete event management dashboard with instant payments. No stress, just results.",
+    "keywords": "ticket selling, event management, get paid, event tickets, online tickets",
+    "ogImage": "/og-image.jpg",
+    "twitterCard": "summary_large_image"
+  },
+  "analytics": {
+    "gaTrackingId": "G-XXXXXXXXXX",
+    "fbPixelId": "XXXXXXXXXX",
+    "linkedInPartnerId": "XXXXXXXXXX"
+  }
+}

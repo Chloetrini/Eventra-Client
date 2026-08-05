@@ -50,15 +50,14 @@ export const registerSchema = z.object({
 export const eventSchema = z.object({
   id: z.string(),
   title: z.string(),
-  category: z.enum(CATEGORIES),
-  subcategory: z.string().optional(),
+  category: z.enum(CATEGORIES), // ✅ directly using the const array
   venue: z.string(),
-  city: z.string(), 
-  no:z.string()  ,         
-  state: z.enum(STATES),       
-  createdAt: z.string(),        
-  minPrice: z.number().min(0),    
-  coverImage: z.string(),
-  promotion: z.boolean().default(false),
-  trendingScore: z.number().default(0),
+  city: z.string(),
+  state: z.enum(STATES), // ✅ directly using the const array
+  description: z.string().optional(),
+  createdAt: z.string().datetime(),
+  minPrice: z.number(),
+  trendingScore: z.number(),
+  image: z.string().optional(),
 });
+

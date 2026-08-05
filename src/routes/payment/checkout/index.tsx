@@ -12,37 +12,50 @@ import bank from '@/assets/bank.png'
 import hashTag from '@/assets/hash.png'
 import qrcode from '@/assets/qrcode2.png'
 import TicketPreview from '@/components/ticket-preview'
-import { useQuery } from '@tanstack/react-query'
-import { useParams } from 'react-router'
-import { getEventById } from '@/lib/dummy-ticket-checkout'
-
+import { useLocation, useNavigate } from 'react-router'
 
 const Checkout = () => {
 
-    // const { id } = useParams<{ id: string }>()
-    const id = "1"
+    const location = useLocation()
+    const navigate = useNavigate()
 
-    const { data: ticket, isLoading, isError } = useQuery({
-        queryKey: ['event', id],
-        queryFn: () => getEventById(id!),
-        enabled: !!id,
-    })
+    const ticket = location.state as {
+        eventId: string
+        eventName: string
+        eventImage: string | null
+        eventDateTime: string
+        eventVenue: string
+        ticketDetails: { id: number; type: string; unitPrice: number; quantity: number }[]
+        subtotal: number
+        serviceFee: number
+        total: number
+    } | null
 
-    const { register,
-        handleSubmit,
-        formState: { errors }
-    } = useForm({
+    const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(registerSchema),
         mode: "onChange",
     })
 
-    if (isLoading) return <div className='w-full'>Loading…</div>
-    if (isError || !ticket) return <div className='w-full'>Event not found.</div>
+    if (!ticket) {
+        return (
+            <div className='px-4 py-20 text-center'>
+                <p className='mb-4 text-[#6E6577]'>No tickets selected yet.</p>
+                <button
+                    onClick={() => navigate('/explore')}
+                    className='text-[#6e6e6e] font-semibold underline'
+                >
+                    Browse events
+                </button>
+            </div>
+        )
+    }
 
-
+    const handlePay = () => {
+        navigate('/payment/ticket-confirmation', { state: ticket })
+    }
 
     return (
-        <div className='px-4 sm:px-8 lg:px-20 py-10 mx-auto container'>
+        <div className='px-4 sm:px-8 lg:px-4 py-10 mx-auto container'>
             <div className='flex items-center gap-3 mb-4'>
                 <div className='w-14.5 h-14.5 bg-[#E4F1EB] rounded-full flex items-center justify-center' >
                     <img src={bag} alt="Shopping Bag" className="w-7.5 h-7.5" />
@@ -66,48 +79,11 @@ const Checkout = () => {
 
                         <div className='flex flex-col gap-7 w-full lg:w-[80%]'>
                             <div className='flex flex-col sm:flex-row gap-5'>
-
-                                <FormBox
-                                    type="text"
-                                    placeholder="First name"
-                                    id="firstName"
-                                    register={register}
-                                    errors={errors?.fullName}
-                                    name="fullName"
-                                    classname="w-full"
-                                    borderStyle="checkout"
-                                />
-                                <FormBox
-                                    type="text"
-                                    placeholder="Last name"
-                                    id="lastName"
-                                    register={register}
-                                    errors={errors?.fullName}
-                                    name="fullName"
-                                    classname="w-full"
-                                    borderStyle="checkout"
-                                />
+                                <FormBox type="text" placeholder="First name" id="firstName" register={register} errors={errors?.fullName} name="fullName" classname="w-full" borderStyle="checkout" />
+                                <FormBox type="text" placeholder="Last name" id="lastName" register={register} errors={errors?.fullName} name="fullName" classname="w-full" borderStyle="checkout" />
                             </div>
-                            <FormBox
-                                type="email"
-                                placeholder="Email address"
-                                id="email"
-                                register={register}
-                                errors={errors?.email}
-                                name="email"
-                                classname="w-full"
-                                borderStyle="checkout"
-                            />
-                            <FormBox
-                                type="text"
-                                placeholder="Phone number"
-                                id="phoneNumber"
-                                register={register}
-                                errors={errors?.phoneNumber}
-                                name="phoneNumber"
-                                classname="w-full"
-                                borderStyle="checkout"
-                            />
+                            <FormBox type="email" placeholder="Email address" id="email" register={register} errors={errors?.email} name="email" classname="w-full" borderStyle="checkout" />
+                            <FormBox type="text" placeholder="Phone number" id="phoneNumber" register={register} errors={errors?.phoneNumber} name="phoneNumber" classname="w-full" borderStyle="checkout" />
                         </div>
 
                     </form>
@@ -126,7 +102,6 @@ const Checkout = () => {
                                 <div>
                                     <img src={paystackLogo} alt="" className='w-32' />
                                 </div>
-
                                 <div>
                                     <p className='flex flex-col'>
                                         <span className='font-medium'>Pay securely with paystack</span>
@@ -136,56 +111,26 @@ const Checkout = () => {
                                     </p>
                                 </div>
                             </div>
-
                             <div className='w-6 h-6 bg-[#0A4F41] rounded-full flex items-center justify-center shrink-0 self-center'>
                                 <Check color='white' className='w-4' />
                             </div>
-
                         </div>
 
                         <h6 className='font-medium'>Or choose another payment method</h6>
 
                         <div className='flex flex-wrap gap-3.5'>
-                            <PaymentBtn
-                                icon={card}
-                                editIcon='w-5 h-5'
-                                text="Card"
-                            // onClick={}
-                            // loading={}
-                            />
-                            <PaymentBtn
-                                icon={bank}
-                                editIcon='w-5 h-5'
-                                text="Bank Transfer"
-                            // onClick={}
-                            // loading={}
-                            />
-                            <PaymentBtn
-                                icon={hashTag}
-                                editIcon='w-5 h-5'
-                                text="USSD"
-                            // onClick={}
-                            // loading={}
-                            />
-                            <PaymentBtn
-                                icon={qrcode}
-                                editIcon='w-5 h-5'
-                                text="QR code"
-                            // onClick={}
-                            // loading={}
-                            />
+                            <PaymentBtn icon={card} editIcon='w-5 h-5' text="Card" />
+                            <PaymentBtn icon={bank} editIcon='w-5 h-5' text="Bank Transfer" />
+                            <PaymentBtn icon={hashTag} editIcon='w-5 h-5' text="USSD" />
+                            <PaymentBtn icon={qrcode} editIcon='w-5 h-5' text="QR code" />
                         </div>
                     </div>
 
-
-
                 </div>
                 <div className='w-full lg:w-[30%] flex justify-center px-2 sm:px-0'>
-
                     <div className='w-full max-w-md lg:max-w-none'>
-                        <TicketPreview ticketCheckout={ticket} />
+                        <TicketPreview ticketCheckout={ticket} onPay={handlePay} />
                     </div>
-
                 </div>
             </div>
         </div>

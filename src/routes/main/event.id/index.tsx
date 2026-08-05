@@ -3,9 +3,9 @@ import { ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Separator } from "@/components/ui/separator";
-import { fetchEventBySlug } from "@/lib/events-api"; // Adjust path to match your API module location
+import { fetchEventBySlug } from "@/lib/events-api";
+import { fetchEventTickets } from "@/lib/tickets-api";
 import { MOCK_EVENTS } from "@/lib/constants";
-
 import { EventHero } from "@/components/event.details/EventHero";
 import { EventInfo } from "@/components/event.details/EventInfo";
 import { AboutEvent } from "@/components/event.details/AboutEvent";
@@ -16,13 +16,21 @@ import { GoodToKnow } from "@/components/event.details/GoodToKnow";
 import { RelatedEvents } from "@/components/event.details/RelatedEvents";
 import { FreeEventTicket } from "../../../components/event.details/FreeEventTicket";
 import { PaidEventTicket } from "../../../components/event.details/PaidEventTicket";
+import { useSavedEvents } from "@/hooks/use-saved-events";
 
 const EventDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
-
+  const { savedIds, toggleSave } = useSavedEvents();
   const { data: event, isLoading } = useQuery({
     queryKey: ["event", slug],
     queryFn: () => fetchEventBySlug(slug ?? ""),
+    enabled: Boolean(slug),
+  });
+
+  // Ticket tiers come from their own endpoint (separate backend collection), keyed by slug
+  const { data: tickets, isLoading: ticketsLoading } = useQuery({
+    queryKey: ["event-tickets", slug],
+    queryFn: () => fetchEventTickets(slug ?? ""),
     enabled: Boolean(slug),
   });
 
@@ -50,8 +58,8 @@ const EventDetailPage = () => {
   const isFree = event.minPrice === 0;
 
   return (
-    <div className="container mx-auto px-4 md:px-10 lg:px-12">
-      <nav className="flex items-center gap-1 pb-4 text-xs text-muted-foreground">
+    <div className="container mx-auto px-4 md:px-10 lg:px-12  ">
+      <nav className="flex items-center gap-1 pb-4 text-xs text-muted-foreground mt-3">
         <a href="/explore" className="hover:text-foreground">
           Explore
         </a>
@@ -63,7 +71,11 @@ const EventDetailPage = () => {
         <span className="text-foreground">{event.title}</span>
       </nav>
 
-      <EventHero event={event} />
+      <EventHero event={event} 
+      isSaved={savedIds.has(event.slug)}      // Set → array, because EventGrid wants string[]
+  onToggleSave={toggleSave}
+       
+      />
 
       <div className="mt-8 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-12">
         <div className="flex-1 space-y-8">
@@ -93,10 +105,19 @@ const EventDetailPage = () => {
         </div>
 
         <div className="w-full lg:sticky lg:top-6 lg:w-85 lg:self-start">
-          {isFree ? (
-            <FreeEventTicket event={event} />
+          {ticketsLoading ? (
+            <div className="h-96 w-full animate-pulse rounded-2xl bg-muted" />
+          ) : isFree ? (
+            <FreeEventTicket
+              event={event}
+              tiers={tickets?.tiers ?? []}
+            />
           ) : (
-            <PaidEventTicket event={event} />
+            <PaidEventTicket
+              event={event}
+              tiers={tickets?.tiers ?? []}
+              serviceFeePercent={tickets?.serviceFeePercent ?? 0}
+            />
           )}
         </div>
       </div>

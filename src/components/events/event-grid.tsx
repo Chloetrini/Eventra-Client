@@ -44,9 +44,9 @@ export function EventGrid({
     <div className={cn("grid gap-[32px] sm:grid-cols-2 lg:grid-cols-3 w-full xl:w-[946px]", className)}>
       {events.map((event) => (
         <EventCard
-          key={event.id}
+          key={event.slug}
           event={event}
-          isSaved={savedIds.includes(event.id)}
+          isSaved={savedIds.includes(event.slug)}
           onToggleSave={onToggleSave}
         />
       ))}

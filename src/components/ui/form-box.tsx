@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 import { Eye, EyeClosed } from 'lucide-react'
 import type { Control, FieldError as FieldErrorType, FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form'
-import type { Control, FieldError as FieldErrorType, FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form'
+
 import { Field, FieldError, FieldLabel, FieldLegend, FieldSet } from './field'
 import { Input } from './input'
 import { Textarea } from './textarea'

@@ -3,9 +3,9 @@ import { ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Separator } from "@/components/ui/separator";
-import { fetchEventBySlug } from "@/lib/events-api";
+import { fetchEventBySlug, fetchEvents } from "@/lib/events-api";
 import { fetchEventTickets } from "@/lib/tickets-api";
-import { MOCK_EVENTS } from "@/lib/constants";
+import { DEFAULT_FILTERS } from "@/types/event-types";
 import { EventHero } from "@/components/event.details/EventHero";
 import { EventInfo } from "@/components/event.details/EventInfo";
 import { AboutEvent } from "@/components/event.details/AboutEvent";
@@ -21,6 +21,7 @@ import { useSavedEvents } from "@/hooks/use-saved-events";
 const EventDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { savedIds, toggleSave } = useSavedEvents();
+
   const { data: event, isLoading } = useQuery({
     queryKey: ["event", slug],
     queryFn: () => fetchEventBySlug(slug ?? ""),
@@ -34,8 +35,13 @@ const EventDetailPage = () => {
     enabled: Boolean(slug),
   });
 
-  // Resolve related events from the relatedEventSlugs array
-  const relatedEvents = MOCK_EVENTS.filter((e) =>
+  // All events (through the same fetch as Explore) — used to resolve related events by slug
+  const { data: allEventsData } = useQuery({
+    queryKey: ["all-events"],
+    queryFn: () => fetchEvents(DEFAULT_FILTERS),
+  });
+
+  const relatedEvents = (allEventsData?.events ?? []).filter((e) =>
     event?.relatedEventSlugs?.includes(e.slug)
   );
 
@@ -71,10 +77,9 @@ const EventDetailPage = () => {
         <span className="text-foreground">{event.title}</span>
       </nav>
 
-      <EventHero event={event} 
-      isSaved={savedIds.has(event.slug)}      // Set → array, because EventGrid wants string[]
-  onToggleSave={toggleSave}
-       
+      <EventHero event={event}
+        isSaved={savedIds.has(event.slug)}
+        onToggleSave={toggleSave}
       />
 
       <div className="mt-8 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-12">
@@ -82,7 +87,7 @@ const EventDetailPage = () => {
           <EventInfo event={event} />
           <AboutEvent event={event} />
           <Separator />
-          
+
           {event.lineup && event.lineup.length > 0 && (
             <>
               <EventLineUp event={event} />
@@ -91,7 +96,7 @@ const EventDetailPage = () => {
           )}
 
           <EventMap location={event.venue} />
-          
+
           {event.organizer && (
             <>
               <Separator />

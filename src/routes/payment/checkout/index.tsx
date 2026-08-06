@@ -77,7 +77,7 @@ const Checkout = () => {
                             <h5 className='font-bold text-xl font-grotesk'>Your Details</h5>
                         </div>
 
-                        <div className='flex flex-col gap-7 w-full lg:w-[80%]'>
+                        <div className='flex flex-col gap-7 w-full '>
                             <div className='flex flex-col sm:flex-row gap-5'>
                                 <FormBox type="text" placeholder="First name" id="firstName" register={register} errors={errors?.fullName} name="fullName" classname="w-full" borderStyle="checkout" />
                                 <FormBox type="text" placeholder="Last name" id="lastName" register={register} errors={errors?.fullName} name="fullName" classname="w-full" borderStyle="checkout" />

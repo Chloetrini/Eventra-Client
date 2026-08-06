@@ -25,6 +25,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "Live music",
+    "no": "0215",
     "tags": [
       "Concerts",
       "Afrobeats",
@@ -80,6 +81,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "DJ sets",
+    "no": "0216",
     "tags": [
       "Parties",
       "Lagos"
@@ -137,6 +139,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "Live music",
+    "no": "0217",
     "tags": [
       "Concerts",
       "Jazz",
@@ -180,11 +183,12 @@ export const MOCK_EVENTS: Event[] = [
     "createdAt": thisWeekend(17),
     "minPrice": 12500,
     "coverImage": "https://picsum.photos/seed/rooftop/600/450",
-    "isPromoted": false,
+    "isPromoted": true,
     "trendingScore": 88,
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "DJ sets",
+    "no": "0218",
     "tags": [
       "Parties",
       "Lagos"
@@ -237,6 +241,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+    "no": "0219",
     "tags": [
       "Arts & Theatre",
       "Lagos"
@@ -288,11 +293,12 @@ export const MOCK_EVENTS: Event[] = [
     "createdAt": thisWeekend(22),
     "minPrice": 25000,
     "coverImage": "https://picsum.photos/seed/boat/600/450",
-    "isPromoted": false,
+    "isPromoted": true,
     "trendingScore": 86,
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "DJ sets",
+    "no": "0220",
     "tags": [
       "Parties",
       "Lagos"
@@ -349,11 +355,12 @@ export const MOCK_EVENTS: Event[] = [
     "createdAt": daysFromNow(4, 9),
     "minPrice": 45000,
     "coverImage": "https://picsum.photos/seed/techweek/600/450",
-    "isPromoted": false,
+    "isPromoted": true,
     "trendingScore": 80,
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+   "no": "0221",
     "tags": [
       "Conferences",
       "Tech",
@@ -402,11 +409,13 @@ export const MOCK_EVENTS: Event[] = [
     "createdAt": daysFromNow(6, 20),
     "minPrice": 5000,
     "coverImage": "https://picsum.photos/seed/comedy/600/450",
-    "isPromoted": false,
+    "isPromoted": true,
     "trendingScore": 76,
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+    "no": "0222",
+
     "tags": [
       "Comedy",
       "Lagos"
@@ -463,6 +472,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+    "no": "0223",
     "tags": [
       "Tech",
       "Lagos"
@@ -510,6 +520,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "Live music",
+    "no": "0224",
     "tags": [
       "Food & Drink",
       "Lagos"
@@ -557,6 +568,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "Live band",
+    "no": "0222",
     "tags": [
       "Parties",
       "Lagos"
@@ -614,6 +626,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+    "no": "0223",
     "tags": [
       "Sports",
       "Athletics",
@@ -675,6 +688,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+    "no": "0224",
     "tags": [
       "Arts & Theatre",
       "Lagos"
@@ -728,6 +742,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+    "no": "0224",
     "tags": [
       "Sports",
       "Football",
@@ -785,6 +800,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "Live music",
+    "no": "0224",
     "tags": [
       "Food & Drink",
       "Lagos"
@@ -832,6 +848,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+    "no": "0224",
     "tags": [
       "Arts & Theatre",
       "Lagos"

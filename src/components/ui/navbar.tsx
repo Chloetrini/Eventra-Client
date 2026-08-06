@@ -71,7 +71,7 @@ function Navbar() {
 
   return (
     <div className="w-full bg-white border-b-2 border-[#E8E6E0]">
-      <div className="flex w-full items-center p-[20px] md:px-[100px] md:py-[20px] ">
+      <div className="flex w-full items-center p-[20px] lg:px-[100px] md:py-[20px]  ">
         {/* Logo */}
         <NavLink to="/" className="flex items-center" onClick={closeMenu}>
           <img  src="/logo.svg" alt="Logo" />

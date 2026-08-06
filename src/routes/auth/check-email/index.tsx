@@ -6,7 +6,7 @@ import { Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
-import EventraLogo from "@/assets/eventra-logo.svg";
+import EventraLogo from "@/assets/Eventra-logo.png";
 
 export default function CheckEmail() {
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Heart, ArrowUpRight } from "lucide-react";
+import { Heart, ArrowUpRight, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event-types";
 import { formatNaira } from "@/lib/utils"
@@ -9,6 +9,7 @@ type EventCardProps = {
   isSaved?: boolean;
   onToggleSave?: (id: string) => void;
   className?: string;
+  variant?: "explore" | "home";
 };
 
 export function EventCard({
@@ -16,6 +17,7 @@ export function EventCard({
   isSaved = false,
   onToggleSave,
   className,
+  variant = "explore",
 }: EventCardProps) {
   const date = new Date(event.startDate);
   const dateLabel = date.toLocaleString("en-NG", {
@@ -27,10 +29,13 @@ export function EventCard({
     hour12: true,
   });
 
+  const eventNo = event.no ?? event._id.padStart(4, "0");
+  const isHome = variant === "home";
+
   return (
     <article
       className={cn(
-        "group overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md w-full md:max-w-[var(--card-w,294px)] max-h-[398px]",
+       "group overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md w-full md:max-w-[var(--card-w,294px)] max-h-[398px]",
         className
       )}
     >
@@ -41,31 +46,47 @@ export function EventCard({
           loading="lazy"
           className="aspect-[294/189] w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        <div className="flex items-center justify-center " >
-          <p className="absolute left-3 top-6 text-[12px] font-[700]  text-white font-mono drop-shadow tracking-wider">No {event.no ?? ""}</p>
-          {onToggleSave && (
-            <button
-              type="button"
-              onClick={() => onToggleSave(event.slug)}
-              aria-label={isSaved ? "Remove from saved" : "Save event"}
-              aria-pressed={isSaved}
-              className={cn(
-                "absolute right-3 top-3 grid h-[37px] w-[37px] place-items-center rounded-full backdrop-blur transition",
-                isSaved
-                  ? "bg-[#F5A524] hover:bg-[#F5A524]"
-                  : "bg-[#6E6577] hover:[#6E6577]"
-              )}
-            >
-              <Heart
-                className={cn(
-                  "h-[10.49px] w-[12.33px]",
-                  isSaved ? "fill-[#7A4E02] text-[#7A4E02]" : "fill-none text-white"
-                )}
-              />
-            </button>
-          )}
-        </div>
 
+        {isHome ? (
+          <>
+            {/* HOME variant: Featured badge top-left, number top-right, no heart */}
+            <span className="absolute left-3 top-3 flex items-center gap-1 rounded-[15px] bg-[#F5A524] px-3 py-1 text-[13px] font-[500] text-[#7A4E02] font-sans">
+              <Star className="h-3 w-3 fill-[#7A4E02] text-[#7A4E02]" />
+              Featured
+            </span>
+            <p className="absolute right-3 top-4 text-[12px] font-[700] text-white font-mono drop-shadow tracking-wider">
+              {eventNo}
+            </p>
+          </>
+        ) : (
+          <>
+            {/* EXPLORE variant: number top-left, heart top-right */}
+            <p className="absolute left-3 top-6 text-[12px] font-[700] text-white font-mono drop-shadow tracking-wider">
+              No {eventNo}
+            </p>
+            {onToggleSave && (
+              <button
+                type="button"
+                onClick={() => onToggleSave(event.slug)}
+                aria-label={isSaved ? "Remove from saved" : "Save event"}
+                aria-pressed={isSaved}
+                className={cn(
+                  "absolute right-3 top-3 grid h-[37px] w-[37px] place-items-center rounded-full backdrop-blur transition",
+                  isSaved
+                    ? "bg-[#F5A524] hover:bg-[#F5A524]"
+                    : "bg-[#6E6577] hover:[#6E6577]"
+                )}
+              >
+                <Heart
+                  className={cn(
+                    "h-[10.49px] w-[12.33px]",
+                    isSaved ? "fill-[#7A4E02] text-[#7A4E02]" : "fill-none text-white"
+                  )}
+                />
+              </button>
+            )}
+          </>
+        )}
       </div>
 
       <div className="space-y-1 p-4 max-h-[209px]">

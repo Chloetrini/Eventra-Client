@@ -48,6 +48,7 @@ export function EventGrid({
           event={event}
           isSaved={savedIds.includes(event.slug)}
           onToggleSave={onToggleSave}
+          variant="explore"
         />
       ))}
     </div>

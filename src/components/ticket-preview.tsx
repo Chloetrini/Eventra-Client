@@ -31,9 +31,12 @@ const TicketPreview = ({ ticketCheckout, onPay }: TicketPreviewProps) => {
 
   return (
     <div className='flex flex-col w-full'>
-      <div>
+      <div >
         {ticketCheckout.eventImage && (
-          <img src={ticketCheckout.eventImage} alt={ticketCheckout.eventName} className='w-full rounded-t-2xl' />
+         
+          <img src={ticketCheckout.eventImage} alt={ticketCheckout.eventName} className='w-full rounded-t-2xl h-[130px] object-cover' />
+        
+          
         )}
       </div>
       <div className='flex flex-col gap-5 px-5 py-5 shadow-2xl rounded-b-2xl'>

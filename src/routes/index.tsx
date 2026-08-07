@@ -96,6 +96,20 @@ const routes = [
                         }
                     },
                     {
+                        path: "organizers",
+                        handle: {
+                            seo: {
+                                title: "Organizer",
+                                description: "Get in touch with the Eventra team.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/main/organizer-page");
+                            return { Component };
+                        }
+                    },
+
+                    {
                         path: "payment",
                         children: [
                             {
@@ -109,7 +123,7 @@ const routes = [
 
                                 lazy: async () => {
                                     const { default: Component } =
-                                        await import("@/routes/payment/checkout");
+                                        await import("@/routes/main/payment/checkout");
                                     return { Component };
                                 },
                             },
@@ -125,7 +139,7 @@ const routes = [
 
                                 lazy: async () => {
                                     const { default: Component } =
-                                        await import("@/routes/payment/ticket-confirmation");
+                                        await import("@/routes/main/payment/ticket-confirmation");
                                     return { Component };
                                 },
                             },

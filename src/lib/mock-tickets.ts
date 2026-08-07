@@ -80,7 +80,7 @@ export const MOCK_TICKETS: EventTickets[] = [
         "description": "Free admission",
         "originalPrice": null,
         "availability": "available",
-        "quantityLeft": null
+        "quantityLeft": 5
       }
     ]
   },
@@ -275,7 +275,7 @@ export const MOCK_TICKETS: EventTickets[] = [
         "description": "Free admission",
         "originalPrice": null,
         "availability": "available",
-        "quantityLeft": null
+        "quantityLeft": 10
       }
     ]
   },
@@ -422,7 +422,7 @@ export const MOCK_TICKETS: EventTickets[] = [
         "description": "Free admission",
         "originalPrice": null,
         "availability": "available",
-        "quantityLeft": null
+        "quantityLeft": 10
       }
     ]
   },

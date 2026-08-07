@@ -17,6 +17,7 @@ const TicketConfirmation = () => {
         subtotal: number
         serviceFee: number
         total: number
+        slug: string
     } | null
 
     const recipientEmail = "oghenekevwet@gmail.com"
@@ -65,8 +66,9 @@ const TicketConfirmation = () => {
                     _id="1"
                     eventName={ticket.eventName}
                     orderID={ticket.orderID}
-                    eventDateTime=""
-                    ticketDetails={[]}
+                    eventDateTime={ticket.eventDateTime}
+                    ticketDetails={ticket.ticketDetails}
+                    slug={order.slug}
                 />
             </div>
             <div className="w-full">

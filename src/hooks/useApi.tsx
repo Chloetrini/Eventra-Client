@@ -1,21 +1,20 @@
-// import { useQuery } from '@tanstack/react-query'
-// import { getTicketById } from '@/lib/dummy-ticket';
+import { fetchEventBySlug } from '@/lib/events-api';
+import { fetchEventTickets } from '@/lib/tickets-api';
+import { useQuery } from '@tanstack/react-query'
 
 
-// const { data: event } = useQuery({
-//   queryKey: ["event", eventId],
-//   queryFn: () => getTicketById(eventId),
-//   initialData: () => {
-//     return queryClient.getQueryData(["event", eventId]);
-//   }
-// });
+export const useFetchBySlug = ( slug?: string ) => {
+    return useQuery ({
+        queryKey: ["event", slug],
+        queryFn: () => fetchEventBySlug(slug ?? ""),
+        enabled: Boolean(slug),
+    })
+};
 
-// export const useGetSingleEvent = (id: string) => {
-//   return useQuery({
-//     queryKey: ['event', id],
-//     queryFn: () => getEventById(id),
-//     initialData: () => {
-//       return queryClient.getQueryData(["event", eventId]);
-//     }
-//   })
-// }
+export const useFetchEventTickets = ( slug?: string ) => {
+  return useQuery({
+    queryKey: ["event-tickets", slug],
+    queryFn: () => fetchEventTickets(slug ?? ""),
+    enabled: Boolean(slug),
+  });
+}

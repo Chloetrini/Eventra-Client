@@ -4,15 +4,18 @@ import { type TicketTier } from "@/types/ticket-tiers"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Check, Mail } from "lucide-react"
+import { useNavigate } from "react-router"
 
 const MAX_GUESTS_PER_RESERVATION = 4
 
 export const FreeEventTicket = ({
   event,
   tiers,
+  slug,
 }: {
   event: Event;
   tiers: TicketTier[];
+  slug?: string
 }) => {
   const [guests, setGuests] = useState(1)
 
@@ -24,6 +27,23 @@ export const FreeEventTicket = ({
 
   const increment = () => setGuests((g) => Math.min(MAX_GUESTS_PER_RESERVATION, g + 1))
   const decrement = () => setGuests((g) => Math.max(1, g - 1))
+  
+  const navigate = useNavigate()
+
+  const handleSelectTickets = () => {
+
+    navigate("/payment/checkout", {
+      state: {
+        eventId: event._id,
+        eventName: event.title,
+        eventImage: event.coverImage,
+        eventDateTime: event.startDate,
+        eventVenue: `${event.venue.name}, ${event.venue.city}`,
+        ticketDetails:  [{ type: "Free", unitPrice: 0, quantity: guests}],
+        slug: slug
+      },
+    });
+  };
 
   return (
     <div className="rounded-2xl border p-6 shadow-[0_0_15px_rgba(0,0,0,0.15)] h-fit">
@@ -70,7 +90,7 @@ export const FreeEventTicket = ({
         </div>
       </div>
 
-      <Separator className="my-5"/>
+      <Separator className="my-5" />
 
       <div className="flex items-center justify-between text-sm">
         <span className="text-[#4A4451] font-normal">Price</span>
@@ -80,7 +100,7 @@ export const FreeEventTicket = ({
         No payment needed. You'll get a QR ticket to show at the door and you can cancel anytime to release your spot.
       </p>
 
-      <Button className="mt-5 w-full bg-[#0F6E56] text-white hover:bg-emerald-900" disabled={isFull}>
+      <Button className="mt-5 w-full bg-[#0F6E56] text-white hover:bg-emerald-900" disabled={isFull} onClick={handleSelectTickets}>
         {isFull ? 'Fully booked' : 'Reserve my spot'}
       </Button>
 

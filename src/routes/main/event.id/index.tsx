@@ -17,23 +17,30 @@ import { RelatedEvents } from "@/components/event.details/RelatedEvents";
 import { FreeEventTicket } from "../../../components/event.details/FreeEventTicket";
 import { PaidEventTicket } from "../../../components/event.details/PaidEventTicket";
 import { useSavedEvents } from "@/hooks/use-saved-events";
+import { useFetchBySlug, useFetchEventTickets } from "@/hooks/useApi";
 
 const EventDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { savedIds, toggleSave } = useSavedEvents();
 
-  const { data: event, isLoading } = useQuery({
-    queryKey: ["event", slug],
-    queryFn: () => fetchEventBySlug(slug ?? ""),
-    enabled: Boolean(slug),
-  });
+  // const { data: event, isLoading } = useQuery({
+  //   queryKey: ["event", slug],
+  //   queryFn: () => fetchEventBySlug(slug ?? ""),
+  //   enabled: Boolean(slug),
+  // });
+
+  // with hook:
+  const { data: event, isLoading } = useFetchBySlug(slug)
 
   // Ticket tiers come from their own endpoint (separate backend collection), keyed by slug
-  const { data: tickets, isLoading: ticketsLoading } = useQuery({
-    queryKey: ["event-tickets", slug],
-    queryFn: () => fetchEventTickets(slug ?? ""),
-    enabled: Boolean(slug),
-  });
+  // const { data: tickets, isLoading: ticketsLoading } = useQuery({
+  //   queryKey: ["event-tickets", slug],
+  //   queryFn: () => fetchEventTickets(slug ?? ""),
+  //   enabled: Boolean(slug),
+  // });
+
+  // with hook: 
+  const { data: tickets, isLoading: ticketsLoading } = useFetchEventTickets()
 
   // All events (through the same fetch as Explore) — used to resolve related events by slug
   const { data: allEventsData } = useQuery({
@@ -116,12 +123,14 @@ const EventDetailPage = () => {
             <FreeEventTicket
               event={event}
               tiers={tickets?.tiers ?? []}
+              slug={slug}
             />
           ) : (
             <PaidEventTicket
               event={event}
               tiers={tickets?.tiers ?? []}
               serviceFeePercent={tickets?.serviceFeePercent ?? 0}
+              slug={slug}
             />
           )}
         </div>

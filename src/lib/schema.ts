@@ -45,6 +45,30 @@ export const registerSchema = z.object({
     message: 'Invalid phone number',
   }),
 })
+
+// Checkout collects only contact details — no password or company name,
+// so it can't reuse registerSchema (those fields would fail silently).
+export const checkoutSchema = z.object({
+  firstName: z
+    .string({
+      message: 'Complete this field to continue',
+    })
+    .min(2, {
+      message: 'First name must be at least 2 characters long',
+    }),
+  lastName: z
+    .string({
+      message: 'Complete this field to continue',
+    })
+    .min(2, {
+      message: 'Last name must be at least 2 characters long',
+    }),
+  email: registerSchema.shape.email,
+  phoneNumber: registerSchema.shape.phoneNumber,
+})
+
+export type CheckoutFormValues = z.infer<typeof checkoutSchema>
+
 export const contactSchema = z.object({
   fullName: z
     .string({

@@ -3,16 +3,18 @@ import bag from '@/assets/bag.png'
 import paystackLogo from '@/assets/paystackLogo.png'
 import { FormBox } from '@/components/ui/form-box'
 import { useForm } from 'react-hook-form'
-import { registerSchema } from '@/lib/schema'
+import { checkoutSchema, type CheckoutFormValues } from '@/lib/schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Check } from 'lucide-react'
+import { Check, ChevronRight } from 'lucide-react'
 import PaymentBtn from '@/components/ui/pay-method-btn'
 import card from '@/assets/card.png'
 import bank from '@/assets/bank.png'
 import hashTag from '@/assets/hash.png'
 import qrcode from '@/assets/qrcode2.png'
 import TicketPreview from '@/components/ticket-preview'
-import { useLocation, useNavigate } from 'react-router'
+import { useLocation, useNavigate, useParams } from 'react-router'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { fetchEventBySlug } from '@/lib/events-api'
 
 const Checkout = () => {
 
@@ -29,11 +31,20 @@ const Checkout = () => {
         subtotal: number
         serviceFee: number
         total: number
+        slug: string
     } | null
 
-    const { register, handleSubmit, formState: { errors } } = useForm({
-        resolver: zodResolver(registerSchema),
+    const { register, handleSubmit, formState: { errors } } = useForm<CheckoutFormValues>({
+        resolver: zodResolver(checkoutSchema),
         mode: "onChange",
+        // Start as empty strings so zod reports the min-length message
+        // instead of an invalid_type error on undefined.
+        defaultValues: {
+            firstName: '',
+            lastName: '',
+            email: '',
+            phoneNumber: '',
+        },
     })
 
     if (!ticket) {
@@ -50,12 +61,21 @@ const Checkout = () => {
         )
     }
 
-    const handlePay = () => {
-        navigate('/payment/ticket-confirmation', { state: ticket })
-    }
+    // handleSubmit runs the zod resolver first. The callback only fires when
+    // every field passes; otherwise RHF fills `errors` and navigation is blocked.
+    const handlePay = handleSubmit((data) => {
+        navigate('/payment/ticket-confirmation', { state: { ...ticket, buyer: data } })
+    })
 
     return (
         <div className='px-4 sm:px-8 lg:px-4 py-10 mx-auto container'>
+            <nav className="flex items-center gap-1 pb-4 text-xs text-muted-foreground mt-3">
+                <a href={`/events/${ticket.slug}`} className="hover:text-foreground">
+                    {ticket.eventName}
+                </a>
+                <ChevronRight className="h-3 w-3" />
+                <span className="text-foreground">Checkout</span>
+            </nav>
             <div className='flex items-center gap-3 mb-4'>
                 <div className='w-14.5 h-14.5 bg-[#E4F1EB] rounded-full flex items-center justify-center' >
                     <img src={bag} alt="Shopping Bag" className="w-7.5 h-7.5" />
@@ -68,7 +88,7 @@ const Checkout = () => {
             <div className='flex flex-col-reverse lg:flex-row lg:justify-between gap-10 lg:gap-8 mt-10'>
                 <div className='w-full lg:w-[60%]'>
 
-                    <form action="" className='flex flex-col gap-7'>
+                    <form onSubmit={handlePay} noValidate className='flex flex-col gap-7'>
 
                         <div className='flex items-center gap-2'>
                             <div className='w-7.5 h-7.5 bg-[#0A4F41] rounded-full flex items-center justify-center text-white'>
@@ -79,8 +99,8 @@ const Checkout = () => {
 
                         <div className='flex flex-col gap-7 w-full '>
                             <div className='flex flex-col sm:flex-row gap-5'>
-                                <FormBox type="text" placeholder="First name" id="firstName" register={register} errors={errors?.fullName} name="fullName" classname="w-full" borderStyle="checkout" />
-                                <FormBox type="text" placeholder="Last name" id="lastName" register={register} errors={errors?.fullName} name="fullName" classname="w-full" borderStyle="checkout" />
+                                <FormBox type="text" placeholder="First name" id="firstName" register={register} errors={errors?.firstName} name="firstName" classname="w-full" borderStyle="checkout" />
+                                <FormBox type="text" placeholder="Last name" id="lastName" register={register} errors={errors?.lastName} name="lastName" classname="w-full" borderStyle="checkout" />
                             </div>
                             <FormBox type="email" placeholder="Email address" id="email" register={register} errors={errors?.email} name="email" classname="w-full" borderStyle="checkout" />
                             <FormBox type="text" placeholder="Phone number" id="phoneNumber" register={register} errors={errors?.phoneNumber} name="phoneNumber" classname="w-full" borderStyle="checkout" />

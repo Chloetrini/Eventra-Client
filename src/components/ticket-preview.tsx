@@ -14,9 +14,10 @@ interface TicketPreviewProps {
     eventVenue: string
     ticketDetails: { type: string; unitPrice: number; quantity: number }[]
   }
+  onPay?: () => void
 }
 
-const TicketPreview = ({ ticketCheckout }: TicketPreviewProps) => {
+const TicketPreview = ({ ticketCheckout, onPay }: TicketPreviewProps) => {
 
   const subTotal = ticketCheckout.ticketDetails.reduce(
     (sum, item) => sum + item.unitPrice * item.quantity,
@@ -30,9 +31,12 @@ const TicketPreview = ({ ticketCheckout }: TicketPreviewProps) => {
 
   return (
     <div className='flex flex-col w-full'>
-      <div>
+      <div >
         {ticketCheckout.eventImage && (
-          <img src={ticketCheckout.eventImage} alt={ticketCheckout.eventName} className='w-full rounded-t-2xl' />
+         
+          <img src={ticketCheckout.eventImage} alt={ticketCheckout.eventName} className='w-full rounded-t-2xl h-[130px] object-cover' />
+        
+          
         )}
       </div>
       <div className='flex flex-col gap-5 px-5 py-5 shadow-2xl rounded-b-2xl'>
@@ -84,8 +88,8 @@ const TicketPreview = ({ ticketCheckout }: TicketPreviewProps) => {
           text={`Pay ${formatNaira(total)}`}
           icon={lock}
           editIcon='w-4 h-4'
-        // onClick={}
-        // loading={}
+          onClick={onPay}
+          // loading={}
         />
         <p className='text-xs flex justify-center md:items-center gap-0.5 md:gap-1 mt-[-15px] text-center md:text-start'>
           <span><img src={yellowLock} alt="" className='w-3 h-3' /></span>

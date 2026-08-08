@@ -25,6 +25,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "Live music",
+    "no": "0215",
     "tags": [
       "Concerts",
       "Afrobeats",
@@ -44,36 +45,6 @@ export const MOCK_EVENTS: Event[] = [
         "isVerified": true,
         "totalEvents": 42,
         "followers": 12800
-      }
-    ],
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 10000,
-        "description": "Limited early bird",
-        "originalPrice": 15000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 15000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 30000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
       }
     ],
     "goodToKnow": [
@@ -110,6 +81,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "DJ sets",
+    "no": "0216",
     "tags": [
       "Parties",
       "Lagos"
@@ -132,36 +104,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 48,
       "followers": 9600
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 3000,
-        "description": "Limited early bird",
-        "originalPrice": 8000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 8000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 16000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -197,6 +139,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "Live music",
+    "no": "0217",
     "tags": [
       "Concerts",
       "Jazz",
@@ -211,18 +154,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 37,
       "followers": 4200
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Free",
-        "unitPrice": 0,
-        "description": "Free admission",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -252,11 +183,12 @@ export const MOCK_EVENTS: Event[] = [
     "createdAt": thisWeekend(17),
     "minPrice": 12500,
     "coverImage": "https://picsum.photos/seed/rooftop/600/450",
-    "isPromoted": false,
+    "isPromoted": true,
     "trendingScore": 88,
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "DJ sets",
+    "no": "0218",
     "tags": [
       "Parties",
       "Lagos"
@@ -275,36 +207,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 33,
       "followers": 7100
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 7500,
-        "description": "Limited early bird",
-        "originalPrice": 12500,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 12500,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 25000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -339,6 +241,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+    "no": "0219",
     "tags": [
       "Arts & Theatre",
       "Lagos"
@@ -361,36 +264,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 14,
       "followers": 3300
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 0,
-        "description": "Limited early bird",
-        "originalPrice": 3000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 3000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 6000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -420,11 +293,12 @@ export const MOCK_EVENTS: Event[] = [
     "createdAt": thisWeekend(22),
     "minPrice": 25000,
     "coverImage": "https://picsum.photos/seed/boat/600/450",
-    "isPromoted": false,
+    "isPromoted": true,
     "trendingScore": 86,
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "DJ sets",
+    "no": "0220",
     "tags": [
       "Parties",
       "Lagos"
@@ -451,36 +325,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 10,
       "followers": 2100
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 20000,
-        "description": "Limited early bird",
-        "originalPrice": 25000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 25000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 50000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -511,11 +355,12 @@ export const MOCK_EVENTS: Event[] = [
     "createdAt": daysFromNow(4, 9),
     "minPrice": 45000,
     "coverImage": "https://picsum.photos/seed/techweek/600/450",
-    "isPromoted": false,
+    "isPromoted": true,
     "trendingScore": 80,
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+   "no": "0221",
     "tags": [
       "Conferences",
       "Tech",
@@ -535,36 +380,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 42,
       "followers": 12800
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 40000,
-        "description": "Limited early bird",
-        "originalPrice": 45000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 45000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 90000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -594,11 +409,13 @@ export const MOCK_EVENTS: Event[] = [
     "createdAt": daysFromNow(6, 20),
     "minPrice": 5000,
     "coverImage": "https://picsum.photos/seed/comedy/600/450",
-    "isPromoted": false,
+    "isPromoted": true,
     "trendingScore": 76,
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+    "no": "0222",
+
     "tags": [
       "Comedy",
       "Lagos"
@@ -621,36 +438,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 48,
       "followers": 9600
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 0,
-        "description": "Limited early bird",
-        "originalPrice": 5000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 5000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 10000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -685,6 +472,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+    "no": "0223",
     "tags": [
       "Tech",
       "Lagos"
@@ -698,18 +486,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 37,
       "followers": 4200
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Free",
-        "unitPrice": 0,
-        "description": "Free admission",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -744,6 +520,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "Live music",
+    "no": "0224",
     "tags": [
       "Food & Drink",
       "Lagos"
@@ -757,18 +534,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 33,
       "followers": 7100
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Free",
-        "unitPrice": 0,
-        "description": "Free admission",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -803,6 +568,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "Live band",
+    "no": "0222",
     "tags": [
       "Parties",
       "Lagos"
@@ -825,36 +591,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 14,
       "followers": 3300
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 0,
-        "description": "Limited early bird",
-        "originalPrice": 3000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 3000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 6000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -890,6 +626,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+    "no": "0223",
     "tags": [
       "Sports",
       "Athletics",
@@ -917,36 +654,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 10,
       "followers": 2100
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 0,
-        "description": "Limited early bird",
-        "originalPrice": 2500,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 2500,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 5000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -981,6 +688,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+    "no": "0224",
     "tags": [
       "Arts & Theatre",
       "Lagos"
@@ -999,36 +707,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 42,
       "followers": 12800
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 0,
-        "description": "Limited early bird",
-        "originalPrice": 1500,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 1500,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 3000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -1064,6 +742,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+    "no": "0224",
     "tags": [
       "Sports",
       "Football",
@@ -1087,36 +766,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 48,
       "followers": 9600
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 0,
-        "description": "Limited early bird",
-        "originalPrice": 2000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 2000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 4000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -1151,6 +800,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": "Live music",
+    "no": "0224",
     "tags": [
       "Food & Drink",
       "Lagos"
@@ -1164,18 +814,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 37,
       "followers": 4200
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Free",
-        "unitPrice": 0,
-        "description": "Free admission",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",
@@ -1210,6 +848,7 @@ export const MOCK_EVENTS: Event[] = [
     "gatesOpenTime": "5:00 PM",
     "doorsCloseTime": "11:00 PM",
     "musicType": null,
+    "no": "0224",
     "tags": [
       "Arts & Theatre",
       "Lagos"
@@ -1228,36 +867,6 @@ export const MOCK_EVENTS: Event[] = [
       "totalEvents": 33,
       "followers": 7100
     },
-    "serviceFeePercent": 5,
-    "ticketTiers": [
-      {
-        "id": 1,
-        "type": "Early Bird",
-        "unitPrice": 13000,
-        "description": "Limited early bird",
-        "originalPrice": 18000,
-        "availability": "sold out",
-        "quantityLeft": null
-      },
-      {
-        "id": 2,
-        "type": "Regular",
-        "unitPrice": 18000,
-        "description": "Standard entry",
-        "originalPrice": null,
-        "availability": "scarce",
-        "quantityLeft": 12
-      },
-      {
-        "id": 3,
-        "type": "VIP",
-        "unitPrice": 36000,
-        "description": "VIP access • perks",
-        "originalPrice": null,
-        "availability": "available",
-        "quantityLeft": null
-      }
-    ],
     "goodToKnow": [
       "Refunds available until 3 days before the event.",
       "Each ticket has a unique QR code - one entry per ticket.",

@@ -1,4 +1,4 @@
-import { eventSchema, eventVenueSchema, lineupMemberSchema, ticketTierSchema } from "@/lib/schema";
+import { eventSchema, eventVenueSchema, lineupMemberSchema } from "@/lib/schema";
 import z from "zod";
 
 export const STATES = [
@@ -141,4 +141,4 @@ export const DEFAULT_FILTERS: EventFilters = {
 
 export type EventVenue = z.infer<typeof eventVenueSchema>;
 export type LineupMember = z.infer<typeof lineupMemberSchema>;
-export type TicketTier = z.infer<typeof ticketTierSchema>;
+

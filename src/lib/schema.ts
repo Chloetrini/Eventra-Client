@@ -45,7 +45,37 @@ export const registerSchema = z.object({
       message: 'Invalid phone number',
     }),
 })
-
+export const contactSchema = z.object({
+  fullName: z
+    .string({
+      message: 'Please enter your full name',
+    })
+    .trim()
+    .min(2, {
+      message: 'Full name must be at least 2 characters long',
+    }),
+  email: z
+    .string({
+      message: 'Please enter your email address',
+    })
+    .trim()
+    .email({
+      message: 'Please enter a valid email address',
+    }),
+  subject: z
+    .string()
+    .trim()
+    .optional()
+    .or(z.literal('')),
+  message: z
+    .string({
+      message: 'Please enter a message',
+    })
+    .trim()
+    .min(10, {
+      message: 'Message must be at least 10 characters long',
+    }),
+})
 
 // Event venue — nested, matching the backend
 export const eventVenueSchema = z.object({
@@ -75,7 +105,12 @@ export const ticketTierSchema = z.object({
   availability: z.enum(["available", "scarce", "sold out"]).optional(),
   quantityLeft: z.number().nullable().optional(),
 });
-
+// The ticket-tier group for one event — its own backend collection, keyed by slug.
+export const eventTicketsSchema = z.object({
+  eventSlug: z.string(),
+  serviceFeePercent: z.number().default(0),
+  tiers: z.array(ticketTierSchema),
+});
 
 export const eventSchema = z.object({
   // --- backend fields ---
@@ -108,8 +143,6 @@ export const eventSchema = z.object({
   gatesOpenTime: z.string().optional(),
   doorsCloseTime: z.string().optional(),
   goodToKnow: z.array(z.string()).optional(),
-  serviceFeePercent: z.number().optional(),
-  ticketTiers: z.array(ticketTierSchema).optional(),
   relatedEventSlugs: z.array(z.string()).optional(),
   location: z.any().optional(),              // Ozcar's nested location, kept until migrated
   organizer: z.any().optional(),             // kept flexible (backend = id, dummy = object)
@@ -211,3 +244,62 @@ export const ORGANISATION_FIELDS = [
 ] as const
 
 export const BANK_FIELDS = ["accountHolderName", "bank", "accountNumber"] as const
+
+
+export const attendeeRegisterSchema = z
+  .object({
+    fullName: z
+      .string({ message: "Complete this field to continue" })
+      .min(3, { message: "Name must be at least 3 characters long" }),
+    email: z.string().email({ message: "Enter a valid email address" }),
+    phoneNumber: z
+      .string({ message: "Phone number is required" })
+      .min(11, { message: "Phone number must be at least 11 digits long" })
+      .max(11, { message: "Phone number must be at most 11 digits long" })
+      .regex(/^\+?[0-9\s\-()]+$/, { message: "Invalid phone number" }),
+    password: z
+      .string({ message: "Complete this field to continue" })
+      .min(8, { message: "Password must be at least 8 characters long" })
+      .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
+      .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
+      .regex(/\d/, { message: "Password must contain at least one number" })
+      .regex(/[!@#$%^&*(),.?":{}|<>]/, { message: "Password must contain at least one special character" }),
+    confirmPassword: z.string().min(1, { message: "Please confirm your password" }),
+    role: z.enum(["attendee", "organizer"]),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type AttendeeRegisterValues = z.infer<typeof attendeeRegisterSchema>;
+
+export const loginSchema = z.object({
+  email: z.string().email({ message: "Enter a valid email address" }),
+  password: z.string().min(1, { message: "Password is required" }),
+});
+ 
+export const forgotPasswordSchema = z.object({
+  email: z.string().email({ message: "Enter a valid email address" }),
+});
+export const resetPasswordSchema = z.object({
+  email: z.string().email({ message: "Enter a valid email address" }),
+  otp: z.string().min(1, { message: "Verification code is required" }),
+  newPassword: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
+    .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
+    .regex(/\d/, { message: "Password must contain at least one number" })
+    .regex(/[!@#$%^&*(),.?":{}|<>]/, { message: "Password must contain at least one special character" }),
+});
+
+export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
+export const verifyEmailSchema = z.object({
+  email: z.string().email({ message: "Enter a valid email address" }),
+  otp: z.string().length(6, { message: "OTP must be 6 digits long" }),
+});
+export type RegisterValues = z.infer<typeof registerSchema>;
+
+export type LoginValues = z.infer<typeof loginSchema>;
+export type VerifyEmailValues = z.infer<typeof verifyEmailSchema>;

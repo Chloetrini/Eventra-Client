@@ -97,6 +97,20 @@ const routes = [
                         }
                     },
                     {
+                        path: "organizers",
+                        handle: {
+                            seo: {
+                                title: "Organizer",
+                                description: "Get in touch with the Eventra team.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/main/organizer-page");
+                            return { Component };
+                        }
+                    },
+
+                    {
                         path: "payment",
                         children: [
                             {
@@ -114,7 +128,7 @@ const routes = [
 
                                 lazy: async () => {
                                     const { default: Component } =
-                                        await import("@/routes/payment/checkout");
+                                        await import("@/routes/main/payment/checkout");
                                     return { Component };
                                 },
                             },
@@ -130,7 +144,7 @@ const routes = [
 
                                 lazy: async () => {
                                     const { default: Component } =
-                                        await import("@/routes/payment/ticket-confirmation");
+                                        await import("@/routes/main/payment/ticket-confirmation");
                                     return { Component };
                                 },
                             },
@@ -167,7 +181,82 @@ const routes = [
 
                         lazy: async () => {
                             const { default: Component } =
-                                await import("@/routes/auth/register");
+                                await import("@/routes/auth/register/index");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "login",
+                        handle: {
+                            seo: {
+                                title: "login",
+                                description: "sign in to your account.",
+                            }
+                        },
+
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/auth/login/index");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "reset-password",
+                        handle: {
+                            seo: {
+                                title: "reset password",
+                                description: "reset your password.",
+                            }
+                        },
+
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/auth/reset-password/index");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "check-email",
+                        handle: {
+                            seo: {
+                                title: "check email",
+                                description: "check your email for password reset instructions.",
+                            }
+                        },
+
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/auth/check-email/index");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "verify-otp",
+                        handle: {
+                            seo: {
+                                title: "verify otp",
+                                description: "verify your otp.",
+                            }
+                        },
+
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/auth/verify-otp/index");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "forgot-password",
+                        handle: {
+                            seo: {
+                                title: "forgot password",
+                                description: "reset your password.",
+                            }
+                        },
+
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/auth/forgot-password/index");
                             return { Component };
                         },
                     },

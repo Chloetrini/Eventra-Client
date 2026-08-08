@@ -2,6 +2,7 @@ import React from "react";
 import type { Ticket } from "@/types/ticket";
 import { CalendarDays, Clock, MapPinIcon, Music4 } from "lucide-react";
 import shieldTick from "@/assets/shieldTick.png";
+import { useNavigate } from "react-router";
 import calendar from "@/assets/calendar.png";
 import rightArrow from "@/assets/rightArrow.png";
 import backward from "@/assets/backward.png";
@@ -13,6 +14,8 @@ interface TicketProps {
 }
 
 export function TicketCard({ ticket }: TicketProps) {
+
+  const navigate = useNavigate();
   const {
     category,
     eventDateTime,
@@ -181,7 +184,8 @@ export function TicketCard({ ticket }: TicketProps) {
         </div>
       </div>
 
-      {/* Footer section */}
+      {/* Footer section — OLD (kept for reference) */}
+      {/*
       <div className="flex flex-col sm:flex-row mt-5 justify-between mx-5 lg:mx-8 my-8 gap-3 min-[400px]:gap-4">
         <div className="flex items-center gap-2">
           <p className="flex items-center text-xs min-[400px]:text-sm lg:text-[15px] text-[#4A4451]">
@@ -225,6 +229,28 @@ export function TicketCard({ ticket }: TicketProps) {
               />
             )}
           </div>
+        </div>
+      </div>
+      */}
+
+      {/* Footer section — NEW: Add to calendar + View my tickets */}
+      <div className="flex flex-col sm:flex-row mt-5  mx-5 lg:mx-8 my-8 gap-3 min-[400px]:gap-4 items-center justify-center">
+        <div className="flex gap-[27px] min-[400px]:gap-3 sm:gap-7 items-center justify-center">
+          <PaymentBtn
+            icon={calendar}
+            editIcon={"w-[18px] h-[18px]"}
+            text={"Add to calender"}
+            classname="h-[40px] flex-1 sm:w-40 text-xs min-[400px]:text-sm md:w-[343px]"
+        
+            editArrow={"w-[18px] h-[18px]"}
+          />
+          <PaymentBtn
+            text={"View my tickets"}
+            classname="h-[40px] flex-1 sm:w-40 bg-[#0A4F41] text-white hover:bg-[#083b31] hover:text-white text-xs min-[400px]:text-sm md:w-[343px]"
+            
+            editArrow={"w-[18px] h-[18px]"}
+            onClick={() => navigate("/tickets")}
+          />
         </div>
       </div>
     </div>

@@ -1,10 +1,12 @@
 import { z } from "zod";
 import { api } from "@/lib/api";
 import { MOCK_EVENTS } from "@/lib/constants";
+
 import {
   eventSchema,
 } from "@/lib/schema";
 import {DATE_WINDOWS, PRICE_TIERS, type Event, type EventFilters } from "@/types/event-types";
+import type { EventTickets } from "@/types/ticket-tiers";
 
 const PAGE_SIZE = 9;
 
@@ -133,12 +135,6 @@ async function fetchEventsReal(filters: EventFilters): Promise<EventsResponse> {
   return eventsResponseSchema.parse(res.body);
 }
 
-
-export function fetchEvents(filters: EventFilters): Promise<EventsResponse> {
-  if (import.meta.env.VITE_USE_MOCKS === "true") return fetchEventsMock(filters);
-  return fetchEventsReal(filters);
-}
-
 async function fetchEventBySlugMock(slug: string): Promise<Event | null> {
   await delay(200); // Simulate network latency
   const found = MOCK_EVENTS.find((e) => e.slug === slug);
@@ -155,9 +151,19 @@ async function fetchEventBySlugReal(slug: string): Promise<Event | null> {
   }
 }
 
-export function fetchEventBySlug(slug: string): Promise<Event | null> {
-  if (import.meta.env.VITE_USE_MOCKS === "true") {
-    return fetchEventBySlugMock(slug);
-  }
-  return fetchEventBySlugReal(slug);
+
+// ---------------------------------------------------------------------
+// Public API — these are what the app calls.
+// While there's no backend, they return mock data directly.
+// When the backend is ready, switch each `...Mock` to `...Real`.
+// ---------------------------------------------------------------------
+export function fetchEvents(filters: EventFilters): Promise<EventsResponse> {
+  return fetchEventsMock(filters);
+  // When the backend is ready: return fetchEventsReal(filters);
 }
+
+export function fetchEventBySlug(slug: string): Promise<Event | null> {
+  return fetchEventBySlugMock(slug);
+  // When the backend is ready: return fetchEventBySlugReal(slug);
+}
+

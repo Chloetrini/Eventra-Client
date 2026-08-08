@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -9,13 +9,15 @@ import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/lib/api";
 import { attendeeRegisterSchema, type AttendeeRegisterValues } from "@/lib/schema";
 import EventraLogo from "@/assets/Eventra-logo.png";
+import { authPath } from "@/lib/auth-path";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Register() {
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const isOrganizer = location.pathname.includes("/organizer");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -31,43 +33,45 @@ export default function Register() {
     },
   });
 
+  const { register: registerUser } = useAuth();
+
   const { mutate, isPending } = useMutation({
-    mutationFn: (values: Omit<AttendeeRegisterValues, "confirmPassword">) =>
-      api.post("/auth/register", values),
-
+    mutationFn: registerUser,
     onSuccess: (data, variables) => {
-      toast.success(data.message || "Account created successfully.");
-
-      navigate("/verify-email", {
+      toast.success(data?.message || "Account created.");
+      navigate(authPath("verify-otp", isOrganizer), {
         state: { email: variables.email },
       });
     },
-
-    onError: (error: Error) => {
-      toast.error(error.message || "Something went wrong.");
-    },
+    onError: (e: Error) => toast.error(e.message || "Something went wrong."),
   });
 
   const onSubmit = (values: AttendeeRegisterValues) => {
-    const { confirmPassword, ...payload } = values;
-    mutate(payload);
+    mutate({
+      fullname: values.fullName,
+      email: values.email,
+      password: values.password,
+      phone: values.phoneNumber,
+      role: isOrganizer ? "organizer" : "attendee",
+    });
   };
 
   return (
     <>
-      <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
+      <Link to="/" className="flex items-center gap-2 mb-[50px] w-fit">
         <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
         <span className="text-[22.8px] font-extrabold text-[#1A1523] tracking-[-0.02em]">
           Eventra
         </span>
+        {isOrganizer && (
+          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
+            Organizer
+          </span>
+        )}
       </Link>
-      <h1 className="text-[34px] font-extrabold mb-2 tracking-[-0.02em] text-[#000000]">
-        Create your account
+      <h1 className="text-[34px] font-extrabold mb-[12px] tracking-[-0.02em] leading-[40px] text-[#000000]">
+        {isOrganizer ? "Start selling tickets." : "Create your account"}
       </h1>
-
-      <p className="text-[#4A4451] text-[17px] leading-6 mb-8">
-        Join thousands of people discovering and creating unforgettable events
-      </p>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
         {/* Full Name */}
@@ -238,9 +242,9 @@ export default function Register() {
       </Button>
 
       <p className="text-center text-sm text-[#4A4451] mt-6">
-        Already have an account?
+        Already have an account?{" "}
         <Link
-          to="/auth/login"
+          to={authPath("login", isOrganizer)}
           className="text-[#0F6E56] font-medium hover:underline"
         >
           Sign in

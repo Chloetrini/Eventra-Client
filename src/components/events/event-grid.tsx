@@ -41,7 +41,7 @@ export function EventGrid({
   }
 
   return (
-    <div className={cn("grid gap-[32px] sm:grid-cols-2 lg:grid-cols-3 w-full xl:w-[946px]", className)}>
+    <div className={cn("grid gap-[32px] sm:grid-cols-2 lg:grid-cols-3 w-full ", )}>
       {events.map((event) => (
         <EventCard
           key={event.slug}

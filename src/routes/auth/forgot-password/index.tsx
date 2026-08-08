@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -8,14 +8,18 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/lib/api";
 import { forgotPasswordSchema } from "@/lib/schema";
 import EventraLogo from "@/assets/Eventra-logo.png";
+import { authPath } from "@/lib/auth-path";
+import { useAuth } from "@/context/AuthContext";
 
 type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isOrganizer = location.pathname.includes("/organizer");
+  const { forgotPassword } = useAuth();
 
   const {
     register,
@@ -27,13 +31,12 @@ export default function ForgotPassword() {
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (values: ForgotPasswordValues) =>
-      api.post("/forgot-password", values),
+    mutationFn: (values: ForgotPasswordValues) => forgotPassword(values.email),
 
     onSuccess: (data, variables) => {
-      toast.success(data.message || "Password reset link sent.");
+      toast.success(data?.message || "Password reset OTP sent.");
 
-      navigate("/check-email", {
+      navigate(authPath("reset-password", isOrganizer), {
         state: {
           email: variables.email,
         },
@@ -46,24 +49,21 @@ export default function ForgotPassword() {
   });
 
   const onSubmit = (values: ForgotPasswordValues) => {
-    // mutate(values);
-
-    toast.success("Password reset link sent.");
-
-    navigate("/check-email", {
-      state: {
-        email: values.email,
-      },
-    });
+    mutate(values);
   };
 
   return (
     <div className="flex flex-col">
       <Link to="/" className="flex items-center gap-2 mb-12 w-fit">
-       <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
+        <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
         <span className="text-[22.8px] font-extrabold tracking-[-0.02em] text-[#1A1523]">
           Eventra
         </span>
+        {isOrganizer && (
+          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
+            Organizer
+          </span>
+        )}
       </Link>
       <h1 className="text-[34px] font-bold leading-[40px] tracking-[-0.02em] text-[#000000] mb-3">
         Forgot password
@@ -105,7 +105,7 @@ export default function ForgotPassword() {
       </form>
 
       <Link
-        to="/auth/login"
+        to={authPath("login", isOrganizer)}
         className="mt-6 text-center text-[16px] text-[#0F6E56] font-semibold hover:underline leading-[26px]"
       >
         Back to Sign in

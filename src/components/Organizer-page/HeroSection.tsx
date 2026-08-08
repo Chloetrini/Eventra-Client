@@ -41,7 +41,7 @@ const HeroSec: React.FC = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4">
-          <Link to={"/register"}>
+          <Link to={"/auth/organizer/register"}>
             <Button variant="default" size="lg" className="bg-[#0F6E56] px-10 py-6 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-shadow">
               Start selling – it's free →
             </Button>

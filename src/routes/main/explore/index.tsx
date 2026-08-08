@@ -42,7 +42,7 @@ const rest = events.filter((e) => !e.isPromoted);
   }
 
   return (
-    <PageWrapper className="py-8 px-6 " >
+    <PageWrapper className="p-[20px] " >
       <header className="space mb-4">
         <p className=" flex items-center  text-[12px] font-[400] font-sans uppercase tracking-widest  text-[#0A4F41] gap-2">
          <span className="inline-block h-px  w-[12px] bg-[#F5A524] " />

@@ -6,6 +6,8 @@ import RootLayout from "./root/layout";
 import MainLayout from "./main/layout";
 import AuthLayout from "./auth/layout";
 import Onboardinglayout from "./onboarding/layout";
+import Dashboardlayout from "./dashboard/layout";
+import CreateEventLayout from "./dashboard/create-event/layout";
 
 const routes = [
     {
@@ -364,6 +366,109 @@ const routes = [
                             return { Component };
                         },
                     },
+                        ],
+                    },
+                ],
+            },
+
+            {
+                path: "dashboard",
+                Component: Dashboardlayout,
+                children: [
+                    {
+                        path: "create-event",
+                        handle: {
+                            seo: {
+                                title: "Create Event",
+                                description: "Create a new event.",
+                            }
+                        },
+                        Component: CreateEventLayout,
+                        children: [
+                            {
+                                handle: {
+                                    seo: {
+                                        title: "Create Event Type",
+                                        description: "Select a type for your new event.",
+                                    }
+                                },
+                                index: true,
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/type");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "basics",
+                                handle: {
+                                    seo: {
+                                        title: "Create Event Basics",
+                                        description: "Provide the basic information for your new event.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/basics");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "location",
+                                handle: {
+                                    seo: {
+                                        title: "Create Event Location",
+                                        description: "Set the location for your new event.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/location");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "Tickets",
+                                handle: {
+                                    seo: {
+                                        title: "Select tickets for your event",
+                                        description: "Choose the tickets you want to offer for your event.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/tickets");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "details",
+                                handle: {
+                                    seo: {
+                                        title: "Create Event Details",
+                                        description: "Add optional details to your new event.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/details");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "Review",
+                                handle: {
+                                    seo: {
+                                        title: "Review Your Event",
+                                        description: "Review all the details before publishing your event.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/review");
+                                    return { Component };
+                                },
+                            },
                         ],
                     },
                 ],

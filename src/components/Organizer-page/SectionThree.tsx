@@ -28,7 +28,7 @@ const SectionThree: React.FC = () => {
   const features = SECTION_THREE_FEATURES;
 
   return (
-    <section className="p-20 max-w-6xl mx-auto border border-[#6E6577] rounded-[20px]">
+    <section className="p-20 max-w-6xl mx-auto border border-[#E8E6E0] rounded-[20px]">
       <div className=" flex flex-col lg:flex-row items-center">
         {/* Left side */}
         <div className="flex-1 w-[50%]">

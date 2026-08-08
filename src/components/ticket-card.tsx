@@ -31,7 +31,7 @@ export function TicketCard({ ticket }: TicketProps) {
   } = ticket;
 
   const admitsCount = ticketDetails.reduce(
-    (sum, item) => sum + item.admits,
+    (sum, item) => sum + item.quantity,
     0,
   );
 
@@ -58,7 +58,7 @@ export function TicketCard({ ticket }: TicketProps) {
   };
 
   return (
-    <div >
+    
       <div className="w-full mb-8 flex flex-col lg:flex-row  items-stretch">
         {/* Green ticket card */}
         <div className="flex flex-col justify-between w-full lg:w-[811px] xl:w-full h-auto lg:h-[404px] bg-linear-to-br from-black from-10% via-[#021713] via-40% to-[#0C5C48] p-4 min-[400px]:p-5 lg:p-8 rounded-[20px] shadow-[8px_0_30px_rgba(0,0,0,1)]">
@@ -185,6 +185,6 @@ export function TicketCard({ ticket }: TicketProps) {
       </div>
 
       
-    </div>
+  
   );
 }

@@ -24,6 +24,7 @@
 export type Ticket = {
     _id?: string
     eventName?: string
+    admits?: string 
     category: string[]
     eventDateTime: string
     eventEntrance: string
@@ -34,7 +35,7 @@ export type Ticket = {
     ticketDetails: {
         type: string
         unitPrice: number
-        admits: number
+        quantity: number
     }[]
     qrImageUrl: string
     refundPolicy: {

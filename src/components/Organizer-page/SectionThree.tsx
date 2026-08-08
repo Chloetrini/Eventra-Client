@@ -28,13 +28,13 @@ const SectionThree: React.FC = () => {
   const features = SECTION_THREE_FEATURES;
 
   return (
-    <section className="p-20 max-w-6xl mx-auto border border-[#6E6577] rounded-[20px]">
-      <div className=" flex flex-col lg:flex-row items-center">
+    <section className=" md:border md:border-[#E8E6E0]  rounded-[20px] my-12 ">
+      <div className=" flex flex-col lg:flex-row items-center lg:px-[74px] md:py-[59px]">
         {/* Left side */}
-        <div className="flex-1 w-[50%]">
+        <div className="lg:flex-1 lg:w-[50%] mb-8 lg:mb-0">
           {/* Badge */}
           <div className="flex items-center gap-3 ">
-            <span className="bg-[#F5A524] h-1 w-6 md:w-8 rounded-full"></span>
+            <span className="bg-[#F5A524] h-[1px] w-[30px]  rounded-full"></span>
             <p className="text-[12px] font-bold text-[#0A4F41] leading-4 tracking-[16%] uppercase">
               SIMPLE, HONEST PRICING
             </p>
@@ -75,7 +75,7 @@ const SectionThree: React.FC = () => {
         </div>
 
         {/* Right side */}
-        <div className="w-full lg:w-[50%] flex flex-col justify-center items-center gap-8 border-l border-[#6E6577]">
+        <div className="w-full lg:w-[50%] flex flex-col justify-center items-center gap-8 md:border-l md:border-[#E8E6E0]">
           {/* Pricing card */}
           <div className="w-52.5 h-52.5 rounded-full shadow-sm p-4 border border-[#E4F1EB] relative">
             <div className="w-45 h-45 rounded-full p-4 border-12 border-[#0F6E56] relative z-10">

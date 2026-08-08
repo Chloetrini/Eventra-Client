@@ -1,5 +1,5 @@
 import { NavLink } from "react-router"
-import { PageWrapper } from "./page-wrapper"
+import PageWrapper from "@/components/pageWrapper";
 
 const DISCOVER_LINKS = [
     { to: "/explore", label: "Explore events" },

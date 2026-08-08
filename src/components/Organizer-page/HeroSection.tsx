@@ -19,11 +19,11 @@ const HeroSec: React.FC = () => {
 
   return (
     <section className="w-full flex flex-col items-center justify-center px-4 md:px-8">
-      <div className="max-w-6xl mx-auto text-center flex flex-col items-center gap-6 py-12 md:py-16">
+      <div className="Text-center flex flex-col items-center gap-6 py-12 md:py-16">
 
         {/* "FOR ORGANIZERS" badge */}
         <div className="flex items-center gap-2">
-          <span className="bg-[#F5A524] h-1 w-6 md:w-8 rounded-full"></span>
+          <span className="bg-[#F5A524] h-[1px] w-[20px] rounded-full"></span>
           <p className="text-[#F5A524] font-medium text-sm md:text-base tracking-widest uppercase">
             FOR ORGANIZERS
           </p>

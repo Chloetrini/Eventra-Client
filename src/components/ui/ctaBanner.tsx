@@ -17,6 +17,7 @@ interface CtaBannerProps {
   };
   bgImage?: string;
   align?: "center" | "left";
+   className?: string
 }
 
 export const CtaBanner: React.FC<CtaBannerProps> = ({
@@ -27,6 +28,7 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({
   secondaryBtn,
   bgImage,
   align = "center",
+  
 }) => {
   const isLeft = align === "left";
 
@@ -59,17 +61,17 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({
             ${isLeft ? "justify-center sm:justify-start" : "justify-center"}
           `}
         >
-          <span className="w-[11.81px] h-0 border border-[#F5A524] inline-block" />
+         
           {label}
         </span>
 
         {/* Heading */}
-        <h2 className="text-3xl sm:text-4xl font-bold font-geist leading-tight">
+        <h2 className="text-[54px] sm:text-4xl font-[700] font-grotesk md:max-w-[602px] text-start">
           {heading}
         </h2>
 
         {/* Body */}
-        <p className="text-white/70 text-[15px] font-normal leading-6 font-geist">
+        <p className="text-white/70 text-[15px] font-normal leading-6 font-geist text-start">
           {body}
         </p>
 

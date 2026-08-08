@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search, ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router";
+import { STATES } from "@/types/event-types";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 import gpsUrl from "@/assets/gps.svg";
 import downUrl from "@/assets/down.svg";
 import { UI_ASSETS } from "@/lib/assets";
-import { PageWrapper } from "@/components/ui/page-wrapper";
+import PageWrapper from "@/components/pageWrapper";
 import { VibeGrid } from "@/components/events/vibe-grid";
 import { FeaturedEvents } from "@/components/events/featured-events";
 import { CtaBanner } from "@/components/ui/ctaBanner";
@@ -24,6 +29,16 @@ import { OrganizersCta } from "@/components/events/OrganizersCta";
 
 const Home: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const navigate = useNavigate();
+  const [heroSearch, setHeroSearch] = useState("");
+  const [heroState, setHeroState] = useState("all");
+
+  const handleHeroSearch = () => {
+    const params = new URLSearchParams();
+    if (heroSearch.trim()) params.set("search", heroSearch.trim());
+    if (heroState && heroState !== "all") params.set("state", heroState);
+    navigate(`/explore?${params.toString()}`);
+  };
 
   // Events come through the same fetch as Explore — one switch to the backend later
   const { data: eventsData } = useQuery({
@@ -40,14 +55,16 @@ const Home: React.FC = () => {
   return (
     <>
       {/* 1. HERO SECTION */}
-      <section className="relative flex items-center bg-[#4A4451] text-white overflow-hidden py-12 md:py-16 lg:py-20">
+      <section className="relative flex items-center bg-[#4A4451] text-white overflow-hidden">
+      <PageWrapper className="p-[20px]">
+
         <div
           className="absolute inset-0 bg-cover bg-center z-0 scale-110 blur-[18px] md:blur-[4px]"
           style={{ backgroundImage: `url(${UI_ASSETS.bgDesktop})` }}
-        />
+          />
         <div className="absolute inset-0 bg-linear-to-b from-black/70 to-black/30 z-1" />
 
-        <div className="relative z-10 w-full px-6 sm:px-12 lg:px-25">
+        <div className="relative z-10 w-full ">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-7 space-y-6">
               <div className="flex flex-row items-center gap-1">
@@ -69,11 +86,15 @@ const Home: React.FC = () => {
 
               {/* Search Bar */}
               <div className="bg-white shadow-lg rounded-xl overflow-hidden">
+                {/* Mobile */}
                 <div className="lg:hidden">
                   <div className="flex items-center gap-2 px-4 py-3">
                     <Search className="w-4 h-4 text-[#3A3A3A] shrink-0 rotate-90" />
                     <input
                       type="text"
+                      value={heroSearch}
+                      onChange={(e) => setHeroSearch(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleHeroSearch()}
                       placeholder="Search, events, artists and venues"
                       className="bg-transparent border-none text-[#1A1523] placeholder-[#4A4451]/60 text-sm focus:outline-none w-full font-geist"
                     />
@@ -81,28 +102,40 @@ const Home: React.FC = () => {
 
                   {/* Divider */}
                   <div className="h-px bg-[#E8E6E0] mx-4" />
+
                   <div className="flex items-center gap-2 px-4 py-3">
                     <img src={gpsUrl} alt="gps" className="shrink-0" />
-                    <div className="flex items-center justify-between flex-1 cursor-pointer font-geist text-sm text-[#1A1523]">
-                      <span>Lagos</span>
-                      <img
-                        src={downUrl}
-                        alt="down"
-                        className="w-[5.8px] h-[3.18px]"
-                      />
-                    </div>
+                    <Select value={heroState} onValueChange={(v) => setHeroState(v ?? "all")}>
+                      <SelectTrigger className="border-none shadow-none flex-1 h-auto font-geist text-sm text-[#1A1523] focus:ring-0 px-0">
+                        <SelectValue placeholder="All states" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All states</SelectItem>
+                        {STATES.map((state) => (
+                          <SelectItem key={state} value={state}>{state}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="px-4 pb-4">
-                    <button className="w-full py-3 bg-[#0F6E56] hover:bg-[#0A4F41] text-white font-bold text-sm rounded-xl transition-all font-geist">
+                    <button
+                      onClick={handleHeroSearch}
+                      className="w-full py-3 bg-[#0F6E56] hover:bg-[#0A4F41] text-white font-bold text-sm rounded-xl transition-all font-geist"
+                    >
                       Search
                     </button>
                   </div>
                 </div>
+
+                {/* Desktop */}
                 <div className="hidden lg:flex items-center gap-3 px-4 py-2">
                   <Search className="w-4 h-4 text-[#3A3A3A] shrink-0 rotate-90" />
                   <input
                     type="text"
+                    value={heroSearch}
+                    onChange={(e) => setHeroSearch(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleHeroSearch()}
                     placeholder="Search, events, artists and venues"
                     className="bg-transparent border-none text-[#1A1523] placeholder-[#4A4451]/60 text-sm focus:outline-none flex-1 font-geist"
                   />
@@ -110,19 +143,25 @@ const Home: React.FC = () => {
                   {/* Vertical divider */}
                   <div className="h-6 w-px bg-[#E8E6E0] shrink-0" />
 
-                  {/* Location */}
-                  <div className="flex items-center gap-2 cursor-pointer font-geist text-sm text-[#1A1523] shrink-0">
-                    <img src={gpsUrl} alt="gps" />
-                    <span>Lagos</span>
-                    <img
-                      src={downUrl}
-                      alt="down"
-                      className="w-[5.8px] h-[3.18px]"
-                    />
-                  </div>
+                  {/* Location dropdown */}
+                  <Select value={heroState} onValueChange={(v) => setHeroState(v ?? "all")}>
+                    <SelectTrigger className="border-none shadow-none w-[140px] h-auto font-geist text-sm text-[#1A1523] focus:ring-0 shrink-0 gap-2">
+                      <img src={gpsUrl} alt="gps" />
+                      <SelectValue placeholder="All states" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All states</SelectItem>
+                      {STATES.map((state) => (
+                        <SelectItem key={state} value={state}>{state}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
                   {/* Search button */}
-                  <button className="px-5 py-2.5 bg-[#0F6E56] hover:bg-[#0A4F41] text-white font-bold text-sm rounded-lg transition-all font-geist whitespace-nowrap">
+                  <button
+                    onClick={handleHeroSearch}
+                    className="px-5 py-2.5 bg-[#0F6E56] hover:bg-[#0A4F41] text-white font-bold text-sm rounded-lg transition-all font-geist whitespace-nowrap"
+                  >
                     Search
                   </button>
                 </div>
@@ -153,14 +192,14 @@ const Home: React.FC = () => {
                         src={heroEvent.coverImage}
                         alt={heroEvent.title}
                         className="w-full h-full object-cover"
-                      />
+                        />
                       <div className="absolute inset-0 bg-linear-to-l from-[#041611]/70 to-[#0B3D31]/10" />
                       <span className="absolute top-3 left-3 bg-[#F5A524] text-black text-[12px] font-medium font-geist px-3 py-1 rounded-full flex items-center gap-1">
                         <img
                           className="h-3 w-3"
                           src={UI_ASSETS.star}
                           alt="star"
-                        />
+                          />
                         Featured
                       </span>
                       <span className="absolute top-3 right-3 text-white font-bold text-[12px] font-space tracking-widest">
@@ -200,7 +239,7 @@ const Home: React.FC = () => {
                         <Link
                           to={`/events/${heroEvent.slug}`}
                           className="px-4 py-2 bg-[#0F6E56] hover:bg-[#0A4F41] text-white font-bold text-sm rounded-lg transition-colors font-geist"
-                        >
+                          >
                           Get tickets
                         </Link>
                       </div>
@@ -217,12 +256,13 @@ const Home: React.FC = () => {
             </div>
           </div>
         </div>
+              </PageWrapper>
       </section>
 
-      <PageWrapper className="pt-0">
+      <PageWrapper className="p-[20px]">
         {/* 2. STATS BAR */}
         <section className="py-6 border-y border-[#E8E6E0]">
-          <div className="grid grid-cols-4 md:gap-8 items-center justify-center max-w-6xl mx-auto text-center relative px-2">
+          <div className="grid grid-cols-4 md:gap-8 items-center justify-center max-w-6xl text-center relative">
             {STATS.map((stat, idx) => (
               <div
                 key={idx}
@@ -481,8 +521,8 @@ const Home: React.FC = () => {
           </div>
         </section>
         {/* 9. BOTTOM CTA BANNER */}
-        <CtaBanner
-          label="READY WHEN YOU ARE"
+        <CtaBanner 
+          label="COME BUILD THE CULTURE"
           heading="Your next night out starts here."
           body="Discover an event to attend, or start selling tickets to your own. It only takes a minute."
           primaryBtn={{ text: "Find an event", to: "/explore" }}

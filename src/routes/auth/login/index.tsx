@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -44,7 +44,7 @@ export default function Login() {
     onSuccess: (user) => {
       toast.success("Logged in successfully.");
       if (user.role === "organizer") {
-        navigate("/");   // organizer dashboard later
+        navigate("/onboarding/organisation");   // organizer dashboard later
       } else {
         navigate("/");   // attendee home
       }

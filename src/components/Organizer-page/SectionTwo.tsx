@@ -16,11 +16,11 @@ const SectionTwo: React.FC = () => {
 
 
   return (
-    <section className="py-20 px-4 md:px-8 bg-white">
-      <div className="max-w-6xl mx-auto">
+    <section className="py-20  bg-white">
+      <div >
         {/* Top badge */}
         <div className="flex items-center gap-3 mb-4">
-          <span className="bg-[#F5A524] h-1 w-6 md:w-8 rounded-[20px]"></span>
+          <span className="bg-[#F5A524]  h-[1px] w-[2 0px] rounded-[20px]"></span>
           <p className="text-[12px] font-bold text-[#0A4F41] leading-4 tracking-[16%] uppercase">
             EVERYTHING YOU NEED
           </p>

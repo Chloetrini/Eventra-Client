@@ -14,6 +14,7 @@ import { contactSchema } from "@/lib/schema";
 import { z } from "zod";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import PageWrapper from "@/components/pageWrapper";
 
 // Ensure leaflet marker images resolve correctly
 delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })._getIconUrl;
@@ -65,7 +66,8 @@ export default function ContactPage() {
 
   return (
     <div className="relative bg-gradient-to-r from-emerald-50 via-emerald-50/50 to-white">
-      <section className="mx-auto max-w-7xl  py-14 sm:px-6 sm:py-20 px-[20px] lg:py-20">
+     <PageWrapper className="p-[20px]">
+
         <div className="flex flex-col gap-10 lg:flex-row lg:items-stretch xl:gap-14">
           <div className="flex flex-1 flex-col lg:max-w-[46%]">
             <div className="mb-5 flex items-center gap-2">
@@ -107,6 +109,7 @@ export default function ContactPage() {
             <h2 className="mt-4 text-xl font-bold text-slate-900 sm:text-2xl">How can we help?</h2>
             <p className="mt-1 text-sm text-slate-500">Tell us a little about you and what you&rsquo;re working on.</p>
 
+     
             <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5">
               <FormBox
                 label="Full name"
@@ -219,7 +222,9 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-      </section>
+        
+     </PageWrapper>
+      
     </div>
   );
 }

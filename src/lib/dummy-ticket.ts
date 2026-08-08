@@ -9,7 +9,7 @@ export const dummyTicket: Ticket[] = [
       {
         type: "Regular",
         unitPrice: 15000,
-        admits: 1,
+        quantity: 1,
       },
     ],
     eventDateTime: "2026-08-15T18:00:00.000Z",
@@ -34,7 +34,7 @@ export const dummyTicket: Ticket[] = [
       {
         type: "VIP",
         unitPrice: 15000,
-        admits: 2,
+        quantity: 2,
       },
     ],
     eventDateTime: "2026-08-15T18:00:00.000Z",
@@ -59,7 +59,7 @@ export const dummyTicket: Ticket[] = [
       {
         type: "Free",
         unitPrice: 15000,
-        admits: 1,
+        quantity: 1,
       },
     ],
     eventDateTime: "2026-08-15T18:00:00.000Z",

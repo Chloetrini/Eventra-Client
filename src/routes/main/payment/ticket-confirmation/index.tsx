@@ -2,7 +2,8 @@ import ConfirmatoryMessage from "@/components/confirmatory-message"
 import { TicketCard } from "@/components/ticket-card"
 import { useLocation, useNavigate } from "react-router"
 import type { Ticket } from "@/types/ticket"
-
+import PaymentBtn from "@/components/ui/pay-method-btn"
+import calendar from "@/assets/calendar.png";
 const TicketConfirmation = () => {
     const location = useLocation()
     const navigate = useNavigate()
@@ -45,7 +46,7 @@ const TicketConfirmation = () => {
         referenceCode: "EVT-PENDING",
         orderID: "0001",
         holderName: "Guest",
-        admits: `Admit ${order.ticketDetails.reduce((s, t) => s + t.quantity, 0)}`,
+       admits: `Admit ${order.ticketDetails.reduce((s, t) => s + t.quantity, 0)}`,
         ticketDetails: order.ticketDetails.map((t) => ({
             type: t.type,
             unitPrice: t.unitPrice,
@@ -67,7 +68,7 @@ const TicketConfirmation = () => {
                     orderID={ticket.orderID}
                     eventDateTime=""
                     ticketDetails={[]}
-                />
+                /> 
             </div>
             <div className="w-full">
                 <TicketCard
@@ -75,6 +76,26 @@ const TicketConfirmation = () => {
                 />
                 <p className="mt-5 text-center lg:text-left">A copy has been sent to <span className="font-bold font-grotesk text-lg sm:text-xl break-words">{recipientEmail}</span>. Tickets are also saved to your account.</p>
             </div>
+             {/* Footer section — NEW: Add to calendar + View my tickets */}
+      <div className="flex flex-col sm:flex-row mt-5  mx-5 lg:mx-8 my-8 gap-3 min-[400px]:gap-4 items-center justify-center">
+        <div className="flex gap-[27px] min-[400px]:gap-3 sm:gap-7 items-center justify-center">
+          <PaymentBtn
+            icon={calendar}
+            editIcon={"w-[18px] h-[18px]"}
+            text={"Add to calender"}
+            classname="h-[40px] flex-1 sm:w-40 text-xs min-[400px]:text-sm md:w-[343px]"
+        
+            editArrow={"w-[18px] h-[18px]"}
+          />
+          <PaymentBtn
+            text={"View my tickets"}
+            classname="h-[40px] flex-1 sm:w-40 bg-[#0A4F41] text-white hover:bg-[#083b31] hover:text-white text-xs min-[400px]:text-sm md:w-[343px]"
+            
+            editArrow={"w-[18px] h-[18px]"}
+            onClick={() => navigate("/tickets")}
+          />
+        </div>
+      </div>
         </div>
     )
 }

@@ -21,7 +21,7 @@ export default function AuthLayout() {
       {/* ---------- Right: logo + page content ---------- */}
           {/* register/index.tsx, login/index.tsx etc. render here */}
       <div className="flex flex-col justify-center px-6 sm:px-16 py-12">
-        <div className="w-full max-w-[494px] mx-auto">
+        <div className="w-full max-w-123.5 mx-auto">
         
           <Outlet />
         </div>

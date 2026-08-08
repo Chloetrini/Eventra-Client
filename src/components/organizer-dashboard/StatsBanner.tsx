@@ -22,7 +22,7 @@ const StatsBanner: React.FC<StatsBannerProps> = ({ status, onClose, onAction }) 
       
       {/* Left Side: Icon + Text */}
       <div className="flex items-start gap-4">
-        <div className={`p-2 rounded-full flex-shrink-0 ${
+        <div className={`p-2 rounded-full shrink-0 ${
           isPending ? 'bg-[#DCFCE7] text-[#166534]' : 'bg-[#FEF3C7] text-[#92400E]'
         }`}>
           <Info className="h-5 w-5" />
@@ -54,7 +54,7 @@ const StatsBanner: React.FC<StatsBannerProps> = ({ status, onClose, onAction }) 
       </div>
 
       {/* Right Side: Buttons */}
-      <div className="flex items-center gap-3 w-full sm:w-auto flex-shrink-0">
+      <div className="flex items-center gap-3 w-full sm:w-auto shrink-0">
         <button 
           onClick={onAction}
           className="bg-gray-900 text-white hover:bg-gray-800 px-4 py-2 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto"

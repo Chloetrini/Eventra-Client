@@ -4,6 +4,8 @@ import { createBrowserRouter, type RouteObject } from "react-router-dom";
 import RootLayout from "./root/layout";
 import MainLayout from "./main/layout";
 import AuthLayout from "./auth/layout";
+import OrganizerDashboardLayout from "@/components/organizer-dashboard/OrganizerDashboardLayout";
+import { organizerLoader } from "@/loaders/organizerLoader";
 
 const routes: RouteObject[] = [
   {
@@ -42,89 +44,108 @@ const routes: RouteObject[] = [
               return { Component };
             },
           },
-          // organizer-dashboard (Parent)
+
+          // organizer-dashboard (Parent Layout)
           {
             path: "organizer-dashboard",
+            // loader: organizerLoader, // protect route (see below)
+            Component: OrganizerDashboardLayout, // imported from "@/components/organizer-dashboard/OrganizerDashboardLayout"
             handle: {
               seo: {
                 title: "Dashboard | EVENTRA",
                 description: "Manage your events and track performance.",
               },
             },
-            lazy: async () => {
-              const { default: Component } = await import("@/routes/main/organizer-dashboard");
-              return { Component };
-            },
             children: [
+              // Index route → overview page (StatsBanner, StatsCards, RecentEventsTable)
               {
-                path: "events",
+                index: true,
+                lazy: async () => {
+                  const { default: Component } = await import("@/routes/organizer-dashboard/index");
+                  return { Component };
+                },
                 handle: {
                   seo: {
-                    title: "Events",
-                    description: "Manage your events.",
+                    title: "Overview | EVENTRA",
+                    description: "Dashboard overview.",
                   },
                 },
+              },
+              // Events
+              {
+                // path: "events",
                 // lazy: async () => {
                 //   const { default: Component } = await import("@/routes/organizer-dashboard/events");
                 //   return { Component };
                 // },
+                // handle: {
+                //   seo: {
+                //     title: "Events | EVENTRA",
+                //     description: "Manage your events.",
+                //   },
+                // },
               },
+              // Attendees
               {
-                path: "attendees",
-                handle: {
-                  seo: {
-                    title: "Attendees",
-                    description: "View your event attendees.",
-                  },
-                },
+                // path: "attendees",
                 // lazy: async () => {
                 //   const { default: Component } = await import("@/routes/organizer-dashboard/attendees");
                 //   return { Component };
                 // },
+                // handle: {
+                //   seo: {
+                //     title: "Attendees | EVENTRA",
+                //     description: "View your event attendees.",
+                //   },
+                // },
               },
+              // Check-in
               {
-                path: "checkin",
-                handle: {
-                  seo: {
-                    title: "Check-in",
-                    description: "Check in attendees.",
-                  },
-                },
+                // path: "checkin",
                 // lazy: async () => {
                 //   const { default: Component } = await import("@/routes/organizer-dashboard/checkin");
                 //   return { Component };
                 // },
+                // handle: {
+                //   seo: {
+                //     title: "Check-in | EVENTRA",
+                //     description: "Check in attendees.",
+                //   },
+                // },
               },
+              // Payouts
               {
-                path: "payouts",
-                handle: {
-                  seo: {
-                    title: "Payouts",
-                    description: "Manage your payouts.",
-                  },
-                },
+                // path: "payouts",
                 // lazy: async () => {
                 //   const { default: Component } = await import("@/routes/organizer-dashboard/payouts");
                 //   return { Component };
                 // },
+                // handle: {
+                //   seo: {
+                //     title: "Payouts | EVENTRA",
+                //     description: "Manage your payouts.",
+                //   },
+                // },
               },
+              // Promotions
               {
-                path: "promotions",
-                handle: {
-                  seo: {
-                    title: "Promotions",
-                    description: "Manage your promotions.",
-                  },
-                },
+                // path: "promotions",
                 // lazy: async () => {
                 //   const { default: Component } = await import("@/routes/organizer-dashboard/promotions");
                 //   return { Component };
                 // },
+                // handle: {
+                //   seo: {
+                //     title: "Promotions | EVENTRA",
+                //     description: "Manage your promotions.",
+                //   },
+                // },
               },
             ],
-          },
+          }
         ],
       },
+
       {
         Component: AuthLayout,
         children: [
@@ -212,6 +233,6 @@ const routes: RouteObject[] = [
   },
 ];
 
-console.log("🔥 DEBUG: Routes Array =", routes);
+console.log("DEBUG: Routes Array =", routes);
 
 export const router = createBrowserRouter(routes);

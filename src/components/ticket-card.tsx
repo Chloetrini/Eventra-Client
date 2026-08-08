@@ -30,8 +30,8 @@ export function TicketCard({ ticket }: TicketProps) {
     eventVenue,
   } = ticket;
 
-  const totalTickets = ticketDetails.reduce(
-    (sum, item) => sum + item.quantity,
+  const admitsCount = ticketDetails.reduce(
+    (sum, item) => sum + item.admits,
     0,
   );
 
@@ -138,7 +138,7 @@ export function TicketCard({ ticket }: TicketProps) {
             <p className="text-white text-xs min-[400px]:text-sm lg:text-base">
               {eventVenue}. {holderName}.{" "}
               {ticketDetails.map((ticket) => ticket.type).join(", ")}. ADMITS{" "}
-              {totalTickets}
+              {admitsCount}
             </p>
           </div>
         </div>
@@ -147,7 +147,7 @@ export function TicketCard({ ticket }: TicketProps) {
         <div className="shadow-2xl flex flex-col items-center lg:w-[397px] lg:h-[390px] rounded-lg text-center justify-between p-3 min-[400px]:p-4">
           <div className="rounded-full border px-4 min-[400px]:px-6 py-1 mb-2 border-[#0F6E56]">
             <p className="text-[#0F6E56] text-xs min-[400px]:text-sm">
-              ADMITS {totalTickets}
+              ADMITS {admitsCount}
             </p>
           </div>
 
@@ -213,7 +213,7 @@ export function TicketCard({ ticket }: TicketProps) {
                 icon={backward}
                 editIcon={"w-[18px] h-[18px]"}
                 text={"Request refund"}
-                classname="h-8 flex-1 sm:w-40 border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] text-xs min-[400px]:text-sm"
+                classname="h-8 flex-1 sm:w-40 border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white text-xs min-[400px]:text-sm"
                 arrow={rightArrow}
                 editArrow={"w-[18px] h-[18px]"}
               />
@@ -223,7 +223,7 @@ export function TicketCard({ ticket }: TicketProps) {
                 icon={backward}
                 editIcon={"w-[18px] h-[18px]"}
                 text={"Cancel RSVP"}
-                classname="h-8 flex-1 sm:w-40 border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] text-xs min-[400px]:text-sm"
+                classname="h-8 flex-1 sm:w-40 border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white text-xs min-[400px]:text-sm"
                 arrow={rightArrow}
                 editArrow={"w-[18px] h-[18px]"}
               />

@@ -4,10 +4,10 @@ import { Loader } from 'lucide-react'
 
 interface PaymentBtnProps {
   loading?: boolean
-  icon?: string
-  editIcon?:string
-  arrow?:string
-  editArrow?:string
+  icon?: string | React.ElementType
+  editIcon?: string
+  arrow?: string | React.ElementType
+  editArrow?: string
   text?: React.ReactNode
   classname?: string
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
@@ -24,20 +24,43 @@ const PaymentBtn = ({
   classname,
   onClick,
   disabled,
-}: PaymentBtnProps)  => {
+}: PaymentBtnProps) => {
+
+  const Icon = typeof icon !== "string" ? icon : undefined
+  const Arrow = typeof arrow !== "string" ? arrow : undefined
+
   return (
     <Button
       disabled={loading || disabled}
       onClick={onClick}
-      className={`flex items-center gap-1 h-12 px-5 text-[#727272] ${classname}`}
+      className={`flex items-center gap-1 md:h-12 md:px-5 text-[#727272] ${classname}`}
       variant="outline"
     >
-      {icon && <img src={icon} alt="" className={`${editIcon}`} />}
-      {loading && <Loader className="animate-spin" />}
+      {typeof icon === "string" ? (
+        <img
+          src={icon}
+          alt=""
+          className={editIcon}
+        />
+      ) : Icon ? (
+        <Icon className={editIcon} />
+      ) : null}
+
+      {loading && (
+        <Loader className="animate-spin" />
+      )}
+
       {!loading && text}
-      {arrow && <img src={arrow} alt="" className={`${editArrow}`}/>}
 
-
+      {typeof arrow === "string" ? (
+        <img
+          src={arrow}
+          alt=""
+          className={editArrow}
+        />
+      ) : Arrow ? (
+        <Arrow className={editArrow} />
+      ) : null}
     </Button>
   )
 }

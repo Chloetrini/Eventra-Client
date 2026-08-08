@@ -31,11 +31,10 @@ export type Ticket = {
     referenceCode: string
     orderID?: string
     holderName: string
-    admits?: string
     ticketDetails: {
         type: string
         unitPrice: number
-        quantity: number
+        admits: number
     }[]
     qrImageUrl: string
     refundPolicy: {

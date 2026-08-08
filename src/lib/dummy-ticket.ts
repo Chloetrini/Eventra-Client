@@ -9,7 +9,7 @@ export const dummyTicket: Ticket[] = [
       {
         type: "Regular",
         unitPrice: 15000,
-        quantity: 2,
+        admits: 1,
       },
     ],
     eventDateTime: "2026-08-15T18:00:00.000Z",
@@ -18,7 +18,6 @@ export const dummyTicket: Ticket[] = [
     orderID: "0001",
     referenceCode: "EVT-8FQ2",
     holderName: "Ada Okafor",
-    admits: "Admit 1",
     qrImageUrl:
       "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=TICKET-0001-EVT-8FQ2",
     // transferable: false,
@@ -35,7 +34,7 @@ export const dummyTicket: Ticket[] = [
       {
         type: "VIP",
         unitPrice: 15000,
-        quantity: 2,
+        admits: 2,
       },
     ],
     eventDateTime: "2026-08-15T18:00:00.000Z",
@@ -44,7 +43,6 @@ export const dummyTicket: Ticket[] = [
     orderID: "0001",
     referenceCode: "EVT-8FQ2",
     holderName: "Ada Okafor",
-    admits: "Admit 1",
     qrImageUrl:
       "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=TICKET-0002-EVT-8FQ2",
     // transferable: false,
@@ -61,7 +59,7 @@ export const dummyTicket: Ticket[] = [
       {
         type: "Free",
         unitPrice: 15000,
-        quantity: 2,
+        admits: 1,
       },
     ],
     eventDateTime: "2026-08-15T18:00:00.000Z",
@@ -70,7 +68,6 @@ export const dummyTicket: Ticket[] = [
     orderID: "0001",
     referenceCode: "EVT-8FQ2",
     holderName: "Ada Okafor",
-    admits: "Admit 1",
     qrImageUrl:
       "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=TICKET-0003-EVT-8FQ2",
     // transferable: false,
@@ -96,12 +93,12 @@ export const dummyTicket: Ticket[] = [
 //             {
 //                 type: "Regular",
 //                 unitPrice: 15000,
-//                 quantity: 2,
+//                 admits: 2,
 //             },
 //             {
 //                 type: "VIP",
 //                 unitPrice: 30000,
-//                 quantity: 1,
+//                 admits: 1,
 //             },
 //         ],
 //         QRcode: "",
@@ -124,12 +121,12 @@ export const dummyTicket: Ticket[] = [
 //             {
 //                 type: "Regular",
 //                 unitPrice: 15000,
-//                 quantity: 2,
+//                 admits: 2,
 //             },
 //             {
 //                 type: "VIP",
 //                 unitPrice: 30000,
-//                 quantity: 1,
+//                 admits: 1,
 //             },
 //         ],
 //         QRcode: "",

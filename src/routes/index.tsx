@@ -1,10 +1,11 @@
 import ErrorBoundary from "@/components/error-boundary";
 import SuspenseUI from "@/components/ui/suspense-ui";
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import { type RouteObject } from "react-router";
 import RootLayout from "./root/layout";
 import MainLayout from "./main/layout";
 import AuthLayout from "./auth/layout";
+import Onboardinglayout from "./onboarding/layout";
 
 const routes = [
     {
@@ -113,6 +114,10 @@ const routes = [
                         path: "payment",
                         children: [
                             {
+                                index: true,
+                                element: <Navigate to="/" replace />,
+                            },
+                            {
                                 path: "checkout",
                                 handle: {
                                     seo: {
@@ -147,19 +152,19 @@ const routes = [
                     },
                 ]
             },
-             {
-                        path: "contact",
-                        handle: {
-                            seo: {
-                                title: "Contact",
-                                description: "Get in touch with the Eventra team.",
-                            }
-                        },
-                        lazy: async () => {
-                            const { default: Component } = await import("@/routes/main/contact");
-                            return { Component };
-                        }
-                    },
+            {
+                path: "contact",
+                handle: {
+                    seo: {
+                        title: "Contact",
+                        description: "Get in touch with the Eventra team.",
+                    }
+                },
+                lazy: async () => {
+                    const { default: Component } = await import("@/routes/main/contact");
+                    return { Component };
+                }
+            },
 
             {
                 path: "auth",
@@ -258,6 +263,73 @@ const routes = [
                 ],
             },
 
+        ],
+
+    },
+    {
+        path: "onboarding",
+        Component: Onboardinglayout,
+        children: [
+            {
+                index: true,
+                element: <Navigate to="organisation" replace />,
+            },
+            {
+                path: "organisation",
+                handle: {
+                    seo: {
+                        title: "Organisation",
+                        description: "Provide details about your organisation.",
+                    }
+                },
+                lazy: async () => {
+                    const { default: Component } =
+                        await import("@/routes/onboarding/organisation");
+                    return { Component };
+                },
+            },
+            {
+                path: "bank-account",
+                handle: {
+                    seo: {
+                        title: "Bank Account",
+                        description: "Provide your bank account details.",
+                    }
+                },
+                lazy: async () => {
+                    const { default: Component } =
+                        await import("@/routes/onboarding/bank-account");
+                    return { Component };
+                },
+            },
+            {
+                path: "review",
+                handle: {
+                    seo: {
+                        title: "Review",
+                        description: "Submit for approval",
+                    }
+                },
+                lazy: async () => {
+                    const { default: Component } =
+                        await import("@/routes/onboarding/review");
+                    return { Component };
+                },
+            },
+            {
+                path: "success",
+                handle: {
+                    seo: {
+                        title: "Success",
+                        description: "Your onboarding is complete.",
+                    }
+                },
+                lazy: async () => {
+                    const { default: Component } =
+                        await import("@/routes/onboarding/success");
+                    return { Component };
+                },
+            },
         ],
     },
 ] satisfies RouteObject[];

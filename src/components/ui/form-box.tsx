@@ -22,7 +22,8 @@ type FormFieldProps<T extends FieldValues> = {
   inputType?: 'input' | 'textarea' | 'select' | 'switch'
   registerOptions?: RegisterOptions<T>
   control?: Control<T>
-  borderStyle?: 'checkout' | 'auth'
+  borderStyle?: 'checkout' | 'auth' | 'onboarding'
+  options?: string[]
 }
 
 export function FormBox<T extends FieldValues>({
@@ -41,6 +42,7 @@ export function FormBox<T extends FieldValues>({
   inputType,
   registerOptions,
   borderStyle,
+  options,
   // control,
 }: FormFieldProps<T>) {
   const toggleVisibility = () => setIsVisible?.((prev: boolean) => !prev)
@@ -54,7 +56,7 @@ export function FormBox<T extends FieldValues>({
             {...register(name, registerOptions)}
             disabled={disabled}
             placeholder={placeholder}
-            className={cn('focus:outline-blue-500 focus:ring-blue-500', errors ? 'border-red-600' : '')}
+            className={cn('focus:outline-blue-500 focus:ring-blue-500 md:py-5.5', errors ? 'border-red-600' : '', borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-15" : 'px-3')}
             defaultValue={
               defaultValue instanceof Date
                 ? defaultValue.toISOString().split('T')[0]
@@ -65,13 +67,44 @@ export function FormBox<T extends FieldValues>({
             rows={4}
           />
         )
+      case 'select':
+        return (
+          <select
+            id={id}
+            {...register(name, registerOptions)}
+            disabled={disabled}
+            defaultValue={
+              defaultValue instanceof Date
+                ? defaultValue.toISOString().split('T')[0]
+                : typeof defaultValue === 'boolean'
+                  ? String(defaultValue)
+                  : (defaultValue ?? '')
+            }
+            className={cn(
+              'w-full rounded-md border bg-transparent focus:outline-blue-500 focus:ring-blue-500 text-sm',
+              errors ? 'border-red-600' : '',
+              borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-12" : 'px-3'
+            )}
+          >
+            {placeholder && (
+              <option value="" disabled>
+                {placeholder}
+              </option>
+            )}
+            {options?.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        )
       default:
         return (
           <div className="relative">
             <Input
               type={isVisible ? 'text' : type}
               placeholder={placeholder}
-              className={cn('focus:outline-blue-500 focus:ring-blue-500 py-5.5', errors ? 'border-red-600' : ''  , borderStyle === 'checkout' ? ' border-[#AEAEB2] h-17.5 px-5 text-black': borderStyle === 'auth' ? 'border-[#C3C9D3] h-14' : '')}
+              className={cn('focus:outline-blue-500 focus:ring-blue-500 py-5.5', errors ? 'border-red-600' : '', borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-15" : 'px-3')}
               id={id}
               {...register(name, registerOptions)}
               disabled={disabled}

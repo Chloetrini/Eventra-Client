@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/auth.context";
 import { EventCard } from "./event-card";
 import { EventCardSkeleton } from "./event-card-skeleton";
 import { cn } from "@/lib/utils";
@@ -39,14 +40,14 @@ export function EventGrid({
       </div>
     );
   }
-
+const { user } = useAuth();
   return (
     <div className={cn("grid gap-[32px] sm:grid-cols-2 lg:grid-cols-3 w-full ", )}>
       {events.map((event) => (
         <EventCard
           key={event.slug}
           event={event}
-          isSaved={savedIds.includes(event.slug)}
+          isSaved={user ? savedIds.includes(event.slug) : false}
           onToggleSave={onToggleSave}
           variant="explore"
         />

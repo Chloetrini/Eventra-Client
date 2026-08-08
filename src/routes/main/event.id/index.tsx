@@ -1,5 +1,5 @@
 import { useParams } from "react-router";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Link } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Separator } from "@/components/ui/separator";
@@ -17,9 +17,14 @@ import { RelatedEvents } from "@/components/event.details/RelatedEvents";
 import { FreeEventTicket } from "../../../components/event.details/FreeEventTicket";
 import { PaidEventTicket } from "../../../components/event.details/PaidEventTicket";
 import { useSavedEvents } from "@/hooks/use-saved-events";
+import PageWrapper from "@/components/pageWrapper";
+import { useAuth } from "@/context/auth.context";
+import { getExploreUrl } from "@/lib/explore.history";
+
 
 const EventDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { user } = useAuth();
   const { savedIds, toggleSave } = useSavedEvents();
 
   const { data: event, isLoading } = useQuery({
@@ -60,15 +65,14 @@ const EventDetailPage = () => {
       </div>
     );
   }
-
   const isFree = event.minPrice === 0;
 
   return (
-    <div className="container mx-auto px-4 md:px-10 lg:px-12  ">
+    <PageWrapper className="p-[20px]">
       <nav className="flex items-center gap-1 pb-4 text-xs text-muted-foreground mt-3">
-        <a href="/explore" className="hover:text-foreground">
-          Explore
-        </a>
+        <Link to={getExploreUrl()} className="hover:text-foreground">
+  Explore
+</Link>
         <ChevronRight className="h-3 w-3" />
         <a href="/explore" className="capitalize hover:text-foreground">
           {event.category.toLowerCase()}
@@ -78,7 +82,7 @@ const EventDetailPage = () => {
       </nav>
 
       <EventHero event={event}
-        isSaved={savedIds.has(event.slug)}
+        isSaved={user ? savedIds.has(event.slug) : false}
         onToggleSave={toggleSave}
       />
 
@@ -128,7 +132,7 @@ const EventDetailPage = () => {
       </div>
 
       {relatedEvents.length > 0 && <RelatedEvents events={relatedEvents} />}
-    </div>
+     </PageWrapper>
   );
 };
 

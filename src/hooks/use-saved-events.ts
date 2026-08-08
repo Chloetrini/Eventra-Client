@@ -1,9 +1,11 @@
-
 import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "@/context/auth.context";
 
 const STORAGE_KEY = "saved-events";
 
 export function useSavedEvents() {
+  const { user } = useAuth();
+
   const [savedIds, setSavedIds] = useState<Set<string>>(() => {
     // load once from localStorage on first render
     try {
@@ -28,7 +30,15 @@ export function useSavedEvents() {
     });
   }, []);
 
-  const isSaved = useCallback((id: string) => savedIds.has(id), [savedIds]);
+  const isSaved = useCallback(
+    (id: string) => (user ? savedIds.has(id) : false),
+    [savedIds, user]
+  );
 
-  return { savedIds, toggleSave, isSaved };
+  // Guests see an empty set — every heart shows unliked.
+  // The real localStorage state is preserved so it's still there
+  // if they log back in.
+  const visibleSavedIds = user ? savedIds : new Set<string>();
+
+  return { savedIds: visibleSavedIds, toggleSave, isSaved };
 }

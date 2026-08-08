@@ -6,7 +6,7 @@ import SectionFour from '@/components/Organizer-page/SectionFour';
 import PageWrapper from '@/components/pageWrapper';
 const OrganizerPage: React.FC = () => {
   return (
-    <PageWrapper>
+    <PageWrapper className='p-[20px]'>
 
     
           <HeroSection />

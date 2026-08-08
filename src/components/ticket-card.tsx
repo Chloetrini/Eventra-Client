@@ -58,10 +58,10 @@ export function TicketCard({ ticket }: TicketProps) {
   };
 
   return (
-    <div className="px-4 sm:px-6 lg:px-0">
-      <div className="w-full mb-8 flex flex-col lg:flex-row justify-center items-stretch">
+    <div >
+      <div className="w-full mb-8 flex flex-col lg:flex-row  items-stretch">
         {/* Green ticket card */}
-        <div className="flex flex-col justify-between w-full lg:w-[811px] h-auto lg:h-[404px] bg-linear-to-br from-black from-10% via-[#021713] via-40% to-[#0C5C48] p-4 min-[400px]:p-5 lg:p-8 rounded-[20px] shadow-[8px_0_30px_rgba(0,0,0,1)]">
+        <div className="flex flex-col justify-between w-full lg:w-[811px] xl:w-full h-auto lg:h-[404px] bg-linear-to-br from-black from-10% via-[#021713] via-40% to-[#0C5C48] p-4 min-[400px]:p-5 lg:p-8 rounded-[20px] shadow-[8px_0_30px_rgba(0,0,0,1)]">
           <div className="flex flex-col gap-2">
             <div className="flex justify-between gap-2">
               <div className="bg-[#0A4F41] w-fit py-1.5 px-3 min-[400px]:py-2 min-[400px]:px-5 uppercase flex gap-1.5 min-[400px]:gap-2 text-[#96E2B5] rounded-[10px] text-xs min-[400px]:text-sm">
@@ -184,75 +184,7 @@ export function TicketCard({ ticket }: TicketProps) {
         </div>
       </div>
 
-      {/* Footer section — OLD (kept for reference) */}
-      {/*
-      <div className="flex flex-col sm:flex-row mt-5 justify-between mx-5 lg:mx-8 my-8 gap-3 min-[400px]:gap-4">
-        <div className="flex items-center gap-2">
-          <p className="flex items-center text-xs min-[400px]:text-sm lg:text-[15px] text-[#4A4451]">
-            <img
-              src={shieldTick}
-              alt="ShieldTick"
-              className="size-3.5 text-emerald-600 shrink-0"
-            />
-            <span className="truncate">{refundPolicy.note}</span>
-          </p>
-        </div>
-
-        <div>
-          <div className="flex gap-2 min-[400px]:gap-3 sm:gap-7">
-            <PaymentBtn
-              icon={calendar}
-              editIcon={"w-[18px] h-[18px]"}
-              text={"Add to calender"}
-              classname="h-8 flex-1 sm:w-40 text-xs min-[400px]:text-sm"
-              arrow={rightArrow}
-              editArrow={"w-[18px] h-[18px]"}
-            />
-            {refundPolicy.type === "refundable" && (
-              <PaymentBtn
-                icon={backward}
-                editIcon={"w-[18px] h-[18px]"}
-                text={"Request refund"}
-                classname="h-8 flex-1 sm:w-40 border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white text-xs min-[400px]:text-sm"
-                arrow={rightArrow}
-                editArrow={"w-[18px] h-[18px]"}
-              />
-            )}
-            {refundPolicy.type === "free-cancel" && (
-              <PaymentBtn
-                icon={backward}
-                editIcon={"w-[18px] h-[18px]"}
-                text={"Cancel RSVP"}
-                classname="h-8 flex-1 sm:w-40 border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white text-xs min-[400px]:text-sm"
-                arrow={rightArrow}
-                editArrow={"w-[18px] h-[18px]"}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-      */}
-
-      {/* Footer section — NEW: Add to calendar + View my tickets */}
-      <div className="flex flex-col sm:flex-row mt-5  mx-5 lg:mx-8 my-8 gap-3 min-[400px]:gap-4 items-center justify-center">
-        <div className="flex gap-[27px] min-[400px]:gap-3 sm:gap-7 items-center justify-center">
-          <PaymentBtn
-            icon={calendar}
-            editIcon={"w-[18px] h-[18px]"}
-            text={"Add to calender"}
-            classname="h-[40px] flex-1 sm:w-40 text-xs min-[400px]:text-sm md:w-[343px]"
-        
-            editArrow={"w-[18px] h-[18px]"}
-          />
-          <PaymentBtn
-            text={"View my tickets"}
-            classname="h-[40px] flex-1 sm:w-40 bg-[#0A4F41] text-white hover:bg-[#083b31] hover:text-white text-xs min-[400px]:text-sm md:w-[343px]"
-            
-            editArrow={"w-[18px] h-[18px]"}
-            onClick={() => navigate("/tickets")}
-          />
-        </div>
-      </div>
+      
     </div>
   );
 }

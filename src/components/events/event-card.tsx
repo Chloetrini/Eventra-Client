@@ -3,6 +3,7 @@ import { Heart, ArrowUpRight, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event-types";
 import { formatNaira } from "@/lib/utils"
+import { useAuthGate } from "@/context/auth.gate";
 
 type EventCardProps = {
   event: Event;
@@ -31,11 +32,11 @@ export function EventCard({
 
   const eventNo = event.no ?? event._id.padStart(4, "0");
   const isHome = variant === "home";
-
+  const { requireAuth } = useAuthGate();
   return (
     <article
       className={cn(
-       "group overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md w-full  max-h-[398px]",
+        "group overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md w-full  max-h-[398px]",
         className
       )}
     >
@@ -67,7 +68,10 @@ export function EventCard({
             {onToggleSave && (
               <button
                 type="button"
-                onClick={() => onToggleSave(event.slug)}
+                onClick={() => {
+                  if (!requireAuth("save-event")) return;
+                  onToggleSave(event.slug);
+                }}
                 aria-label={isSaved ? "Remove from saved" : "Save event"}
                 aria-pressed={isSaved}
                 className={cn(

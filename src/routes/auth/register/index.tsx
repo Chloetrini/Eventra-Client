@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { attendeeRegisterSchema, type AttendeeRegisterValues } from "@/lib/schema";
 import EventraLogo from "@/assets/Eventra-logo.png";
 import { authPath } from "@/lib/auth-path";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth.context";
 
 export default function Register() {
   const navigate = useNavigate();

@@ -3,6 +3,10 @@ import { EventGrid } from "@/components/events/event-grid"; // adjust path if di
 import { useEvents } from "@/hooks/use-event";
 import { useSavedEvents } from "@/hooks/use-saved-events";
 import { DEFAULT_FILTERS } from "@/types/event-types";
+import { useEffect } from "react";
+import { useAuth } from "@/context/auth.context";
+import { useAuthGate } from "@/context/auth.gate";
+import { useNavigate } from "react-router";
 
 export default function SavedEvent() {
     const { data, isLoading } = useEvents(DEFAULT_FILTERS);
@@ -10,7 +14,20 @@ export default function SavedEvent() {
     const { savedIds, toggleSave } = useSavedEvents();
 
     const savedEvents = events.filter((e) => savedIds.has(e.slug));
+    const { user, isLoading: isUserLoading } = useAuth();
+    const { requireAuth } = useAuthGate();
+    const navigate = useNavigate();
 
+    useEffect(() => {
+        if (!isUserLoading && !user) {
+            requireAuth("saved-events");
+            navigate(-1)
+        }
+    }, [isUserLoading, user]);
+
+    if (!isUserLoading && !user) {
+        return null;
+    }
     return (
         <PageWrapper className="py-8  px-[20px]" >
             <header className="flex items-center   mt-5">

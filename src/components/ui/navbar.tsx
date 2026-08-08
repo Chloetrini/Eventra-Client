@@ -11,7 +11,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import PageWrapper from "../pageWrapper"
-import { useAuth } from "@/context/AuthContext"
+import { useAuth } from "@/context/auth.context"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -103,8 +103,10 @@ function Navbar() {
   }
 
   return (
+    <div className="border-b-2 border-[#E8E6E0]">
+
     <PageWrapper className="p-[20px]">
-      <div className="w-full bg-white border-b-2 border-[#E8E6E0]">
+      <div className="w-full bg-white  ">
         <div className="flex w-full items-center">
           {/* Logo */}
           <NavLink to="/" className="flex items-center" onClick={closeMenu}>
@@ -135,7 +137,7 @@ function Navbar() {
                 <DropdownMenuContent
                   align="end"
                   className="w-[310px] rounded-[24px] border border-[#E8E6E0] p-[24px] shadow-lg bg-white mt-2"
-                >
+                  >
                   {/* User Profile Header */}
                   <div className="flex items-center gap-[14px] pb-[20px]">
                     <div className="flex h-[48px] w-[48px] items-center justify-center rounded-full bg-[#333333] text-white font-bold text-[18px]">
@@ -159,7 +161,7 @@ function Navbar() {
                       <NavLink
                         to="/profile"
                         className="flex w-full items-center gap-[14px] px-0 py-[6px] text-[18px] font-bold text-[#1A1523] cursor-pointer hover:text-[#0F6E56]"
-                      >
+                        >
                         <UserIcon className="h-5 w-5 text-[#1A1523]" />
                         <span>Profile</span>
                       </NavLink>
@@ -167,9 +169,9 @@ function Navbar() {
 
                     <DropdownMenuItem>
                       <NavLink
-                        to="/my-tickets"
+                        to="/tickets"
                         className="flex w-full items-center gap-[14px] px-0 py-[6px] text-[18px] font-bold text-[#1A1523] cursor-pointer hover:text-[#0F6E56]"
-                      >
+                        >
                         <Ticket className="h-5 w-5 text-[#EAB308]" />
                         <span>My tickets</span>
                       </NavLink>
@@ -179,7 +181,7 @@ function Navbar() {
                       <NavLink
                         to="/saved-events"
                         className="flex w-full items-center gap-[14px] px-0 py-[6px] text-[18px] font-bold text-[#1A1523] cursor-pointer hover:text-[#0F6E56]"
-                      >
+                        >
                         <Heart className="h-5 w-5 text-[#1A1523]" />
                         <span>Saved events</span>
                       </NavLink>
@@ -193,7 +195,7 @@ function Navbar() {
                     <DropdownMenuItem
                       onClick={logout}
                       className="flex items-center gap-[14px] px-0 py-[8px] text-[18px] font-bold text-[#B91C1C] cursor-pointer hover:text-[#991B1B]"
-                    >
+                      >
                       <LogOut className="h-5 w-5 text-[#B91C1C]" />
                       <span>Sign out</span>
                     </DropdownMenuItem>
@@ -214,7 +216,7 @@ function Navbar() {
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-          >
+            >
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
@@ -246,21 +248,21 @@ function Navbar() {
                     to="/profile"
                     onClick={closeMenu}
                     className="py-1 text-sm font-semibold text-[#1A1523]"
-                  >
+                    >
                     Profile
                   </NavLink>
                   <NavLink
                     to="/my-tickets"
                     onClick={closeMenu}
                     className="py-1 text-sm font-semibold text-[#1A1523]"
-                  >
+                    >
                     My tickets
                   </NavLink>
                   <NavLink
                     to="/saved-events"
                     onClick={closeMenu}
                     className="py-1 text-sm font-semibold text-[#1A1523]"
-                  >
+                    >
                     Saved events
                   </NavLink>
                   <button
@@ -270,17 +272,17 @@ function Navbar() {
                       closeMenu()
                     }}
                     className="py-1 text-left text-sm font-bold text-[#B91C1C]"
-                  >
+                    >
                     Sign out
                   </button>
                 </>
               ) : (
                 AUTH_LINKS.map((link) => (
                   <AuthLink
-                    key={link.to}
-                    {...link}
-                    className="text-center"
-                    onClick={closeMenu}
+                  key={link.to}
+                  {...link}
+                  className="text-center"
+                  onClick={closeMenu}
                   />
                 ))
               )}
@@ -289,6 +291,7 @@ function Navbar() {
         )}
       </div>
     </PageWrapper>
+        </div>
   )
 }
 

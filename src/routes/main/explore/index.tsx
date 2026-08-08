@@ -4,13 +4,15 @@ import { useEvents } from "@/hooks/use-event";
 import { EventGrid } from "@/components/events/event-grid";
 import { FeaturedEventCard } from "@/components/events/featured-event-class";
 import { FilterSidebar } from "@/components/filters/filter-sidebar";
-import {type EventFilters} from "@/types/event-types";
+import { type EventFilters } from "@/types/event-types";
 import { Button } from "@/components/ui/button";
 import { TopBarFilter } from "@/components/filters/filter-topbar";
-import { useState } from "react";
+import { useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import { useSavedEvents } from "@/hooks/use-saved-events";
 import { useNavigate } from "react-router";
+import { useLocation } from "react-router";
+import { saveExploreUrl } from "@/lib/explore.history";
 
 export default function ExplorePage() {
   const navigate = useNavigate();
@@ -20,15 +22,18 @@ export default function ExplorePage() {
 
   const events = data?.events ?? [];
   const featured = events.find((e) => e.isPromoted);
-const rest = events.filter((e) => !e.isPromoted);
-   const { savedIds, toggleSave } = useSavedEvents();
+  const rest = events.filter((e) => !e.isPromoted);
+  const { savedIds, toggleSave } = useSavedEvents();
 
   const stateLabel = filters.state || "All Nigeria";
   const monthLabel = new Date().toLocaleString("en-NG", {
     month: "short",
     year: "numeric",
   });
-
+  const location = useLocation();
+  useEffect(() => {
+    saveExploreUrl(location.pathname + location.search);
+  }, [location.pathname, location.search]);
   if (isError) {
     return (
 
@@ -45,7 +50,7 @@ const rest = events.filter((e) => !e.isPromoted);
     <PageWrapper className="p-[20px] " >
       <header className="space mb-4">
         <p className=" flex items-center  text-[12px] font-[400] font-sans uppercase tracking-widest  text-[#0A4F41] gap-2">
-         <span className="inline-block h-px  w-[12px] bg-[#F5A524] " />
+          <span className="inline-block h-px  w-[12px] bg-[#F5A524] " />
           {stateLabel} · {monthLabel}
         </p>
         <h1 className="text-[32px] md:text-[54px] font-[800] tracking-tight font-grotesk text-[#1A1523]">Explore events</h1>
@@ -61,25 +66,25 @@ const rest = events.filter((e) => !e.isPromoted);
           sortValue={filters.sort}
           accessValue={filters.access}
           stateValue={filters.state}
-          searchOnChange={(s) => setFilter("search", s)}                        
+          searchOnChange={(s) => setFilter("search", s)}
           stateOnChange={(v) => setFilter("state", v as EventFilters["state"])}
           dateOnChange={(d) => setFilter("when", d as EventFilters["when"])}
           sortOnChange={(v) => setFilter("sort", v as EventFilters["sort"])}
           accessOnClick={(a) => setFilter("access", a as EventFilters["access"])}
         />
-        
+
       </div>
 
       <div className="grid gap-15 grid-cols-1 xl:grid-cols-[220px_1fr]">
-       <div className="hidden xl:block">
-        <FilterSidebar
-          filters={filters}
-          categoryCounts={data?.categoryCounts ?? {}}
-          onToggleCategory={toggleCategory}
-          onSelectWhen={(w) => setFilter("when", w)}
-          onSelectPrice={(p) => setFilter("price", p)}
-          onClearAll={clearAll}
-        />
+        <div className="hidden xl:block">
+          <FilterSidebar
+            filters={filters}
+            categoryCounts={data?.categoryCounts ?? {}}
+            onToggleCategory={toggleCategory}
+            onSelectWhen={(w) => setFilter("when", w)}
+            onSelectPrice={(p) => setFilter("price", p)}
+            onClearAll={clearAll}
+          />
         </div>
 
         <main className="min-w-0 space-y-6">
@@ -90,22 +95,22 @@ const rest = events.filter((e) => !e.isPromoted);
             />
           )}
 
-         <EventGrid
-  events={rest}
-  isLoading={isLoading}
-  className="grid-cols-[repeat(auto-fill,294px)]"
-  savedIds={[...savedIds]}      // Set → array, because EventGrid wants string[]
-  onToggleSave={toggleSave}
-/>
+          <EventGrid
+            events={rest}
+            isLoading={isLoading}
+            className="grid-cols-[repeat(auto-fill,294px)]"
+            savedIds={[...savedIds]}      // Set → array, because EventGrid wants string[]
+            onToggleSave={toggleSave}
+          />
 
           {data?.hasMore && (
             <div className="mt-10 flex justify-center  mx-auto">
               <Button variant="outline" onClick={loadMore} disabled={isFetching} className="text-[15px] font-[700] font-sans  max-w-[177px] min-h-[42px]">
                 {isFetching ? "Loading…" : "Load more events"}
-              
-                 <ArrowRight/>
+
+                <ArrowRight />
               </Button>
-              
+
             </div>
           )}
         </main>

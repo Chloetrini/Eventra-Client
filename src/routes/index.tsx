@@ -29,6 +29,68 @@ const routes = [
               return { Component };
             },
           },
+
+          {
+            path: "tickets",
+            handle: {
+              seo: {
+                title: "My Tickets",
+                description: "View and manage your event tickets.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } = await import("@/routes/tickets");
+              return { Component };
+            },
+          },
+          {
+            path: "events",
+            handle: {
+              seo: {
+                title: "Events",
+                description: "Manage your events, from draft to sold out.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } = await import("@/routes/events");
+              return { Component };
+            },
+          },
+          {
+            path: "payment",
+            children: [
+              {
+                path: "checkout",
+                handle: {
+                  seo: {
+                    title: "Checkout",
+                    description: "Complete your purchase.",
+                  },
+                },
+
+                lazy: async () => {
+                  const { default: Component } =
+                    await import("@/routes/payment/checkout");
+                  return { Component };
+                },
+              },
+              {
+                path: "ticket-confirmation",
+                handle: {
+                  seo: {
+                    title: "Ticket confirmation",
+                    description: "View your completed ticket purchase.",
+                  },
+                },
+
+                lazy: async () => {
+                  const { default: Component } =
+                    await import("@/routes/payment/ticket-confirmation");
+                  return { Component };
+                },
+              },
+            ],
+          },
         ],
       },
       {
@@ -47,55 +109,6 @@ const routes = [
             lazy: async () => {
               const { default: Component } =
                 await import("@/routes/main/register");
-              return { Component };
-            },
-          },
-        ],
-      },
-
-      {
-        path: "tickets",
-        handle: {
-          seo: {
-            title: "My Tickets",
-            description: "View and manage your event tickets.",
-          },
-        },
-        lazy: async () => {
-          const { default: Component } = await import("@/routes/tickets");
-          return { Component };
-        },
-      },
-      {
-        path: "payment",
-        children: [
-          {
-            path: "checkout",
-            handle: {
-              seo: {
-                title: "Checkout",
-                description: "Complete your purchase.",
-              },
-            },
-
-            lazy: async () => {
-              const { default: Component } =
-                await import("@/routes/payment/checkout");
-              return { Component };
-            },
-          },
-          {
-            path: "ticket-confirmation",
-            handle: {
-              seo: {
-                title: "Ticket confirmation",
-                description: "View your completed ticket purchase.",
-              },
-            },
-
-            lazy: async () => {
-              const { default: Component } =
-                await import("@/routes/payment/ticket-confirmation");
               return { Component };
             },
           },

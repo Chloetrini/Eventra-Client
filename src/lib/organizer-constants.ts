@@ -6,7 +6,7 @@ export const HERO_DATA = {
   subtitle:
     'Publish a published event in minutes, and with real payments, only pay when you sell tickets.',
   ctaText: 'Get Started',
-  ctaLink: '/register',
+  ctaLink: '/auth/organizer/register',
   image: '/images/hero-illustration.svg',
 };
 
@@ -86,7 +86,7 @@ export const SECTION_FOUR_DATA = {
   description:
     "Set up your organizer account, add your tickets and share one link. We'll handle the payments, the gate and the payout.",
   primaryButtonText: 'Become an organizer',
-  primaryButtonLink: '/register',
+  primaryButtonLink: '/auth/organizer/register',
   secondaryButtonText: 'Contact sales',
   secondaryButtonLink: '/contact',
 };

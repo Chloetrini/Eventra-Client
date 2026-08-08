@@ -7,12 +7,13 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import EventraLogo from "@/assets/Eventra-logo.png";
+import { authPath } from "@/lib/auth-path";
 
 export default function CheckEmail() {
   const navigate = useNavigate();
   const location = useLocation();
   const email = (location.state as { email?: string } | null)?.email;
-
+  const isOrganizer = location.pathname.includes("/organizer");
   const [cooldown, setCooldown] = useState(false);
 
   const { mutate, isPending } = useMutation({
@@ -31,7 +32,7 @@ export default function CheckEmail() {
 
   const handleResend = () => {
     if (!email) {
-      navigate("/forgot-password");
+      navigate(authPath("forgot-password", isOrganizer));
       return;
     }
 
@@ -39,7 +40,7 @@ export default function CheckEmail() {
   };
 
   const handleOpenEmail = () => {
-    navigate("/verify-otp", {
+    navigate(authPath("verify-otp", isOrganizer), {
       state: { email },
     });
   };
@@ -51,6 +52,11 @@ export default function CheckEmail() {
         <span className="text-[30.13px] font-extrabold tracking-[-0.02em] text-[#1A1523] leading-[35.45px]">
           Eventra
         </span>
+        {isOrganizer && (
+          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
+            Organizer
+          </span>
+        )}
       </Link>
 
       <div

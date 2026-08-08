@@ -3,6 +3,7 @@ import { ToastContainer, Bounce } from 'react-toastify';
 import { QueryClientProvider } from '@tanstack/react-query'
 import { router } from './routes'
 import { queryClient } from './lib/utils';
+import { AuthProvider } from '@/context/AuthContext';
 
 function App() {
   return (
@@ -19,7 +20,9 @@ function App() {
         theme="light"
         transition={Bounce} />
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
       </QueryClientProvider>
     </>
   )

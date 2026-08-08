@@ -1,4 +1,5 @@
 import { NavLink } from "react-router"
+import { PageWrapper } from "./page-wrapper"
 
 const DISCOVER_LINKS = [
     { to: "/explore", label: "Explore events" },
@@ -52,7 +53,8 @@ function FooterColumn({
 export default function Footer() {
     return (
         <footer className="relative overflow-hidden bg-[#E4F1EB]">
-            <div className="mx-auto w-full py-4 px-[101.5px]">
+            <PageWrapper className="p-[20px]">
+            <div className=" w-full ">
                 {/* Newsletter CTA */}
                 <div className="flex flex-col gap-6 py-14 md:flex-row md:items-center md:justify-between md:gap-10">
                     <div>
@@ -108,13 +110,13 @@ export default function Footer() {
                     </span>
                 </div>
             </div>
-
-
-            {/* Watermark */}
+           {/* Watermark */}
             <div className="overflow-hidden">
                 <img src="footer-eventra.svg" alt="" />
             </div>
 
+        </PageWrapper>
+           
         </footer>
     )
 }

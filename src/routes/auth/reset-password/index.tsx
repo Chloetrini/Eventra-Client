@@ -7,31 +7,34 @@ import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/lib/api";
 import { resetPasswordSchema } from "@/lib/schema";
 import EventraLogo from "@/assets/Eventra-logo.png";
+import { authPath } from "@/lib/auth-path";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as { email?: string; otp?: string } | null;
-
+  const isOrganizer = location.pathname.includes("/organizer");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const { resetPassword } = useAuth();
+
   const { mutate, isPending } = useMutation({
     mutationFn: (values: {
       email: string;
       otp: string;
       newPassword: string;
-    }) => api.post("/reset-password", values),
+    }) => resetPassword(values.email, values.otp, values.newPassword),
 
     onSuccess: (data) => {
-      toast.success(data.message || "Password reset successful.");
-      navigate("/login");
+      toast.success(data?.message || "Password reset successful.");
+      navigate(authPath("login", isOrganizer));
     },
 
     onError: (error: Error) => {
@@ -45,7 +48,7 @@ export default function ResetPassword() {
 
     if (!state?.email || !state?.otp) {
       toast.error("Missing verification details.");
-      navigate("/forgot-password");
+      navigate(authPath("forgot-password", isOrganizer));
       return;
     }
 
@@ -70,11 +73,16 @@ export default function ResetPassword() {
 
   return (
     <div className="flex flex-col">
-      <Link to="/" className="flex items-center gap-2 mb-12 w-fit">
+      <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
         <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
-        <span className="text-[22.8px] font-extrabold tracking-[-0.02em] text-[#1A1523]">
+        <span className="text-[22.8px] font-extrabold text-[#1A1523] tracking-[-0.02em]">
           Eventra
         </span>
+        {isOrganizer && (
+          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
+            Organizer
+          </span>
+        )}
       </Link>
 
       <h1 className="text-[34px] font-bold leading-[40px] tracking-[-0.02em] text-[#000000] mb-3">
@@ -163,7 +171,7 @@ export default function ResetPassword() {
       </form>
 
       <Link
-        to="/login"
+        to={authPath("login", isOrganizer)}
         className="mt-6 text-center text-[16px] text-[#0F6E56] font-semibold hover:underline leading-[26px]"
       >
         Back to Sign in

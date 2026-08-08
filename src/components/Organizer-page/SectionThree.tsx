@@ -104,7 +104,7 @@ const SectionThree: React.FC = () => {
               That's it – no set up fees, no <br className="hidden sm:block" />{" "}
               monthly charges, no surprises.
             </p>
-            <Link to="/create-event">
+            <Link to="/auth/organizer/register">
               <Button
                 variant="default"
                 size="lg"

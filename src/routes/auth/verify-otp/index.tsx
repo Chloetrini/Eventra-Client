@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import { Button } from "@/components/ui/button";
 import { verifyEmailSchema } from "@/lib/schema";
 import EventraLogo from "@/assets/Eventra-logo.png";
+import { authPath } from "@/lib/auth-path";
+import { useAuth } from "@/context/AuthContext";
 
 const OTP_LENGTH = 6;
 const RESEND_SECONDS = 60;
@@ -13,12 +16,40 @@ export default function VerifyOtp() {
   const navigate = useNavigate();
   const location = useLocation();
   const email = (location.state as { email?: string } | null)?.email;
-
+  const isOrganizer = location.pathname.includes("/organizer");
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [error, setError] = useState<string | null>(null);
   const [secondsLeft, setSecondsLeft] = useState(RESEND_SECONDS);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const { verifyEmail, resendOtp } = useAuth();
+
+  // --- Verify OTP Mutation ---
+  const { mutate: handleVerify, isPending: isVerifying } = useMutation({
+    mutationFn: (otp: string) => verifyEmail(email!, otp),
+    onSuccess: (data) => {
+      toast.success(data?.message || "Email verified successfully.");
+      // Navigate to login after successful registration verification
+      navigate(authPath("login", isOrganizer));
+    },
+    onError: (e: Error) => {
+      setError(e.message || "Invalid or expired code.");
+      toast.error(e.message || "Verification failed.");
+    },
+  });
+
+  // --- Resend OTP Mutation ---
+  const { mutate: handleResendOtp, isPending: isResending } = useMutation({
+    mutationFn: () => resendOtp(email!),
+    onSuccess: (data) => {
+      toast.success(data?.message || "Verification code resent.");
+      setSecondsLeft(RESEND_SECONDS);
+    },
+    onError: (e: Error) => {
+      toast.error(e.message || "Failed to resend code.");
+    },
+  });
 
   useEffect(() => {
     if (secondsLeft <= 0) return;
@@ -75,8 +106,8 @@ export default function VerifyOtp() {
     setError(null);
 
     if (!email) {
-      toast.error("Missing email. Please restart the reset process.");
-      navigate("/forgot-password");
+      toast.error("Missing email. Please restart the process.");
+      navigate(authPath("login", isOrganizer));
       return;
     }
 
@@ -92,29 +123,30 @@ export default function VerifyOtp() {
       return;
     }
 
-    // Temporary frontend-only success
-    toast.success("OTP verified successfully.");
-
-    navigate("/reset-password", {
-      state: {
-        email,
-        otp,
-      },
-    });
+    // Trigger API Call
+    handleVerify(otp);
   };
 
   const handleResend = () => {
-    toast.success("Verification code resent.");
-    setSecondsLeft(RESEND_SECONDS);
+    if (!email) {
+      toast.error("Missing email address.");
+      return;
+    }
+    handleResendOtp();
   };
 
   return (
     <div className="flex flex-col">
-      <Link to="/" className="flex items-center gap-2 mb-12 w-fit">
+      <Link to="/" className="flex items-center gap-2 mb-8 w-fit">
         <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
         <span className="text-[22.8px] font-extrabold tracking-[-0.02em] text-[#1A1523]">
           Eventra
         </span>
+        {isOrganizer && (
+          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
+            Organizer
+          </span>
+        )}
       </Link>
 
       <h1 className="text-[34px] font-bold leading-[40px] tracking-[-0.02em] text-[#000000] mb-3">
@@ -150,9 +182,10 @@ export default function VerifyOtp() {
 
         <Button
           type="submit"
+          disabled={isVerifying}
           className="w-full h-[52px] rounded-[8px] bg-[#0F6E56] text-[#FFFFFF] text-[18px] font-bold hover:bg-primary/90"
         >
-          Verify Code
+          {isVerifying ? "Verifying..." : "Verify Code"}
         </Button>
       </form>
 
@@ -163,15 +196,16 @@ export default function VerifyOtp() {
           <button
             type="button"
             onClick={handleResend}
-            className="text-[#5f0609] font-semibold hover:underline"
+            disabled={isResending}
+            className="text-[#5f0609] font-semibold hover:underline disabled:opacity-50"
           >
-            Resend code
+            {isResending ? "Resending..." : "Resend code"}
           </button>
         )}
       </p>
 
       <Link
-        to="/login"
+        to={authPath("login", isOrganizer)}
         className="mt-8 text-center text-[16px] text-[#0F6E56] font-semibold hover:underline leading-[26px]"
       >
         Back to Sign in

@@ -1,12 +1,25 @@
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
+function resolveBaseUrl(): string {
+  const raw = import.meta.env.VITE_API_URL
+  if (!raw) return '/api/v1'
+  const trimmed = raw.replace(/\/+$/, '')
+  return trimmed.endsWith('/api/v1') ? trimmed : `${trimmed}/api/v1`
+}
+
+const BASE_URL = resolveBaseUrl()
 
 export const axiosClient = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
 })
+
+
+
+
+
+
 
 async function request(
   method: string,
@@ -26,11 +39,12 @@ async function request(
       throw new Error(message || 'Request failed', { cause: error })
     }
     throw new Error('Network error', { cause: error })
-  }}
-
-  export const api = {
-    get: (path: string) => request('GET', path),
-    post: (path: string, body: unknown) => request('POST', path, body),
-    patch: (path: string, body: unknown) => request('PATCH', path, body),
-    delete: (path: string) => request('DELETE', path),
   }
+}
+
+export const api = {
+  get: (path: string) => request('GET', path),
+  post: (path: string, body: unknown) => request('POST', path, body),
+  patch: (path: string, body: unknown) => request('PATCH', path, body),
+  delete: (path: string) => request('DELETE', path),
+}

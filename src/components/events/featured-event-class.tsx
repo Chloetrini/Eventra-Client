@@ -19,7 +19,7 @@ export function FeaturedEventCard({ event, onGetTickets }: FeaturedEventCardProp
   });
 
   return (
-    <article className="flex flex-col md:flex-row overflow-hidden rounded-2xl border border-orange-200 gap-6 md:gap-[35px] w-full max-w-[946px] md:h-[231px]">
+    <article className="flex flex-col md:flex-row overflow-hidden rounded-2xl border border-orange-200 gap-6 md:gap-[35px] w-full  md:h-[231px]">
       <div className="relative aspect-[4/3] md:aspect-auto w-full md:w-[314px] md:shrink-0">
         <img
           src={event.coverImage}

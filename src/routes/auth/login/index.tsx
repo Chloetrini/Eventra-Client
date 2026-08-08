@@ -1,4 +1,5 @@
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router";
+import { useAuth } from "@/context/AuthContext";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
 import { loginSchema } from "@/lib/schema";
 import EventraLogo from "@/assets/Eventra-logo.png";   // or whatever the real name is
+import { authPath } from "@/lib/auth-path";
 
 const attendeeLoginSchema = loginSchema;
 
@@ -20,7 +22,8 @@ type AttendeeLoginValues = z.infer<typeof attendeeLoginSchema>;
 
 export default function Login() {
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const isOrganizer = location.pathname.includes("/organizer");
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -32,13 +35,19 @@ export default function Login() {
     mode: "onBlur",
   });
 
+ const { login } = useAuth();
+
   const { mutate, isPending } = useMutation({
-    mutationFn: (values: AttendeeLoginValues) => api.post("/login", values),
+    mutationFn: (values: AttendeeLoginValues) =>
+      login(values.email, values.password),
 
-    onSuccess: (data) => {
-      toast.success(data.message || "Logged in successfully.");
-
-      navigate("/");
+    onSuccess: (user) => {
+      toast.success("Logged in successfully.");
+      if (user.role === "organizer") {
+        navigate("/");   // organizer dashboard later
+      } else {
+        navigate("/");   // attendee home
+      }
     },
 
     onError: (error: Error) => {
@@ -51,13 +60,18 @@ export default function Login() {
   };
 
   return (
-    <div className="h-[494px] flex flex-col justify-center mb-[213px]">
-      <div className="mb-10 mt-[181px]">
-        <Link to="/" className="flex items-center gap-2 w-fit">
+    <div className="h-[494px] flex flex-col justify-center ">
+      <div className="mb-[12px] mt-[120px]">
+        <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
           <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
           <span className="text-[22.8px] font-extrabold text-[#1A1523] tracking-[-0.02em]">
             Eventra
           </span>
+          {isOrganizer && (
+          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
+            Organizer
+          </span>
+        )}
         </Link>
       </div>
       <h1 className="text-[34px] font-extrabold mb-[12px] tracking-[-0.02em] leading-[40px] text-[#000000]">
@@ -150,7 +164,7 @@ export default function Login() {
           </label>
 
           <Link
-            to="/auth/forgot-password"
+            to={authPath("forgot-password", isOrganizer)}
             className="text-[#0A4F41] font-medium text-[14px] hover:underline"
           >
             Forgot Password ?
@@ -182,7 +196,7 @@ export default function Login() {
       <p className="text-center text-sm text-[#4A4451] mt-6">
         Don't have an account?
         <Link
-          to="/register"
+          to={authPath("register", isOrganizer)}
           className="text-[#0F6E56] font-medium hover:underline"
         >
           Sign up

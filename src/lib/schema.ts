@@ -46,6 +46,31 @@ export const registerSchema = z.object({
     }),
 })
 
+
+// Checkout collects only contact details — no password or company name,
+// so it can't reuse registerSchema (those fields would fail silently).
+export const checkoutSchema = z.object({
+  firstName: z
+    .string({
+      message: 'Complete this field to continue',
+    })
+    .min(2, {
+      message: 'First name must be at least 2 characters long',
+    }),
+  lastName: z
+    .string({
+      message: 'Complete this field to continue',
+    })
+    .min(2, {
+      message: 'Last name must be at least 2 characters long',
+    }),
+  email: registerSchema.shape.email,
+  phoneNumber: registerSchema.shape.phoneNumber,
+})
+
+export type CheckoutFormValues = z.infer<typeof checkoutSchema>
+
+
 export const contactSchema = z.object({
   fullName: z
     .string({
@@ -97,21 +122,24 @@ export const lineupMemberSchema = z.object({
 });
 
 // Ticket tier — frontend-only for now (backend keeps these in a separate collection)
-export const ticketTierSchema = z.object({
-  id: z.number(),
-  type: z.string(),
-  unitPrice: z.number(),
-  description: z.string().optional(),
-  originalPrice: z.number().nullable().optional(),
-  availability: z.enum(["available", "scarce", "sold out"]).optional(),
-  quantityLeft: z.number().nullable().optional(),
+// Matches the backend's real TicketType shape
+export const ticketTypeSchema = z.object({
+  _id: z.string(),
+  name: z.string(),
+  price: z.number(),
+  quantity: z.number(),
+  quantitySold: z.number(),
+  purchaseLimitPerPerson: z.number(),
+  isActive: z.boolean(),
 });
+
+export type TicketType = z.infer<typeof ticketTypeSchema>;
 
 // The ticket-tier group for one event — its own backend collection, keyed by slug.
 export const eventTicketsSchema = z.object({
   eventSlug: z.string(),
   serviceFeePercent: z.number().default(0),
-  tiers: z.array(ticketTierSchema),
+  tiers: z.array(ticketTypeSchema),
 });
 
 export const eventSchema = z.object({
@@ -138,7 +166,12 @@ export const eventSchema = z.object({
   lineupCount: z.number().default(0),
   createdAt: z.string(),
   updatedAt: z.string().optional(),
-
+ capacity: z.number().nullable().optional(),
+reservationsCount: z.number().optional().default(0),
+ticketsSoldCount: z.number().optional().default(0),
+revenueTotal: z.number().optional().default(0),
+ticketTypes: z.array(ticketTypeSchema).optional().default([]),
+  // --- frontend-only (kept until backend provides them) ---
   // --- frontend-only (kept until backend provides them) ---
   subcategory: z.string().optional(),
   no: z.string().optional(),

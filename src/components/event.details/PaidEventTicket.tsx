@@ -88,10 +88,12 @@ export const PaidEventTicket = ({
   event,
   tiers,
   serviceFeePercent,
+  slug,
 }: {
   event: Event;
   tiers: TicketTier[];
   serviceFeePercent: number;
+  slug?: string
 }) => {
   const navigate = useNavigate();
 
@@ -152,6 +154,7 @@ export const PaidEventTicket = ({
         subtotal,
         serviceFee,
         total,
+        slug
       },
     });
   };

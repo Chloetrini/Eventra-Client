@@ -6,10 +6,11 @@ export type TicketCheckout = {
     eventVenue?: string
     orderID?: string
     ticketDetails: {
-            type: string
-            unitPrice: number
-            quantity: number
-        }[]
+        type: string
+        unitPrice: number
+        quantity: number
+    }[]
+    slug?: string
 }
 
 const dummyTicketCheckout = [

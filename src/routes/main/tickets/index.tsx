@@ -1,16 +1,43 @@
 import { useNavigate, useSearchParams } from "react-router";
 import { TicketCard } from "@/components/ticket-card";
-import { dummyTicket } from "@/lib/dummy-ticket";
 import { cn } from "@/lib/utils";
 import PageWrapper from "@/components/pageWrapper";
 import { useEffect } from "react";
 import { useAuth } from "@/context/auth.context";
 import { useAuthGate } from "@/context/auth.gate";
+import { useMyTickets } from "@/hooks/use-event";
 
 const TABS = [
     { value: "upcoming", label: "Upcoming" },
     { value: "past", label: "Past" },
 ] as const;
+
+// Real ticket → the shape TicketCard displays
+function toDisplayTicket(t: any) {
+    return {
+        _id: t._id,
+        eventName: t.event?.title ?? "Event",
+        category: [],
+        eventDateTime: t.event?.startDate ?? "",
+        eventEntrance: "Main entrance",
+        eventVenue: t.event?.venue
+            ? `${t.event.venue.name}, ${t.event.venue.city}`
+            : "",
+        referenceCode: t.code,
+        orderID: t._id,
+        holderName: t.attendeeName,
+        ticketDetails: [{ type: t.type === "free" ? "Free" : "General", unitPrice: t.price ?? 0, quantity: 1 }],
+        qrImageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t.code)}`,
+        refundPolicy: {
+            type: (t.type === "free" ? "non-refundable" : "refundable") as "non-refundable" | "refundable",
+            note: t.type === "free"
+                ? "Free reservations can be cancelled from here."
+                : "Refunds subject to the event's policy.",
+        },
+        _rawEvent: t.event,
+    };
+    
+}
 
 export default function Tickets() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -20,10 +47,25 @@ export default function Tickets() {
         setSearchParams({ tab });
     };
 
-    const filteredTickets = activeTab === "upcoming" ? dummyTicket : [];
     const { user, isLoading } = useAuth();
     const { requireAuth } = useAuthGate();
-     const navigate = useNavigate();
+    const navigate = useNavigate();
+
+    const { data: rawTickets = [], isLoading: ticketsLoading } = useMyTickets();
+    const displayTickets = (rawTickets as any[]).map(toDisplayTicket);
+
+    const now = new Date();
+    const upcomingTickets = displayTickets.filter((t) => {
+        const eventDate = t._rawEvent?.startDate ? new Date(t._rawEvent.startDate) : null;
+        return !eventDate || eventDate >= now;
+    });
+    const pastTickets = displayTickets.filter((t) => {
+        const eventDate = t._rawEvent?.startDate ? new Date(t._rawEvent.startDate) : null;
+        return eventDate && eventDate < now;
+    });
+
+    const filteredTickets = activeTab === "upcoming" ? upcomingTickets : pastTickets;
+
     useEffect(() => {
         if (!isLoading && !user) {
             requireAuth("my-tickets");
@@ -34,6 +76,7 @@ export default function Tickets() {
     if (!isLoading && !user) {
         return null;
     }
+
     return (
         <PageWrapper className="p-[20px]" >
             <header className="flex items-center   mt-5">
@@ -48,7 +91,6 @@ export default function Tickets() {
                 </h1>
             </div>
 
-            {/* Tabs */}
             <div className="flex justify-between min-[400px]:justify-start min-[400px]:gap-[84px] mb-6 ">
                 {TABS.map((tab) => (
                     <button
@@ -66,9 +108,10 @@ export default function Tickets() {
                 ))}
             </div>
 
-            {/* Ticket Cards */}
             <div className="space-y-6">
-                {filteredTickets.length > 0 ? (
+                {ticketsLoading ? (
+                    <p className="text-sm text-center py-12 text-muted-foreground">Loading your tickets…</p>
+                ) : filteredTickets.length > 0 ? (
                     filteredTickets.map((ticket) => (
                         <TicketCard key={ticket._id} ticket={ticket} />
                     ))

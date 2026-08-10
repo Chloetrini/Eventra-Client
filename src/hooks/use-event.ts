@@ -1,19 +1,26 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { fetchEvents } from "@/lib/events-api";
+import { fetchEvents, fetchCategories } from "@/lib/events-api";
 import type { EventFilters } from "@/types/event-types";
 
-// The whole filters object is the query key. Change any filter → new key →
-// TanStack refetches and caches that exact combination.
 export const eventKeys = {
   all: ["events"] as const,
   list: (filters: EventFilters) => [...eventKeys.all, "list", filters] as const,
 };
 
 export function useEvents(filters: EventFilters) {
-  return useQuery({
+  const { data, isLoading, isFetching, isError, refetch } = useQuery({
     queryKey: eventKeys.list(filters),
     queryFn: () => fetchEvents(filters),
-    // keeps old results on screen while new ones load — no empty flash
     placeholderData: keepPreviousData,
   });
+  return { data, isLoading, isFetching, isError, refetch };
+}
+
+export function useCategories() {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+    staleTime: Infinity, // categories rarely change — no need to refetch often
+  });
+  return { categories: data ?? [], isLoading, isError };
 }

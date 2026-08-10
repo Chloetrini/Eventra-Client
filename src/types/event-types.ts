@@ -120,7 +120,7 @@ export type Event = z.infer<typeof eventSchema>;
 export type EventFilters = {
   search: string;
   state: State | "";
-  categories: Category[];
+  categories: string[];
   when: DateWindow;
   price: PriceTier;
   access: Access;

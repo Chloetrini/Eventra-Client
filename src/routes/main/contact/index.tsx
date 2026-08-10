@@ -82,7 +82,7 @@ export default function ContactPage() {
             <p className="mt-6 max-w-md text-sm text-slate-600 sm:text-base">Questions, press, partnerships or need a hand with an event? Send us a message and we&rsquo;ll get back within a day.</p>
 
             <div className="relative mt-10 flex-1 z-10 rounded-3xl shadow-xl">
-              <img src={crowdImage} alt="Crowd at an Eventra event" className="w-full object-cover rounded-3xl h-full" />
+              <img src={crowdImage} alt="Crowd a-t an Eventra event" className="w-full object-cover rounded-3xl h-full" />
 
               <div className="absolute -left-7 top-6 z-20 -rotate-6 rounded-lg bg-amber-400 px-3 py-2.5 shadow-lg sm:top-8 sm:px-4 sm:py-3">
                 <p className="text-[9px] font-semibold tracking-wide text-emerald-950 sm:text-[10px]">eventra</p>

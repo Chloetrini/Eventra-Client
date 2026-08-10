@@ -25,7 +25,7 @@ const emptyValues: OnboardingValues = {
 
 const getSavedValues = (): Partial<OnboardingValues> => {
     try {
-        const raw = sessionStorage.getItem(ONBOARDING_STORAGE_KEY)
+        const raw = localStorage.getItem(ONBOARDING_STORAGE_KEY)
         return raw ? JSON.parse(raw) : {}
     } catch {
         // corrupted / unavailable storage shouldn't block onboarding
@@ -49,7 +49,7 @@ const Onboardinglayout = () => {
     // doesn't lose progress
     useEffect(() => {
         const subscription = methods.watch((values) => {
-            sessionStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(values))
+            localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(values))
         })
         return () => subscription.unsubscribe()
     }, [methods])

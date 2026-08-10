@@ -1,0 +1,95 @@
+import type { Attendee } from "@/types/attendees";
+
+export const attendees: Attendee[] = [
+  // Afrobeats Night Market (eventId: "2")  8 total, 3 checked in, 5 not
+  {
+    _id: "a1",
+    eventId: "2",
+    name: "Ada Okafor",
+    email: "ada.okafor@example.com",
+    referenceCode: "EVT-8FQ2",
+    checkedIn: true,
+  },
+  {
+    _id: "a2",
+    eventId: "2",
+    name: "Tunde Bakare",
+    email: "tunde.bakare@example.com",
+    referenceCode: "EVT-3KD1",
+    checkedIn: true,
+  },
+  {
+    _id: "a3",
+    eventId: "2",
+    name: "Chioma Eze",
+    email: "chioma.eze@example.com",
+    referenceCode: "EVT-9PL7",
+    checkedIn: true,
+  },
+  {
+    _id: "a4",
+    eventId: "2",
+    name: "Ifeanyi Obi",
+    email: "ifeanyi.obi@example.com",
+    referenceCode: "EVT-2XR4",
+    checkedIn: false,
+  },
+  {
+    _id: "a5",
+    eventId: "2",
+    name: "Blessing Adeyemi",
+    email: "blessing.adeyemi@example.com",
+    referenceCode: "EVT-6TN8",
+    checkedIn: false,
+  },
+  {
+    _id: "a6",
+    eventId: "2",
+    name: "Emeka Nwosu",
+    email: "emeka.nwosu@example.com",
+    referenceCode: "EVT-1QZ5",
+    checkedIn: false,
+  },
+  {
+    _id: "a7",
+    eventId: "2",
+    name: "Funmilayo Adebayo",
+    email: "funmilayo.adebayo@example.com",
+    referenceCode: "EVT-4WY9",
+    checkedIn: false,
+  },
+  {
+    _id: "a8",
+    eventId: "2",
+    name: "Segun Balogun",
+    email: "segun.balogun@example.com",
+    referenceCode: "EVT-7MC3",
+    checkedIn: false,
+  },
+
+  // Lagos Frontend Meetup (eventId: "1") 3 total, 2 checked in, 1 not
+  {
+    _id: "a9",
+    eventId: "1",
+    name: "Dayo Fashola",
+    email: "dayo.fashola@example.com",
+    referenceCode: "EVT-5HK2",
+    checkedIn: true,
+  },
+  {
+    _id: "a10",
+    eventId: "1",
+    name: "Ngozi Chukwu",
+    email: "ngozi.chukwu@example.com",
+    referenceCode: "EVT-8VB6",
+    checkedIn: true,
+  },
+  {
+    _id: "a11",
+    eventId: "1",
+    name: "Kelechi Uzo",
+    email: "kelechi.uzo@example.com",
+    referenceCode: "EVT-3JD0",
+    checkedIn: false,
+  },
+];

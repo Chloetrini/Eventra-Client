@@ -56,6 +56,21 @@ const routes = [
               return { Component };
             },
           },
+
+          {
+            path: "attendees",
+            handle: {
+              seo: {
+                title: "Attendees",
+                description:
+                  "See who's coming to each event and report the guest list.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } = await import("@/routes/attendees");
+              return { Component };
+            },
+          },
           {
             path: "payment",
             children: [

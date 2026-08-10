@@ -40,10 +40,7 @@ export function EventsTable({ events }: EventsTableProps) {
             <TableHead className="text-[#6E6577] font-medium"> DATE </TableHead>
             <TableHead className="text-[#6E6577] font-medium"> TYPE </TableHead>
             <TableHead className="text-[#6E6577] font-medium"> SOLD </TableHead>
-            <TableHead className="text-[#6E6577] font-medium">
-              {" "}
-              REVENUE{" "}
-            </TableHead>
+            <TableHead className="text-[#6E6577] font-medium">{" "}REVENUE{" "}</TableHead>
             <TableHead className="text-[#6E6577] font-medium"> STATUS </TableHead>
             <TableHead className="w-10"></TableHead>
           </TableRow>

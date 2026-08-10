@@ -6,6 +6,7 @@ import RootLayout from "./root/layout";
 import MainLayout from "./main/layout";
 import AuthLayout from "./auth/layout";
 import Onboardinglayout from "./onboarding/layout";
+import OrganizerLayout from "./organizer/layout";
 
 const routes = [
     {
@@ -178,6 +179,20 @@ const routes = [
                     return { Component };
                 }
             },
+            {
+                        path: "profile-settings",
+                        handle: {
+                            seo: {
+                                title: "Profile & Settings",
+                                description: "Manage your account.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/profile/index");
+                            return { Component };
+                        }
+                    },
 
             {
                 path: "auth",
@@ -368,11 +383,7 @@ const routes = [
                     },
                 ],
             },
-
-        ],
-
-    },
-    {
+            {
         path: "onboarding",
         Component: Onboardinglayout,
         children: [
@@ -436,8 +447,37 @@ const routes = [
                     return { Component };
                 },
             },
+
         ],
+
     },
+    {
+                        path: "organizer",
+                        Component: OrganizerLayout,
+                        children: [
+                            {
+                                path: "dashboard",
+                                handle: {
+                                    seo: {
+                                        title: "Organizer Dashboard",
+                                        description: "Manage your events and organization.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/organizer/dashboard/index");
+                                    return { Component };
+                                },
+                            },
+                        ]
+                    },
+
+        ],
+
+    },
+    
+                    
+
 ] satisfies RouteObject[];
 
 export const router = createBrowserRouter(routes);

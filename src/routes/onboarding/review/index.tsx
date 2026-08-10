@@ -26,7 +26,7 @@ const ReviewPage = () => {
             console.log("submitting", values)
 
             // flow is done — don't leave stale draft data behind
-            sessionStorage.removeItem(ONBOARDING_STORAGE_KEY)
+            localStorage.removeItem(ONBOARDING_STORAGE_KEY)
             navigate("/onboarding/success")
         } finally {
             setIsSubmitting(false)

@@ -50,6 +50,6 @@ async function fetchMyTicketsReal(): Promise<Ticket[]> {
 }
 
 export function fetchMyTickets(): Promise<Ticket[]> {
-  return fetchMyTicketsMock();
+  return fetchMyTicketsReal();
   // When the backend is ready: return fetchMyTicketsReal();
 }

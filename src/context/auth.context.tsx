@@ -1,6 +1,7 @@
 import { createContext, useContext, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { clearOnboardingSubmitted } from "@/lib/onboarding-store";
 
 type User = {
   id: string;
@@ -108,7 +109,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   } catch {
     // clear locally regardless
   }
-  localStorage.removeItem("saved-events");   // ← add this
+  localStorage.removeItem("saved-events");
+  clearOnboardingSubmitted();   
   queryClient.setQueryData(ME_QUERY_KEY, null);
 }
 

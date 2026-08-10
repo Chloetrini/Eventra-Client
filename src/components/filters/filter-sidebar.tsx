@@ -1,15 +1,15 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { CATEGORIES, PRICE_TIERS, type Category } from "@/types/event-types";
+import { PRICE_TIERS } from "@/types/event-types";
 import { Button } from "@/components/ui/button";
 import type { EventFilters } from "@/types/event-types";
 import type { DateWindow, PriceTier } from "@/types/event-types";
-
+import type { EventCategory } from "@/lib/events-api";
 
 type FilterSidebarProps = {
-
   filters: EventFilters;
+  categories: EventCategory[];       // real categories with _id + name
   categoryCounts: Record<string, number>;
-  onToggleCategory: (c: Category) => void;
+  onToggleCategory: (categoryId: string) => void;
   onSelectWhen: (w: DateWindow) => void;
   onSelectPrice: (p: PriceTier) => void;
   onClearAll: () => void;
@@ -17,6 +17,7 @@ type FilterSidebarProps = {
 
 export function FilterSidebar({
   filters,
+  categories,
   categoryCounts,
   onToggleCategory,
   onSelectPrice,
@@ -34,22 +35,22 @@ export function FilterSidebar({
           Category
         </h3>
         <ul className="space-y-4 ">
-          {CATEGORIES.map((category) => (
-            <li key={category} className="flex items-center gap-2 ">
+          {categories.map((cat) => (
+            <li key={cat._id} className="flex items-center gap-2 ">
               <Checkbox
-                id={`cat-${category}`}
-                checked={filters.categories.includes(category)}
-                onCheckedChange={() => onToggleCategory(category)}
+                id={`cat-${cat._id}`}
+                checked={filters.categories.includes(cat._id)}
+                onCheckedChange={() => onToggleCategory(cat._id)}
                 className="w-[19px] h-[19px]"
               />
               <label
-                htmlFor={`cat-${category}`}
+                htmlFor={`cat-${cat._id}`}
                 className="flex-1 cursor-pointer text-[15px] font-sans text-[#6E6577] font-[400]"
               >
-                {category}
+                {cat.name}
               </label>
               <span className="text-xs text-muted-foreground">
-                {categoryCounts[category] ?? 0}
+                {categoryCounts[cat._id] ?? 0}
               </span>
             </li>
           ))}
@@ -76,9 +77,6 @@ export function FilterSidebar({
           ))}
         </ul>
       </section>
-
-
-
     </aside>
   );
 }

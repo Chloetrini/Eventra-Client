@@ -45,6 +45,7 @@ export const registerSchema = z.object({
       message: 'Invalid phone number',
     }),
 })
+
 export const contactSchema = z.object({
   fullName: z
     .string({
@@ -91,7 +92,7 @@ export const eventVenueSchema = z.object({
 export const lineupMemberSchema = z.object({
   _id: z.string().optional(),
   name: z.string(),
-  role: z.string(),
+  role: z.string().optional(),   // relaxed: backend doesn't always send this
   imageUrl: z.string().nullable().optional(),
 });
 
@@ -105,6 +106,7 @@ export const ticketTierSchema = z.object({
   availability: z.enum(["available", "scarce", "sold out"]).optional(),
   quantityLeft: z.number().nullable().optional(),
 });
+
 // The ticket-tier group for one event — its own backend collection, keyed by slug.
 export const eventTicketsSchema = z.object({
   eventSlug: z.string(),
@@ -119,7 +121,12 @@ export const eventSchema = z.object({
   title: z.string(),
   description: z.string().optional(),
   type: z.enum(["free", "paid"]),
-  category: z.enum(CATEGORIES),           // backend sends an id/name; string keeps it flexible
+ category: z.preprocess((val) => {
+  if (typeof val === "string") return val;
+  if (val && typeof val === "object" && "name" in val) return (val as { name: string }).name;
+  if (val && typeof val === "object" && "_id" in val) return (val as { _id: string })._id;
+  return "Uncategorized";
+}, z.string()), // relaxed: backend sends a category ID, not the display name enum
   coverImage: z.string().optional(),
   venue: eventVenueSchema,
   startDate: z.string(),

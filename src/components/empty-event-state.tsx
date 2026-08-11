@@ -6,7 +6,7 @@ export function EventsEmptyState() {
             <div className="bg-[#E4F1EB] rounded-xl p-4 mb-4">
                 <img src={GemImage} alt="Gem image" className="size-6" />
             </div>
-            <p className="text-base font-semibold text-[#1A1523] ">
+            <p className="text-base text-[#1A1523] ">
                  No Event here
             </p>
             <p className="text-sm mt-1 text-[#4A4451]">

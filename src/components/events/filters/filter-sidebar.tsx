@@ -7,8 +7,7 @@ import type { EventCategory } from "@/lib/events-api";
 
 type FilterSidebarProps = {
   filters: EventFilters;
-  categories: EventCategory[];       // real categories with _id + name
-  categoryCounts: Record<string, number>;
+  categories: EventCategory[];   // now includes eventCount directly
   onToggleCategory: (categoryId: string) => void;
   onSelectWhen: (w: DateWindow) => void;
   onSelectPrice: (p: PriceTier) => void;
@@ -18,7 +17,6 @@ type FilterSidebarProps = {
 export function FilterSidebar({
   filters,
   categories,
-  categoryCounts,
   onToggleCategory,
   onSelectPrice,
   onClearAll,
@@ -35,25 +33,29 @@ export function FilterSidebar({
           Category
         </h3>
         <ul className="space-y-4 ">
-          {categories.map((cat) => (
-            <li key={cat._id} className="flex items-center gap-2 ">
-              <Checkbox
-                id={`cat-${cat._id}`}
-                checked={filters.categories.includes(cat._id)}
-                onCheckedChange={() => onToggleCategory(cat._id)}
-                className="w-[19px] h-[19px]"
-              />
-              <label
-                htmlFor={`cat-${cat._id}`}
-                className="flex-1 cursor-pointer text-[15px] font-sans text-[#6E6577] font-[400]"
-              >
-                {cat.name}
-              </label>
-              <span className="text-xs text-muted-foreground">
-                {categoryCounts[cat._id] ?? 0}
-              </span>
-            </li>
-          ))}
+          {categories.length === 0 ? (
+            <li className="text-[13px] text-muted-foreground">No categories yet</li>
+          ) : (
+            categories.map((cat) => (
+              <li key={cat._id} className="flex items-center gap-2 ">
+                <Checkbox
+                  id={`cat-${cat._id}`}
+                  checked={filters.categories.includes(cat._id)}
+                  onCheckedChange={() => onToggleCategory(cat._id)}
+                  className="w-[19px] h-[19px]"
+                />
+                <label
+                  htmlFor={`cat-${cat._id}`}
+                  className="flex-1 cursor-pointer text-[15px] font-sans text-[#6E6577] font-[400]"
+                >
+                  {cat.name}
+                </label>
+                <span className="text-xs text-muted-foreground">
+                  {cat.eventCount}
+                </span>
+              </li>
+            ))
+          )}
         </ul>
         <hr className="mt-7" />
       </section>

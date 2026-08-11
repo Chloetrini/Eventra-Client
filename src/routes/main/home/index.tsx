@@ -23,7 +23,7 @@ import {
 } from "@/lib/home-constants";
 import { fetchEvents } from "@/lib/events-api";
 import { DEFAULT_FILTERS } from "@/types/event-types";
-import { Format } from "@/lib/format";
+import { Format } from "@/lib/utils";
 import HowItWorks from "@/components/events/HowItWorks";
 import { OrganizersCta } from "@/components/events/OrganizersCta";
 
@@ -56,207 +56,211 @@ const Home: React.FC = () => {
     <>
       {/* 1. HERO SECTION */}
       <section className="relative flex items-center bg-[#4A4451] text-white overflow-hidden">
-      <PageWrapper className="p-[20px]">
+        <PageWrapper className="p-[20px]">
 
-        <div
-          className="absolute inset-0 bg-cover bg-center z-0 scale-110 blur-[18px] md:blur-[4px]"
-          style={{ backgroundImage: `url(${UI_ASSETS.bgDesktop})` }}
+          <div
+            className="absolute inset-0 bg-cover bg-center z-0 scale-110 blur-[18px] md:blur-[4px]"
+            style={{ backgroundImage: `url(${UI_ASSETS.bgDesktop})` }}
           />
-        <div className="absolute inset-0 bg-linear-to-b from-black/70 to-black/30 z-1" />
+          <div className="absolute inset-0 bg-linear-to-b from-black/70 to-black/30 z-1" />
 
-        <div className="relative z-10 w-full ">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            <div className="lg:col-span-7 space-y-6">
-              <div className="flex flex-row items-center gap-1">
-                <div className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
-                <span className="inline-block text-[#FCD98A] text-[12px] uppercase tracking-[0.08em] font-regular font-space">
-                  214 EVENTS THIS WEEK . LAGOS
-                </span>
-              </div>
+          <div className="relative z-10 w-full ">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              <div className="lg:col-span-7 space-y-6">
+                <div className="flex flex-row items-center gap-1">
+                  <div className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
+                  <span className="inline-block text-[#FCD98A] text-[12px] uppercase tracking-[0.08em] font-regular font-space">
+                    214 EVENTS THIS WEEK . LAGOS
+                  </span>
+                </div>
 
-              <h1 className="text-[40px] sm:text-[54px] lg:text-[64px] font-bold md:font-extrabold tracking-[-0.03em] leading-none font-geist md:font-grotesk">
-                Find events worth{" "}
-                <span className="text-[#FCD98A]">showing up</span> for.
-              </h1>
+                <h1 className="text-[40px] sm:text-[54px] lg:text-[64px] font-bold md:font-extrabold tracking-[-0.03em] leading-none font-geist md:font-grotesk">
+                  Find events worth{" "}
+                  <span className="text-[#FCD98A]">showing up</span> for.
+                </h1>
 
-              <p className="text-[16px] sm:text-[18px] text-white/90 max-w-xl font-normal font-geist leading-7">
-                Concerts, conferences, parties and more — real tickets, instant
-                entry, and none of the group-chat wahala.
-              </p>
+                <p className="text-[16px] sm:text-[18px] text-white/90 max-w-xl font-normal font-geist leading-7">
+                  Concerts, conferences, parties and more — real tickets, instant
+                  entry, and none of the group-chat wahala.
+                </p>
 
-              {/* Search Bar */}
-              <div className="bg-white shadow-lg rounded-xl overflow-hidden">
-                {/* Mobile */}
-                <div className="lg:hidden">
-                  <div className="flex items-center gap-2 px-4 py-3">
-                    <Search className="w-4 h-4 text-[#3A3A3A] shrink-0 rotate-90" />
+                {/* Search Bar */}
+                <div className="bg-white shadow-lg rounded-xl overflow-hidden">
+                  {/* Mobile */}
+                  <div className="lg:hidden">
+                    <div className="flex items-center gap-2 px-4 py-3">
+                      <Search className="w-4 h-4 text-[#3A3A3A] shrink-0 rotate-90" />
+                      <input
+                        type="text"
+                        value={heroSearch}
+                        onChange={(e) => setHeroSearch(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleHeroSearch()}
+                        placeholder="Search, events, artists and venues"
+                        className="bg-transparent border-none text-[#1A1523] placeholder-[#4A4451]/60 text-sm focus:outline-none w-full font-geist"
+                      />
+                    </div>
+
+                    {/* Divider */}
+                    <div className="h-px bg-[#E8E6E0] mx-4" />
+
+                    <div className="flex items-center gap-2 px-4 py-3">
+                      <img src={gpsUrl} alt="gps" className="shrink-0" />
+                      <Select value={heroState} onValueChange={(v) => setHeroState(v ?? "all")}>
+                        <SelectTrigger className="border-none shadow-none flex-1 h-auto font-geist text-sm text-[#1A1523] focus:ring-0 px-0">
+                          <SelectValue placeholder="All states">
+                            {(value) => (value === "all" ? "All states" : value)}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All states</SelectItem>
+                          {STATES.map((state) => (
+                            <SelectItem key={state} value={state}>{state}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="px-4 pb-4">
+                      <button
+                        onClick={handleHeroSearch}
+                        className="w-full py-3 bg-[#0F6E56] hover:bg-[#0A4F41] text-white font-bold text-sm rounded-xl transition-all font-geist"
+                      >
+                        Search
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Desktop */}
+                  <div className="hidden gap-1 lg:flex items-center  px-4 py-2">
+                    <Search className="w-4 h-4 text-[#3A3A3A] shrink-0 rotate-90 " />
                     <input
                       type="text"
                       value={heroSearch}
                       onChange={(e) => setHeroSearch(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleHeroSearch()}
                       placeholder="Search, events, artists and venues"
-                      className="bg-transparent border-none text-[#1A1523] placeholder-[#4A4451]/60 text-sm focus:outline-none w-full font-geist"
+                      className="bg-transparent border-none text-[#1A1523] placeholder-[#4A4451]/60 text-sm focus:outline-none flex-1 font-geist"
                     />
-                  </div>
 
-                  {/* Divider */}
-                  <div className="h-px bg-[#E8E6E0] mx-4" />
+                    {/* Vertical divider */}
+                    <div className="h-6 w-px bg-[#E8E6E0] shrink-0" />
 
-                  <div className="flex items-center gap-2 px-4 py-3">
-                    <img src={gpsUrl} alt="gps" className="shrink-0" />
+                    {/* Location dropdown */}
                     <Select value={heroState} onValueChange={(v) => setHeroState(v ?? "all")}>
-                      <SelectTrigger className="border-none shadow-none flex-1 h-auto font-geist text-sm text-[#1A1523] focus:ring-0 px-0">
-                        <SelectValue placeholder="All states" />
+                      <SelectTrigger className="border-none shadow-none w-[140px] h-auto font-geist text-sm text-[#1A1523] focus:ring-0 shrink-0 gap-2 max-w-[125px]">
+                        <img src={gpsUrl} alt="gps" />
+                        <SelectValue placeholder="All states">
+                          {(value) => (value === "all" ? "All states" : value)}
+                        </SelectValue>
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent >
                         <SelectItem value="all">All states</SelectItem>
                         {STATES.map((state) => (
                           <SelectItem key={state} value={state}>{state}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
 
-                  <div className="px-4 pb-4">
+                    {/* Search button */}
                     <button
                       onClick={handleHeroSearch}
-                      className="w-full py-3 bg-[#0F6E56] hover:bg-[#0A4F41] text-white font-bold text-sm rounded-xl transition-all font-geist"
+                      className="px-5 py-2.5 bg-[#0F6E56] hover:bg-[#0A4F41] text-white font-bold text-sm rounded-lg transition-all font-geist whitespace-nowrap"
                     >
                       Search
                     </button>
                   </div>
                 </div>
 
-                {/* Desktop */}
-                <div className="hidden lg:flex items-center gap-3 px-4 py-2">
-                  <Search className="w-4 h-4 text-[#3A3A3A] shrink-0 rotate-90" />
-                  <input
-                    type="text"
-                    value={heroSearch}
-                    onChange={(e) => setHeroSearch(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleHeroSearch()}
-                    placeholder="Search, events, artists and venues"
-                    className="bg-transparent border-none text-[#1A1523] placeholder-[#4A4451]/60 text-sm focus:outline-none flex-1 font-geist"
-                  />
-
-                  {/* Vertical divider */}
-                  <div className="h-6 w-px bg-[#E8E6E0] shrink-0" />
-
-                  {/* Location dropdown */}
-                  <Select value={heroState} onValueChange={(v) => setHeroState(v ?? "all")}>
-                    <SelectTrigger className="border-none shadow-none w-[140px] h-auto font-geist text-sm text-[#1A1523] focus:ring-0 shrink-0 gap-2">
-                      <img src={gpsUrl} alt="gps" />
-                      <SelectValue placeholder="All states" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All states</SelectItem>
-                      {STATES.map((state) => (
-                        <SelectItem key={state} value={state}>{state}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  {/* Search button */}
-                  <button
-                    onClick={handleHeroSearch}
-                    className="px-5 py-2.5 bg-[#0F6E56] hover:bg-[#0A4F41] text-white font-bold text-sm rounded-lg transition-all font-geist whitespace-nowrap"
-                  >
-                    Search
-                  </button>
+                {/* Popular Categories */}
+                <div className="font-geist flex flex-row items-start sm:items-center gap-3">
+                  <span className="font-medium text-[13px] text-white/70 shrink-0">
+                    POPULAR
+                  </span>
+                  <div className="text-[#FCD98A] text-[13px] flex flex-row flex-wrap items-center gap-x-3 gap-y-1">
+                    <span>Afrobeats</span>
+                    <span className="text-white/40">●</span>
+                    <span>Tech</span>
+                    <span className="text-white/40">●</span>
+                    <span>Comedy</span>
+                    <span className="text-white/40">●</span>
+                    <span>Detty December</span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Popular Categories */}
-              <div className="font-geist flex flex-row items-start sm:items-center gap-3">
-                <span className="font-medium text-[13px] text-white/70 shrink-0">
-                  POPULAR
-                </span>
-                <div className="text-[#FCD98A] text-[13px] flex flex-row flex-wrap items-center gap-x-3 gap-y-1">
-                  <span>Afrobeats</span>
-                  <span className="text-white/40">●</span>
-                  <span>Tech</span>
-                  <span className="text-white/40">●</span>
-                  <span>Comedy</span>
-                  <span className="text-white/40">●</span>
-                  <span>Detty December</span>
-                </div>
-              </div>
-
-              {/* Mobile card — below popular tags, inside hero */}
-              {heroEvent && (
-                <div className="lg:hidden mt-4">
-                  <div className="bg-white rounded-2xl overflow-hidden shadow-xl">
-                    <div className="relative h-[180px] overflow-hidden">
-                      <img
-                        src={heroEvent.coverImage}
-                        alt={heroEvent.title}
-                        className="w-full h-full object-cover"
-                        />
-                      <div className="absolute inset-0 bg-linear-to-l from-[#041611]/70 to-[#0B3D31]/10" />
-                      <span className="absolute top-3 left-3 bg-[#F5A524] text-black text-[12px] font-medium font-geist px-3 py-1 rounded-full flex items-center gap-1">
+                {/* Mobile card — below popular tags, inside hero */}
+                {heroEvent && (
+                  <div className="lg:hidden mt-4">
+                    <div className="bg-white rounded-2xl overflow-hidden shadow-xl">
+                      <div className="relative h-[180px] overflow-hidden">
                         <img
-                          className="h-3 w-3"
-                          src={UI_ASSETS.star}
-                          alt="star"
+                          src={heroEvent.coverImage}
+                          alt={heroEvent.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-linear-to-l from-[#041611]/70 to-[#0B3D31]/10" />
+                        <span className="absolute top-3 left-3 bg-[#F5A524] text-black text-[12px] font-medium font-geist px-3 py-1 rounded-full flex items-center gap-1">
+                          <img
+                            className="h-3 w-3"
+                            src={UI_ASSETS.star}
+                            alt="star"
                           />
-                        Featured
-                      </span>
-                      <span className="absolute top-3 right-3 text-white font-bold text-[12px] font-space tracking-widest">
-                        № {heroEvent.no ?? heroEvent._id.padStart(4, "0")}
-                      </span>
-                    </div>
-                    <div className="p-4">
-                      <span className="text-xs text-[#0F6E56] font-geist uppercase tracking-widest font-medium">
-                        {heroEvent.category}
-                        {heroEvent.subcategory && ` • ${heroEvent.subcategory}`}
-                      </span>
-                      <h3 className="text-xl font-bold text-[#1A1523] font-grotesk mt-0.5">
-                        {heroEvent.title}
-                      </h3>
-                      <p className="text-sm text-[#4A4451] font-geist mt-1">
-                        {new Date(heroEvent.startDate).toLocaleString("en-NG", {
-                          weekday: "short",
-                          day: "numeric",
-                          month: "short",
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        })}{" "}
-                        · {heroEvent.venue.name}
-                      </p>
-                      <div className="mt-4 pt-3 border-t border-[#E8E6E0] flex items-center justify-between">
-                        <div>
-                          <span className="text-lg font-bold font-space text-[#1A1523]">
-                            {heroEvent.minPrice === 0
-                              ? "Free"
-                              : Format.amount(heroEvent.minPrice)}
-                          </span>
-                          <span className="text-xs text-[#4A4451] block font-geist">
-                            from Regular
-                          </span>
-                        </div>
-                        <Link
-                          to={`/events/${heroEvent.slug}`}
-                          className="px-4 py-2 bg-[#0F6E56] hover:bg-[#0A4F41] text-white font-bold text-sm rounded-lg transition-colors font-geist"
+                          Featured
+                        </span>
+                        <span className="absolute top-3 right-3 text-white font-bold text-[12px] font-space tracking-widest">
+                          № {heroEvent.no ?? heroEvent._id.padStart(4, "0")}
+                        </span>
+                      </div>
+                      <div className="p-4">
+                        <span className="text-xs text-[#0F6E56] font-geist uppercase tracking-widest font-medium">
+                          {heroEvent.category}
+                          {heroEvent.subcategory && ` • ${heroEvent.subcategory}`}
+                        </span>
+                        <h3 className="text-xl font-bold text-[#1A1523] font-grotesk mt-0.5">
+                          {heroEvent.title}
+                        </h3>
+                        <p className="text-sm text-[#4A4451] font-geist mt-1">
+                          {new Date(heroEvent.startDate).toLocaleString("en-NG", {
+                            weekday: "short",
+                            day: "numeric",
+                            month: "short",
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          })}{" "}
+                          · {heroEvent.venue.name}
+                        </p>
+                        <div className="mt-4 pt-3 border-t border-[#E8E6E0] flex items-center justify-between">
+                          <div>
+                            <span className="text-lg font-bold font-space text-[#1A1523]">
+                              {heroEvent.minPrice === 0
+                                ? "Free"
+                                : Format.amount(heroEvent.minPrice)}
+                            </span>
+                            <span className="text-xs text-[#4A4451] block font-geist">
+                              from Regular
+                            </span>
+                          </div>
+                          <Link
+                            to={`/events/${heroEvent.slug}`}
+                            className="px-4 py-2 bg-[#0F6E56] hover:bg-[#0A4F41] text-white font-bold text-sm rounded-lg transition-colors font-geist"
                           >
-                          Get tickets
-                        </Link>
+                            Get tickets
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
 
-            <div className="hidden lg:flex lg:col-span-5 justify-end items-center">
-              <div className="w-full translate-x-8">
-                <StackedCardCarousel events={featuredEvents} />
+              <div className="hidden lg:flex lg:col-span-5 justify-end items-center">
+                <div className="w-full translate-x-8">
+                  <StackedCardCarousel events={featuredEvents} />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-              </PageWrapper>
+        </PageWrapper>
       </section>
 
       <PageWrapper className="p-[20px]">
@@ -504,11 +508,10 @@ const Home: React.FC = () => {
                 >
                   <span>{faq.question}</span>
                   <ChevronDown
-                    className={`w-5 h-5 transition-transform duration-200 ${
-                      openFaq === idx
+                    className={`w-5 h-5 transition-transform duration-200 ${openFaq === idx
                         ? "rotate-180 text-[#0F6E56]"
                         : "text-[#4A4451]"
-                    }`}
+                      }`}
                   />
                 </button>
                 {openFaq === idx && (
@@ -521,7 +524,7 @@ const Home: React.FC = () => {
           </div>
         </section>
         {/* 9. BOTTOM CTA BANNER */}
-        <CtaBanner 
+        <CtaBanner
           label="COME BUILD THE CULTURE"
           heading="Your next night out starts here."
           body="Discover an event to attend, or start selling tickets to your own. It only takes a minute."

@@ -11,11 +11,12 @@ import card from '@/assets/card.png'
 import bank from '@/assets/bank.png'
 import hashTag from '@/assets/hash.png'
 import qrcode from '@/assets/qrcode2.png'
-import TicketPreview from '@/components/ticket-preview'
+import TicketPreview from '@/components/tickets/ticket-preview'
 import { useLocation, useNavigate, Link } from 'react-router'
 import PageWrapper from '@/components/pageWrapper'
 import { toast } from 'react-toastify'
 import { rsvpFreeEvent, initializeCheckout } from '@/lib/tickets-api'
+import { getExploreUrl } from '@/lib/explore.history'
 
 const Checkout = () => {
     const location = useLocation()
@@ -74,7 +75,7 @@ const Checkout = () => {
                 guestEmail: data.email,
                 guestPhone: data.phoneNumber,
             })
-            console.log("RSVP RESULT:", tickets) 
+            console.log("RSVP RESULT:", tickets)
             toast.success('Reservation confirmed')
             navigate('/payment/ticket-confirmation', {
                 state: { tickets, event: ticket, buyer: data, type: 'free' },
@@ -113,6 +114,10 @@ const Checkout = () => {
     return (
         <PageWrapper className='p-[20px]'>
             <nav className="flex items-center gap-1 pb-4 text-xs text-muted-foreground mt-3">
+                <Link to={getExploreUrl()} className="hover:text-foreground">
+                    Explore
+                </Link>
+                <ChevronRight className="h-3 w-3" />
                 <Link to={`/events/${ticket.slug}`} className="hover:text-foreground">
                     {ticket.eventName}
                 </Link>
@@ -201,7 +206,7 @@ const Checkout = () => {
                             ticketCheckout={ticket}
                             onPay={handleSubmitForm}
                             isSubmitting={isSubmitting}
-                    
+
                         />
                     </div>
                 </div>

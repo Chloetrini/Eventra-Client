@@ -15,10 +15,10 @@ import { saveExploreUrl } from "@/lib/explore.history";
 
 export default function ExplorePage() {
   const navigate = useNavigate();
-  const { filters, setFilter, toggleCategory, clearAll, loadMore } =
+  const { filters, setFilter, toggleCategory, clearAll } =
     useEventFilters();
 
-  const { data, isLoading, isFetching, isError, refetch } = useEvents(filters);
+  const { data, isLoading, isFetching, isError, refetch ,loadMore} = useEvents(filters);
 const { categories } = useCategories();
   const events = data?.events ?? [];
   const featured = events.find((e) => e.isPromoted);
@@ -82,7 +82,6 @@ const { categories } = useCategories();
           <FilterSidebar
             filters={filters}
             categories={categories}
-            categoryCounts={data?.categoryCounts ?? {}}
             onToggleCategory={toggleCategory}
             onSelectWhen={(w) => setFilter("when", w)}
             onSelectPrice={(p) => setFilter("price", p)}
@@ -108,7 +107,7 @@ const { categories } = useCategories();
 
           {data?.hasMore && (
             <div className="mt-10 flex justify-center mx-auto">
-              <Button variant="outline" onClick={loadMore} disabled={isFetching} className="text-[15px] font-[700] font-sans max-w-[177px] min-h-[42px]">
+              <Button variant="outline" onClick={() => loadMore()}disabled={isFetching} className="text-[15px] font-[700] font-sans max-w-[177px] min-h-[42px]">
                 {isFetching ? "Loading…" : "Load more events"}
                 <ArrowRight />
               </Button>

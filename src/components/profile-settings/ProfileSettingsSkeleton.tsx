@@ -1,8 +1,9 @@
 import React from 'react';
+import PageWrapper from '../pageWrapper';
 
 export default function ProfileSettingsSkeleton() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8 animate-pulse">
+    <PageWrapper className="p-[20px] animate-pulse">
       {/* Profile Header Skeleton */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 pb-8 border-b border-gray-200 mb-8">
         <div className="h-20 w-20 bg-gray-200 rounded-full flex-shrink-0" />
@@ -40,6 +41,6 @@ export default function ProfileSettingsSkeleton() {
           </div>
         </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

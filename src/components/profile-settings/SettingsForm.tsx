@@ -32,8 +32,9 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSave }) => {
   });
 
   return (
-    <div className="container mx-auto w-11/12 border border-[#E8E6E0] rounded-[20px] p-10 mb-18">
-      <h2 className="font-[Schibsted Grotesk] font-semibold text-[#000000] text-[34px] leading-10 md:leading-1 tracking-[-2%] pb-6">
+    <div className="border border-[#E8E6E0] rounded-[20px] py-10 px-14  mb-18">
+      <h2 className="font-grotesk 
+      font-semibold text-[#000000] text-[34px] leading-10 md:leading-1 tracking-[-2%] pb-6">
         Personal Information
       </h2>
 

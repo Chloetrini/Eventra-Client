@@ -1,19 +1,14 @@
 import { z } from "zod";
 import { api } from "@/lib/api";
-
-
 import {
   eventSchema,
 } from "@/lib/schema";
-import { DATE_WINDOWS, PRICE_TIERS, type Event, type EventFilters } from "@/types/event-types";
-
-const PAGE_SIZE = 9;
+import { type Event, type EventFilters } from "@/types/event-types";
 
 export type EventsResponse = {
   events: Event[];
   total: number;
   hasMore: boolean;
-  categoryCounts: Record<string, number>;
 };
 
 // Matches the backend's actual shape: { events: [...], meta: { total, hasMore, ... } }
@@ -27,32 +22,16 @@ const eventsResponseSchema = z.object({
     hasMore: z.boolean(),
   }),
 });
+
 const categorySchema = z.object({
   _id: z.string(),
   name: z.string(),
   slug: z.string(),
+  isActive: z.boolean().optional(),
+  eventCount: z.number().optional().default(0),
 });
 
 export type EventCategory = z.infer<typeof categorySchema>;
-
-function matchesSearch(e: Event, q: string) {
-  if (!q.trim()) return true;
-  const n = q.toLowerCase();
-  return (
-    e.title.toLowerCase().includes(n) ||
-    e.venue.name.toLowerCase().includes(n) ||
-    e.venue.city.toLowerCase().includes(n) ||
-    e.category.toLowerCase().includes(n)
-  );
-}
-
-
-// ---------------------------------------------------------------------
-// MOCK implementation — used while there's no backend.
-// ---------------------------------------------------------------------
-const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-
 
 // ---------------------------------------------------------------------
 // Maps our EventFilters to the EXACT query params the backend expects.
@@ -109,21 +88,12 @@ export async function fetchEventsReal(filters: EventFilters): Promise<EventsResp
   const res = await api.get(`/events?${buildParams(filters)}`);
   const parsed = eventsResponseSchema.parse(res.body);
 
-  // Normalize backend's nested `meta` into the flat shape the rest of the app expects.
-  // categoryCounts isn't provided by the backend yet — derive it from what we got back.
-  const categoryCounts = parsed.events.reduce<Record<string, number>>((acc, e) => {
-    acc[e.category] = (acc[e.category] ?? 0) + 1;
-    return acc;
-  }, {});
-
   return {
     events: parsed.events,
     total: parsed.meta.total,
     hasMore: parsed.meta.hasMore,
-    categoryCounts,
   };
 }
-
 
 async function fetchEventBySlugReal(slug: string): Promise<Event | null> {
   try {
@@ -134,22 +104,16 @@ async function fetchEventBySlugReal(slug: string): Promise<Event | null> {
   }
 }
 
-// ---------------------------------------------------------------------
-// ONE-LINE SWITCH: flip these when you need mock data instead of live
-// ---------------------------------------------------------------------
 export async function fetchEvents(filters: EventFilters) {
   return await fetchEventsReal(filters);
-  // return await fetchEventsMock(filters);
 }
 
 export function fetchEventBySlug(slug: string): Promise<Event | null> {
   return fetchEventBySlugReal(slug);
-  // return fetchEventBySlugMock(slug);
 }
 
 export async function fetchCategories(): Promise<EventCategory[]> {
   const res = await api.get("/categories");
-  console.log("CATEGORIES RESPONSE:", res.body); // temporary — tells us the real shape
   const raw = Array.isArray(res.body) ? res.body : (res.body as { categories: unknown[] }).categories;
   return z.array(categorySchema).parse(raw);
 }

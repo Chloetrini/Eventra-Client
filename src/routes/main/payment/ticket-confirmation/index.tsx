@@ -1,5 +1,5 @@
 import ConfirmatoryMessage from "@/components/confirmatory-message"
-import { TicketCard } from "@/components/ticket-card"
+import { TicketCard } from "@/components/tickets/ticket-card"
 import { useLocation, useNavigate } from "react-router"
 import PaymentBtn from "@/components/ui/pay-method-btn"
 import calendar from "@/assets/calendar.png";

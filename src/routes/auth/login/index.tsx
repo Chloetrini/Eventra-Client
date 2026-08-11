@@ -7,13 +7,12 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-
+import { useGoogleLogin } from "@react-oauth/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/lib/api";
 import { loginSchema } from "@/lib/schema";
-import EventraLogo from "@/assets/Eventra-logo.png";   // or whatever the real name is
+import EventraLogo from "@/assets/Eventra-logo.png";
 import { authPath } from "@/lib/auth-path";
 
 const attendeeLoginSchema = loginSchema;
@@ -35,17 +34,16 @@ export default function Login() {
     mode: "onBlur",
   });
 
-  const { login, logout } = useAuth();
+  const { login, logout, googleAuth } = useAuth();
 
   const { mutate, isPending } = useMutation({
     mutationFn: (values: AttendeeLoginValues) =>
       login(values.email, values.password),
 
     onSuccess: (user) => {
-      // The page itself (attendee vs organizer layout) must match the account's real role.
       if (isOrganizer && user.role !== "organizer") {
         toast.error("This is an attendee account. Please use the attendee login page.");
-        logout(); // clear the session immediately — don't leave them logged in on the wrong side
+        logout();
         return;
       }
       if (!isOrganizer && user.role === "organizer") {
@@ -53,12 +51,9 @@ export default function Login() {
         logout();
         return;
       }
+
       toast.success("Logged in successfully.");
-      if (user.role === "organizer") {
-        navigate("/onboarding/organisation");   // organizer dashboard later
-      } else {
-        navigate("/");   // attendee home
-      }
+      navigate(user.role === "organizer" ? "/organizer/dashboard" : "/");
     },
 
     onError: (error: Error) => {
@@ -69,6 +64,33 @@ export default function Login() {
   const onSubmit = (values: AttendeeLoginValues) => {
     mutate(values);
   };
+
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const user = await googleAuth(tokenResponse.access_token, isOrganizer ? "organizer" : "attendee");
+
+        if (isOrganizer && user.role !== "organizer") {
+          toast.error("This is an attendee account. Please use the attendee login page.");
+          await logout();
+          return;
+        }
+        if (!isOrganizer && user.role === "organizer") {
+          toast.error("This is an organizer account. Please use the organizer login page.");
+          await logout();
+          return;
+        }
+
+        toast.success("Logged in successfully.");
+        navigate(user.role === "organizer" ? "/organizer/dashboard" : "/");
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Google sign-in failed");
+      }
+    },
+    onError: () => {
+      toast.error("Google sign-in failed");
+    },
+  });
 
   return (
     <div className="h-[494px] flex flex-col justify-center ">
@@ -196,6 +218,7 @@ export default function Login() {
       <Button
         type="button"
         variant="outline"
+        onClick={() => handleGoogleLogin()}
         className="w-full h-12 border-[#E8E6E0] hover:border-[#E8E6E0] text-[#1A1523] font-bold text-[18px] leading-[29px] mb-[15px]"
       >
         <GoogleIcon className="h-4 w-4 mr-2" />

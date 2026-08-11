@@ -60,7 +60,7 @@ const NotificationToggles: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto w-11/12">
+    <div className='mb-8'>
       <div className="flex flex-col justify-center items-start border border-[#E8E6E0] rounded-[20px] p-6 sm:p-10">
         <h2 className="font-[Schibsted Grotesk] font-semibold text-[#000000] text-[24px] sm:text-[34px] leading-1 tracking-[-2%] pb-10">
           Email notifications

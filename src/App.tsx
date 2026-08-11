@@ -1,10 +1,13 @@
 import { RouterProvider } from 'react-router'
 import { ToastContainer, Bounce } from 'react-toastify';
 import { QueryClientProvider } from '@tanstack/react-query'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 import { router } from './routes'
 import { queryClient } from './lib/utils';
 import { AuthProvider } from '@/context/auth.context';
 import { ThemeProvider } from '@/context/theme.context';
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 function App() {
   return (
@@ -22,7 +25,9 @@ function App() {
         transition={Bounce} />
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <RouterProvider router={router} />
+          <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+            <RouterProvider router={router} />
+          </GoogleOAuthProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>

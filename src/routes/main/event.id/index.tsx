@@ -1,5 +1,6 @@
 import { useParams } from "react-router";
-import { ChevronRight, Link } from "lucide-react";
+import { Link } from "react-router";
+import { ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Separator } from "@/components/ui/separator";
@@ -29,8 +30,6 @@ const EventDetailPage = () => {
   const { savedIds, toggleSave } = useSavedEvents();
   const { data: event, isLoading } = useEvent(slug);
 
-
-  // All events (through the same fetch as Explore) — used to resolve related events by slug
   const { data: allEventsData } = useQuery({
     queryKey: ["all-events"],
     queryFn: () => fetchEvents(DEFAULT_FILTERS),
@@ -57,7 +56,7 @@ const EventDetailPage = () => {
     );
   }
   const isFree = event.minPrice === 0;
-
+  console.log("EVENT CATEGORY DEBUG:", { category: event.category, categoryId: event.categoryId });
   return (
     <PageWrapper className="p-[20px]">
       <nav className="flex items-center gap-1 pb-4 text-xs text-muted-foreground mt-3">
@@ -65,9 +64,12 @@ const EventDetailPage = () => {
           Explore
         </Link>
         <ChevronRight className="h-3 w-3" />
-        <a href="/explore" className="capitalize hover:text-foreground">
+        <Link
+          to={`/explore?categories=${event.categoryId ?? ""}`}
+          className="capitalize hover:text-foreground"
+        >
           {event.category.toLowerCase()}
-        </a>
+        </Link>
         <ChevronRight className="h-3 w-3" />
         <span className="text-foreground">{event.title}</span>
       </nav>

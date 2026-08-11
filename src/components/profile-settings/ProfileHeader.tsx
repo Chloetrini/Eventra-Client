@@ -13,21 +13,21 @@ interface ProfileHeaderProps {
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
     return (
-        <div className="container mx-auto w-11/12">
+        <div >
             {/* ACCOUNT label */}
             <div className="flex flex-row justify-start items-center gap-2.5 mb-10">
-                <span className='bg-[#0F6E56] ml-1 h-1 w-4 sm:h-1 sm:w-6 inline'></span>
-                <p className="font-[Schibsted Grotesk] font-semibold text-[20px] md:text-[22px] text-[#0F6E56] leading-7.5 tracking-[-1%]">
+                <span className='bg-[#0F6E56] ml-1 h-[3px] w-[30px] sm:w-[20px] inline'></span>
+                <p className="font-grotesk font-[600] text-[20px] md:text-[22px] text-[#0F6E56] leading-7.5 tracking-[-1%]">
                      ACCOUNT
                 </p>
             </div>
 
             {/* Title & description */}
             <div className="flex flex-col justify-center items-start gap-6 mt-4">
-                <h1 className="font-[Schibsted Grotesk] font-bold text-[40px] md:text-[64px] text-[#000000] leading-7.5 tracking-[-6%]">
+                <h1 className="font-grotesk font-[700] text-[40px] md:text-[64px] text-[#000000] leading-7.5 tracking-[-6%]">
                     Profile & Settings
                 </h1>
-                <p className="font-[Geist] font-medium text-[#6E6577] text-[18px] leading-7.25 tracking-[-3%]">
+                <p className="font-sans font-[700] text-[#6E6577] text-[18px] leading-7.25 tracking-[-3%]">
                     Update Your details, passwords, and how we reach you.
                 </p>
             </div>
@@ -37,15 +37,15 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
               
                 <div className="flex flex-row items-center gap-4 md:gap-7.25 flex-1">
 
-                    <div className="h-16 w-16 md:h-25.5 md:w-25.5 rounded-full bg-[#0A4F41] flex items-center justify-center text-[#FFFFFF] text-[24px] md:text-[34px] font-bold font-[Schibsted Grotesk] leading-1 tracking-[-2%]">
+                    <div className="h-16 w-16 md:h-25.5 md:w-25.5 rounded-full bg-[#0A4F41] flex items-center justify-center text-[#FFFFFF] text-[24px] md:text-[34px] font-[700] font-grotesk leading-1 tracking-[-2%]">
                         {user.initials}
                     </div>
 
                     <div className='flex flex-col gap-4 mt-4                            '>  
-                        <p className="font-[Schibsted Grotesk] font-semibold text-[24px] md:text-[34px] text-[#000000] leading-1 tracking-[-2%]">
+                        <p className="font-grotesk font-[600] text-[24px] md:text-[34px] text-[#000000] leading-1 tracking-[-2%]">
                             {user.fullName}
                         </p>
-                        <p className="font-[Geist] text-[#6E6577] text-sm md:text-base">
+                        <p className="font-sans text-[#6E6577] text-sm  font-[700] md:text-[18px]">
                             {user.email}
                         </p>
                     </div>
@@ -53,7 +53,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                 </div>
 
                
-                <p className="font-[Schibsted Grotesk] font-medium text-[#4A4451] uppercase text-sm md:text-[20px] mt-1 md:mt-0 md:ml-auto">
+                <p className="font-grotesk font-[500] text-[#4A4451] uppercase text-sm md:text-[20px] mt-1 md:mt-0 md:ml-auto">
                     Member since {user.memberSince}
                 </p>
             </div>

@@ -2,9 +2,10 @@
 import ProfileHeader from '@/components/profile-settings/ProfileHeader';
 import SettingsForm from "@/components/profile-settings/SettingsForm";
 import NToggles from '@/components/profile-settings/NToggles';
-import ProfileSettingsSkeleton from '@/components/ProfileSettingsSkeleton';
+import ProfileSettingsSkeleton from '@/components/profile-settings/ProfileSettingsSkeleton';
 import { useAuth } from '@/context/auth.context';
 import { toast } from 'react-toastify';
+import PageWrapper from '@/components/pageWrapper';
 
 export default function SettingsPage() {
   const { user, isLoading } = useAuth();
@@ -32,20 +33,23 @@ export default function SettingsPage() {
     .join('')
     .toUpperCase()
     .slice(0, 2);
+    
+const memberSince = typeof user.createdAt === "string"
+    ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })
+    : '';
 
   return (
     <>
     
-      <main className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-    
+      <PageWrapper className='p-[20px]'>
           <ProfileHeader
             user={{
               fullName: user.fullname,
               email: user.email,
-              memberSince: '',
+              memberSince,
               initials,
             }}
-          />
+            />
           <SettingsForm
             user={{
               fullName: user.fullname,
@@ -54,10 +58,11 @@ export default function SettingsPage() {
               city: typeof user.city === "string" ? user.city : undefined,
             }}
             onSave={handleSave}
-          />
+            />
           <NToggles />
        
-      </main>
+      </PageWrapper>
+    
     </>
   );
 }

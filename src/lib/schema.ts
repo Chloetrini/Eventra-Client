@@ -149,12 +149,11 @@ export const eventSchema = z.object({
   title: z.string(),
   description: z.string().optional(),
   type: z.enum(["free", "paid"]),
- category: z.preprocess((val) => {
-  if (typeof val === "string") return val;
-  if (val && typeof val === "object" && "name" in val) return (val as { name: string }).name;
-  if (val && typeof val === "object" && "_id" in val) return (val as { _id: string })._id;
-  return "Uncategorized";
-}, z.string()), // relaxed: backend sends a category ID, not the display name enum
+  category: z.union([
+    z.string(),
+    z.object({ _id: z.string(), name: z.string().optional() }),
+    z.null(),
+  ]),
   coverImage: z.string().optional(),
   venue: eventVenueSchema,
   startDate: z.string(),
@@ -166,17 +165,16 @@ export const eventSchema = z.object({
   lineupCount: z.number().default(0),
   createdAt: z.string(),
   updatedAt: z.string().optional(),
- capacity: z.number().nullable().optional(),
-reservationsCount: z.number().optional().default(0),
-ticketsSoldCount: z.number().optional().default(0),
-revenueTotal: z.number().optional().default(0),
-ticketTypes: z.array(ticketTypeSchema).optional().default([]),
-  // --- frontend-only (kept until backend provides them) ---
+  capacity: z.number().nullable().optional(),
+  reservationsCount: z.number().optional().default(0),
+  ticketsSoldCount: z.number().optional().default(0),
+  revenueTotal: z.number().optional().default(0),
+  ticketTypes: z.array(ticketTypeSchema).optional().default([]),
   // --- frontend-only (kept until backend provides them) ---
   subcategory: z.string().optional(),
   no: z.string().optional(),
   trendingScore: z.number().default(0),
-  coverImageUrl: z.string().optional(),      // legacy alias used by some components
+  coverImageUrl: z.string().optional(),
   subTags: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
   musicType: z.string().nullable().optional(),
@@ -184,8 +182,25 @@ ticketTypes: z.array(ticketTypeSchema).optional().default([]),
   doorsCloseTime: z.string().optional(),
   goodToKnow: z.array(z.string()).optional(),
   relatedEventSlugs: z.array(z.string()).optional(),
-  location: z.any().optional(),              // Ozcar's nested location, kept until migrated
-  organizer: z.any().optional(),             // kept flexible (backend = id, dummy = object)
+  location: z.any().optional(),
+  organizer: z.any().optional(),
+}).transform((event) => {
+  // Derive BOTH a display name and a real ID from the single raw `category` value.
+  let categoryName = "Uncategorized";
+  let categoryId: string | null = null;
+
+  if (typeof event.category === "string") {
+    categoryName = event.category;
+  } else if (event.category && typeof event.category === "object") {
+    categoryId = event.category._id;
+    categoryName = event.category.name ?? event.category._id;
+  }
+
+  return {
+    ...event,
+    category: categoryName,
+    categoryId,
+  };
 });
 
 export const profileSchema = z.object({
@@ -198,20 +213,20 @@ export const profileSchema = z.object({
  * STEP 1 — Organization. Always required.
  */
 export const organisationSchema = z.object({
-    organizationName: z
-        .string()
-        .min(2, "Organization name is too short")
-        .max(80, "Organization name is too long"),
-    category: z.string().min(1, "Please select a category"),
-    city: z.string().min(1, "Please select a city"),
-    contactPhone: z
-        .string()
-        .regex(/^(\+234|0)[789][01]\d{8}$/, "Enter a valid Nigerian phone number"),
-    email: z.string().email("Enter a valid email address"),
-    shortBio: z
-        .string()
-        .min(20, "Tell us a little more (at least 20 characters)")
-        .max(200, "Keep it under 200 characters"),
+  organizationName: z
+    .string()
+    .min(2, "Organization name is too short")
+    .max(80, "Organization name is too long"),
+  category: z.string().min(1, "Please select a category"),
+  city: z.string().min(1, "Please select a city"),
+  contactPhone: z
+    .string()
+    .regex(/^(\+234|0)[789][01]\d{8}$/, "Enter a valid Nigerian phone number"),
+  email: z.string().email("Enter a valid email address"),
+  shortBio: z
+    .string()
+    .min(20, "Tell us a little more (at least 20 characters)")
+    .max(200, "Keep it under 200 characters"),
 })
 
 /**
@@ -227,65 +242,65 @@ export const organisationSchema = z.object({
  * type stops matching z.infer.)
  */
 export const bankSchema = z.object({
-    accountHolderName: z.string(),
-    bank: z.string(),
-    accountNumber: z.string(),
+  accountHolderName: z.string(),
+  bank: z.string(),
+  accountNumber: z.string(),
 })
 
 /**
  * STEP 3 — Review. The terms checkbox gates the final submit.
  */
 export const termsSchema = z.object({
-    terms: z.boolean().refine((checked) => checked === true, {
-        message: "Please accept the Organizer Terms to continue",
-    }),
+  terms: z.boolean().refine((checked) => checked === true, {
+    message: "Please accept the Organizer Terms to continue",
+  }),
 })
 
 export const onboardingSchema = organisationSchema
-    .merge(bankSchema)
-    .merge(termsSchema)
-    .superRefine((data, ctx) => {
-        const { accountHolderName, bank, accountNumber } = data
+  .merge(bankSchema)
+  .merge(termsSchema)
+  .superRefine((data, ctx) => {
+    const { accountHolderName, bank, accountNumber } = data
 
-        // nothing entered at all = the step was skipped, which is allowed
-        if (!accountHolderName && !bank && !accountNumber) return
+    // nothing entered at all = the step was skipped, which is allowed
+    if (!accountHolderName && !bank && !accountNumber) return
 
-        // once one field is touched, all three have to be valid
-        if (accountHolderName.trim().length < 2) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ["accountHolderName"],
-                message: "Enter the account holder name",
-            })
-        }
+    // once one field is touched, all three have to be valid
+    if (accountHolderName.trim().length < 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["accountHolderName"],
+        message: "Enter the account holder name",
+      })
+    }
 
-        if (!bank) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ["bank"],
-                message: "Please select a bank",
-            })
-        }
+    if (!bank) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["bank"],
+        message: "Please select a bank",
+      })
+    }
 
-        if (!/^\d{10}$/.test(accountNumber)) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                path: ["accountNumber"],
-                message: "Account number must be exactly 10 digits",
-            })
-        }
-    })
+    if (!/^\d{10}$/.test(accountNumber)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["accountNumber"],
+        message: "Account number must be exactly 10 digits",
+      })
+    }
+  })
 
 export type OnboardingValues = z.infer<typeof onboardingSchema>
 
 // field name groups, used by trigger() to validate one step at a time
 export const ORGANISATION_FIELDS = [
-    "organizationName",
-    "category",
-    "city",
-    "contactPhone",
-    "email",
-    "shortBio",
+  "organizationName",
+  "category",
+  "city",
+  "contactPhone",
+  "email",
+  "shortBio",
 ] as const
 
 export const BANK_FIELDS = ["accountHolderName", "bank", "accountNumber"] as const
@@ -323,7 +338,7 @@ export const loginSchema = z.object({
   email: z.string().email({ message: "Enter a valid email address" }),
   password: z.string().min(1, { message: "Password is required" }),
 });
- 
+
 export const forgotPasswordSchema = z.object({
   email: z.string().email({ message: "Enter a valid email address" }),
 });

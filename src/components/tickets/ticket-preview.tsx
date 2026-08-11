@@ -1,10 +1,10 @@
 import React from 'react'
 import { formatDateTime, formatNaira } from '@/lib/utils'
 import { CalendarDays, MapPin } from 'lucide-react'
-import PaymentBtn from './ui/pay-method-btn'
+import PaymentBtn from '../ui/pay-method-btn'
 import lock from '@/assets/lock.png'
 import yellowLock from '@/assets/yellow lock.png'
-import { Separator } from './ui/separator'
+
 
 
 interface TicketPreviewProps {
@@ -26,10 +26,7 @@ const TicketPreview = ({ ticketCheckout, onPay, isSubmitting }: TicketPreviewPro
     0
   )
 
-  const serviceCharge = 5
-  const serviceFee = serviceCharge / 100 * subTotal
-
-  const total = subTotal + serviceFee
+  const total = subTotal
 
   const isFree = total === 0
 
@@ -89,16 +86,6 @@ const TicketPreview = ({ ticketCheckout, onPay, isSubmitting }: TicketPreviewPro
 
               </div>
             ))}
-            {!isFree && (
-              <div className='flex justify-between border-b pb-2'>
-                <p className='text-sm'>
-                  Service fee ({serviceCharge}%)
-                </p>
-                <p className='font-space font-bold'>
-                  {formatNaira(serviceFee)}
-                </p>
-              </div>
-            )}
           </div>
           <div className='flex justify-between'>
             <p className='font-grotesk font-bold'>

@@ -32,6 +32,7 @@ type AuthContextType = {
   resetPassword: (email: string, otp: string, newPassword: string) => Promise<ApiResult>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  googleAuth: (accessToken: string, role?: "attendee" | "organizer") => Promise<User>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -102,6 +103,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return api.post("/auth/reset-password", { email, otp, newPassword });
   }
 
+// --- Google OAuth login/register ---
+async function googleAuth(accessToken: string, role?: "attendee" | "organizer") {
+  await api.post("/auth/google", { accessToken, role });
+  const meRes = await api.get("/auth/me");
+  const loggedInUser = meRes.body as User;
+  queryClient.setQueryData(ME_QUERY_KEY, loggedInUser);
+  return loggedInUser;
+}
   // --- Logout: server clears the cookie, we clear the cache ---
   async function logout() {
   try {
@@ -127,6 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         resetPassword,
         logout,
         refreshUser,
+        googleAuth
       }}
     >
       {children}

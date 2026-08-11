@@ -176,7 +176,7 @@ function Navbar() {
                   <div className="py-[12px] space-y-[8px]">
                     <DropdownMenuItem>
                       <NavLink
-                        to="/profile-settings"
+                        to="/profile"
                         className="flex w-full items-center gap-[14px] px-0 py-[6px] text-[18px] font-bold text-[#1A1523] dark:text-white cursor-pointer hover:text-[#0F6E56]"
                         >
                         <UserIcon className="h-5 w-5 text-[#1A1523] dark:text-white" />

@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Switch } from "@/components/ui/switch";
+import { useNavigate } from 'react-router';
+import { useAuth } from '@/context/auth.context';
+import { toast } from 'react-toastify';
 
 interface NotificationItem {
   id: string;
@@ -32,6 +35,9 @@ const NOTIFICATIONS: NotificationItem[] = [
 ];
 
 const NotificationToggles: React.FC = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
   const [toggles, setToggles] = useState<Record<string, boolean>>(() =>
     NOTIFICATIONS.reduce(
       (acc, item) => ({ ...acc, [item.id]: item.defaultEnabled }),
@@ -43,8 +49,14 @@ const NotificationToggles: React.FC = () => {
     setToggles((prev) => ({ ...prev, [id]: checked }));
   };
 
-  const handleSignOut = () => {
-    console.log('Sign out clicked');
+  const handleSignOut = async () => {
+    try {
+      await logout();
+      toast.success("Signed out.");
+      navigate("/auth/login");
+    } catch (err) {
+      toast.error("Could not sign out. Please try again.");
+    }
   };
 
   return (
@@ -82,6 +94,7 @@ const NotificationToggles: React.FC = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-8 gap-4">
         <Button
           variant="ghost"
+          onClick={() => navigate("/tickets")}
           className="h-auto font-[Geist] font-medium text-[#0A4F41] text-[16px] sm:text-[18px] leading-7.25 tracking-normal hover:bg-transparent hover:border hover:border-[#0A4F41] rounded-[10px] p-2"
         >
           View order history <ArrowRight className="ml-1 h-4 w-4 sm:h-5 sm:w-5 inline" />

@@ -1,12 +1,11 @@
 import { z } from "zod";
 import { api } from "@/lib/api";
-import { MOCK_EVENTS } from "@/lib/constants";
+
 
 import {
   eventSchema,
 } from "@/lib/schema";
 import { DATE_WINDOWS, PRICE_TIERS, type Event, type EventFilters } from "@/types/event-types";
-import type { EventTickets } from "@/types/ticket-tiers";
 
 const PAGE_SIZE = 9;
 
@@ -46,72 +45,14 @@ function matchesSearch(e: Event, q: string) {
     e.category.toLowerCase().includes(n)
   );
 }
-function matchesState(e: Event, state: EventFilters["state"]) {
-  return state === "" ? true : e.venue.state === state;
-}
-function matchesCategories(e: Event, cats: EventFilters["categories"]) {
-  return cats.length === 0 ? true : cats.includes(e.category);
-}
-function matchesWhen(e: Event, when: EventFilters["when"]) {
-  const now = new Date();
-  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  return DATE_WINDOWS[when].test(new Date(e.createdAt), startOfToday);
-}
-function matchesPrice(e: Event, price: EventFilters["price"]) {
-  return PRICE_TIERS[price].test(e.minPrice);
-}
-function matchesAccess(e: Event, access: EventFilters["access"]) {
-  if (access === "all") return true;
-  if (access === "free") return e.minPrice === 0;
-  return e.minPrice > 0; // "paid"
-}
+
 
 // ---------------------------------------------------------------------
 // MOCK implementation — used while there's no backend.
 // ---------------------------------------------------------------------
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-async function fetchEventsMock(filters: EventFilters): Promise<EventsResponse> {
-  await delay(400);
 
-  const results = MOCK_EVENTS.filter(
-    (e) =>
-      matchesSearch(e, filters.search) &&
-      matchesState(e, filters.state) &&
-      matchesCategories(e, filters.categories) &&
-      matchesWhen(e, filters.when) &&
-      matchesPrice(e, filters.price) &&
-      matchesAccess(e, filters.access)
-  );
-
-  const forCounts = MOCK_EVENTS.filter(
-    (e) =>
-      matchesSearch(e, filters.search) &&
-      matchesState(e, filters.state) &&
-      matchesWhen(e, filters.when) &&
-      matchesPrice(e, filters.price) &&
-      matchesAccess(e, filters.access)
-  );
-  const categoryCounts = forCounts.reduce<Record<string, number>>((acc, e) => {
-    acc[e.category] = (acc[e.category] ?? 0) + 1;
-    return acc;
-  }, {});
-
-  const sorted = [...results].sort((a, b) => {
-    if (filters.sort === "date")
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    if (filters.sort === "price") return a.minPrice - b.minPrice;
-    return b.trendingScore - a.trendingScore;
-  });
-
-  const end = filters.page * PAGE_SIZE;
-  return {
-    events: sorted.slice(0, end),
-    total: sorted.length,
-    hasMore: end < sorted.length,
-    categoryCounts,
-  };
-}
 
 // ---------------------------------------------------------------------
 // Maps our EventFilters to the EXACT query params the backend expects.
@@ -183,11 +124,6 @@ export async function fetchEventsReal(filters: EventFilters): Promise<EventsResp
   };
 }
 
-async function fetchEventBySlugMock(slug: string): Promise<Event | null> {
-  await delay(200);
-  const found = MOCK_EVENTS.find((e) => e.slug === slug);
-  return found ?? null;
-}
 
 async function fetchEventBySlugReal(slug: string): Promise<Event | null> {
   try {

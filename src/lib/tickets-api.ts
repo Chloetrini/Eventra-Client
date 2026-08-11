@@ -1,21 +1,12 @@
-import { MOCK_TICKETS } from "@/lib/mock-tickets";
-import { dummyTicket } from "@/lib/dummy-ticket";
-import { eventTicketsSchema, ticketTypeSchema } from "@/lib/schema";
+
+import {  ticketTypeSchema } from "@/lib/schema";
 import type { EventTickets } from "@/types/ticket-tiers";
 import type { Ticket } from "@/types/ticket";
 import { api } from "@/lib/api";
 import z from "zod";
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-// ---------------------------------------------------------------------
-// Ticket tiers — the "menu" of buyable tiers for one event, by the
-// event's real _id (backend's nested route: GET /events/:eventId/ticket-types).
-// ---------------------------------------------------------------------
-async function fetchEventTicketsMock(slug: string): Promise<EventTickets | null> {
-  await delay(200);
-  const found = MOCK_TICKETS.find((t) => t.eventSlug === slug);
-  return found ?? null;
-}
+
 
 async function fetchEventTicketsReal(eventId: string): Promise<EventTickets | null> {
   try {
@@ -55,10 +46,7 @@ export function fetchEventTickets(eventIdOrSlug: string): Promise<EventTickets |
 // The user's ISSUED tickets — what they've already purchased (QR, order id…).
 // GET /tickets/my-tickets
 // ---------------------------------------------------------------------
-async function fetchMyTicketsMock(): Promise<Ticket[]> {
-  await delay(300);
-  return dummyTicket;
-}
+
 
 async function fetchMyTicketsReal(): Promise<Ticket[]> {
   try {

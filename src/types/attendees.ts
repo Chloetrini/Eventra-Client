@@ -8,5 +8,6 @@ export interface Attendee {
     ticketType: "VIP" | "Regular"  | "Table";
     tableSize: number | null;
     purchasedDate: string;
+    avatarUrl?: string
     
 }

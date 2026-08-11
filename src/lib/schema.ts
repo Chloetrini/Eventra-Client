@@ -1,4 +1,4 @@
-import { CATEGORIES, STATES } from '@/types/event-types';
+
 import { z } from 'zod'
 
 export const registerSchema = z.object({
@@ -188,7 +188,12 @@ ticketTypes: z.array(ticketTypeSchema).optional().default([]),
   organizer: z.any().optional(),             // kept flexible (backend = id, dummy = object)
 });
 
-
+export const profileSchema = z.object({
+  fullName: z.string().min(1, 'Full name is required'),
+  phone: z.string().optional(),
+  email: z.string().email('Invalid email address'),
+  city: z.string().optional(),
+});
 /**
  * STEP 1 — Organization. Always required.
  */
@@ -343,3 +348,5 @@ export type RegisterValues = z.infer<typeof registerSchema>;
 
 export type LoginValues = z.infer<typeof loginSchema>;
 export type VerifyEmailValues = z.infer<typeof verifyEmailSchema>;
+
+

@@ -8,10 +8,13 @@ import {
   Ticket,
   Heart,
   LogOut,
+  Sun,
+  Moon,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import PageWrapper from "../pageWrapper"
 import { useAuth } from "@/context/auth.context"
+import { useTheme } from "@/context/theme.context"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,9 +58,9 @@ function NavItem({
       onClick={onClick}
       className={({ isActive }) =>
         cn(
-          "text-[#1A1523]",
+          "text-[#1A1523] dark:text-white",
           isActive
-            ? "opacity-100 text-[#0F6E56] font-semibold"
+            ? "opacity-100 text-[#0F6E56] font-semibold dark:text-[#4ADE80]"
             : "opacity-80 hover:opacity-100"
         )
       }
@@ -75,7 +78,7 @@ function AuthLink({ to, label, variant, className, onClick }: AuthLinkProps) {
       className={cn(
         variant === "primary"
           ? "bg-[#0F6E56] text-white px-[20px] py-[10px] rounded-[5px] text-[18px] font-bold"
-          : "text-[#1A1523] mr-[20px] text-[18px] font-bold",
+          : "text-[#1A1523] dark:text-white mr-[20px] text-[18px] font-bold",
         className
       )}
     >
@@ -89,8 +92,8 @@ function Navbar() {
   const closeMenu = () => setOpen(false)
 
   const { user, logout } = useAuth()
+  const { theme, toggleTheme } = useTheme()
 
-  // Generate initials from user's full name (e.g. "Ada Okafor" -> "AO")
   const getInitials = (name?: string) => {
     if (!name) return "U"
     return name
@@ -102,11 +105,26 @@ function Navbar() {
       .slice(0, 2)
   }
 
+  const ThemeToggleButton = (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      className="flex h-10 w-10 items-center justify-center rounded-full border border-[#E8E6E0] hover:bg-slate-50 transition-colors dark:border-white/10 dark:hover:bg-white/10 shrink-0"
+    >
+      {theme === "dark" ? (
+        <Sun className="h-5 w-5 text-[#1A1523] dark:text-white" />
+      ) : (
+        <Moon className="h-5 w-5 text-[#1A1523]" />
+      )}
+    </button>
+  )
+
   return (
-    <div className="border-b-2 border-[#E8E6E0]">
+    <div className="sticky top-0 z-40 border-b-2 border-[#E8E6E0] bg-white/70 backdrop-blur-md dark:border-white/10 dark:bg-[#18181B]/80">
 
     <PageWrapper className="p-[20px]">
-      <div className="w-full bg-white  ">
+      <div className="w-full">
         <div className="flex w-full items-center">
           {/* Logo */}
           <NavLink to="/" className="flex items-center" onClick={closeMenu}>
@@ -122,47 +140,46 @@ function Navbar() {
 
           {/* Auth Links or User Profile Dropdown */}
           <div className="hidden lg:flex ml-auto gap-[13px] items-center">
+            {ThemeToggleButton}
             {user ? (
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-[10px] border border-[#E8E6E0] rounded-full py-[6px] pl-[6px] pr-[14px] bg-white hover:bg-slate-50 transition-colors focus:outline-none">
+                <DropdownMenuTrigger className="flex items-center gap-[10px] border border-[#E8E6E0] rounded-full py-[6px] pl-[6px] pr-[14px] bg-white hover:bg-slate-50 transition-colors focus:outline-none dark:bg-[#18181B] dark:border-white/10 dark:hover:bg-white/10">
                   <div className="flex h-[38px] w-[38px] items-center justify-center rounded-full bg-[#333333] text-white font-bold text-[14px]">
                     {getInitials(user.fullname)}
                   </div>
-                  <span className="text-[17px] font-bold text-[#1A1523]">
+                  <span className="text-[17px] font-bold text-[#1A1523] dark:text-white">
                     {user.fullname}
                   </span>
-                  <ChevronDown className="h-4 w-4 text-[#1A1523]" />
+                  <ChevronDown className="h-4 w-4 text-[#1A1523] dark:text-white" />
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent
                   align="end"
-                  className="w-[310px] rounded-[24px] border border-[#E8E6E0] p-[24px] shadow-lg bg-white mt-2"
+                  className="w-[310px] rounded-[24px] border border-[#E8E6E0] p-[24px] shadow-lg bg-white mt-2 dark:bg-[#18181B] dark:border-white/10"
                   >
-                  {/* User Profile Header */}
                   <div className="flex items-center gap-[14px] pb-[20px]">
                     <div className="flex h-[48px] w-[48px] items-center justify-center rounded-full bg-[#333333] text-white font-bold text-[18px]">
                       {getInitials(user.fullname)}
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-[20px] font-bold text-[#1A1523] leading-tight">
+                      <span className="text-[20px] font-bold text-[#1A1523] dark:text-white leading-tight">
                         {user.fullname}
                       </span>
-                      <span className="text-[15px] text-[#52525B] mt-[2px]">
+                      <span className="text-[15px] text-[#52525B] dark:text-white/60 mt-[2px]">
                         {user.email}
                       </span>
                     </div>
                   </div>
 
-                  <DropdownMenuSeparator className="bg-[#E8E6E0] my-0" />
+                  <DropdownMenuSeparator className="bg-[#E8E6E0] dark:bg-white/10 my-0" />
 
-                  {/* Menu Options */}
                   <div className="py-[12px] space-y-[8px]">
                     <DropdownMenuItem>
                       <NavLink
                         to="/profile-settings"
-                        className="flex w-full items-center gap-[14px] px-0 py-[6px] text-[18px] font-bold text-[#1A1523] cursor-pointer hover:text-[#0F6E56]"
+                        className="flex w-full items-center gap-[14px] px-0 py-[6px] text-[18px] font-bold text-[#1A1523] dark:text-white cursor-pointer hover:text-[#0F6E56]"
                         >
-                        <UserIcon className="h-5 w-5 text-[#1A1523]" />
+                        <UserIcon className="h-5 w-5 text-[#1A1523] dark:text-white" />
                         <span>Profile</span>
                       </NavLink>
                     </DropdownMenuItem>
@@ -170,7 +187,7 @@ function Navbar() {
                     <DropdownMenuItem>
                       <NavLink
                         to="/tickets"
-                        className="flex w-full items-center gap-[14px] px-0 py-[6px] text-[18px] font-bold text-[#1A1523] cursor-pointer hover:text-[#0F6E56]"
+                        className="flex w-full items-center gap-[14px] px-0 py-[6px] text-[18px] font-bold text-[#1A1523] dark:text-white cursor-pointer hover:text-[#0F6E56]"
                         >
                         <Ticket className="h-5 w-5 text-[#EAB308]" />
                         <span>My tickets</span>
@@ -180,17 +197,16 @@ function Navbar() {
                     <DropdownMenuItem>
                       <NavLink
                         to="/saved-events"
-                        className="flex w-full items-center gap-[14px] px-0 py-[6px] text-[18px] font-bold text-[#1A1523] cursor-pointer hover:text-[#0F6E56]"
+                        className="flex w-full items-center gap-[14px] px-0 py-[6px] text-[18px] font-bold text-[#1A1523] dark:text-white cursor-pointer hover:text-[#0F6E56]"
                         >
-                        <Heart className="h-5 w-5 text-[#1A1523]" />
+                        <Heart className="h-5 w-5 text-[#1A1523] dark:text-white" />
                         <span>Saved events</span>
                       </NavLink>
                     </DropdownMenuItem>
                   </div>
 
-                  <DropdownMenuSeparator className="bg-[#E8E6E0] my-0" />
+                  <DropdownMenuSeparator className="bg-[#E8E6E0] dark:bg-white/10 my-0" />
 
-                  {/* Sign Out Action */}
                   <div className="pt-[16px]">
                     <DropdownMenuItem
                       onClick={logout}
@@ -212,7 +228,7 @@ function Navbar() {
           {/* Mobile toggle */}
           <button
             type="button"
-            className="ml-auto inline-flex size-9 items-center justify-center rounded-md text-[#1A1523] lg:hidden"
+            className="ml-auto inline-flex size-9 items-center justify-center rounded-md text-[#1A1523] dark:text-white lg:hidden"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
@@ -223,45 +239,50 @@ function Navbar() {
 
         {/* Mobile nav */}
         {open && (
-          <div className="flex flex-col gap-3 border-t border-[#E8E6E0] p-4 lg:hidden">
+          <div className="flex flex-col gap-3 border-t border-[#E8E6E0] dark:border-white/10 p-4 lg:hidden">
             {NAV_LINKS.map((link) => (
               <NavItem key={link.to} {...link} onClick={closeMenu} />
             ))}
 
+            <div className="flex items-center justify-between py-2 border-t border-[#E8E6E0] dark:border-white/10">
+              <span className="text-sm font-semibold text-[#1A1523] dark:text-white">Theme</span>
+              {ThemeToggleButton}
+            </div>
+
             <div className="mt-2 flex flex-col gap-2">
               {user ? (
                 <>
-                  <div className="flex items-center gap-3 py-2 border-t border-[#E8E6E0]">
+                  <div className="flex items-center gap-3 py-2 border-t border-[#E8E6E0] dark:border-white/10">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#333333] text-white font-bold">
                       {getInitials(user.fullname)}
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-bold text-[#1A1523]">
+                      <span className="font-bold text-[#1A1523] dark:text-white">
                         {user.fullname}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-500 dark:text-white/60">
                         {user.email}
                       </span>
                     </div>
                   </div>
                   <NavLink
-                    to="/profile"
+                    to="/profile-settings"
                     onClick={closeMenu}
-                    className="py-1 text-sm font-semibold text-[#1A1523]"
+                    className="py-1 text-sm font-semibold text-[#1A1523] dark:text-white"
                     >
                     Profile
                   </NavLink>
                   <NavLink
-                    to="/my-tickets"
+                    to="/tickets"
                     onClick={closeMenu}
-                    className="py-1 text-sm font-semibold text-[#1A1523]"
+                    className="py-1 text-sm font-semibold text-[#1A1523] dark:text-white"
                     >
                     My tickets
                   </NavLink>
                   <NavLink
                     to="/saved-events"
                     onClick={closeMenu}
-                    className="py-1 text-sm font-semibold text-[#1A1523]"
+                    className="py-1 text-sm font-semibold text-[#1A1523] dark:text-white"
                     >
                     Saved events
                   </NavLink>

@@ -4,10 +4,11 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { router } from './routes'
 import { queryClient } from './lib/utils';
 import { AuthProvider } from '@/context/auth.context';
+import { ThemeProvider } from '@/context/theme.context';
 
 function App() {
   return (
-    <>
+    <ThemeProvider>
       <ToastContainer position="top-right"
         autoClose={5000}
         hideProgressBar={false}
@@ -21,11 +22,10 @@ function App() {
         transition={Bounce} />
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          
           <RouterProvider router={router} />
         </AuthProvider>
       </QueryClientProvider>
-    </>
+    </ThemeProvider>
   )
 }
 

@@ -5,13 +5,8 @@ import { z } from 'zod';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Button } from '../ui/button';
+import { profileSchema }  from "@/lib/schema";
 
-const profileSchema = z.object({
-  fullName: z.string().min(1, 'Full name is required'),
-  phone: z.string().optional(),
-  email: z.string().email('Invalid email address'),
-  city: z.string().optional(),
-});
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 

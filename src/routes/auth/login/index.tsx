@@ -35,13 +35,24 @@ export default function Login() {
     mode: "onBlur",
   });
 
- const { login } = useAuth();
+  const { login, logout } = useAuth();
 
   const { mutate, isPending } = useMutation({
     mutationFn: (values: AttendeeLoginValues) =>
       login(values.email, values.password),
 
     onSuccess: (user) => {
+      // The page itself (attendee vs organizer layout) must match the account's real role.
+      if (isOrganizer && user.role !== "organizer") {
+        toast.error("This is an attendee account. Please use the attendee login page.");
+        logout(); // clear the session immediately — don't leave them logged in on the wrong side
+        return;
+      }
+      if (!isOrganizer && user.role === "organizer") {
+        toast.error("This is an organizer account. Please use the organizer login page.");
+        logout();
+        return;
+      }
       toast.success("Logged in successfully.");
       if (user.role === "organizer") {
         navigate("/onboarding/organisation");   // organizer dashboard later
@@ -68,10 +79,10 @@ export default function Login() {
             Eventra
           </span>
           {isOrganizer && (
-          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
-            Organizer
-          </span>
-        )}
+            <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
+              Organizer
+            </span>
+          )}
         </Link>
       </div>
       <h1 className="text-[34px] font-extrabold mb-[12px] tracking-[-0.02em] leading-[40px] text-[#000000]">

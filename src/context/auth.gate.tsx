@@ -40,21 +40,19 @@ export function AuthGateProvider({ children }: { children: ReactNode }) {
   }
 
   function handleContinueAsGuest() {
-  setModalOpen(false);
-  if (currentAction === "buy-ticket") {
-    // Enable guest checkout — caller re-checks and proceeds
-    setIsGuest(true);
-  } else {
-    // For save/my-tickets/saved-events: guest = "nevermind, go back"
-    navigate(-1);
+    setModalOpen(false);
+    if (currentAction === "buy-ticket") {
+      setIsGuest(true);
+    } else {
+      navigate(-1);
+    }
   }
-}
 
   function clearGuest() {
     setIsGuest(false);
   }
 
-  const allowGuest =true;
+  const allowGuest = true;
 
   return (
     <AuthGateContext.Provider value={{ requireAuth, isGuest, clearGuest }}>

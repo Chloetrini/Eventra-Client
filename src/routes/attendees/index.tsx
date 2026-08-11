@@ -11,7 +11,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { RecentEventsTable } from "@/components/recent-evnts-table";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 
 const FILTERS = [
@@ -71,8 +70,7 @@ export default function Attendees() {
     setSearchParams(params);
   };
 
-  const eventAttendees =
-    attendees?.filter((a) => a.eventId === selectEventId) ?? [];
+  const eventAttendees = attendees?.filter((a) => a.eventId === selectEventId) ?? [];
   const selectedEvent = events.find((event) => event._id === selectEventId);
   const total = eventAttendees.length;
   const checkedIn = eventAttendees.filter((a) => a.checkedIn).length;
@@ -111,7 +109,8 @@ export default function Attendees() {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Select value={selectEventId} onValueChange={handleEventChange}>
+
+       <span className="py-[5px] text-[#6E6577] uppercase rounded-md">Event</span> <Select value={selectEventId} onValueChange={handleEventChange}>
           <SelectTrigger className="w-auto rounded-md py-3 min-[400px]:py-[18px] px-3 min-[400px]:px-4 border-[#4A4451]/20 text-xs min-[400px]:text-[15px] font-medium text-[#1A1523] font-bold">
             <SelectValue placeholder="Select event">
               {selectedEvent?.eventTitle}
@@ -127,15 +126,15 @@ export default function Attendees() {
           </SelectContent>
         </Select>
 
-        <div className="border-[#E8E6E0] border text-[#6E6577] rounded-md px-3 min-[400px]:px-4 py-1.5 min-[400px]:py-2 text-xs min-[400px]:text-[15px] font-medium">
+        <div className="border-[#E8E6E0] border text-[#6E6577] rounded-md px-3 min-[400px]:px-4 py-1.5 min-[400px]:py-2 text-xs min-[400px]:text-[15px] font-bold">
           Total <span className="font-bold text-black">{total}</span>
         </div>
 
-        <div className="border-[#E8E6E0] border text-[#6E6577] rounded-md px-3 min-[400px]:px-4 py-1.5 min-[400px]:py-2 text-xs min-[400px]:text-[15px] font-medium">
+        <div className="border-[#E8E6E0] border text-[#6E6577] rounded-md px-3 min-[400px]:px-4 py-1.5 min-[400px]:py-2 text-xs min-[400px]:text-[15px] font-bold">
           Checked in <span className="font-bold text-black">{checkedIn}</span>
         </div>
 
-        <div className="border-[#E8E6E0] border text-[#6E6577] rounded-md px-3 min-[400px]:px-4 py-1.5 min-[400px]:py-2 text-xs min-[400px]:text-[15px] font-medium">
+        <div className="border-[#E8E6E0] border text-[#6E6577] rounded-md px-3 min-[400px]:px-4 py-1.5 min-[400px]:py-2 text-xs min-[400px]:text-[15px] font-bold">
           Not in <span className="font-bold text-black">{notIn}</span>
         </div>
       </div>
@@ -170,7 +169,6 @@ export default function Attendees() {
         </div>
       </div>
 
-      <RecentEventsTable />
     </div>
   );
 }

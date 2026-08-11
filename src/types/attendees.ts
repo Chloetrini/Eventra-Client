@@ -4,5 +4,9 @@ export interface Attendee {
     name: string;
     email: string;
     referenceCode: string;
-    checkedIn: boolean
+    checkedIn: boolean;
+    ticketType: "VIP" | "Regular"  | "Table";
+    tableSize: number | null;
+    purchasedDate: string;
+    
 }

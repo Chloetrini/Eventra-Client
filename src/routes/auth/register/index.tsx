@@ -54,6 +54,20 @@ export default function Register() {
         isVisible={isVisible}
         setIsVisible={setIsVisible}
       />
+
+      <FormBox
+        label="confirmPassword"
+        type="password"
+        placeholder="******"
+        id="confirmPassword"
+        register={register}
+        errors={errors?.confirmPassword}
+        name="confirmPassword"
+        isVisible={isVisible}
+        setIsVisible={setIsVisible}
+      />
+      
+
       <ActionBtn
         text="Log In"
         type="submit"

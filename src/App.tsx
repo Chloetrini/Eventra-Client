@@ -4,9 +4,11 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { router } from './routes'
 import { queryClient } from './lib/utils';
 
+
 function App() {
   return (
     <>
+     
       <ToastContainer position="top-right"
         autoClose={5000}
         hideProgressBar={false}
@@ -21,6 +23,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
       </QueryClientProvider>
+      
     </>
   )
 }

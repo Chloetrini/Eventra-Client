@@ -169,6 +169,27 @@ const routes = [
                 ],
             },
 
+            {
+                path: "promotion",
+                        children: [
+                            {
+                                path: "promote",
+                                handle: {
+                                    seo: {
+                                        title: "promote",
+                                        description: "Promote your shows.",
+                                    },
+                                },
+
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/promotion/promote");
+                                    return { Component };
+                                },
+                            },
+                        ]
+            }
+
         ],
     },
 ] satisfies RouteObject[];

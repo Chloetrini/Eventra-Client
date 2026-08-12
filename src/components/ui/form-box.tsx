@@ -1,7 +1,6 @@
 import { cn } from '@/lib/utils'
 import { Eye, EyeClosed } from 'lucide-react'
 import type { Control, FieldError as FieldErrorType, FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form'
-import type { Control, FieldError as FieldErrorType, FieldValues, Path, RegisterOptions, UseFormRegister } from 'react-hook-form'
 import { Field, FieldError, FieldLabel, FieldLegend, FieldSet } from './field'
 import { Input } from './input'
 import { Textarea } from './textarea'
@@ -14,6 +13,8 @@ type FormFieldProps<T extends FieldValues> = {
   errors?: FieldErrorType | undefined
   placeholder?: string
   isVisible?: boolean
+  isconfirmVisible?: boolean
+  setIsconfirmVisible?: (visible: boolean | ((prev: boolean) => boolean)) => void
   setIsVisible?: (visible: boolean | ((prev: boolean) => boolean)) => void
   name: Path<T>
   classname?: string
@@ -27,6 +28,8 @@ type FormFieldProps<T extends FieldValues> = {
 
 export function FormBox<T extends FieldValues>({
   isVisible,
+  isconfirmVisible,
+  setIsconfirmVisible,
   setIsVisible,
   label,
   type,
@@ -44,7 +47,7 @@ export function FormBox<T extends FieldValues>({
   // control,
 }: FormFieldProps<T>) {
   const toggleVisibility = () => setIsVisible?.((prev: boolean) => !prev)
-
+  const toggleConfirmVisibility = () => setIsconfirmVisible?.((prev: boolean) => !prev)
   const renderField = () => {
     switch (inputType) {
       case 'textarea':
@@ -90,6 +93,16 @@ export function FormBox<T extends FieldValues>({
                 onClick={toggleVisibility}
               >
                 {isVisible ? <Eye /> : <EyeClosed />}
+              </button>
+            )}
+      {/* ---------------- changes------------ */}
+            {type === 'confirmPassword' && (
+              <button
+                type="button"
+                className="absolute top-[50%] right-2 text-xs border-0 focus:outline-none font-semibold cursor-pointer text-gray-700 w-fit"
+                onClick={toggleConfirmVisibility}
+              >
+                {isconfirmVisible ? <Eye /> : <EyeClosed />}
               </button>
             )}
           </div>

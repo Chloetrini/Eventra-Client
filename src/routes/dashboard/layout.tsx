@@ -35,7 +35,7 @@ const LayoutSkeleton = () => (
   </div>
 );
 
-export default function OrganizerLayout() {
+export default function DashBoardLayout() {
   const { data, isLoading, isError } = useDashboard();
 
   if (isLoading) return <LayoutSkeleton />;

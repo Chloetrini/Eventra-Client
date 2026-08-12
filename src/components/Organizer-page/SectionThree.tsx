@@ -28,8 +28,8 @@ const SectionThree: React.FC = () => {
   const features = SECTION_THREE_FEATURES;
 
   return (
-    <section className=" md:border md:border-[#E8E6E0]  rounded-[20px] my-12 ">
-      <div className=" flex flex-col lg:flex-row items-center lg:px-[74px] md:py-[59px]">
+    <section className="p-20 max-w-6xl mx-auto border border-[#E8E6E0] rounded-[20px]">
+      <div className=" flex flex-col lg:flex-row items-center">
         {/* Left side */}
         <div className="lg:flex-1 lg:w-[50%] mb-8 lg:mb-0">
           {/* Badge */}

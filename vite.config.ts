@@ -23,11 +23,11 @@ export default defineConfig({
     allowedHosts: ['localhost', '0.0.0.0'],
     proxy: {
       '/api': {
-        target: 'http://localhost:4001',
+        // target: 'http://localhost:4001',
         changeOrigin: true,
         secure: false,
       },
     },
   },
-  
+
 })

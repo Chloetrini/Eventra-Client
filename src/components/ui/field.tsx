@@ -171,6 +171,14 @@ function FieldSeparator({
   )
 }
 
+export function FieldSuccess({ className, children }: { className?: string; children: React.ReactNode }) {
+  return (
+    <p className={cn('text-xs text-[#0F6E56]', className)}>
+      {children}
+    </p>
+  )
+}
+
 function FieldError({
   className,
   children,

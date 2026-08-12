@@ -6,7 +6,9 @@ import RootLayout from "./root/layout";
 import MainLayout from "./main/layout";
 import AuthLayout from "./auth/layout";
 import Onboardinglayout from "./onboarding/layout";
-import OrganizerLayout from "./organizer/layout";
+
+import CreateEventLayout from "./dashboard/create-event/layout";
+import DashBoardLayout from "./dashboard/layout";
 
 const routes = [
     {
@@ -439,11 +441,11 @@ const routes = [
 
             },
             {
-                path: "organizer",
-                Component: OrganizerLayout,
+                path: "dashboard",
+                Component: DashBoardLayout,
                 children: [
                     {
-                        path: "dashboard",
+                        path: "overview",
                         handle: {
                             seo: {
                                 title: "Organizer Dashboard",
@@ -452,7 +454,7 @@ const routes = [
                         },
                         lazy: async () => {
                             const { default: Component } =
-                                await import("@/routes/organizer/overview/index");
+                                await import("@/routes/dashboard/overview/index");
                             return { Component };
                         },
                     },
@@ -466,7 +468,7 @@ const routes = [
                         },
                         lazy: async () => {
                             const { default: Component } =
-                                await import("@/routes/organizer/events/index");
+                                await import("@/routes/dashboard/events/index");
                             return { Component };
                         },
                     },
@@ -480,14 +482,75 @@ const routes = [
                         },
                         lazy: async () => {
                             const { default: Component } =
-                                await import("@/routes/organizer/attendees/index");
+                                await import("@/routes/dashboard/attendees/index");
                             return { Component };
                         },
+                    },
+                    {
+                        path: "create-event",
+                        Component: CreateEventLayout,
+                        children: [
+                            {
+                                path: "type",
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/type");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "basics",
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/basics");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "location",
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/location");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "rsvp",
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/rsvp");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "tickets",
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/tickets");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "details",
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/details");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "review",
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/review");
+                                    return { Component };
+                                },
+                            },
+                        ],
                     },
                 ]
             },
         ],
     },
 ] satisfies RouteObject[];
-
 export const router = createBrowserRouter(routes);

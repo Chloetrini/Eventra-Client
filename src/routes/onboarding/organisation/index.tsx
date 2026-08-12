@@ -30,7 +30,8 @@ const OrganisationPage = () => {
                 </div>
                 <div>
                     <PageSwitcher
-                        backOnClick={() => navigate(-1)}
+                        // backOnClick={() => navigate(-1)}
+                        disableBack={true}
                         continueOnClick={handleContinue}
                     />
                 </div>

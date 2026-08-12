@@ -41,10 +41,11 @@ export default function Login() {
       login(values.email, values.password),
 
     onSuccess: (user) => {
-      if (isOrganizer && user.role !== "organizer") {
-        toast.error("This is an attendee account. Please use the attendee login page.");
-        logout();
-        return;
+      toast.success("Logged in successfully.");
+      if (user.role === "organizer") {
+        navigate("/onboarding");   // organizer dashboard later
+      } else {
+        navigate("/");   // attendee home
       }
       if (!isOrganizer && user.role === "organizer") {
         toast.error("This is an organizer account. Please use the organizer login page.");

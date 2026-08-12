@@ -1,4 +1,4 @@
-
+import type { Path } from 'react-hook-form';
 import { z } from 'zod'
 
 export const registerSchema = z.object({
@@ -225,7 +225,7 @@ export const organisationSchema = z.object({
   email: z.string().email("Enter a valid email address"),
   shortBio: z
     .string()
-    .min(20, "Tell us a little more (at least 20 characters)")
+    .min(10, "Tell us a little more (at least 10 characters)")
     .max(200, "Keep it under 200 characters"),
 })
 
@@ -301,9 +301,9 @@ export const ORGANISATION_FIELDS = [
   "contactPhone",
   "email",
   "shortBio",
-] as const
+] as const satisfies Path<OnboardingValues>[]
 
-export const BANK_FIELDS = ["accountHolderName", "bank", "accountNumber"] as const
+export const BANK_FIELDS = ["accountHolderName", "bank", "accountNumber"] as const satisfies Path<OnboardingValues>[]
 
 
 export const attendeeRegisterSchema = z
@@ -364,4 +364,240 @@ export type RegisterValues = z.infer<typeof registerSchema>;
 export type LoginValues = z.infer<typeof loginSchema>;
 export type VerifyEmailValues = z.infer<typeof verifyEmailSchema>;
 
+export const eventTypeSchema = z.object({
+  eventType: z.enum(["paid", "free"], { message: "Please select an event type" }),
+})
 
+export const eventBasicsSchema = z.object({
+  eventName: z.string().min(3, { message: "Event name must be at least 3 characters long" }),
+  category: z.string().min(1, "Please select a category"),
+  date: z.string().min(1, { message: "Please select a date" }),
+  startTime: z.string().min(1, { message: "Please select a start time - click on the clock icon to set time" }),
+  endTime: z.string().min(1, { message: "Please select an end time - click on the clock icon to set time" }),
+  description: z.string().min(10, { message: "Description must be at least 10 characters long" }),
+  coverImage: z.string().min(1, { message: "Please upload a cover image" }),
+})
+
+export const locationSchema = z.object({
+  locationType: z.enum(["physical", "online"], { message: "Please select a location type" }),
+  venueName: z.string().optional(),
+  address: z.string().optional(),
+  platform: z.string().optional(),
+  link: z.string().optional(),
+})
+
+export const freeEventRSVPSchema = z.object({
+  hasRsvpLimit: z.boolean(),
+  rsvpLimit: z.coerce.number().optional(),
+})
+
+export const ticketsSchema = z.object({
+  tickets: z.array(
+    z.object({
+      name: z.string().min(1, { message: "Ticket type is required" }),
+      price: z.coerce.number().optional(),
+      quantity: z.coerce.number().optional(),
+      limitPerPerson: z.coerce.number().optional(),
+    })
+  ),
+})
+
+export const refundPolicySchema = z.object({
+  hasRefundPolicy: z.boolean(),
+})
+
+export const lineupSchema = z.object({
+  hasLineup: z.boolean(),
+  acts: z.array(
+    z.object({
+      name: z.string().min(1, { message: "Act/session name is required" }),
+    })
+  ),
+})
+
+export const gallerySchema = z.object({
+  hasGallery: z.boolean(),
+  photos: z.array(
+    z.object({
+      url: z.string().min(1, { message: "Photo is required" }),
+    })
+  ),
+})
+
+export const agePolicySchema = z.object({
+  hasAgePolicy: z.boolean(),
+  policyText: z.string().optional(),
+})
+
+export const eventFormSchema = eventTypeSchema
+  .merge(eventBasicsSchema)
+  .merge(locationSchema)
+  .merge(freeEventRSVPSchema)
+  .merge(ticketsSchema)
+  .merge(lineupSchema)
+  .merge(gallerySchema)
+  .merge(agePolicySchema)
+  .merge(refundPolicySchema)
+  .superRefine((data, ctx) => {
+    // Location — required fields depend on locationType
+    if (data.locationType === "physical") {
+      if (!data.venueName || data.venueName.trim().length < 3) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["venueName"],
+          message: "Venue name must be at least 3 characters long",
+        })
+      }
+      if (!data.address || data.address.trim().length < 5) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["address"],
+          message: "Address must be at least 5 characters long",
+        })
+      }
+    }
+
+    if (data.locationType === "online") {
+      if (!data.platform || data.platform.trim().length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["platform"],
+          message: "Please select a platform",
+        })
+      }
+      if (!data.link || !z.string().url().safeParse(data.link).success) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["link"],
+          message: "Please enter a valid URL",
+        })
+      }
+    }
+
+    // RSVP — only required if the limit switch is on
+    if (data.hasRsvpLimit && (data.rsvpLimit === undefined || data.rsvpLimit < 1)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["rsvpLimit"],
+        message: "RSVP limit must be at least 1",
+      })
+    }
+
+    // Tickets — only required when the event is paid
+    if (data.eventType === "paid") {
+      if (data.tickets.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["tickets"],
+          message: "Add at least one ticket type",
+        })
+      }
+      data.tickets.forEach((ticket, i) => {
+        if (!ticket.name || ticket.name.trim().length === 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["tickets", i, "name"],
+            message: "Ticket type is required",
+          })
+        }
+        if (ticket.price === undefined || ticket.price < 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["tickets", i, "price"],
+            message: "Enter a valid price",
+          })
+        }
+        if (ticket.quantity === undefined || ticket.quantity < 1) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["tickets", i, "quantity"],
+            message: "Quantity must be at least 1",
+          })
+        }
+        if (ticket.limitPerPerson !== undefined && ticket.limitPerPerson < 1) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["tickets", i, "limitPerPerson"],
+            message: "Limit must be at least 1",
+          })
+        }
+      })
+    }
+
+    // Lineup — every act must have a name, but only if lineup is on
+    if (data.hasLineup) {
+      if (data.acts.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["acts"],
+          message: "Add at least one act/session",
+        })
+      }
+      data.acts.forEach((act, i) => {
+        if (!act.name || act.name.trim().length === 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["acts", i, "name"],
+            message: "Act/session name is required",
+          })
+        }
+      })
+    }
+
+    // Gallery — at least one photo, only if gallery is on
+    if (data.hasGallery && data.photos.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["photos"],
+        message: "Upload at least one photo",
+      })
+    }
+
+    // Policy — text required, only if policy switch is on
+    if (data.hasAgePolicy && (!data.policyText || data.policyText.trim().length === 0)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["policyText"],
+        message: "Policy details are required",
+      })
+    }
+  })
+
+export type EventFormValues = z.infer<typeof eventFormSchema>
+
+export const TYPE_FIELDS: Path<EventFormValues>[] = ["eventType"]
+
+export const BASICS_FIELDS: Path<EventFormValues>[] = [
+  "eventName",
+  "category",
+  "date",
+  "startTime",
+  "endTime",
+  "description",
+  "coverImage",
+]
+
+export const LOCATION_FIELDS: Path<EventFormValues>[] = [
+  "locationType",
+  "venueName",
+  "address",
+  "platform",
+  "link",
+]
+
+export const RSVP_FIELDS: Path<EventFormValues>[] = [
+  "hasRsvpLimit",
+  "rsvpLimit",
+]
+
+export const TICKETS_FIELDS: Path<EventFormValues>[] = ["tickets"]
+
+export const DETAILS_FIELDS: Path<EventFormValues>[] = [
+  "hasLineup",
+  "acts",
+  "hasGallery",
+  "photos",
+  "hasAgePolicy",
+  "policyText",
+  "hasRefundPolicy",
+]

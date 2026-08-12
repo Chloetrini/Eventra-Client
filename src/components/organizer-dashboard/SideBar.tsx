@@ -14,9 +14,9 @@ import {
 } from 'lucide-react';
 
 const navItems = [
-  { icon: LayoutDashboard, label: 'Overview', path: '/organizer/dashboard' },
-  { icon: Calendar, label: 'Events', path: '/organizer/events' },
-  { icon: Users, label: 'Attendees', path: '/organizer/attendees' },
+  { icon: LayoutDashboard, label: 'Overview', path: '/dashboard/overview' },
+  { icon: Calendar, label: 'Events', path: '/dashboard/events' },
+  { icon: Users, label: 'Attendees', path: '/dashboard/attendees' },
   { icon: CheckSquare, label: 'Check-in', path: '/organizer/dashboard/checkin' },
   { icon: Wallet, label: 'Payouts', path: '/organizer/dashboard/payouts' },
   { icon: Megaphone, label: 'Promotions', path: '/organizer/dashboard/promotions' },

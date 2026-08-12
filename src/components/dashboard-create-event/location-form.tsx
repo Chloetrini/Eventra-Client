@@ -1,0 +1,109 @@
+import type { EventFormValues } from '@/lib/schema'
+import { useFormContext, useWatch } from 'react-hook-form'
+import { FormBox } from '../ui/form-box'
+import LocationMap from './location-map'
+import mapPin from '@/assets/map-pin.png'
+
+const LocationForm = () => {
+
+    const {
+        register,
+        control,
+        watch,
+        formState: { errors },
+    } = useFormContext<EventFormValues>()
+
+    const locationType = useWatch({ control, name: 'locationType' })
+    const address = useWatch({ name: 'address' })
+    const venue = useWatch({ name: 'venueName' })
+
+    return (
+        <div>
+            {locationType === 'physical' && (
+                <div className='flex flex-col gap-5'>
+                    <FormBox
+                        inputType='input'
+                        type='text'
+                        label='VENUE NAME'
+                        placeholder="e.g Muri Oriola Park"
+                        id="venueName"
+                        errors={errors.venueName}
+                        name="venueName"
+                        classname="w-full"
+                        borderStyle="createEvent"
+                        register={register}
+                    />
+                    <FormBox
+                        inputType='input'
+                        type='text'
+                        label='ADDRESS'
+                        placeholder="Street, area, city"
+                        id="address"
+                        errors={errors.address}
+                        name="address"
+                        classname="w-full"
+                        borderStyle="createEvent"
+                        register={register}
+                    />
+                    {(!venue || !address) && (
+                    <div className='w-full h-[118px] bg-[#E4F1EB] border border-[#E8E6E0] flex items-center justify-center animate-in fade-in slide-in-from-top-2 duration-300 ease-out mt-2'>
+                        <div className='flex gap-2'>
+                            <img src={mapPin} alt="" className='w-[19px] h-[19px]'/>
+                            <p className='text-sm text-[#4A4451]'>Map preview pin shows here</p>
+                        </div>
+                    </div>
+                    )}
+
+                    {(venue && address) && (
+                        <div className='animate-in fade-in slide-in-from-top-2 duration-300 ease-out mt-2'>
+                            <LocationMap
+                                name={venue}
+                                address={address}
+                                // mapQuery={address}
+                                openLabel='Open in Google Maps'
+                                className='border border-[#E8E6E0]'
+                                cardClassName='hidden'
+                            />
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {locationType === 'online' && (
+                <div className='flex flex-col gap-5'>
+                    <FormBox
+                        inputType='select'
+                        type='select'
+                        label='PLATFORM'
+                        placeholder="Select Platform"
+                        id="platform"
+                        errors={errors.platform}
+                        name="platform"
+                        classname="w-full"
+                        borderStyle="createEvent"
+                        register={register}
+                        options={["Zoom", "Google Meet", "Microsoft Teams", "Webex", "Discord", "Other"]}
+                        control={control}
+                    />
+                    <FormBox
+                        inputType='input'
+                        type='text'
+                        label='JOIN LINK'
+                        placeholder="https://..."
+                        id="link"
+                        errors={errors.link}
+                        name="link"
+                        classname="w-full"
+                        borderStyle="createEvent"
+                        register={register}
+                    />
+                    <div className='w-full bg-[#E4F1EB] p-2.5 rounded-[5px]'>
+                        <p className='text-[14px] text-[#4A4451]'>🔗 The join link is only revealed to attendees after they RSVP or buy</p>
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
+
+export default LocationForm

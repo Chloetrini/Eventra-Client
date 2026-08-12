@@ -1,6 +1,5 @@
-import { CATEGORIES, STATES } from '@/types/event-types';
 import type { Path } from 'react-hook-form';
-import { date, z } from 'zod'
+import { z } from 'zod'
 
 export const registerSchema = z.object({
   fullName: z
@@ -46,6 +45,32 @@ export const registerSchema = z.object({
       message: 'Invalid phone number',
     }),
 })
+
+
+// Checkout collects only contact details — no password or company name,
+// so it can't reuse registerSchema (those fields would fail silently).
+export const checkoutSchema = z.object({
+  firstName: z
+    .string({
+      message: 'Complete this field to continue',
+    })
+    .min(2, {
+      message: 'First name must be at least 2 characters long',
+    }),
+  lastName: z
+    .string({
+      message: 'Complete this field to continue',
+    })
+    .min(2, {
+      message: 'Last name must be at least 2 characters long',
+    }),
+  email: registerSchema.shape.email,
+  phoneNumber: registerSchema.shape.phoneNumber,
+})
+
+export type CheckoutFormValues = z.infer<typeof checkoutSchema>
+
+
 export const contactSchema = z.object({
   fullName: z
     .string({
@@ -92,25 +117,29 @@ export const eventVenueSchema = z.object({
 export const lineupMemberSchema = z.object({
   _id: z.string().optional(),
   name: z.string(),
-  role: z.string(),
+  role: z.string().optional(),   // relaxed: backend doesn't always send this
   imageUrl: z.string().nullable().optional(),
 });
 
 // Ticket tier — frontend-only for now (backend keeps these in a separate collection)
-export const ticketTierSchema = z.object({
-  id: z.number(),
-  type: z.string(),
-  unitPrice: z.number(),
-  description: z.string().optional(),
-  originalPrice: z.number().nullable().optional(),
-  availability: z.enum(["available", "scarce", "sold out"]).optional(),
-  quantityLeft: z.number().nullable().optional(),
+// Matches the backend's real TicketType shape
+export const ticketTypeSchema = z.object({
+  _id: z.string(),
+  name: z.string(),
+  price: z.number(),
+  quantity: z.number(),
+  quantitySold: z.number(),
+  purchaseLimitPerPerson: z.number(),
+  isActive: z.boolean(),
 });
+
+export type TicketType = z.infer<typeof ticketTypeSchema>;
+
 // The ticket-tier group for one event — its own backend collection, keyed by slug.
 export const eventTicketsSchema = z.object({
   eventSlug: z.string(),
   serviceFeePercent: z.number().default(0),
-  tiers: z.array(ticketTierSchema),
+  tiers: z.array(ticketTypeSchema),
 });
 
 export const eventSchema = z.object({
@@ -120,7 +149,11 @@ export const eventSchema = z.object({
   title: z.string(),
   description: z.string().optional(),
   type: z.enum(["free", "paid"]),
-  category: z.enum(CATEGORIES),           // backend sends an id/name; string keeps it flexible
+  category: z.union([
+    z.string(),
+    z.object({ _id: z.string(), name: z.string().optional() }),
+    z.null(),
+  ]),
   coverImage: z.string().optional(),
   venue: eventVenueSchema,
   startDate: z.string(),
@@ -132,12 +165,16 @@ export const eventSchema = z.object({
   lineupCount: z.number().default(0),
   createdAt: z.string(),
   updatedAt: z.string().optional(),
-
+  capacity: z.number().nullable().optional(),
+  reservationsCount: z.number().optional().default(0),
+  ticketsSoldCount: z.number().optional().default(0),
+  revenueTotal: z.number().optional().default(0),
+  ticketTypes: z.array(ticketTypeSchema).optional().default([]),
   // --- frontend-only (kept until backend provides them) ---
   subcategory: z.string().optional(),
   no: z.string().optional(),
   trendingScore: z.number().default(0),
-  coverImageUrl: z.string().optional(),      // legacy alias used by some components
+  coverImageUrl: z.string().optional(),
   subTags: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
   musicType: z.string().nullable().optional(),
@@ -145,11 +182,33 @@ export const eventSchema = z.object({
   doorsCloseTime: z.string().optional(),
   goodToKnow: z.array(z.string()).optional(),
   relatedEventSlugs: z.array(z.string()).optional(),
-  location: z.any().optional(),              // Ozcar's nested location, kept until migrated
-  organizer: z.any().optional(),             // kept flexible (backend = id, dummy = object)
+  location: z.any().optional(),
+  organizer: z.any().optional(),
+}).transform((event) => {
+  // Derive BOTH a display name and a real ID from the single raw `category` value.
+  let categoryName = "Uncategorized";
+  let categoryId: string | null = null;
+
+  if (typeof event.category === "string") {
+    categoryName = event.category;
+  } else if (event.category && typeof event.category === "object") {
+    categoryId = event.category._id;
+    categoryName = event.category.name ?? event.category._id;
+  }
+
+  return {
+    ...event,
+    category: categoryName,
+    categoryId,
+  };
 });
 
-
+export const profileSchema = z.object({
+  fullName: z.string().min(1, 'Full name is required'),
+  phone: z.string().optional(),
+  email: z.string().email('Invalid email address'),
+  city: z.string().optional(),
+});
 /**
  * STEP 1 — Organization. Always required.
  */

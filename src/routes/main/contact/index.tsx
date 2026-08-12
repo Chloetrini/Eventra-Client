@@ -14,6 +14,7 @@ import { contactSchema } from "@/lib/schema";
 import { z } from "zod";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import PageWrapper from "@/components/pageWrapper";
 
 // Ensure leaflet marker images resolve correctly
 delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })._getIconUrl;
@@ -65,7 +66,8 @@ export default function ContactPage() {
 
   return (
     <div className="relative bg-gradient-to-r from-emerald-50 via-emerald-50/50 to-white">
-      <section className="mx-auto max-w-7xl  py-14 sm:px-6 sm:py-20 px-[20px] lg:py-20">
+     <PageWrapper className="p-[20px]">
+
         <div className="flex flex-col gap-10 lg:flex-row lg:items-stretch xl:gap-14">
           <div className="flex flex-1 flex-col lg:max-w-[46%]">
             <div className="mb-5 flex items-center gap-2">
@@ -80,16 +82,16 @@ export default function ContactPage() {
             <p className="mt-6 max-w-md text-sm text-slate-600 sm:text-base">Questions, press, partnerships or need a hand with an event? Send us a message and we&rsquo;ll get back within a day.</p>
 
             <div className="relative mt-10 flex-1 z-10 rounded-3xl shadow-xl">
-              <img src={crowdImage} alt="Crowd at an Eventra event" className="w-full object-cover rounded-3xl h-full" />
+              <img src={crowdImage} alt="Crowd a-t an Eventra event" className="w-full object-cover rounded-3xl h-full" />
 
-              <div className="absolute -left-7 top-6 z-20 -rotate-6 rounded-lg bg-amber-400 px-3 py-2.5 shadow-lg sm:top-8 sm:px-4 sm:py-3">
-                <p className="text-[9px] font-semibold tracking-wide text-emerald-950 sm:text-[10px]">eventra</p>
-                <p className="text-base font-bold leading-tight text-emerald-950 sm:text-lg">VIP</p>
-                <p className="text-[8px] font-medium tracking-widest text-emerald-900/80 sm:text-[9px]">No 0001 &middot; ADMIT ONE</p>
+              <div className="absolute -left-2 -top-3 z-20 -rotate-8 rounded-lg bg-[#F5A524] pt-1 pl-2  md:pt-2.5 shadow-lg md:-top-3 md:pl-4 w-[110px] h-[68px] md:h-[125px] md:w-[203px]">
+                <p className="text-[11px] font-[700] font-grotesk tracking-wide text-[#4A4451] md:text-[20px]">eventra</p>
+                <p className="text-[18px] font-[800] leading-tight text-[#4A4451] md:text-[34px] mb-2">VIP</p>
+                <p className="text-[6.5px] font-mono font-[400] tracking-widest text-[#6E6577] md:text-[12px]">No 0001 &middot; ADMIT ONE</p>
               </div>
 
-              <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-semibold text-slate-900 shadow sm:right-4 sm:top-4 sm:px-3 sm:py-1.5 sm:text-xs">
-                <Star className="h-3 w-3 fill-amber-400 text-amber-400 sm:h-3.5 sm:w-3.5" />
+              <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-[700] text-slate-900 shadow sm:right-4 sm:top-4 sm:px-3 sm:py-1.5 md:text-[18px] font-sans">
+                <Star className="h-3 w-3 fill-[#3A3A3A] text-[#3A3A3A] sm:h-3.5 sm:w-3.5 " />
                 4.9 &middot; 12k reviews
               </div>
 
@@ -107,6 +109,7 @@ export default function ContactPage() {
             <h2 className="mt-4 text-xl font-bold text-slate-900 sm:text-2xl">How can we help?</h2>
             <p className="mt-1 text-sm text-slate-500">Tell us a little about you and what you&rsquo;re working on.</p>
 
+     
             <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5">
               <FormBox
                 label="Full name"
@@ -219,7 +222,9 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-      </section>
+        
+     </PageWrapper>
+      
     </div>
   );
 }

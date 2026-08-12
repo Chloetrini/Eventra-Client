@@ -10,6 +10,8 @@ import { HiOutlineLocationMarker } from "react-icons/hi";
 import Celeb from "@/assets/Celeb.png";
 import Combined from "@/assets/Combined.png"
 import PageWrapper from "@/components/pageWrapper";
+import { CtaBanner } from "@/components/ui/ctaBanner";
+import { UI_ASSETS } from "@/lib/assets";
 
 export default function About() {
 
@@ -228,38 +230,17 @@ export default function About() {
                     </div>
                     {/*-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/}
 
-                    <div
-                        className="hidden md:flex w-full max-w-screen-xl rounded-[15px] p-6 lg:p-10 bg-center bg-cover bg-no-repeat mx-auto"
-                        style={{ backgroundImage: `url(${Celeb})` }}
-                    >
-                        <div className="flex flex-col justify-center gap-6 max-w-lg p-8 lg:p-12 rounded-[12px]">
-                            <p className="font-geist font-semibold text-lg text-[#F5A524]">
-                                COME BUILD THE CULTURE
-                            </p>
-
-                            <h1 className="font-schibsted font-extrabold text-4xl md:text-[36px] lg:text-6xl leading-tight text-white">
-                                Ready to join the party?
-                            </h1>
-                            <p className="font-geist font-medium text-lg md:text-[14px] text-[#FFFFFF]">
-                                Discover your next event, or start selling tickets to your own.
-                            </p>
-
-                            <div className="flex gap-6 mt-4">
-                                <button
-                                    className="px-6 py-3 rounded-md bg-[#0F6E56] text-[#E8E6E0] font-geist font-bold text-base cursor-pointer"
-                                >
-                                    Find an event
-
-                                </button>
-
-                                <button
-                                    className="px-6 py-3 rounded-md border border-white text-[#E8E6E0] font-geist font-bold text-base cursor-pointer">
-                                    Talk to us
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                 </section>
+                   {/* 9. BOTTOM CTA BANNER */}
+                           <CtaBanner
+                             label="COME BUILD THE CULTURE"
+                             heading="Ready to join the party?"
+                             body="Discover your next event, or start selling tickets to your own."
+                             primaryBtn={{ text: "Find an event", to: "/explore" }}
+                             secondaryBtn={{ text: "Talk to us", to: "/auth/register" }}
+                             bgImage={UI_ASSETS.manWithHandUp}
+                             align="left"
+                           />
             </main>
         </PageWrapper>
     );

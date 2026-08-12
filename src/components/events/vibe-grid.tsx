@@ -1,15 +1,39 @@
 import React from "react";
-import { VIBE_CATEGORIES } from "@/lib/home-constants";
-import { UI_ASSETS } from "@/lib/assets";
+import { useCategories } from "@/hooks/use-event";
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 
+// Fallback images for categories, keyed by category name.
+// Extend this map as more categories get their own art, or fall back to a generic one.
+import { UI_ASSETS } from "@/lib/assets";
+
+const CATEGORY_IMAGE_MAP: Record<string, string> = {
+  "Music & Concerts": UI_ASSETS.concert,
+  "Parties": UI_ASSETS.party,
+  "Conference": UI_ASSETS.conference,
+  "Comedy": UI_ASSETS.comedy,
+  "Sports": UI_ASSETS.sport,
+  "Arts & Theatre": UI_ASSETS.arts,
+  "Food & Drink": UI_ASSETS.food,
+  "Tech & Startups": UI_ASSETS.tech,
+};
+
+const FALLBACK_IMAGE = UI_ASSETS.tech; // pick any sensible default
+
 export const VibeGrid: React.FC = () => {
+  const { categories, isLoading } = useCategories();
+
+  // Only show categories that actually have events, so the grid doesn't
+  // advertise empty categories with 0 events.
+  const displayCategories = categories.filter((c) => c.eventCount > 0);
+
+  if (isLoading || displayCategories.length === 0) {
+    return null; // or a skeleton, if you want a loading state here
+  }
+
   return (
     <section className="mb-5 md:mb-10">
-      {/* the div holding all of them*/}
       <div className="flex flex-row justify-between items-end mb-2 md:mb-8.25 mt-4 lg:mt-6.75">
-        {/* left div */}
         <div className="">
           <div className="flex items-center gap-1.25">
             <div className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
@@ -21,9 +45,8 @@ export const VibeGrid: React.FC = () => {
             Browse by vibe
           </h2>
         </div>
-        {/* right div */}
         <Link
-          to="/categories"
+          to="/explore"
           className="flex flex-row items-center gap-1 hover:bg-[#0F6E56]/10 rounded-2xl px-2.5 py-1.25 transition-colors duration-300 cursor-pointer"
         >
           <h5 className="font-geist font-regular text-[#0F6E56]">
@@ -35,26 +58,26 @@ export const VibeGrid: React.FC = () => {
         </Link>
       </div>
 
-      {/* grid showing the vibes on mobile display*/}
+      {/* mobile */}
       <div className="md:hidden -mx-4 sm:-mx-6">
         <div className="flex gap-3.5 overflow-x-auto px-4 sm:px-6 pb-2 scrollbar-hide">
-          {VIBE_CATEGORIES.map((category) => (
+          {displayCategories.map((category) => (
             <Link
-            to={`/explore?category=${category.id}`}
-              key={category.id}
+              to={`/explore?categories=${category._id}`}
+              key={category._id}
               className="relative flex-none w-[75vw] max-w-75 h-42.5 rounded-2xl overflow-hidden group cursor-pointer"
             >
               <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-out group-hover:scale-110"
-                style={{ backgroundImage: `url(${category.image})` }}
+                style={{ backgroundImage: `url(${CATEGORY_IMAGE_MAP[category.name] ?? FALLBACK_IMAGE})` }}
               />
               <div className="absolute inset-0 bg-linear-to-t from-[#1A1523]/90 via-[#1A1523]/40 to-transparent" />
               <div className="absolute bottom-0 inset-x-0 p-4 flex flex-col justify-end">
                 <h3 className="text-[20px] font-bold text-[#E4F1EB] transition-colors duration-300 font-grotesk">
-                  {category.title}
+                  {category.name}
                 </h3>
                 <span className="text-xs text-[#E4F1EB] font-mono uppercase font-normal">
-                  {category.count}
+                  {category.eventCount} {category.eventCount === 1 ? "Event" : "Events"}
                 </span>
               </div>
             </Link>
@@ -62,25 +85,25 @@ export const VibeGrid: React.FC = () => {
         </div>
       </div>
 
-      {/* for desktop display */}
+      {/* desktop */}
       <div className="hidden md:grid grid-cols-4 gap-4">
-        {VIBE_CATEGORIES.map((category) => (
+        {displayCategories.map((category) => (
           <Link
-            to={`/explore?category=${category.id}`}
-            key={category.id}
+            to={`/explore?categories=${category._id}`}
+            key={category._id}
             className="relative h-50 rounded-2xl overflow-hidden group cursor-pointer"
           >
             <div
               className="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-out group-hover:scale-110"
-              style={{ backgroundImage: `url(${category.image})` }}
+              style={{ backgroundImage: `url(${CATEGORY_IMAGE_MAP[category.name] ?? FALLBACK_IMAGE})` }}
             />
             <div className="absolute inset-0 bg-linear-to-t from-[#1A1523]/90 via-[#1A1523]/40 to-transparent" />
             <div className="absolute bottom-0 inset-x-0 p-4 flex flex-col justify-end">
               <h3 className="text-lg font-bold text-[#E4F1EB] transition-colors duration-300 font-grotesk">
-                {category.title}
+                {category.name}
               </h3>
               <span className="text-xs text-[#E4F1EB] font-mono">
-                {category.count}
+                {category.eventCount} {category.eventCount === 1 ? "Event" : "Events"}
               </span>
             </div>
           </Link>
@@ -89,4 +112,3 @@ export const VibeGrid: React.FC = () => {
     </section>
   );
 };
-export const VibeCategory = VibeGrid;

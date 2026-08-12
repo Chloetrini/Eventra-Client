@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth.context";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -7,13 +7,12 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-
+import { useGoogleLogin } from "@react-oauth/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/lib/api";
 import { loginSchema } from "@/lib/schema";
-import EventraLogo from "@/assets/Eventra-logo.png";   // or whatever the real name is
+import EventraLogo from "@/assets/Eventra-logo.png";
 import { authPath } from "@/lib/auth-path";
 
 const attendeeLoginSchema = loginSchema;
@@ -35,19 +34,34 @@ export default function Login() {
     mode: "onBlur",
   });
 
- const { login } = useAuth();
+  const { login, logout, googleAuth } = useAuth();
 
   const { mutate, isPending } = useMutation({
     mutationFn: (values: AttendeeLoginValues) =>
       login(values.email, values.password),
 
     onSuccess: (user) => {
+<<<<<<< HEAD
       toast.success("Logged in successfully.");
       if (user.role === "organizer") {
         navigate("/onboarding");   // organizer dashboard later
       } else {
         navigate("/");   // attendee home
+=======
+      if (isOrganizer && user.role !== "organizer") {
+        toast.error("This is an attendee account. Please use the attendee login page.");
+        logout();
+        return;
+>>>>>>> origin/devbranch
       }
+      if (!isOrganizer && user.role === "organizer") {
+        toast.error("This is an organizer account. Please use the organizer login page.");
+        logout();
+        return;
+      }
+
+      toast.success("Logged in successfully.");
+      navigate(user.role === "organizer" ? "/organizer/dashboard" : "/");
     },
 
     onError: (error: Error) => {
@@ -59,6 +73,33 @@ export default function Login() {
     mutate(values);
   };
 
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const user = await googleAuth(tokenResponse.access_token, isOrganizer ? "organizer" : "attendee");
+
+        if (isOrganizer && user.role !== "organizer") {
+          toast.error("This is an attendee account. Please use the attendee login page.");
+          await logout();
+          return;
+        }
+        if (!isOrganizer && user.role === "organizer") {
+          toast.error("This is an organizer account. Please use the organizer login page.");
+          await logout();
+          return;
+        }
+
+        toast.success("Logged in successfully.");
+        navigate(user.role === "organizer" ? "/organizer/dashboard" : "/");
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Google sign-in failed");
+      }
+    },
+    onError: () => {
+      toast.error("Google sign-in failed");
+    },
+  });
+
   return (
     <div className="h-[494px] flex flex-col justify-center ">
       <div className="mb-[12px] mt-[120px]">
@@ -68,10 +109,10 @@ export default function Login() {
             Eventra
           </span>
           {isOrganizer && (
-          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
-            Organizer
-          </span>
-        )}
+            <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
+              Organizer
+            </span>
+          )}
         </Link>
       </div>
       <h1 className="text-[34px] font-extrabold mb-[12px] tracking-[-0.02em] leading-[40px] text-[#000000]">
@@ -185,6 +226,7 @@ export default function Login() {
       <Button
         type="button"
         variant="outline"
+        onClick={() => handleGoogleLogin()}
         className="w-full h-12 border-[#E8E6E0] hover:border-[#E8E6E0] text-[#1A1523] font-bold text-[18px] leading-[29px] mb-[15px]"
       >
         <GoogleIcon className="h-4 w-4 mr-2" />

@@ -2,7 +2,7 @@ import { type Event } from "@/types/event-types"
 import { Heart, MoveUpRight, MapPin, Calendar } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import { cn, formatDate, formatTime } from "@/lib/utils"
-
+import { useAuthGate } from "@/context/auth.gate";
 type EventHeroProps = {
   event: Event;
   isSaved?: boolean;
@@ -13,6 +13,8 @@ export const EventHero = ({ event,
   isSaved = false,
   onToggleSave,
   className,}: EventHeroProps) => {
+
+    const { requireAuth } = useAuthGate();
   return (
     <div className="relative rounded-2xl">
         <img className="rounded-2xl h-74 md:h-131.75 w-full" src={event.coverImage ?? undefined} alt={event.title}/>
@@ -24,7 +26,10 @@ export const EventHero = ({ event,
           {onToggleSave && (
             <button
               type="button"
-              onClick={() => onToggleSave(event.slug)}
+              onClick={() => {
+                requireAuth("save-event");
+                onToggleSave(event.slug);
+              }}
               aria-label={isSaved ? "Remove from saved" : "Save event"}
               aria-pressed={isSaved}
               className={cn(

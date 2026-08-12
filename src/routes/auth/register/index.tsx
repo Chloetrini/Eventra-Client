@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useGoogleLogin } from "@react-oauth/google";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { attendeeRegisterSchema, type AttendeeRegisterValues } from "@/lib/schema";
 import EventraLogo from "@/assets/Eventra-logo.png";
 import { authPath } from "@/lib/auth-path";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth.context";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ export default function Register() {
     },
   });
 
-  const { register: registerUser } = useAuth();
+  const { register: registerUser, googleAuth, logout } = useAuth();
 
   const { mutate, isPending } = useMutation({
     mutationFn: registerUser,
@@ -55,6 +56,33 @@ export default function Register() {
       role: isOrganizer ? "organizer" : "attendee",
     });
   };
+
+  const handleGoogleSignup = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const user = await googleAuth(tokenResponse.access_token, isOrganizer ? "organizer" : "attendee");
+
+        if (isOrganizer && user.role !== "organizer") {
+          toast.error("This is an attendee account. Please use the attendee login page.");
+          await logout();
+          return;
+        }
+        if (!isOrganizer && user.role === "organizer") {
+          toast.error("This is an organizer account. Please use the organizer login page.");
+          await logout();
+          return;
+        }
+
+        toast.success("Account ready!");
+        navigate(user.role === "organizer" ? "/organizer/dashboard" : "/");
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Google sign-up failed");
+      }
+    },
+    onError: () => {
+      toast.error("Google sign-up failed");
+    },
+  });
 
   return (
     <>
@@ -235,6 +263,7 @@ export default function Register() {
       <Button
         type="button"
         variant="outline"
+        onClick={() => handleGoogleSignup()}
         className="w-full h-12 border-[#E8E6E0] hover:border-[#E8E6E0] text-[#1A1523] font-bold text-[18px] leading-[29px]"
       >
         <GoogleIcon className="h-4 w-4 mr-2" />

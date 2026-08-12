@@ -11,7 +11,7 @@ const OnboardingNavbar = () => {
   // change, so "saving" here is really just leaving — the draft is picked
   // back up automatically when they return to /onboarding
   const handleSaveAndExit = () => {
-    navigate("/dashboard")
+    navigate("/organizer/dashboard")
   }
 
   return (

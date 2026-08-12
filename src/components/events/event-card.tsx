@@ -3,6 +3,7 @@ import { Heart, ArrowUpRight, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event-types";
 import { formatNaira } from "@/lib/utils"
+import { useAuthGate } from "@/context/auth.gate";
 
 type EventCardProps = {
   event: Event;
@@ -29,13 +30,13 @@ export function EventCard({
     hour12: true,
   });
 
-  const eventNo = event.no ?? event._id.padStart(4, "0");
+  const eventNo = event.no ?? event._id.slice(-4).toUpperCase();
   const isHome = variant === "home";
-
+  const { requireAuth } = useAuthGate();
   return (
     <article
       className={cn(
-       "group overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md w-full  max-h-[398px]",
+        "group overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md w-full  min-h-[398px]",
         className
       )}
     >
@@ -67,7 +68,10 @@ export function EventCard({
             {onToggleSave && (
               <button
                 type="button"
-                onClick={() => onToggleSave(event.slug)}
+                onClick={() => {
+                  if (!requireAuth("save-event")) return;
+                  onToggleSave(event.slug);
+                }}
                 aria-label={isSaved ? "Remove from saved" : "Save event"}
                 aria-pressed={isSaved}
                 className={cn(
@@ -89,19 +93,21 @@ export function EventCard({
         )}
       </div>
 
-      <div className="space-y-1 p-4 max-h-[209px]">
-        <p className="text-[13px] font-[400] uppercase tracking-wide  text-[#0A4F41] font-space">
+      <div className="flex flex-col space-y-1 p-4 max-h-[209px] h-full">
+        <p className="text-[13px] font-[400] uppercase tracking-wide text-[#0A4F41] font-space">
           {event.category === "Parties" ? "Party" : event.category === "Concerts" ? "Concert" : event.category}
           {event.subcategory && ` · ${event.subcategory}`}
         </p>
 
-        <h3 className="font-[700] leading-snug font-grotesk md:text-[20px] text-[19px]">{event.title}</h3>
+        <h3 className="font-[700] leading-snug font-grotesk md:text-[20px] text-[19px] line-clamp-2 min-h-[2lh]">
+          {event.title}
+        </h3>
 
-        <p className="text-[14px] text-muted-foreground text-[#6E6577] font-[500] font-sans ">
+        <p className="text-[14px] text-muted-foreground text-[#6E6577] font-[500] font-sans line-clamp-1">
           {dateLabel} · {event.venue.name}, {event.venue.city}
         </p>
 
-        <div className="flex items-center justify-between pt-8 pb-2">
+        <div className="mt-auto flex items-center justify-between pt-8 pb-2">
           <span className="font-[16px] font-mono text-[#4A4451] font-[700]">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice)} </span>
           <Link
             to={`/events/${event.slug}`}

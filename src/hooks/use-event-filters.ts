@@ -49,7 +49,7 @@ export function useEventFilters() {
   );
 
   const toggleCategory = useCallback(
-    (category: Category) => {
+    (category: string) => {
       const next = filters.categories.includes(category)
         ? filters.categories.filter((c) => c !== category)
         : [...filters.categories, category];

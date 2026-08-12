@@ -1,4 +1,5 @@
 import { useParams } from "react-router";
+import { Link } from "react-router";
 import { ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -18,27 +19,21 @@ import { FreeEventTicket } from "../../../components/event.details/FreeEventTick
 import { PaidEventTicket } from "../../../components/event.details/PaidEventTicket";
 import { useSavedEvents } from "@/hooks/use-saved-events";
 
+import PageWrapper from "@/components/pageWrapper";
+import { useAuth } from "@/context/auth.context";
+import { getExploreUrl } from "@/lib/explore.history";
+import { useEvent, useEventTickets } from "@/hooks/use-event";
+
 const EventDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { user } = useAuth();
   const { savedIds, toggleSave } = useSavedEvents();
+  const { data: event, isLoading } = useEvent(slug);
 
-  const { data: event, isLoading } = useQuery({
-    queryKey: ["event", slug],
-    queryFn: () => fetchEventBySlug(slug ?? ""),
-    enabled: Boolean(slug),
-  });
-
-  // Ticket tiers come from their own endpoint (separate backend collection), keyed by slug
-  const { data: tickets, isLoading: ticketsLoading } = useQuery({
-    queryKey: ["event-tickets", slug],
-    queryFn: () => fetchEventTickets(slug ?? ""),
-    enabled: Boolean(slug),
-  });
-
-  // All events (through the same fetch as Explore) — used to resolve related events by slug
   const { data: allEventsData } = useQuery({
     queryKey: ["all-events"],
     queryFn: () => fetchEvents(DEFAULT_FILTERS),
+    enabled: Boolean(event?.relatedEventSlugs?.length),
   });
 
   const relatedEvents = (allEventsData?.events ?? []).filter((e) =>
@@ -60,25 +55,27 @@ const EventDetailPage = () => {
       </div>
     );
   }
-
   const isFree = event.minPrice === 0;
-
+  console.log("EVENT CATEGORY DEBUG:", { category: event.category, categoryId: event.categoryId });
   return (
-    <div className="container mx-auto px-4 md:px-10 lg:px-12  ">
+    <PageWrapper className="p-[20px]">
       <nav className="flex items-center gap-1 pb-4 text-xs text-muted-foreground mt-3">
-        <a href="/explore" className="hover:text-foreground">
+        <Link to={getExploreUrl()} className="hover:text-foreground">
           Explore
-        </a>
+        </Link>
         <ChevronRight className="h-3 w-3" />
-        <a href="/explore" className="capitalize hover:text-foreground">
+        <Link
+          to={`/explore?categories=${event.categoryId ?? ""}`}
+          className="capitalize hover:text-foreground"
+        >
           {event.category.toLowerCase()}
-        </a>
+        </Link>
         <ChevronRight className="h-3 w-3" />
         <span className="text-foreground">{event.title}</span>
       </nav>
 
       <EventHero event={event}
-        isSaved={savedIds.has(event.slug)}
+        isSaved={user ? savedIds.has(event.slug) : false}
         onToggleSave={toggleSave}
       />
 
@@ -110,25 +107,37 @@ const EventDetailPage = () => {
         </div>
 
         <div className="w-full lg:sticky lg:top-6 lg:w-85 lg:self-start">
-          {ticketsLoading ? (
+          {isLoading ? (
             <div className="h-96 w-full animate-pulse rounded-2xl bg-muted" />
           ) : isFree ? (
             <FreeEventTicket
               event={event}
-              tiers={tickets?.tiers ?? []}
+              slug={slug}
             />
           ) : (
             <PaidEventTicket
               event={event}
-              tiers={tickets?.tiers ?? []}
-              serviceFeePercent={tickets?.serviceFeePercent ?? 0}
+              tiers={(event.ticketTypes ?? []).map((tt) => {
+                const remaining = tt.quantity - tt.quantitySold;
+                return {
+                  id: tt._id,
+                  type: tt.name,
+                  unitPrice: tt.price,
+                  quantityLeft: remaining,
+                  availability: remaining <= 0 ? "sold out" as const
+                    : remaining <= 10 ? "scarce" as const
+                      : "available" as const,
+                };
+              })}
+              serviceFeePercent={0}
+              slug={slug}
             />
           )}
         </div>
       </div>
 
       {relatedEvents.length > 0 && <RelatedEvents events={relatedEvents} />}
-    </div>
+    </PageWrapper>
   );
 };
 

@@ -1,5 +1,7 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { clearOnboardingSubmitted } from "@/lib/onboarding-store";
 
 type User = {
   id: string;
@@ -30,30 +32,41 @@ type AuthContextType = {
   resetPassword: (email: string, otp: string, newPassword: string) => Promise<ApiResult>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  googleAuth: (accessToken: string, role?: "attendee" | "organizer") => Promise<User>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// The query key for the current user — used everywhere we need to invalidate/set it
+const ME_QUERY_KEY = ["auth", "me"];
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  // Ask the server who we are. The auth cookie rides along automatically.
+  // The current user query. Runs on mount, refetches on focus, cached.
+  const {
+    data: user,
+    isLoading,
+  } = useQuery({
+    queryKey: ME_QUERY_KEY,
+    queryFn: async (): Promise<User | null> => {
+      try {
+        const res = await api.get("/auth/me");
+        return (res.body as User) ?? null;
+      } catch {
+        // 401 / not logged in — treat as null user, not an error
+        return null;
+      }
+    },
+    // 5-minute stale time — good for auth (don't hammer /me on every render)
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+
+  // Manually re-fetch the user (e.g. after login).
   async function refreshUser() {
-    try {
-      const res = await api.get("/auth/me");
-      setUser(res.body as User);
-    } catch {
-      setUser(null); // not logged in / cookie expired
-    } finally {
-      setIsLoading(false);
-    }
+    await queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });
   }
-
-  // Restore the session on app load
-  useEffect(() => {
-    refreshUser();
-  }, []);
 
   // --- Register ---
   async function register(payload: RegisterPayload) {
@@ -70,39 +83,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return api.post("/auth/resend-otp", { email });
   }
 
-  // --- Login: server sets the cookie, then we fetch the profile ---
+  // --- Login: server sets the cookie, then we refetch /me ---
   async function login(email: string, password: string): Promise<User> {
     await api.post("/auth/login", { email, password });
+    // Refetch the user via the query so any subscriber updates
     const meRes = await api.get("/auth/me");
     const loggedInUser = meRes.body as User;
-    setUser(loggedInUser);
+    queryClient.setQueryData(ME_QUERY_KEY, loggedInUser);
     return loggedInUser;
   }
 
-  // --- Forgot password: sends a reset code to the email ---
+  // --- Forgot password ---
   async function forgotPassword(email: string) {
     return api.post("/auth/forgot-password", { email });
   }
 
-  // --- Reset password with the emailed OTP ---
+  // --- Reset password ---
   async function resetPassword(email: string, otp: string, newPassword: string) {
     return api.post("/auth/reset-password", { email, otp, newPassword });
   }
 
-  // --- Logout: server clears the cookie ---
+// --- Google OAuth login/register ---
+async function googleAuth(accessToken: string, role?: "attendee" | "organizer") {
+  await api.post("/auth/google", { accessToken, role });
+  const meRes = await api.get("/auth/me");
+  const loggedInUser = meRes.body as User;
+  queryClient.setQueryData(ME_QUERY_KEY, loggedInUser);
+  return loggedInUser;
+}
+  // --- Logout: server clears the cookie, we clear the cache ---
   async function logout() {
-    try {
-      await api.post("/auth/logout", {});
-    } catch {
-      // clear locally regardless
-    }
-    setUser(null);
+  try {
+    await api.post("/auth/logout", {});
+  } catch {
+    // clear locally regardless
   }
+  localStorage.removeItem("saved-events");
+  clearOnboardingSubmitted();   
+  queryClient.setQueryData(ME_QUERY_KEY, null);
+}
 
   return (
     <AuthContext.Provider
       value={{
-        user,
+        user: user ?? null,
         isLoading,
         register,
         verifyEmail,
@@ -112,6 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         resetPassword,
         logout,
         refreshUser,
+        googleAuth
       }}
     >
       {children}

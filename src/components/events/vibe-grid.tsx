@@ -63,8 +63,8 @@ export const VibeGrid: React.FC = () => {
         <div className="flex gap-3.5 overflow-x-auto px-4 sm:px-6 pb-2 scrollbar-hide">
           {displayCategories.map((category) => (
             <Link
-              to={`/explore?categories=${category._id}`}
-              key={category._id}
+            to={`/explore?category=${category.slug}`}
+              key={category.slug}
               className="relative flex-none w-[75vw] max-w-75 h-42.5 rounded-2xl overflow-hidden group cursor-pointer"
             >
               <div
@@ -89,8 +89,8 @@ export const VibeGrid: React.FC = () => {
       <div className="hidden md:grid grid-cols-4 gap-4">
         {displayCategories.map((category) => (
           <Link
-            to={`/explore?categories=${category._id}`}
-            key={category._id}
+            to={`/explore?category=${category.slug}`}
+            key={category.slug}
             className="relative h-50 rounded-2xl overflow-hidden group cursor-pointer"
           >
             <div

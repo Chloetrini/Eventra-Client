@@ -10,7 +10,7 @@ import { useAuthGate } from "@/context/auth.gate"
 const MAX_GUESTS_PER_RESERVATION = 4
 
 export const FreeEventTicket = ({
-  event,
+  event: _event,
   slug,
 }: {
   event: Event;

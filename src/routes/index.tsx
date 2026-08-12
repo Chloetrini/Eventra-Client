@@ -17,8 +17,7 @@ const routes = [
             seo: {
                 title: "EventPulse",
                 description: "Event management platform for organizers and attendees.",
-
-            }
+            },
         },
         hydrateFallbackElement: <SuspenseUI />,
         children: [
@@ -453,19 +452,28 @@ const routes = [
                         },
                         lazy: async () => {
                             const { default: Component } =
-                                await import("@/routes/organizer/dashboard/index");
+                                await import("@/routes/organizer/overview/index");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "events",
+                        handle: {
+                            seo: {
+                                title: "Events",
+                                description: "Manage your events, from draft to sold out.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/organizer/events/index");
                             return { Component };
                         },
                     },
                 ]
             },
-
         ],
-
     },
-
-
-
 ] satisfies RouteObject[];
 
 export const router = createBrowserRouter(routes);

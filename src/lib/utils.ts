@@ -1,6 +1,6 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-import { QueryClient } from '@tanstack/react-query'
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { QueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
@@ -15,7 +15,7 @@ export const queryClient = new QueryClient({
       gcTime: 5 * 60 * 1000, // 5 minutes
     },
   },
-})
+});
 
 // --- Ozcar-dev's formatters (event details) ---
 export const formatDate = (iso: string) => {
@@ -43,10 +43,20 @@ export const formatPrice = (price: number) => {
 // --- Chloe's formatters (restored after merge) ---
 export const formatDateTime = (eventDateTime: string, displayFormat: string) => {
   return format(new Date(eventDateTime), displayFormat);
-}
+};
 
 export const formatNaira = (amount: number): string =>
-  `₦${amount.toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
+  `₦${amount.toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+
+export const formatCompactNaira = (amount: number): string => {
+  if (amount >= 1_000_000) {
+    return `${(amount / 1_000_000).toFixed(2)}M`;
+  }
+  if (amount >= 1_000) {
+    return `${(amount / 1_000).toFixed(0)}K`;
+  }
+  return `${amount.toLocaleString("en-NG")}`;
+};
 
 const DAY_MS = 86_400_000;
 const now = new Date();
@@ -103,16 +113,16 @@ export const Format = {
     }).format(date);
   },
 
-shortDate: (dateStr: string) => {
-  return new Date(dateStr).toLocaleDateString("en-GB", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-  }); // → "Fri 20 Feb"
-},
+  shortDate: (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString("en-GB", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    }); // → "Fri 20 Feb"
+  },
 
-shortLocation: (location: string) => {
-  // Returns just the venue name, before the comma
-  return location.split(",")[0].trim(); // "V.I. Rooftop, Lagos" → "V.I. Rooftop"
-},
+  shortLocation: (location: string) => {
+    // Returns just the venue name, before the comma
+    return location.split(",")[0].trim(); // "V.I. Rooftop, Lagos" → "V.I. Rooftop"
+  },
 };

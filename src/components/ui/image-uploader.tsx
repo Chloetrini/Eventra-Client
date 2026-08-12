@@ -1,8 +1,10 @@
 import { useRef, useState, type DragEvent } from "react"
 import { X } from "lucide-react"
+import type { FieldError as FieldErrorType } from 'react-hook-form'
+import { FieldError } from "./field"
 
 type ImageUploaderProps = {
-  label: string
+  label?: string
   labelStyle?: string
   onFileChange?: (file: File | null) => void
   accept?: string
@@ -10,6 +12,8 @@ type ImageUploaderProps = {
   previewStyle?: string
   defaultStyle?: string
   imageStyle? :string
+  placeholder? :string
+  errors?: FieldErrorType | undefined
 }
 
 const ImageUploader = ({
@@ -21,6 +25,8 @@ const ImageUploader = ({
   previewStyle,
   defaultStyle,
   imageStyle,
+  placeholder,
+  errors,
 }: ImageUploaderProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [preview, setPreview] = useState<string | null>(null)
@@ -100,9 +106,10 @@ const ImageUploader = ({
             </button>
           </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center px-4">
-            <p className="text-[#4A4451] text-center">
-              Drag a cover image or click to upload
+          <div className="w-full h-full flex items-center justify-center">
+            <p className="text-[#4A4451] text-center flex-col">
+              {placeholder}
+            {errors?.message && <FieldError className="text-xs text-destructive">{String(errors?.message)}</FieldError>}
             </p>
           </div>
         )}

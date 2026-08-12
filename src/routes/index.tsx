@@ -428,7 +428,21 @@ const routes = [
                                 },
                             },
                             {
-                                path: "Tickets",
+                                path: "rsvp",
+                                handle: {
+                                    seo: {
+                                        title: "Select tickets for your event",
+                                        description: "Choose the tickets you want to offer for your event.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/rsvp");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "tickets",
                                 handle: {
                                     seo: {
                                         title: "Select tickets for your event",
@@ -456,7 +470,7 @@ const routes = [
                                 },
                             },
                             {
-                                path: "Review",
+                                path: "review",
                                 handle: {
                                     seo: {
                                         title: "Review Your Event",

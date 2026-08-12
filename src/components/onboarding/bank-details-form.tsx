@@ -7,7 +7,7 @@ import bankImg from "@/assets/onboarding-bank.png"
 import lock from "@/assets/onboarding-lock.png"
 
 const BankDetailsForm = () => {
-    // same form instance as the layout — no local useForm here
+
     const {
         register,
         formState: { errors },

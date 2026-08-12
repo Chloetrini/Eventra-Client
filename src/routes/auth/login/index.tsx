@@ -44,7 +44,7 @@ export default function Login() {
     onSuccess: (user) => {
       toast.success("Logged in successfully.");
       if (user.role === "organizer") {
-        navigate("/");   // organizer dashboard later
+        navigate("/onboarding");   // organizer dashboard later
       } else {
         navigate("/");   // attendee home
       }

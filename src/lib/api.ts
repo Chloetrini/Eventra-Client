@@ -16,11 +16,6 @@ export const axiosClient = axios.create({
 })
 
 
-
-
-
-
-
 async function request(
   method: string,
   path: string,

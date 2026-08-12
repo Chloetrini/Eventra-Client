@@ -470,6 +470,20 @@ const routes = [
                             return { Component };
                         },
                     },
+                    {
+                        path: "attendees",
+                        handle: {
+                            seo: {
+                                title: "Attendee",
+                                description: "Manage your events, from draft to sold out.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/organizer/attendees/index");
+                            return { Component };
+                        },
+                    },
                 ]
             },
         ],

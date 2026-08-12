@@ -18,7 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Edit, Eye, Users, Megaphone, Copy, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router";
 import EditPen from "@/assets/magicpen.png"
 import Promote from "@/assets/star.png"

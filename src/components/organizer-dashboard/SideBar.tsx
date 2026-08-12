@@ -15,7 +15,7 @@ import {
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Overview', path: '/organizer/dashboard' },
-  { icon: Calendar, label: 'Events', path: '/organizer/dashboard/events' },
+  { icon: Calendar, label: 'Events', path: '/organizer/events' },
   { icon: Users, label: 'Attendees', path: '/organizer/dashboard/attendees' },
   { icon: CheckSquare, label: 'Check-in', path: '/organizer/dashboard/checkin' },
   { icon: Wallet, label: 'Payouts', path: '/organizer/dashboard/payouts' },

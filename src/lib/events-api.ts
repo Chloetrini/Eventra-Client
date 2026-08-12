@@ -2,10 +2,13 @@ import { z } from "zod";
 import { api } from "@/lib/api";
 import { MOCK_EVENTS } from "@/lib/constants";
 
+import { eventSchema } from "@/lib/schema";
 import {
-  eventSchema,
-} from "@/lib/schema";
-import {DATE_WINDOWS, PRICE_TIERS, type Event, type EventFilters } from "@/types/event-types";
+  DATE_WINDOWS,
+  PRICE_TIERS,
+  type Event,
+  type EventFilters,
+} from "@/types/event-types";
 import type { EventTickets } from "@/types/ticket-tiers";
 
 const PAGE_SIZE = 9;
@@ -53,7 +56,11 @@ function matchesCategories(e: Event, cats: EventFilters["categories"]) {
 }
 function matchesWhen(e: Event, when: EventFilters["when"]) {
   const now = new Date();
-  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const startOfToday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+  );
   return DATE_WINDOWS[when].test(new Date(e.createdAt), startOfToday);
 }
 function matchesPrice(e: Event, price: EventFilters["price"]) {
@@ -80,7 +87,7 @@ async function fetchEventsMock(filters: EventFilters): Promise<EventsResponse> {
       matchesCategories(e, filters.categories) &&
       matchesWhen(e, filters.when) &&
       matchesPrice(e, filters.price) &&
-      matchesAccess(e, filters.access)
+      matchesAccess(e, filters.access),
   );
 
   // Sidebar counts ignore the category filter itself, so ticking one
@@ -91,7 +98,7 @@ async function fetchEventsMock(filters: EventFilters): Promise<EventsResponse> {
       matchesState(e, filters.state) &&
       matchesWhen(e, filters.when) &&
       matchesPrice(e, filters.price) &&
-      matchesAccess(e, filters.access)
+      matchesAccess(e, filters.access),
   );
   const categoryCounts = forCounts.reduce<Record<string, number>>((acc, e) => {
     acc[e.category] = (acc[e.category] ?? 0) + 1;
@@ -119,7 +126,8 @@ function buildParams(filters: EventFilters): string {
   const p = new URLSearchParams();
   if (filters.search) p.set("q", filters.search);
   if (filters.state) p.set("state", filters.state);
-  if (filters.categories.length) p.set("categories", filters.categories.join(","));
+  if (filters.categories.length)
+    p.set("categories", filters.categories.join(","));
   if (filters.when !== "any") p.set("when", filters.when);
   if (filters.price !== "any") p.set("price", filters.price);
   if (filters.access !== "all") p.set("access", filters.access);
@@ -151,7 +159,6 @@ async function fetchEventBySlugReal(slug: string): Promise<Event | null> {
   }
 }
 
-
 // ---------------------------------------------------------------------
 // Public API — these are what the app calls.
 // While there's no backend, they return mock data directly.
@@ -166,4 +173,3 @@ export function fetchEventBySlug(slug: string): Promise<Event | null> {
   return fetchEventBySlugMock(slug);
   // When the backend is ready: return fetchEventBySlugReal(slug);
 }
-

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
-import type { Event, TicketTier } from '@/types/event'
+import type { Event } from '@/types/event-types'
+import type { TicketTier } from '@/types/ticket-tiers'
 
 export interface SelectedTier {
   tier: TicketTier
@@ -7,7 +8,7 @@ export interface SelectedTier {
 }
 
 export interface CheckoutState {
-  event: Pick<Event, 'id' | 'name' | 'startDate' | 'location' | 'coverImageUrl' | 'serviceFeePercent'> | null
+  event: (Partial<Event> & { serviceFeePercent?: number; location?: string; name?: string; coverImageUrl?: string }) | null
   selectedTiers: SelectedTier[]
   subtotal: number
   serviceFee: number

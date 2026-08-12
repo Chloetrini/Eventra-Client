@@ -8,7 +8,7 @@ import { Check, Mail } from "lucide-react"
 const MAX_GUESTS_PER_RESERVATION = 4
 
 export const FreeEventTicket = ({
-  event,
+  event: _event,
   tiers,
 }: {
   event: Event;

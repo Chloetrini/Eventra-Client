@@ -129,7 +129,7 @@ export default function OrganizerEventDetailsRoute() {
       <OrganizerEventHeader
         event={event}
         onBack={() => navigate(-1)}
-        onPreview={() => navigate(`/events/${event.slug}`)}
+        onPreview={() => navigate(`/events/${event.id}`)}
         onShare={handleShare}
         onEdit={() => navigate(`/organizer/events/${event.slug}/edit`)}
       />

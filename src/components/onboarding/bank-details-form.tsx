@@ -1,20 +1,69 @@
-import { useFormContext } from "react-hook-form"
-import ngBanks from "ng-banks"
+import { useFormContext, useWatch } from "react-hook-form"
+import { useState, useEffect } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { FormBox } from "../ui/form-box"
 import type { OnboardingValues } from "@/lib/schema"
 import user from "@/assets/user.png"
 import bankImg from "@/assets/onboarding-bank.png"
 import lock from "@/assets/onboarding-lock.png"
+import { listBanks, resolveBankAccount } from "@/lib/onboarding-api"
+import { CheckCircle2, Loader2 } from "lucide-react"
 
 const BankDetailsForm = () => {
-
     const {
         register,
+        control,
+        setValue,
         formState: { errors },
     } = useFormContext<OnboardingValues>()
 
-    const banks = ngBanks.getBanks() ?? []
-    const bankNames: string[] = banks.map((bank) => bank.name)
+    const { data: banks = [] } = useQuery({
+        queryKey: ["banks"],
+        queryFn: listBanks,
+        staleTime: Infinity, // bank list barely changes
+    })
+
+    const bankNames = banks.map((b) => b.name)
+
+    const [bankName, accountNumber] = useWatch({
+        control,
+        name: ["bank", "accountNumber"],
+    })
+
+    const [isVerifying, setIsVerifying] = useState(false)
+    const [verifiedName, setVerifiedName] = useState<string | null>(null)
+    const [verifyError, setVerifyError] = useState<string | null>(null)
+
+    useEffect(() => {
+        setVerifiedName(null)
+        setVerifyError(null)
+
+        const selectedBank = banks.find((b) => b.name === bankName)
+        const isValidAccountNumber = accountNumber && accountNumber.length === 10
+
+        if (!selectedBank || !isValidAccountNumber) return
+
+        const timeout = setTimeout(async () => {
+            setIsVerifying(true)
+            try {
+                const result = await resolveBankAccount({
+                    accountNumber,
+                    bankCode: selectedBank.code,
+                })
+                setVerifiedName(result.accountName)
+                // auto-fill the account holder name field with the verified name
+                setValue("accountHolderName", result.accountName, { shouldValidate: true })
+            } catch (err) {
+                setVerifyError(
+                    err instanceof Error ? err.message : "Couldn't verify this account. Check the details and try again."
+                )
+            } finally {
+                setIsVerifying(false)
+            }
+        }, 600) // small debounce so it doesn't fire on every keystroke
+
+        return () => clearTimeout(timeout)
+    }, [bankName, accountNumber, banks, setValue])
 
     return (
         <div className="flex flex-col gap-5">
@@ -22,7 +71,7 @@ const BankDetailsForm = () => {
                 <img
                     src={user}
                     alt=""
-                    className={`w-6 h-6 absolute bottom-5 left-5 ${errors.accountHolderName ? "bottom-9 left-5" : ""} z-20`}
+                    className={`w-6 h-6 absolute bottom-5 left-5${errors.accountHolderName ? "bottom-9 left-5" : ""} z-20`}
                 />
                 <FormBox
                     inputType="input"
@@ -35,9 +84,9 @@ const BankDetailsForm = () => {
                     classname="w-full"
                     borderStyle="onboarding"
                     register={register}
+                    disabled={isVerifying}
                 />
             </span>
-
             <div className="flex flex-col md:flex-row gap-[10px]">
                 <span className="h-full w-full relative">
                     <img
@@ -59,7 +108,6 @@ const BankDetailsForm = () => {
                         options={bankNames}
                     />
                 </span>
-
                 <span className="h-full w-full relative">
                     <img
                         src={lock}
@@ -69,7 +117,6 @@ const BankDetailsForm = () => {
                     <FormBox
                         inputType="input"
                         type="text"
-                        // was mislabelled "BANK"
                         label="ACCOUNT NUMBER"
                         placeholder="10 digits"
                         id="accountNumber"
@@ -81,8 +128,23 @@ const BankDetailsForm = () => {
                     />
                 </span>
             </div>
+
+            {isVerifying && (
+                <p className="flex items-center gap-2 text-sm text-[#4A4451]">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Verifying account…
+                </p>
+            )}
+            {verifiedName && !isVerifying && (
+                <p className="flex items-center gap-2 text-sm text-[#0F6E56] font-medium">
+                    <CheckCircle2 className="h-4 w-4" />
+                    Verified: {verifiedName}
+                </p>
+            )}
+            {verifyError && !isVerifying && (
+                <p className="text-sm text-red-600">{verifyError}</p>
+            )}
         </div>
     )
 }
-
 export default BankDetailsForm

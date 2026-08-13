@@ -27,7 +27,7 @@ const OnboardingSuccess = () => {
                   <a href="" className='text-[#0F6E56]'>under review.</a>{" "}
                   Start creating events now, free events can go live immediately, and paid events unlock once you're verified.
                 </p>
-                <Link to="/organizer/dashboard">
+                <Link to="/dashboard/overview">
                   <PaymentBtn
                     text="Go to dashboard"
                     arrow={ArrowRight}

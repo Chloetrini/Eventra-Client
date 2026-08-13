@@ -29,11 +29,11 @@ function toDisplayTicket(t: any) {
         ticketDetails: [{ type: t.type === "free" ? "Free" : "General", unitPrice: t.price ?? 0, quantity: 1 }],
         qrImageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t.code)}`,
         refundPolicy: {
-            type: (t.type === "free" ? "non-refundable" : "refundable") as "non-refundable" | "refundable",
-            note: t.type === "free"
-                ? "Free reservations can be cancelled from here."
-                : "Refunds subject to the event's policy.",
-        },
+    type: (t.type === "free" ? "free-cancel" : "refundable") as "free-cancel" | "refundable" | "non-refundable",
+    note: t.type === "free"
+        ? "Free event · cancel anytime to release your spot."
+        : "Refunds allowed until 3 days before the event.",
+},
         _rawEvent: t.event,
     };
     
@@ -113,7 +113,7 @@ export default function Tickets() {
                     <p className="text-sm text-center py-12 text-muted-foreground">Loading your tickets…</p>
                 ) : filteredTickets.length > 0 ? (
                     filteredTickets.map((ticket) => (
-                        <TicketCard key={ticket._id} ticket={ticket} />
+                        <TicketCard key={ticket._id} ticket={ticket} showActions />
                     ))
                 ) : (
                     <p className="text-sm text-center py-12 text-muted-foreground">

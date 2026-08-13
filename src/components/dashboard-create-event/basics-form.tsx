@@ -3,8 +3,10 @@ import ImageUploader from '../ui/image-uploader'
 import { FormBox } from '../ui/form-box'
 import type { EventFormValues } from '@/lib/schema'
 
-const BasicsForm = () => {
-
+type BasicsFormProps = {
+  onUploadStatusChange?: (uploading: boolean) => void
+}
+const BasicsForm = ({ onUploadStatusChange }: BasicsFormProps) => {
   const {
     register,
     control,
@@ -112,6 +114,7 @@ const BasicsForm = () => {
           imagePreviewStyle='h-[527px] rounded-[20px]'
           imageDefaultStyle='h-[75px] hover:bg-[#E4F1EB]'
           placeholder='Drag a cover image or click to upload'
+          onUploadStatusChange={onUploadStatusChange}
         />
 
       </div>

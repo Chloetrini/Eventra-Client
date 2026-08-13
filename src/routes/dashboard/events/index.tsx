@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { data, useSearchParams } from "react-router";
-import { getEvents } from "@/lib/api/event";
+import { fetchMyEvents } from "@/lib/events-api";
 import type { Event } from "@/types/event";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 import { EventsHeader } from "@/components/events-header";
@@ -8,6 +8,10 @@ import { EventsFilterBar } from "@/components/events-filter-bar";
 import { EventsTable } from "@/components/events-table";
 import { useEffect, useState } from "react";
 import { DeleteEventDialog } from "@/components/delete-event-dialog";
+import { useOrganizerStatus } from "@/lib/organizer-api";
+import { deleteEvent } from "@/lib/events-api";
+import { toast } from "react-toastify";
+import { useQueryClient } from "@tanstack/react-query";
 
 const STATUS_MAP: Record<string, Event["status"]> = {
   live: "Live",
@@ -24,7 +28,7 @@ export default function Events() {
     isError,
   } = useQuery({
     queryKey: ["events"],
-    queryFn: getEvents,
+    queryFn: fetchMyEvents,
   });
   console.log(
     "events data:",
@@ -33,8 +37,9 @@ export default function Events() {
     "isError:",
     isError,
   );
-
+  const { status } = useOrganizerStatus();
   const [events, setEvents] = useState<Event[]> ([])
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (data) setEvents (data)
@@ -46,9 +51,16 @@ export default function Events() {
   const searchQuery = searchParams.get("q") ?? "";
   const [deletingEvent, setDeletingEvent] =  useState<Event | null>(null)
 
-  const handleDelete = (eventId: string) => {
-    setEvents((prev) => prev.filter((e) => e._id !== eventId))
+ const handleDelete = async (eventId: string) => {
+  try {
+    await deleteEvent(eventId);
+    setEvents((prev) => prev.filter((e) => e._id !== eventId));
+    queryClient.invalidateQueries({ queryKey: ["my-events"] }); // ensures fresh data on next load
+    toast.success("Event deleted");
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : "Could not delete event. Please try again.");
   }
+};
 
   const handleDuplicate = (event: Event) => {
     const duplicated: Event = {
@@ -91,7 +103,7 @@ export default function Events() {
 
   return (
     <div className="max-w-[1145px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      <AccountReviewBanner />
+      <AccountReviewBanner status={status} />
       <EventsHeader />
       <EventsFilterBar />
       <EventsTable events={filteredEvents}

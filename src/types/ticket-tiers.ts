@@ -1,11 +1,14 @@
-import type { z } from "zod";
-import type { ticketTierSchema } from "@/lib/schema";
-
-// One purchasable tier (Early Bird / Regular / VIP). Inferred from the schema.
-export type TicketTier = z.infer<typeof ticketTierSchema>;
+// One purchasable tier, in DISPLAY shape (already transformed from the
+// backend's raw TicketType — see the mapping in event.id/index.tsx).
+export type TicketTier = {
+  id: string;
+  type: string;
+  unitPrice: number;
+  quantityLeft: number;
+  availability: "sold out" | "scarce" | "available";
+};
 
 // The ticket-tier group for ONE event (the "menu" of what you can buy).
-// Backend serves this from its own collection: GET /events/:slug/tickets
 export type EventTickets = {
   eventSlug: string;
   serviceFeePercent: number;

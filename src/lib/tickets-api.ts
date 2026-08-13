@@ -95,3 +95,14 @@ export async function getOrderByReference(reference: string) {
   const res = await api.get(`/tickets/orders/${reference}`);
   return res.body;
 }
+
+export async function requestTicketRefund(ticketId: string, reason?: string) {
+  const res = await api.post(`/tickets/${ticketId}/refund-request`, { reason: reason ?? "Requested by attendee" });
+  return res.body;
+}
+
+export async function cancelReservation(ticketId: string) {
+  const res = await api.delete(`/tickets/${ticketId}/reservation`);
+  return res.body;
+}
+

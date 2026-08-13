@@ -4,16 +4,36 @@ import OrganisationForm from "@/components/onboarding/organisation-form"
 import PageSwitcher from "@/components/onboarding/page-switcher"
 import { ORGANISATION_FIELDS, type OnboardingValues } from "@/lib/schema"
 import PageWrapper from "@/components/pageWrapper"
+import { useState } from "react"
+import { toast } from "react-toastify"
+import { saveOrganizerProfile } from "@/lib/onboarding-api"
 
 const OrganisationPage = () => {
     const navigate = useNavigate()
-    const { trigger } = useFormContext<OnboardingValues>()
+    const { trigger, getValues } = useFormContext<OnboardingValues>()
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const handleContinue = async () => {
-        // validates ONLY this step's fields — the bank fields on the next
-        // page are still empty and would otherwise block us
         const isValid = await trigger([...ORGANISATION_FIELDS])
-        if (isValid) navigate("/onboarding/bank-account")
+        if (!isValid) return
+
+        setIsSubmitting(true)
+        try {
+            const values = getValues()
+            await saveOrganizerProfile({
+                businessName: values.organizationName,
+                category: values.category,
+                city: values.city,
+                contactPhone: values.contactPhone,
+                publicEmail: values.email,
+                bio: values.shortBio,
+            })
+            navigate("/onboarding/bank-account")
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Could not save this step. Please try again.")
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     return (
@@ -24,21 +44,18 @@ const OrganisationPage = () => {
                     <h3 className="font-grotesk font-bold text-[34px]">About your organization</h3>
                     <p className="font-grotesk font-medium text-[18px] text-[#4A4451]">This is what attendees see on your events and profile.</p>
                 </div>
-
                 <div className="w-full">
                     <OrganisationForm />
                 </div>
                 <div>
                     <PageSwitcher
-                        // backOnClick={() => navigate(-1)}
                         disableBack={true}
                         continueOnClick={handleContinue}
+                        disablecontinue={isSubmitting}
                     />
                 </div>
-
             </div>
         </PageWrapper>
     )
 }
-
 export default OrganisationPage

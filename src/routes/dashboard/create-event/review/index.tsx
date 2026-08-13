@@ -26,7 +26,7 @@ const Review = () => {
 
       // flow is done — don't leave stale draft data behind
       localStorage.removeItem(CREATE_EVENT_STORAGE_KEY)
-      navigate("/dashboard")
+      navigate("/dashboard/overview")
     } finally {
       setIsSubmitting(false)
     }

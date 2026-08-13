@@ -1,8 +1,10 @@
 import React from "react";
 import { useDashboard } from "@/hooks/useDashboard";
-import StatsBanner from "@/components/organizer-dashboard/StatsBanner";
 import StatsCards from "@/components/organizer-dashboard/StatsCards";
 import RecentEventsTable from "@/components/organizer-dashboard/RecentEventsTable";
+import { useOrganizerStatus } from "@/lib/organizer-api";
+import { AccountReviewBanner } from "@/components/account-review-banner";
+
 import { useNavigate } from "react-router";
 
 // ── Content‑only skeleton (unchanged) ──
@@ -10,7 +12,7 @@ const DashboardPageSkeleton: React.FC = () => (
   <div className="flex-1 overflow-y-auto px-8 py-6 animate-pulse">
     {/* Banner Skeleton */}
     <div className="h-24 bg-gray-200 rounded-xl mb-6 w-full" />
-    
+
     {/* Header Skeleton */}
     <div className="mb-6">
       <div className="h-4 bg-gray-200 rounded w-24 mb-2" />
@@ -38,8 +40,8 @@ const DashboardPageSkeleton: React.FC = () => (
         <div key={i} className="flex items-center px-6 py-4 border-b border-gray-100 gap-4">
           <div className="h-10 w-10 bg-gray-200 rounded-lg" />
           <div className="flex-1 flex flex-col gap-1">
-             <div className="h-4 bg-gray-200 rounded w-1/3" />
-             <div className="h-3 bg-gray-200 rounded w-1/4" />
+            <div className="h-4 bg-gray-200 rounded w-1/3" />
+            <div className="h-3 bg-gray-200 rounded w-1/4" />
           </div>
         </div>
       ))}
@@ -50,6 +52,7 @@ const DashboardPageSkeleton: React.FC = () => (
 export default function DashboardPage() {
   const { data, isLoading, isError } = useDashboard();
   const navigate = useNavigate();
+  const { status } = useOrganizerStatus();
 
   if (isLoading) return <DashboardPageSkeleton />;
   if (isError || !data) {
@@ -71,11 +74,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <StatsBanner
-        status={data.accountStatus}
-        onAction={handleBannerAction}
-        onClose={() => console.log("Banner closed")}
-      />
+      <AccountReviewBanner status={status} />
 
       <div className="mb-6">
         <p className="text-[10px] font-bold text-[#0F6E56] uppercase tracking-widest mb-1">

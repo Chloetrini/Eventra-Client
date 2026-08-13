@@ -4,7 +4,7 @@ import {
   eventSchema,
 } from "@/lib/schema";
 import { type Event, type EventFilters } from "@/types/event-types";
-
+import type { Attendee } from "@/types/attendees";
 export type EventsResponse = {
   events: Event[];
   total: number;
@@ -116,4 +116,93 @@ export async function fetchCategories(): Promise<EventCategory[]> {
   const res = await api.get("/categories");
   const raw = Array.isArray(res.body) ? res.body : (res.body as { categories: unknown[] }).categories;
   return z.array(categorySchema).parse(raw);
+}
+
+// ---------------------------------------------------------------------
+// Organizer's own events (their event management list)
+// GET /events/mine
+// ---------------------------------------------------------------------
+type RealMyEvent = {
+  _id: string;
+  title: string;
+  slug: string;
+  coverImage?: string;
+  category?: { name: string } | string | null;
+  type: "free" | "paid";
+  status: string;
+  startDate?: string;
+  capacity?: number | null;
+  ticketsSoldCount?: number;
+  reservationsCount?: number;
+  revenueTotal?: number;
+};
+
+function mapMyEventStatus(status: string): "Live" | "Draft" | "Sold out" | "Past" | "Rejected" {
+  const s = status.toLowerCase();
+  if (s === "live") return "Live";
+  if (s === "draft") return "Draft";
+  if (s === "sold_out" || s === "sold out") return "Sold out";
+  if (s === "rejected") return "Rejected";
+  return "Past";
+}
+
+function getMyEventCategoryName(category: RealMyEvent["category"]): string {
+  if (!category) return "Uncategorized";
+  if (typeof category === "string") return category;
+  return category.name ?? "Uncategorized";
+}
+
+export async function fetchMyEvents() {
+  const res = await api.get("/events/mine");
+  const body = res.body as { events: RealMyEvent[]; meta: unknown };
+  return body.events.map((e, index) => ({
+    _id: e._id,
+    eventTitle: e.title ?? "Untitled Event",
+    eventNumber: `№ ${String(index + 1).padStart(4, "0")}`,
+    category: getMyEventCategoryName(e.category),
+    coverImage: e.coverImage ?? "",
+    date: e.startDate ?? null,
+    EventType: (e.type === "free" ? "Free" : "Paid") as "Free" | "Paid",
+    sold: e.type === "free" ? e.reservationsCount ?? 0 : e.ticketsSoldCount ?? 0,
+    capacity: e.capacity ?? null,
+    revenue: e.revenueTotal ?? null,
+    status: mapMyEventStatus(e.status),
+  }));
+}
+
+// ---------------------------------------------------------------------
+// Attendees for a specific event (organizer only)
+// GET /events/:eventId/attendees
+// ---------------------------------------------------------------------
+type RealTicket = {
+  _id: string;
+  code: string;
+  type: "free" | "paid";
+  price: number;
+  attendeeName: string;
+  attendeeEmail: string;
+  status: "valid" | "checked_in" | "cancelled" | "refunded";
+  checkedInAt?: string;
+  issuedAt: string;
+  ticketType?: { name: string } | null;
+};
+
+export async function fetchEventAttendees(eventId: string): Promise<Attendee[]> {
+  const res = await api.get(`/events/${eventId}/attendees`);
+  const body = res.body as { tickets: RealTicket[]; meta: unknown };
+  return body.tickets.map((t) => ({
+    _id: t._id,
+    eventId,
+    name: t.attendeeName,
+    email: t.attendeeEmail,
+    referenceCode: t.code,
+    checkedIn: t.status === "checked_in",
+    ticketType: (t.ticketType?.name as "VIP" | "Regular" | "Table") ?? "Regular",
+    tableSize: null,
+    purchasedDate: t.issuedAt,
+  }));
+}
+
+export async function deleteEvent(eventId: string) {
+  await api.delete(`/events/${eventId}`);
 }

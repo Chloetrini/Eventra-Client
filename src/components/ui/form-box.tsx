@@ -39,6 +39,7 @@ type FormFieldProps<T extends FieldValues> = {
   imagePreviewStyle?: string
   imageDefaultStyle?: string
   onImageFileSelected?: (file: File | null) => void
+  onUploadStatusChange?: (uploading: boolean) => void
 }
 
 export function FormBox<T extends FieldValues>({
@@ -70,6 +71,7 @@ export function FormBox<T extends FieldValues>({
   imagePreviewStyle,
   imageDefaultStyle,
   onImageFileSelected,
+  onUploadStatusChange
 }: FormFieldProps<T>) {
   const toggleVisibility = () => setIsVisible?.((prev: boolean) => !prev)
 
@@ -197,6 +199,27 @@ export function FormBox<T extends FieldValues>({
             description={switchDescription}
             disabled={disabled}
             className={switchInputClassName}
+          />
+        )
+        case 'imageUpload':
+        if (!control) {
+          throw new Error(
+            `FormBox: "control" prop is required when inputType="imageUpload" (field: ${String(name)})`
+          )
+        }
+        return (
+          <ImageUploadInput
+            name={name}
+            control={control}
+            label={label}
+            accept={imageAccept}
+            classname={classname}
+            previewStyle={imagePreviewStyle}
+            defaultStyle={imageDefaultStyle}
+            placeholder={placeholder}
+            errors={errors}
+            onFileSelected={onImageFileSelected}
+            onUploadStatusChange={onUploadStatusChange}
           />
         )
       default:

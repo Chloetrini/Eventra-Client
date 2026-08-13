@@ -47,8 +47,8 @@ const TYPE_STYLES: Record<Event["EventType"], string> = {
 };
 
 
-export function EventsTable({ events, onDuplicate, onDeleteRequest}: EventsTableProps) {
-    const navigate = useNavigate();
+export function EventsTable({ events, onDuplicate, onDeleteRequest }: EventsTableProps) {
+  const navigate = useNavigate();
   return (
     <div className="overflow-x-auto border rounded-xl ">
       <Table className="min-w-[800px]">
@@ -141,18 +141,18 @@ export function EventsTable({ events, onDuplicate, onDeleteRequest}: EventsTable
 
                 <TableCell>
                   <DropdownMenu>
-                    <DropdownMenuTrigger>
-                        <Button variant="ghost" size="icon">
-                            <img src={Loading} alt="More Option" className="size-6 text-[#292D32]"/>
-                        </Button>
+                    <DropdownMenuTrigger
+                      render={<Button variant="ghost" size="icon" />}
+                    >
+                      <img src={Loading} alt="More Option" className="size-6 text-[#292D32]" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => navigate(`/events/${event._id}/edit`)} className="text-[#6E6577] text-[13px]">
-                         <img src={EditPen} alt="magic pen" className="size-4 "/> Edit
+                      <DropdownMenuItem onClick={() => navigate(`/dashboard/create-event/type?eventId=${event._id}`)} className="text-[#6E6577] text-[13px]">
+                        <img src={EditPen} alt="magic pen" className="size-4 " /> Edit
                       </DropdownMenuItem>
 
                       <DropdownMenuItem disabled className="text-[#6E6577] text-[13px]">
-                     <img src={Preview} alt="Preview image" className="size-4" /> Preview
+                        <img src={Preview} alt="Preview image" className="size-4" /> Preview
                       </DropdownMenuItem>
 
                       <DropdownMenuItem onClick={() => navigate(`/attendees?event=${event._id}`)} className="text-[#6E6577] text-[13px]">

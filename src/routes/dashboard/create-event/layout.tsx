@@ -1,16 +1,17 @@
-import { useEffect } from 'react'
 import CreateEventSidebar from '@/components/dashboard-create-event/create-event-sidebar'
 import { Outlet } from 'react-router'
 import { FormProvider, useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { eventFormSchema, type EventFormValues } from '@/lib/schema'
-
+import { useSearchParams } from "react-router";
+import { useEffect, useState } from "react";
+import { getEvent, setCreatedEventId } from "@/lib/create-event-api";
 export const CREATE_EVENT_STORAGE_KEY = 'eventra-create-event'
 
 const emptyValues: EventFormValues = {
   eventType: undefined as any,
   eventName: '',
-  category: '', 
+  category: '',
   date: '',
   startTime: '',
   endTime: '',
@@ -48,6 +49,35 @@ const CreateEventLayout = () => {
     mode: 'onBlur',
     defaultValues: { ...emptyValues, ...getSavedValues() },
   })
+  const [searchParams] = useSearchParams();
+  const editEventId = searchParams.get("eventId");
+  const [isLoadingEdit, setIsLoadingEdit] = useState(Boolean(editEventId));
+
+  useEffect(() => {
+    if (!editEventId) return;
+
+    setCreatedEventId(editEventId);
+
+    getEvent(editEventId).then((event: any) => {
+       console.log("LOADED EVENT FOR EDIT:", event);
+      methods.reset({
+        eventType: event.type,
+        eventName: event.title ?? "",
+        category: event.category?.name ?? event.category ?? "",
+        date: event.startDate ?? "",
+        startTime: event.startDate ?? "",
+        endTime: event.endDate ?? "",
+        description: event.description ?? "",
+        coverImage: event.coverImage ?? "",
+        locationType: event.isOnline ? "online" : "physical",
+        venueName: event.venue?.name ?? "",
+        address: event.venue?.address ?? "",
+        platform: event.onlinePlatform ?? "",
+        link: event.onlineJoinLink ?? "",
+      });
+      setIsLoadingEdit(false);
+    }).catch(() => setIsLoadingEdit(false));
+  }, [editEventId]);
 
   useEffect(() => {
     const subscription = methods.watch((values) => {
@@ -59,6 +89,11 @@ const CreateEventLayout = () => {
     })
     return () => subscription.unsubscribe()
   }, [methods])
+
+  // Early return comes AFTER all hooks are declared — this is now safe.
+  if (isLoadingEdit) {
+    return <div className="p-10 text-center text-muted-foreground">Loading your event…</div>;
+  }
 
   return (
     <FormProvider {...methods}>

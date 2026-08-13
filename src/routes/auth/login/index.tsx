@@ -39,24 +39,20 @@ export default function Login() {
   const { mutate, isPending } = useMutation({
     mutationFn: (values: AttendeeLoginValues) =>
       login(values.email, values.password),
-
     onSuccess: (user) => {
-      toast.success("Logged in successfully.");
-      if (user.role === "organizer") {
-        navigate("/onboarding");   // organizer dashboard later
-      } else {
-        navigate("/");   // attendee home
+      if (isOrganizer && user.role !== "organizer") {
+        toast.error("This is an attendee account. Please use the attendee login page.");
+        logout();
+        return;
       }
       if (!isOrganizer && user.role === "organizer") {
         toast.error("This is an organizer account. Please use the organizer login page.");
         logout();
         return;
       }
-
       toast.success("Logged in successfully.");
-      navigate(user.role === "organizer" ? "/organizer/dashboard" : "/");
+      navigate(user.role === "organizer" ? "/dashboard/overview" : "/");
     },
-
     onError: (error: Error) => {
       toast.error(error.message || "Something went wrong.");
     },
@@ -70,7 +66,6 @@ export default function Login() {
     onSuccess: async (tokenResponse) => {
       try {
         const user = await googleAuth(tokenResponse.access_token, isOrganizer ? "organizer" : "attendee");
-
         if (isOrganizer && user.role !== "organizer") {
           toast.error("This is an attendee account. Please use the attendee login page.");
           await logout();
@@ -81,9 +76,8 @@ export default function Login() {
           await logout();
           return;
         }
-
         toast.success("Logged in successfully.");
-        navigate(user.role === "organizer" ? "/organizer/dashboard" : "/");
+        navigate(user.role === "organizer" ? "/dashboard/overview" : "/");
       } catch (err) {
         toast.error(err instanceof Error ? err.message : "Google sign-in failed");
       }

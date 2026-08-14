@@ -88,7 +88,7 @@ export default function Login() {
   });
 
   return (
-    <div className="h-[494px] flex flex-col justify-center ">
+    <div className="min-h-[494px] flex flex-col justify-center ">
       <div className="mb-[12px] mt-[120px]">
         <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
           <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />

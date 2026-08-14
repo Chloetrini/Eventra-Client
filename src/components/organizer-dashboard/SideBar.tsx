@@ -6,6 +6,7 @@ import {
   Calendar,
   Users,
   CheckSquare,
+  Wallet,
   Megaphone,
   Settings,
   Home,
@@ -17,7 +18,10 @@ const navItems = [
   { icon: Calendar, label: 'Events', path: '/dashboard/events' },
   { icon: Users, label: 'Attendees', path: '/dashboard/attendees' },
   { icon: CheckSquare, label: 'Check-in', path: '/dashboard/check-in' },
-  { icon: Megaphone, label: 'Promotions', path: '/dashboard/promote' },
+  { icon: Megaphone, label: 'Promotions', path: '/dashboard/promotion' },
+  // No payouts page exists yet — kept visible as a placeholder (not a
+  // real link) so the section isn't missing from the nav while it's built.
+  { icon: Wallet, label: 'Payouts', path: null },
 ];
 
 const bottomItems = [
@@ -89,6 +93,22 @@ const SideBar: React.FC<SideBarProps> = ({ organization }) => {
       <nav className="flex-1 px-4 py-4 space-y-1">
         <p className="px-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Manage</p>
         {navItems.map((item) => {
+          if (!item.path) {
+            // Placeholder item — no page built yet, so it's shown but not clickable.
+            return (
+              <div
+                key={item.label}
+                className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-[#B5B0BC] cursor-not-allowed"
+                title="Coming soon"
+              >
+                <div className="flex items-center gap-3">
+                  <item.icon className="h-5 w-5 text-[#D8D5DC]" />
+                  {item.label}
+                </div>
+                <span className="text-[9px] font-bold uppercase tracking-wide text-[#B5B0BC]">Soon</span>
+              </div>
+            );
+          }
           const isActive = location.pathname === item.path;
           return (
             <Link

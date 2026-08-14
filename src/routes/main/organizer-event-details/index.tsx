@@ -123,7 +123,7 @@ export default function OrganizerEventDetailsRoute() {
           <PromotionsCard
             isPromoted={event.isPromoted}
             message={event.promotionMessage}
-            onPromote={() => navigate(`/dashboard/promote?event=${event.id}`)}
+            onPromote={() => navigate(`/dashboard/promotion?event=${event.id}`)}
           />
         </div>
 

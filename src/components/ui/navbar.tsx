@@ -5,6 +5,7 @@ import {
   X,
   ChevronDown,
   User as UserIcon,
+  LayoutDashboard,
   Ticket,
   Heart,
   LogOut,
@@ -93,6 +94,7 @@ function Navbar() {
 
   const { user, logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
+  const isOrganizer = user?.role === "organizer"
 
   const getInitials = (name?: string) => {
     if (!name) return "U"
@@ -176,11 +178,15 @@ function Navbar() {
                   <div className="py-[12px] space-y-[8px]">
                     <DropdownMenuItem>
                       <NavLink
-                        to="/profile"
+                        to={isOrganizer ? "/dashboard/overview" : "/profile"}
                         className="flex w-full items-center gap-[14px] px-0 py-[6px] text-[18px] font-bold text-[#1A1523] dark:text-white cursor-pointer hover:text-[#0F6E56]"
                         >
-                        <UserIcon className="h-5 w-5 text-[#1A1523] dark:text-white" />
-                        <span>Profile</span>
+                        {isOrganizer ? (
+                          <LayoutDashboard className="h-5 w-5 text-[#1A1523] dark:text-white" />
+                        ) : (
+                          <UserIcon className="h-5 w-5 text-[#1A1523] dark:text-white" />
+                        )}
+                        <span>{isOrganizer ? "Dashboard" : "Profile"}</span>
                       </NavLink>
                     </DropdownMenuItem>
 
@@ -266,11 +272,11 @@ function Navbar() {
                     </div>
                   </div>
                   <NavLink
-                    to="/profile-settings"
+                    to={isOrganizer ? "/dashboard/overview" : "/profile"}
                     onClick={closeMenu}
                     className="py-1 text-sm font-semibold text-[#1A1523] dark:text-white"
                     >
-                    Profile
+                    {isOrganizer ? "Dashboard" : "Profile"}
                   </NavLink>
                   <NavLink
                     to="/tickets"

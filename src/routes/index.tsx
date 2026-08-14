@@ -189,6 +189,10 @@ const routes = [
                 Component: AuthLayout,
                 children: [
                     {
+                        index: true,
+                        element: <Navigate to="login" replace />,
+                    },
+                    {
                         path: "register",
                         handle: {
                             seo: {
@@ -449,6 +453,10 @@ const routes = [
                         Component: DashBoardLayout,
                         children: [
                             {
+                                index: true,
+                                element: <Navigate to="overview" replace />,
+                            },
+                            {
                                 path: "overview",
                         handle: {
                             seo: {
@@ -510,7 +518,7 @@ const routes = [
                         },
                     },
                     {
-                        path: "promote",
+                        path: "promotion",
                         handle: {
                             seo: {
                                 title: "Promote",
@@ -519,7 +527,7 @@ const routes = [
                         },
                         lazy: async () => {
                             const { default: Component } =
-                                await import("@/routes/dashboard/promote");
+                                await import("@/routes/dashboard/promotion");
                             return { Component };
                         },
                     },

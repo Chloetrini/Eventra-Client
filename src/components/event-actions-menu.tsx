@@ -95,7 +95,7 @@ export function EventActionsMenu({ eventId, eventTitle, onDeleteRequest }: Event
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={() => navigate(`/dashboard/promote?event=${eventId}`)}
+          onClick={() => navigate(`/dashboard/promotion?event=${eventId}`)}
           className="text-[#6E6577] text-[13px]"
         >
           <img src={Promote} alt="" className="size-4" /> Promote

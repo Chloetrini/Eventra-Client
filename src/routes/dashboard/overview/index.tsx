@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDashboard } from "@/hooks/useDashboard";
 import StatsCards from "@/components/organizer-dashboard/StatsCards";
 import RecentEventsTable from "@/components/organizer-dashboard/RecentEventsTable";
+import RevenueChart from "@/components/organizer-dashboard/RevenueChart";
+import TicketsByTypeChart from "@/components/organizer-dashboard/TicketsByTypeChart";
 import { useOrganizerStatus } from "@/lib/organizer-api";
 import { AccountReviewBanner } from "@/components/account-review-banner";
+import type { RevenuePeriod } from "@/types/dashboard";
 
 import { useNavigate } from "react-router";
 
@@ -50,7 +53,8 @@ const DashboardPageSkeleton: React.FC = () => (
 );
 
 export default function DashboardPage() {
-  const { data, isLoading, isError } = useDashboard();
+  const [period, setPeriod] = useState<RevenuePeriod>("30d");
+  const { data, isLoading, isError } = useDashboard(period);
   const navigate = useNavigate();
   const { status } = useOrganizerStatus();
 
@@ -84,11 +88,17 @@ export default function DashboardPage() {
           Welcome back, {data.organization.name} 👋
         </h1>
         <p className="text-sm text-gray-500 mt-1">
-          Here's how your events are performing. Full charts and activity land in Batch 2.
+          Here's how your events are performing.
         </p>
       </div>
 
       <StatsCards stats={data.stats} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-8">
+        <RevenueChart data={data.revenueSeries} period={period} onPeriodChange={setPeriod} />
+        <TicketsByTypeChart data={data.ticketsByType} />
+      </div>
+
       <RecentEventsTable events={data.recentEvents} />
     </>
   );

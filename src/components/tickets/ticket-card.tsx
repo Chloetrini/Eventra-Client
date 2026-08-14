@@ -25,7 +25,6 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
     eventEntrance,
     holderName,
     eventName,
-    referenceCode,
     orderID,
     ticketDetails,
     qrImageUrl,
@@ -190,10 +189,7 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
               <p className="font-space font-bold text-xl min-[400px]:text-2xl text-[#1A1523]">
                 {orderID}
               </p>
-              <p className="font-space w-full h-[18px] text-xs text-[#0F6E56]">
-                {referenceCode}
-              </p>
-              <p className="text-xs text-[#4A4451] italic">Non-transferable</p>
+              <p className="text-xs text-[#4A4451] italic mt-1">Non-transferable</p>
             </div>
             <div className="text-xs min-[400px]:text-[14px] font-[500] leading-[21px] w-full max-w-[316px] mx-auto text-[#0F6E56]">
               <p className="">Eventra</p>

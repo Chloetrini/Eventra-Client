@@ -514,6 +514,20 @@ const routes = [
                         },
                     },
                     {
+                        path: "check-in",
+                        handle: {
+                            seo: {
+                                title: "Check-in",
+                                description: "Scan or enter a ticket code to check guests in.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/dashboard/check-in");
+                            return { Component };
+                        },
+                    },
+                    {
                         path: "create-event",
                         Component: CreateEventLayout,
                         children: [

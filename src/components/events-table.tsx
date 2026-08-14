@@ -151,15 +151,15 @@ export function EventsTable({ events, onDuplicate, onDeleteRequest }: EventsTabl
                         <img src={EditPen} alt="magic pen" className="size-4 " /> Edit
                       </DropdownMenuItem>
 
-                      <DropdownMenuItem disabled className="text-[#6E6577] text-[13px]">
-                        <img src={Preview} alt="Preview image" className="size-4" /> Preview
+                      <DropdownMenuItem onClick={() => navigate(`/organizer/events/${event._id}`)} className="text-[#6E6577] text-[13px]">
+                        <img src={Preview} alt="Preview image" className="size-4" /> View details
                       </DropdownMenuItem>
 
-                      <DropdownMenuItem onClick={() => navigate(`/attendees?event=${event._id}`)} className="text-[#6E6577] text-[13px]">
+                      <DropdownMenuItem onClick={() => navigate(`/dashboard/attendees?event=${event._id}`)} className="text-[#6E6577] text-[13px]">
                         <img src={UserProfile} alt="User profile" className="size-4" />Attendance
                       </DropdownMenuItem>
 
-                      <DropdownMenuItem disabled className="text-[#6E6577] text-[13px]">
+                      <DropdownMenuItem onClick={() => navigate(`/dashboard/promote?event=${event._id}`)} className="text-[#6E6577] text-[13px]">
                         <img src={Promote} alt="Promote icon" className="size-4" /> Promote
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onDuplicate(event)} className="text-[#6E6577] text-[13px] border-t border-[#E8E6E0]">

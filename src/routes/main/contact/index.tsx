@@ -65,21 +65,21 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="relative bg-gradient-to-r from-emerald-50 via-emerald-50/50 to-white">
+    <div className="relative bg-gradient-to-r from-emerald-50 via-emerald-50/50 to-white dark:from-background dark:via-background dark:to-background">
      <PageWrapper className="p-[20px]">
 
         <div className="flex flex-col gap-10 lg:flex-row lg:items-stretch xl:gap-14">
           <div className="flex flex-1 flex-col lg:max-w-[46%]">
             <div className="mb-5 flex items-center gap-2">
               <span className="h-0.5 w-6 bg-amber-400" />
-              <span className="text-xs font-semibold tracking-widest text-emerald-700">CONTACT</span>
+              <span className="text-xs font-semibold tracking-widest text-emerald-700 dark:text-emerald-400">CONTACT</span>
             </div>
 
-            <h1 className="text-4xl font-bold leading-[1.08] tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
-              Let&rsquo;s make <span className="font-serif italic font-medium text-emerald-700">something</span> unforgettable.
+            <h1 className="text-4xl font-bold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+              Let&rsquo;s make <span className="font-serif italic font-medium text-emerald-700 dark:text-emerald-400">something</span> unforgettable.
             </h1>
 
-            <p className="mt-6 max-w-md text-sm text-slate-600 sm:text-base">Questions, press, partnerships or need a hand with an event? Send us a message and we&rsquo;ll get back within a day.</p>
+            <p className="mt-6 max-w-md text-sm text-muted-foreground sm:text-base">Questions, press, partnerships or need a hand with an event? Send us a message and we&rsquo;ll get back within a day.</p>
 
             <div className="relative mt-10 flex-1 z-10 rounded-3xl shadow-xl">
               <img src={crowdImage} alt="Crowd a-t an Eventra event" className="w-full object-cover rounded-3xl h-full" />
@@ -103,11 +103,11 @@ export default function ContactPage() {
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
-            <span className="inline-flex w-fit items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">&middot; Send a message</span>
+          <div className="flex flex-1 flex-col rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8 lg:p-10">
+            <span className="inline-flex w-fit items-center rounded-full bg-emerald-50 dark:bg-emerald-500/15 px-3 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">&middot; Send a message</span>
 
-            <h2 className="mt-4 text-xl font-bold text-slate-900 sm:text-2xl">How can we help?</h2>
-            <p className="mt-1 text-sm text-slate-500">Tell us a little about you and what you&rsquo;re working on.</p>
+            <h2 className="mt-4 text-xl font-bold text-foreground sm:text-2xl">How can we help?</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Tell us a little about you and what you&rsquo;re working on.</p>
 
      
             <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5">
@@ -162,10 +162,10 @@ export default function ContactPage() {
               </Button>
             </form>
 
-            <div className="my-7 h-px bg-slate-100" />
+            <div className="my-7 h-px bg-border" />
 
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-[11px] font-semibold tracking-widest text-slate-400">OR REACH US DIRECTLY ON</p>
+              <p className="text-[11px] font-semibold tracking-widest text-muted-foreground">OR REACH US DIRECTLY ON</p>
               <div className="flex items-center gap-2.5">
                 {SOCIALS.map(({ name, href, Icon, style }) => (
                   <a key={name} href={href} aria-label={name} target="_blank" rel="noreferrer" className="flex h-9 w-9 items-center justify-center rounded-md text-white shadow-sm transition hover:scale-105" style={style}>
@@ -188,17 +188,17 @@ export default function ContactPage() {
             <div>
               <div className="mb-4 flex items-center gap-2">
                 <span className="h-0.5 w-6 bg-amber-400" />
-                <span className="text-xs font-semibold tracking-widest text-emerald-700">FIND US</span>
+                <span className="text-xs font-semibold tracking-widest text-emerald-700 dark:text-emerald-400">FIND US</span>
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">Yaba, Lagos &middot; Nigeria</h2>
+              <h2 className="text-2xl font-bold text-foreground sm:text-3xl">Yaba, Lagos &middot; Nigeria</h2>
             </div>
 
-            <a href={MAP_LINK} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700">Open in map
+            <a href={MAP_LINK} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 dark:hover:text-emerald-400">Open in map
               <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
           </div>
 
-          <div className="relative h-[320px] w-full overflow-hidden rounded-3xl border border-slate-200 shadow-sm sm:h-[400px] lg:h-[480px]">
+          <div className="relative h-[320px] w-full overflow-hidden rounded-3xl border border-border shadow-sm sm:h-[400px] lg:h-[480px]">
             <MapContainer center={EVENTRA_HQ} zoom={15} scrollWheelZoom={false} style={{ height: "100%", width: "100%" }}>
               <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
               <Marker position={EVENTRA_HQ}>
@@ -209,14 +209,14 @@ export default function ContactPage() {
               </Marker>
             </MapContainer>
 
-            <div className="pointer-events-none absolute bottom-4 left-4 z-[1000] max-w-[13rem] rounded-2xl bg-white/95 p-3.5 shadow-lg backdrop-blur sm:bottom-6 sm:left-6 sm:max-w-xs sm:p-4">
+            <div className="pointer-events-none absolute bottom-4 left-4 z-[1000] max-w-[13rem] rounded-2xl bg-card/95 p-3.5 shadow-lg backdrop-blur sm:bottom-6 sm:left-6 sm:max-w-xs sm:p-4">
               <div className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700"><MapPin className="h-4 w-4" /></span>
+                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"><MapPin className="h-4 w-4" /></span>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Eventra HQ</p>
-                  <p className="text-xs text-slate-500">Yaba, Lagos &middot; Nigeria</p>
-                  <p className="mt-1 text-xs text-slate-500">Weekdays &middot; 9AM &ndash; 6PM</p>
-                  <p className="mt-1 text-xs font-medium text-emerald-700">&middot; Open now</p>
+                  <p className="text-sm font-semibold text-foreground">Eventra HQ</p>
+                  <p className="text-xs text-muted-foreground">Yaba, Lagos &middot; Nigeria</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Weekdays &middot; 9AM &ndash; 6PM</p>
+                  <p className="mt-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">&middot; Open now</p>
                 </div>
               </div>
             </div>
@@ -231,15 +231,15 @@ export default function ContactPage() {
 
 function ContactRow({ icon, label, value, href, }: { icon: ReactNode; label: string; value: string; href: string; }) {
   return (
-    <a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined} className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/60 px-4 py-3 transition hover:border-emerald-200 hover:bg-emerald-50/50">
+    <a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined} className="flex items-center justify-between rounded-xl border border-border bg-muted/60 px-4 py-3 transition hover:border-emerald-200 dark:hover:border-emerald-500/40 hover:bg-emerald-50/50 dark:hover:bg-emerald-500/10">
       <div className="flex items-center gap-3">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-emerald-700 shadow-sm">{icon}</span>
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-card text-emerald-700 dark:text-emerald-400 shadow-sm">{icon}</span>
         <div>
-          <p className="text-[10px] font-semibold tracking-widest text-slate-400">{label}</p>
-          <p className="text-sm font-medium text-slate-900">{value}</p>
+          <p className="text-[10px] font-semibold tracking-widest text-muted-foreground">{label}</p>
+          <p className="text-sm font-medium text-foreground">{value}</p>
         </div>
       </div>
-      <ArrowUpRight className="h-3.5 w-3.5 text-slate-400" />
+      <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground" />
     </a>
   );
 }

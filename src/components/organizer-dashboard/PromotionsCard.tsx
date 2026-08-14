@@ -13,12 +13,12 @@ export default function PromotionsCard({
   onPromote,
 }: PromotionsCardProps) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 space-y-4 shadow-2xs dark:bg-zinc-900 dark:border-zinc-800">
-      <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+    <div className="rounded-2xl border border-border bg-card p-5 space-y-4 shadow-2xs">
+      <h3 className="text-base font-bold text-foreground">
         Promotions
       </h3>
 
-      <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
+      <p className="text-xs text-muted-foreground leading-relaxed">
         {message}
       </p>
 

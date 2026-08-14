@@ -209,6 +209,14 @@ export async function deleteEvent(eventId: string) {
   await api.delete(`/events/${eventId}`);
 }
 
+// POST /events/:id/duplicate — server clones the event (and its ticket
+// types) as a brand-new draft. Dates, status, and sales counters are
+// deliberately not carried over.
+export async function duplicateEvent(eventId: string): Promise<{ _id: string }> {
+  const res = await api.post(`/events/${eventId}/duplicate`, {});
+  return res.body as { _id: string };
+}
+
 // ---------------------------------------------------------------------
 // Organizer event dashboard — powers the event-details page
 // GET /events/:id/dashboard

@@ -54,9 +54,9 @@ const BankAccountPage = () => {
         <PageWrapper className="w-full">
             <div className="px-5 py-10 lg:pl-10 lg:pr-60 lg:py-20 flex flex-col gap-10">
                 <div>
-                    <p className='text-[#0F6E56] '>STEP 2 OF 3</p>
+                    <p className='text-[#0F6E56] dark:text-[#4ADE80]'>STEP 2 OF 3</p>
                     <h3 className="font-grotesk font-bold text-[34px]">Where should we send your money ?</h3>
-                    <p className="font-grotesk font-medium text-[18px] text-[#4A4451] max-w-[500px] line-clamp-4">
+                    <p className="font-grotesk font-medium text-[18px] text-muted-foreground max-w-[500px] line-clamp-4">
                         Add the bank account for your payouts; we verify it with paystack. You need this to publish paid events and receive payouts. Free events can go live without it.
                     </p>
                 </div>
@@ -65,7 +65,7 @@ const BankAccountPage = () => {
                     <BankDetailsForm />
                 </div>
 
-                <div className='w-full bg-[#E4F1EB] rounded-[15px]'>
+                <div className='w-full bg-[#E4F1EB] dark:bg-[#0F6E56]/15 rounded-[15px]'>
                     <div className='flex py-7.5 px-5 items-center gap-3'>
                         <img src={shieldPay} alt="" className='w-7.5 h-7.5' />
                         <p className='flex flex-col'>

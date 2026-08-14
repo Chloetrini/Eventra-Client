@@ -130,19 +130,19 @@ const BankDetailsForm = () => {
             </div>
 
             {isVerifying && (
-                <p className="flex items-center gap-2 text-sm text-[#4A4451]">
+                <p className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Verifying account…
                 </p>
             )}
             {verifiedName && !isVerifying && (
-                <p className="flex items-center gap-2 text-sm text-[#0F6E56] font-medium">
+                <p className="flex items-center gap-2 text-sm text-[#0F6E56] dark:text-[#4ADE80] font-medium">
                     <CheckCircle2 className="h-4 w-4" />
                     Verified: {verifiedName}
                 </p>
             )}
             {verifyError && !isVerifying && (
-                <p className="text-sm text-red-600">{verifyError}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">{verifyError}</p>
             )}
         </div>
     )

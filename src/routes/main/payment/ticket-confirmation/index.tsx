@@ -3,6 +3,7 @@ import { TicketCard } from "@/components/tickets/ticket-card"
 import { useLocation, useNavigate } from "react-router"
 import PaymentBtn from "@/components/ui/pay-method-btn"
 import calendar from "@/assets/calendar.png";
+import { downloadEventIcs } from "@/lib/calendar";
 
 const TicketConfirmation = () => {
     const location = useLocation()
@@ -13,6 +14,9 @@ const TicketConfirmation = () => {
     const state = location.state as {
         tickets?: Array<{
             _id: string;
+            // Friendly backend-generated ticket id (e.g. "TKT-A1B2C3D4") — the
+            // one meant to be shown to attendees, never the raw Mongo _id.
+            ticketId: string;
             code: string;
             attendeeName: string;
             attendeeEmail: string;
@@ -39,10 +43,10 @@ const TicketConfirmation = () => {
     if (!state || tickets.length === 0 || !eventInfo) {
         return (
             <div className='px-4 py-20 text-center'>
-                <p className='mb-4 text-[#6E6577]'>No ticket to show.</p>
+                <p className='mb-4 text-muted-foreground'>No ticket to show.</p>
                 <button
                     onClick={() => navigate('/explore')}
-                    className='text-[#6e6e6e] font-semibold underline'
+                    className='text-muted-foreground font-semibold underline'
                 >
                     Browse events
                 </button>
@@ -59,7 +63,7 @@ const TicketConfirmation = () => {
                 <ConfirmatoryMessage
                     _id="1"
                     eventName={eventInfo.eventName}
-                    orderID={tickets[0]._id}
+                    orderID={tickets[0].ticketId ?? tickets[0]._id}
                     eventDateTime={eventInfo.eventDateTime}
                     ticketDetails={[{ type: "Free", unitPrice: 0, quantity: admitsCount }]}
                     slug={eventInfo.slug}
@@ -77,7 +81,7 @@ const TicketConfirmation = () => {
                             eventEntrance: "Main entrance",
                             eventVenue: eventInfo.eventVenue,
                             referenceCode: t.code,
-                            orderID: t._id,
+                            orderID: t.ticketId ?? t._id,
                             holderName: t.attendeeName,
                             ticketDetails: [{ type: "Free", unitPrice: 0, quantity: 1 }],
                             qrImageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t.code)}`,
@@ -98,6 +102,13 @@ const TicketConfirmation = () => {
                         text={"Add to calender"}
                         classname="h-[40px] flex-1 sm:w-40 text-xs min-[400px]:text-sm md:w-[343px]"
                         editArrow={"w-[18px] h-[18px]"}
+                        onClick={() =>
+                            downloadEventIcs({
+                                title: eventInfo.eventName,
+                                location: eventInfo.eventVenue,
+                                start: eventInfo.eventDateTime,
+                            })
+                        }
                     />
                     <PaymentBtn
                         text={"View my tickets"}

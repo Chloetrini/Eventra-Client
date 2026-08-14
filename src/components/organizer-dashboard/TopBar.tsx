@@ -1,6 +1,7 @@
 import React from 'react';
 import { Bell, Plus } from 'lucide-react';
 import { useAuth } from '@/context/auth.context';
+import { UserAvatar } from '@/components/ui/user-avatar';
 
 interface TopBarProps {
   organization: {
@@ -11,27 +12,15 @@ interface TopBarProps {
   title?: string;
 }
 
-function getInitials(name?: string): string {
-  if (!name) return "?";
-  return name
-    .split(" ")
-    .map(n => n[0])
-    .filter(Boolean)
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
-
 const TopBar: React.FC<TopBarProps> = ({ organization, onCreateEvent, title }) => {
   const { user } = useAuth();
-  const initials = getInitials(user?.fullname);
 
   return (
-    <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between gap-4">
+    <header className="bg-card border-b border-border px-6 py-3 flex items-center justify-between gap-4">
       <div className="flex items-center gap-3">
-        {title && <h1 className="text-xl font-semibold text-gray-900">{title}</h1>}
+        {title && <h1 className="text-xl font-semibold text-foreground">{title}</h1>}
         {organization?.name && (
-          <span className="text-sm text-gray-500">· {organization.name}</span>
+          <span className="text-sm text-muted-foreground">· {organization.name}</span>
         )}
       </div>
 
@@ -44,18 +33,18 @@ const TopBar: React.FC<TopBarProps> = ({ organization, onCreateEvent, title }) =
           Create event
         </button>
 
-        <div className="h-8 w-px bg-gray-200 mx-2" />
+        <div className="h-8 w-px bg-border mx-2" />
 
-        <button className="relative text-gray-500 hover:text-gray-700 transition-colors bg-gray-50 border border-gray-200 p-2 rounded-lg">
+        <button className="relative text-muted-foreground hover:text-foreground transition-colors bg-muted border border-border p-2 rounded-lg">
           <Bell className="h-5 w-5" />
-          <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 bg-[#F59E0B] rounded-full border-2 border-white" />
+          <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 bg-[#F59E0B] rounded-full border-2 border-card" />
         </button>
 
         <button
-          className="h-9 w-9 rounded-full bg-[#0F6E56] text-white flex items-center justify-center font-bold text-sm"
+          className="h-9 w-9 rounded-full overflow-hidden bg-[#0F6E56] text-white flex items-center justify-center font-bold text-sm"
           title={user?.fullname || "Account"}
         >
-          {initials}
+          <UserAvatar avatarUrl={user?.avatarUrl} name={user?.fullname} className="h-9 w-9 text-sm" />
         </button>
       </div>
     </header>

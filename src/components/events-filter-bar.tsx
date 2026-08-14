@@ -39,13 +39,13 @@ export function EventsFilterBar() {
   return (
     <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
       <div className="relative w-full lg:w-[520px]">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[#6E6577] " />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground " />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => handleSearchChange(e.target.value)}
           placeholder="Search Events..."
-          className="w-full pl-9 py-3 pr-3 text-[13px] border text-[#6E6577] rounded-[10px] outline-none focus:border-[#0F6E56] "
+          className="w-full pl-9 py-3 pr-3 text-[13px] border border-border bg-background text-foreground placeholder:text-muted-foreground rounded-[10px] outline-none focus:border-[#0F6E56] "
         />
       </div>
 
@@ -55,10 +55,10 @@ export function EventsFilterBar() {
             key={filter.value}
             onClick={() => handleStatusChange(filter.value)}
             className={cn(
-              "px-[15px] py-[10px] rounded-[20px] text-[13px] border border-[#E8E6E0] transition-colors",
+              "px-[15px] py-[10px] rounded-[20px] text-[13px] border border-border transition-colors",
               activeStatus === filter.value
-                ? "bg-[#3A3A3A] text-[#FFFFFF] border-[#E8E6E0]"
-                : "text-[#6E6577] hover:border-[#E8E6E0]",
+                ? "bg-[#3A3A3A] text-[#FFFFFF] border-[#3A3A3A] dark:bg-white dark:text-[#1A1523]"
+                : "text-muted-foreground hover:border-foreground/30",
             )}
           >
             {filter.label}

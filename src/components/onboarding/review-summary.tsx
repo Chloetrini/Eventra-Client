@@ -58,19 +58,19 @@ const ReviewSummary = () => {
                 return (
                     <div
                         key={row.label}
-                        className={`w-full bg-white  border-[#E8E6E0] rounded-[20px] px-6 py-6 flex items-center justify-between gap-6 text-sm ${isLastRow ? "border-b-0 " : "border-b-2"}`}
+                        className={`w-full bg-card  border-border rounded-[20px] px-6 py-6 flex items-center justify-between gap-6 text-sm ${isLastRow ? "border-b-0 " : "border-b-2"}`}
                     >
                         <div className="flex items-center gap-2 md:gap-4 shrink-0">
                             <Icon
-                                className="w-6 h-6 text-[#4A4451] shrink-0"
+                                className="w-6 h-6 text-muted-foreground shrink-0"
                                 strokeWidth={1.5}
                             />
-                            <p className="font-grotesk md:text-[18px] text-[#4A4451]">
+                            <p className="font-grotesk md:text-[18px] text-muted-foreground">
                                 {row.label}
                             </p>
                         </div>
 
-                        <p className="font-grotesk md:text-[18px] text-[#4A4451] text-right min-w-0 break-words">
+                        <p className="font-grotesk md:text-[18px] text-muted-foreground text-right min-w-0 break-words">
                             {row.value}
                         </p>
                     </div>

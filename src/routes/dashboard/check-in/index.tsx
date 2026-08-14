@@ -65,19 +65,19 @@ export default function CheckIn() {
       <AccountReviewBanner status={status} />
 
       <div>
-        <p className="text-[16px] min-[400px]:text-sm lg:text-[16px] font-medium tracking-wide uppercase text-[#0A4F41]">
+        <p className="text-[16px] min-[400px]:text-sm lg:text-[16px] font-medium tracking-wide uppercase text-[#0A4F41] dark:text-[#4ADE80]">
           Manage
         </p>
-        <h1 className="text-[34px] leading-[40px] font-grotesk min-[400px] font-semibold text-[#1A1523] mt-1">
+        <h1 className="text-[34px] leading-[40px] font-grotesk min-[400px] font-semibold text-foreground mt-1">
           Check-in
         </h1>
-        <p className="text-[16px] leading-[26px] font-medium min-[400px]:text-sm lg:text-[16px] text-[#4A4451] mt-1">
+        <p className="text-[16px] leading-[26px] font-medium min-[400px]:text-sm lg:text-[16px] text-muted-foreground mt-1">
           Scan or type a ticket's code to check a guest in at the door.
         </p>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="py-[5px] text-[#6E6577] text-[16px] font-light uppercase">
+        <span className="py-[5px] text-muted-foreground text-[16px] font-light uppercase">
           Event
         </span>
         <Select
@@ -85,7 +85,7 @@ export default function CheckIn() {
           onValueChange={handleEventChange}
           disabled={eventsLoading || events.length === 0}
         >
-          <SelectTrigger className="w-auto rounded-md py-3 min-[400px]:py-[18px] px-3 min-[400px]:px-4 border-[#E8E6E0] border text-[15px] min-[400px]:text-[15px] text-[#1A1523] font-bold">
+          <SelectTrigger className="w-auto rounded-md py-3 min-[400px]:py-[18px] px-3 min-[400px]:px-4 border-border border text-[15px] min-[400px]:text-[15px] text-foreground font-bold">
             <SelectValue placeholder={eventsLoading ? "Loading events…" : "Select event"}>
               {selectedEvent?.eventTitle}
             </SelectValue>
@@ -101,7 +101,7 @@ export default function CheckIn() {
       </div>
 
       {!eventsLoading && events.length === 0 && (
-        <p className="text-sm text-[#6E6577]">
+        <p className="text-sm text-muted-foreground">
           You don't have any events to check guests in for yet.
         </p>
       )}
@@ -110,9 +110,9 @@ export default function CheckIn() {
         <>
           <form
             onSubmit={handleSubmit}
-            className="border border-[#E8E6E0] rounded-2xl p-6 space-y-4"
+            className="border border-border rounded-2xl p-6 space-y-4"
           >
-            <label className="text-xs font-semibold uppercase tracking-wide text-[#6E6577]">
+            <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Ticket code
             </label>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -133,7 +133,7 @@ export default function CheckIn() {
                 {checkInMutation.isPending ? "Checking…" : "Check in"}
               </Button>
             </div>
-            <p className="text-xs text-[#6E6577]">
+            <p className="text-xs text-muted-foreground">
               This is the same code printed in each ticket's QR image — a camera scanner can be
               wired in later to feed this same field.
             </p>
@@ -144,20 +144,20 @@ export default function CheckIn() {
           )}
 
           {log.length > 0 && (
-            <div className="border border-[#E8E6E0] rounded-2xl overflow-hidden">
-              <div className="px-5 py-3 border-b border-[#E8E6E0] font-semibold text-[#1A1523]">
+            <div className="border border-border rounded-2xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-border font-semibold text-foreground">
                 Recent scans this session
               </div>
-              <div className="divide-y divide-[#E8E6E0]">
+              <div className="divide-y divide-border">
                 {log.map((entry) => (
                   <div
                     key={`${entry.code}-${entry.at}`}
                     className="flex items-center justify-between px-5 py-3 text-sm"
                   >
                     <div>
-                      <p className="font-mono font-semibold text-[#1A1523]">{entry.code}</p>
+                      <p className="font-mono font-semibold text-foreground">{entry.code}</p>
                       {entry.ticket?.attendeeName && (
-                        <p className="text-xs text-[#6E6577]">{entry.ticket.attendeeName}</p>
+                        <p className="text-xs text-muted-foreground">{entry.ticket.attendeeName}</p>
                       )}
                     </div>
                     <ResultBadge result={entry.result} />
@@ -176,17 +176,17 @@ function CheckInResultBanner({ result }: { result: ScanLogEntry }) {
   const config = {
     valid: {
       icon: CheckCircle2,
-      classes: "bg-[#E4F1EB] border-emerald-200 text-[#0F6E56]",
+      classes: "bg-[#E4F1EB] border-emerald-200 text-[#0F6E56] dark:bg-[#0F6E56]/15 dark:border-[#0F6E56]/40 dark:text-[#4ADE80]",
       title: result.ticket?.attendeeName ? `${result.ticket.attendeeName} checked in` : "Checked in",
     },
     already_used: {
       icon: AlertTriangle,
-      classes: "bg-[#FCEBC9] border-amber-200 text-[#7A4E02]",
+      classes: "bg-[#FCEBC9] border-amber-200 text-[#7A4E02] dark:bg-[#7A4E02]/20 dark:border-[#7A4E02]/40 dark:text-[#FBBF24]",
       title: "Already checked in",
     },
     invalid: {
       icon: XCircle,
-      classes: "bg-[#FFE4E4] border-red-200 text-[#BE2525]",
+      classes: "bg-[#FFE4E4] border-red-200 text-[#BE2525] dark:bg-[#BE2525]/20 dark:border-[#BE2525]/40 dark:text-[#FCA5A5]",
       title: "Not a valid ticket for this event",
     },
   }[result.result];
@@ -208,9 +208,9 @@ function CheckInResultBanner({ result }: { result: ScanLogEntry }) {
 
 function ResultBadge({ result }: { result: CheckInResult["result"] }) {
   const config = {
-    valid: { label: "VALID", classes: "bg-[#E4F1EB] text-[#0F6E56]" },
-    already_used: { label: "ALREADY USED", classes: "bg-[#FCEBC9] text-[#7A4E02]" },
-    invalid: { label: "INVALID", classes: "bg-[#FFE4E4] text-[#BE2525]" },
+    valid: { label: "VALID", classes: "bg-[#E4F1EB] text-[#0F6E56] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]" },
+    already_used: { label: "ALREADY USED", classes: "bg-[#FCEBC9] text-[#7A4E02] dark:bg-[#7A4E02]/20 dark:text-[#FBBF24]" },
+    invalid: { label: "INVALID", classes: "bg-[#FFE4E4] text-[#BE2525] dark:bg-[#BE2525]/20 dark:text-[#FCA5A5]" },
   }[result];
 
   return (

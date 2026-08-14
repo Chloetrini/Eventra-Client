@@ -36,10 +36,10 @@ const wherePromotedEventsAppear = [
 
 const PromotionStatusBadge = ({ status }: { status: PromotionStatus }) => {
   const styles: Record<PromotionStatus, string> = {
-    approved: "bg-[#E4F1EB] text-[#0F6E56]",
-    pending: "bg-[#F4DFB6] text-[#7A4E02]",
-    expired: "bg-[#E4F1EB] text-[#0F6E56]",
-    rejected: "bg-[#FFC4C4] text-[#BE2525]",
+    approved: "bg-[#E4F1EB] text-[#0F6E56] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]",
+    pending: "bg-[#F4DFB6] text-[#7A4E02] dark:bg-[#7A4E02]/20 dark:text-[#FBBF24]",
+    expired: "bg-[#E4F1EB] text-[#0F6E56] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]",
+    rejected: "bg-[#FFC4C4] text-[#BE2525] dark:bg-[#BE2525]/20 dark:text-[#FCA5A5]",
   }
   const labels: Record<PromotionStatus, string> = {
     approved: "ACTIVE",
@@ -113,7 +113,7 @@ const Promotions = () => {
          Grow
         </p>
         <h2 className="mt-1 flex items-center gap-2 text-lg font-bold">
-          <Star className="border rounded-lg bg-[#E4F1EB] size-3 text-[#4A4451] w-[35px] h-[29px]" />
+          <Star className="border border-border rounded-lg bg-[#E4F1EB] size-3 text-[#4A4451] w-[35px] h-[29px] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]" />
           Promotions
         </h2>
         <p className="text-sm text-muted-foreground">
@@ -123,15 +123,15 @@ const Promotions = () => {
 
       {/* Only show this for organizers who haven't finished onboarding — verified/pending organizers don't need it */}
       {showVerifyBanner && organizerStatus === "unverified" && (
-        <Alert className="border-[#f1ebdd] bg-[#F4DFB6]">
-            <LockKeyhole className="mt-3 bg-[#ffff]"/>
-          <AlertTitle className="flex items-center gap-2 text-[#1A1523]">
+        <Alert className="border-[#f1ebdd] bg-[#F4DFB6] dark:border-[#7A4E02]/40 dark:bg-[#7A4E02]/20">
+            <LockKeyhole className="mt-3 text-[#7A4E02] dark:text-[#FBBF24]"/>
+          <AlertTitle className="flex items-center gap-2 text-[#1A1523] dark:text-zinc-50">
             Finish setting up your account
-            <Badge className="border-transparent bg-[#E4F1EB] text-[#1A1523]">
+            <Badge className="border-transparent bg-[#E4F1EB] text-[#1A1523] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]">
               UNVERIFIED
             </Badge>
           </AlertTitle>
-          <AlertDescription className="text-[#4A4451]">
+          <AlertDescription className="text-[#4A4451] dark:text-zinc-300">
             Add your bank details to publish paid events and receive payouts. Free events can still be promoted.
           </AlertDescription>
           <AlertAction className="static mt-3 flex items-center gap-3 sm:absolute sm:top-2 sm:mt-0">
@@ -142,7 +142,7 @@ const Promotions = () => {
               type="button"
               onClick={() => setShowVerifyBanner(false)}
               aria-label="Dismiss"
-              className="text-[#1A1523] hover:text-[#1e1c21]"
+              className="text-[#1A1523] hover:text-[#1e1c21] dark:text-zinc-300 dark:hover:text-zinc-100"
             >
               <X className="size-4" />
             </button>
@@ -157,7 +157,7 @@ const Promotions = () => {
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-[#4A4451]">
+              <label className="text-xs font-medium text-muted-foreground">
                 EVENT TO PROMOTE
               </label>
               <Select
@@ -177,19 +177,19 @@ const Promotions = () => {
                 </SelectContent>
               </Select>
               {!eventsLoading && myEvents.length === 0 && (
-                <p className="text-xs text-[#6E6577]">
+                <p className="text-xs text-muted-foreground">
                   You don't have any events yet.
                 </p>
               )}
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-xs font-medium text-[#4A4451]">
+              <label className="text-xs font-medium text-muted-foreground">
                 CHOOSE A PACKAGE
               </label>
 
               {packagesLoading && (
-                <p className="text-xs text-[#6E6577]">Loading packages…</p>
+                <p className="text-xs text-muted-foreground">Loading packages…</p>
               )}
 
               {packages.map(pkg => {
@@ -202,24 +202,24 @@ const Promotions = () => {
                     className={cn(
                       "flex items-start justify-between rounded-xl border p-3 text-left transition-colors",
                       isSelected
-                        ? "border-[#0A4F41] ring-1 ring-[#0A4F41]"
-                        : "border-border hover:bg-[#E8F5F0]"
+                        ? "border-[#0A4F41] ring-1 ring-[#0A4F41] dark:border-[#4ADE80] dark:ring-[#4ADE80]"
+                        : "border-border hover:bg-[#E8F5F0] dark:hover:bg-[#0F6E56]/10"
                     )}
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="font-bold text-[#1A1523]">{pkg.label}</p>
+                        <p className="font-bold text-foreground">{pkg.label}</p>
                         {pkg.popular && (
-                          <Badge className="border-transparent bg-[#F5A524] text-[#4A4451]">
+                          <Badge className="border-transparent bg-[#F5A524] text-[#4A4451] dark:bg-[#F5A524]/25 dark:text-[#FBBF24]">
                             Popular
                           </Badge>
                         )}
                       </div>
-                      <p className="mt-0.5 text-xs text-[#4A4451]">{pkg.durationDays} Days</p>
-                      <p className="mt-1 text-sm text-[#4A4451]">{pkg.description}</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">{pkg.durationDays} Days</p>
+                      <p className="mt-1 text-sm text-muted-foreground">{pkg.description}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-[#0A4F41]">{formatNaira(pkg.priceNaira)}</p>
+                      <p className="font-semibold text-[#0A4F41] dark:text-[#4ADE80]">{formatNaira(pkg.priceNaira)}</p>
                       {isSelected && (
                         <span className="flex size-4 items-center justify-center rounded-full bg-[#0A4F41] text-[#FFFFFF]">
                           <Check className="size-3" />
@@ -269,8 +269,8 @@ const Promotions = () => {
               ))}
             </ul>
 
-            <div className="rounded-lg bg-[#E4F1EB] p-3 font-semibold text-[#0F6E56]">
-              Only events that are already <span className="text-[#0A4F41]">published and approved</span> can be promoted.
+            <div className="rounded-lg bg-[#E4F1EB] p-3 font-semibold text-[#0F6E56] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]">
+              Only events that are already <span className="text-[#0A4F41] dark:text-[#4ADE80]">published and approved</span> can be promoted.
               Drafts, pending and rejected events aren't eligible.
             </div>
           </CardContent>
@@ -283,15 +283,15 @@ const Promotions = () => {
         </CardHeader>
         <CardContent className="overflow-x-auto p-0">
           {promotionsLoading ? (
-            <p className="px-(--card-spacing) py-6 text-sm text-[#6E6577]">Loading…</p>
+            <p className="px-(--card-spacing) py-6 text-sm text-muted-foreground">Loading…</p>
           ) : myPromotions.length === 0 ? (
-            <p className="px-(--card-spacing) py-6 text-sm text-[#6E6577]">
+            <p className="px-(--card-spacing) py-6 text-sm text-muted-foreground">
               You haven't promoted any events yet.
             </p>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-t text-left text-xs text-[#6E6577]">
+                <tr className="border-t text-left text-xs text-muted-foreground">
                   <th className="px-(--card-spacing) py-2 font-normal">Event</th>
                   <th className="px-(--card-spacing) py-2 font-normal">Package</th>
                   <th className="px-(--card-spacing) py-2 font-normal">Placement</th>
@@ -303,20 +303,20 @@ const Promotions = () => {
               <tbody>
                 {myPromotions.map((promo) => (
                   <tr key={promo.eventId} className="border-t align-top">
-                    <td className="px-(--card-spacing) py-3 font-semibold text-[#1A1523]">{promo.eventTitle}</td>
-                    <td className="px-(--card-spacing) py-3 text-[#1A1523]">{promo.packageLabel}</td>
-                    <td className="px-(--card-spacing) py-3 text-[#1A1523]">{promo.placementLabel ?? "-"}</td>
-                    <td className="px-(--card-spacing) py-3 text-[#1A1523]">
+                    <td className="px-(--card-spacing) py-3 font-semibold text-foreground">{promo.eventTitle}</td>
+                    <td className="px-(--card-spacing) py-3 text-foreground">{promo.packageLabel}</td>
+                    <td className="px-(--card-spacing) py-3 text-foreground">{promo.placementLabel ?? "-"}</td>
+                    <td className="px-(--card-spacing) py-3 text-foreground">
                       {promo.startsAt && promo.endsAt
                         ? `${formatDate(promo.startsAt)} – ${formatDate(promo.endsAt)}`
                         : "Starts once approved"}
                     </td>
                     <td className="px-(--card-spacing) py-3">
-                      <p className="font-bold text-[#1A1523]">
+                      <p className="font-bold text-foreground">
                         {promo.priceNaira !== null ? formatNaira(promo.priceNaira) : "-"}
                       </p>
                       {!promo.paid && (
-                        <p className="text-xs text-[#1A1523] font-bold">awaiting payment</p>
+                        <p className="text-xs text-foreground font-bold">awaiting payment</p>
                       )}
                     </td>
                     <td className="px-(--card-spacing) py-3">

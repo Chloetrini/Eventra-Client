@@ -57,24 +57,24 @@ export const FreeEventTicket = ({
   return (
     <div className="rounded-2xl border p-6 shadow-[0_0_15px_rgba(0,0,0,0.15)] h-fit">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-extrabold text-[#1A1523]">Reserve your spot</h2>
-        <span className="rounded-full w-22 h-8 flex items-center justify-center bg-[#FCEBC9] px-3 py-1 text-sm font-medium text-[#7A4E02]">Free</span>
+        <h2 className="text-xl font-extrabold text-foreground">Reserve your spot</h2>
+        <span className="rounded-full w-22 h-8 flex items-center justify-center bg-[#FCEBC9] dark:bg-[#7A4E02]/20 px-3 py-1 text-sm font-medium text-[#7A4E02] dark:text-[#F5C877]">Free</span>
       </div>
 
       {hasCapLimit ? (
         <div className="mt-6 space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="font-medium text-[#4A4451]">Spots left</span>
+            <span className="font-medium text-muted-foreground">Spots left</span>
             <span className="font-bold">
-              {spotsLeft} <span className="font-normal text-[#6E6577]">/ {capacity}</span>
+              {spotsLeft} <span className="font-normal text-muted-foreground">/ {capacity}</span>
             </span>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-[#E4F1EB]">
-            <div className="h-full rounded-full bg-[#0F6E56]" style={{ width: `${percentFilled}%` }} />
+          <div className="h-2 w-full overflow-hidden rounded-full bg-[#E4F1EB] dark:bg-[#0F6E56]/15">
+            <div className="h-full rounded-full bg-[#0F6E56] dark:bg-[#4ADE80]" style={{ width: `${percentFilled}%` }} />
           </div>
         </div>
       ) : (
-        <p className="mt-6 text-sm text-[#6E6577]">Unlimited spots available</p>
+        <p className="mt-6 text-sm text-muted-foreground">Unlimited spots available</p>
       )}
 
       <div className="mt-5 rounded-xl border p-4">
@@ -106,10 +106,10 @@ export const FreeEventTicket = ({
       <Separator className="my-5" />
 
       <div className="flex items-center justify-between text-sm">
-        <span className="text-[#4A4451] font-normal">Price</span>
-        <span className="font-bold tracking-wider font-space text-[#0F6E56]">Free</span>
+        <span className="text-muted-foreground font-normal">Price</span>
+        <span className="font-bold tracking-wider font-space text-[#0F6E56] dark:text-[#4ADE80]">Free</span>
       </div>
-      <p className="mt-2 text-xs font-normal text-[#4A4451]">
+      <p className="mt-2 text-xs font-normal text-muted-foreground">
         No payment needed. You'll get a QR ticket to show at the door and you can cancel anytime to release your spot.
       </p>
 
@@ -122,10 +122,10 @@ export const FreeEventTicket = ({
       </Button>
 
       <div className="mt-4 space-y-1.5">
-        <p className="flex items-center gap-1.5 text-xs text-[#6E6577]">
+        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Check className="h-3.5 w-3.5" /> Free entry · Your QR admits {guests}
         </p>
-        <p className="flex items-center gap-1.5 text-xs text-[#6E6577]">
+        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <Mail className="h-3.5 w-3.5" /> Instant confirmation sent to your mail
         </p>
       </div>

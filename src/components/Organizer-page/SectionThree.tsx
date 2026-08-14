@@ -28,20 +28,20 @@ const SectionThree: React.FC = () => {
   const features = SECTION_THREE_FEATURES;
 
   return (
-    <section className="p-20 max-w-6xl mx-auto border border-[#E8E6E0] rounded-[20px]">
+    <section className="p-20 max-w-6xl mx-auto border border-border rounded-[20px]">
       <div className=" flex flex-col lg:flex-row items-center">
         {/* Left side */}
         <div className="lg:flex-1 lg:w-[50%] mb-8 lg:mb-0">
           {/* Badge */}
           <div className="flex items-center gap-3 ">
             <span className="bg-[#F5A524] h-[1px] w-[30px]  rounded-full"></span>
-            <p className="text-[12px] font-bold text-[#0A4F41] leading-4 tracking-[16%] uppercase">
+            <p className="text-[12px] font-bold text-[#0A4F41] dark:text-[#4ADE80] leading-4 tracking-[16%] uppercase">
               SIMPLE, HONEST PRICING
             </p>
           </div>
 
           {/* Main heading */}
-          <h2 className="text-3xl md:text-5xl font-extrabold text-[#1A1523] leading-tight tracking-[-2px] mb-3">
+          <h2 className="text-3xl md:text-5xl font-extrabold text-foreground leading-tight tracking-[-2px] mb-3">
             Only pay when <br className="hidden sm:block" /> you sell
           </h2>
 
@@ -52,19 +52,19 @@ const SectionThree: React.FC = () => {
                 iconMap[feature.icon as keyof typeof iconMap];
               return (
                 <div key={feature.id} className="flex items-center gap-4">
-                  <div className="shrink-0 mt-1 p-2 rounded-[10px] border border-[#E5E7EB] bg-white">
+                  <div className="shrink-0 mt-1 p-2 rounded-[10px] border border-border bg-card">
                     {IconComponent && (
                       <IconComponent
-                        className="w-5 h-5 text-[#0F6E56]"
+                        className="w-5 h-5 text-[#0F6E56] dark:text-[#4ADE80]"
                         strokeWidth={1.75}
                       />
                     )}
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-[#1A1523]">
+                    <h3 className="text-lg font-semibold text-foreground">
                       {feature.title}
                     </h3>
-                    <p className="text-sm text-[#4A4451] leading-relaxed">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       {feature.description}
                     </p>
                   </div>
@@ -75,22 +75,22 @@ const SectionThree: React.FC = () => {
         </div>
 
         {/* Right side */}
-        <div className="w-full lg:w-[50%] flex flex-col justify-center items-center gap-8 md:border-l md:border-[#E8E6E0]">
+        <div className="w-full lg:w-[50%] flex flex-col justify-center items-center gap-8 md:border-l md:border-border">
           {/* Pricing card */}
-          <div className="w-52.5 h-52.5 rounded-full shadow-sm p-4 border border-[#E4F1EB] relative">
+          <div className="w-52.5 h-52.5 rounded-full shadow-sm p-4 border border-[#E4F1EB] dark:border-[#0F6E56]/30 relative">
             <div className="w-45 h-45 rounded-full p-4 border-12 border-[#0F6E56] relative z-10">
               <div className="flex flex-col items-center ">
-                <span className=" flex justify-center items-center rounded-full bg-[#ffffff] absolute bottom-36 z-20 w-12.5 h-12.5">
+                <span className=" flex justify-center items-center rounded-full bg-card absolute bottom-36 z-20 w-12.5 h-12.5">
                   <Tag
-                    className="w-8 h-8 text-[#0F6E56] shrink-0  scale-x-[-1]"
+                    className="w-8 h-8 text-[#0F6E56] dark:text-[#4ADE80] shrink-0  scale-x-[-1]"
                     strokeWidth={1.5}
                   />
                 </span>
                 <div className="flex flex-col justify-center items-center mt-4">
-                  <div className=" text-[45px]  md:text-[64px] font-extrabold text-[#0F6E56] leading-16 tracking-[-3%]">
+                  <div className=" text-[45px]  md:text-[64px] font-extrabold text-[#0F6E56] dark:text-[#4ADE80] leading-16 tracking-[-3%]">
                     5%
                   </div>
-                  <div className=" text-[16px] font-bold text-[#0A4F41] mt-1  leading-6.5 tracking-normal">
+                  <div className=" text-[16px] font-bold text-[#0A4F41] dark:text-[#4ADE80] mt-1  leading-6.5 tracking-normal">
                     / paid ticket
                   </div>
                 </div>
@@ -100,7 +100,7 @@ const SectionThree: React.FC = () => {
 
           {/* Bottom text & button */}
           <div className="w-full flex flex-col justify-center items-center gap-4">
-            <p className="text-sm text-[#4A4451] leading-relaxed ">
+            <p className="text-sm text-muted-foreground leading-relaxed ">
               That's it – no set up fees, no <br className="hidden sm:block" />{" "}
               monthly charges, no surprises.
             </p>

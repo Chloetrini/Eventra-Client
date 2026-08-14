@@ -105,7 +105,7 @@ export function TopBarFilter({
                                 index === 0 && "md:rounded-l-[16px] rounded-l-[10px]",
                                 index === ACCESS_OPTIONS.length - 1 && "md:rounded-r-[16px] rounded-r-[10px]",
                                 accessValue === option
-                                    ? "bg-slate-900 text-white"
+                                    ? "bg-primary text-primary-foreground"
                                     : "text-muted-foreground"
                             )}
                         >

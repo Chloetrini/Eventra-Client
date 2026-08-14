@@ -14,63 +14,67 @@ export default function AuthLayout() {
   const isOrganizer = location.pathname.includes("/organizer");
 
   return (
-    <div className="h-screen grid lg:grid-cols-2 bg-background items-center">
-      {/* ---------- Hero image ---------- */}
+    <div className="h-screen overflow-hidden grid lg:grid-cols-2 bg-background">
+      {/* ---------- Hero image — fixed in place, never scrolls ---------- */}
       <div
-        className={`hidden lg:block relative m-4 rounded-[40px] h-[90%] overflow-hidden ${
+        className={`hidden lg:flex h-screen flex-col justify-center ${
           isOrganizer ? "lg:order-2" : "lg:order-1"
         }`}
       >
-        <img
-          src={isOrganizer ? organizerBg : authBg}
-          alt={
-            isOrganizer
-              ? "Event organizer managing a live event"
-              : "Crowd at a live concert with purple stage lighting"
-          }
-          className="h-full w-full object-cover"
-        />
+        <div className="relative mx-4 rounded-[40px] h-[90%] overflow-hidden">
+          <img
+            src={isOrganizer ? organizerBg : authBg}
+            alt={
+              isOrganizer
+                ? "Event organizer managing a live event"
+                : "Crowd at a live concert with purple stage lighting"
+            }
+            className="h-full w-full object-cover"
+          />
 
-        {/* Organizer overlay text */}
-        {isOrganizer && (
-          <>
-            {/* dark gradient so text stays readable over the image */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+          {/* Organizer overlay text */}
+          {isOrganizer && (
+            <>
+              {/* dark gradient so text stays readable over the image */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-            <div className="absolute bottom-0 left-0 p-8 text-white">
-              <p className="text-[#F5A524] text-sm font-semibold tracking-wide mb-3 uppercase">
-                № ORG · SELL WITH EVENTRA
-              </p>
-              <h2 className="text-3xl font-bold mb-5 leading-tight font-grotesk">
-                Your events,<br />properly run.
-              </h2>
-              <ul className="space-y-2.5 text-sm font-medium">
-                <li className="flex items-center gap-2.5">
-                  <span className="text-[#F5A524] text-xs">◆</span>
-                  Sell tickets by card, transfer &amp; USSD
-                </li>
-                <li className="flex items-center gap-2.5">
-                  <span className="text-[#F5A524] text-xs">◆</span>
-                  Scan guests in at the gate, even offline
-                </li>
-                <li className="flex items-center gap-2.5">
-                  <span className="text-[#F5A524] text-xs">◆</span>
-                  Get paid a few days after your event
-                </li>
-              </ul>
-            </div>
-          </>
-        )}
+              <div className="absolute bottom-0 left-0 p-8 text-white">
+                <p className="text-[#F5A524] text-sm font-semibold tracking-wide mb-3 uppercase">
+                  № ORG · SELL WITH EVENTRA
+                </p>
+                <h2 className="text-3xl font-bold mb-5 leading-tight font-grotesk">
+                  Your events,<br />properly run.
+                </h2>
+                <ul className="space-y-2.5 text-sm font-medium">
+                  <li className="flex items-center gap-2.5">
+                    <span className="text-[#F5A524] text-xs">◆</span>
+                    Sell tickets by card, transfer &amp; USSD
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <span className="text-[#F5A524] text-xs">◆</span>
+                    Scan guests in at the gate, even offline
+                  </li>
+                  <li className="flex items-center gap-2.5">
+                    <span className="text-[#F5A524] text-xs">◆</span>
+                    Get paid a few days after your event
+                  </li>
+                </ul>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
-      {/* ---------- Logo + page content ---------- */}
+      {/* ---------- Logo + page content — the only side that scrolls ---------- */}
       <div
-        className={`flex flex-col justify-center px-6 sm:px-16 py-12 ${
+        className={`h-screen overflow-y-auto ${
           isOrganizer ? "lg:order-1" : "lg:order-2"
         }`}
       >
-        <div className="w-full max-w-[494px] mx-auto">
-          <Outlet />
+        <div className="min-h-full flex flex-col justify-center px-6 sm:px-16 py-12">
+          <div className="w-full max-w-[494px] mx-auto">
+            <Outlet />
+          </div>
         </div>
       </div>
     </div>

@@ -12,6 +12,7 @@ export interface EventItem {
 export interface VibeCategory {
   id: string;
   title: string;
+  slug: string;
   count: string;
   image: string;
 }

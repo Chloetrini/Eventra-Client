@@ -29,6 +29,9 @@ export const registerSchema = z.object({
     .regex(/\d/, {
       message: 'Password must contain at least one number',
     }),
+  confirmPassword: z.string({
+    message: 'Password confirmation is required',
+  }),
   companyName: z.string({
     message: 'Company name is required',
   }),
@@ -44,6 +47,9 @@ export const registerSchema = z.object({
     .regex(/^\+?[0-9\s\-()]+$/, {
       message: 'Invalid phone number',
     }),
+}).refine(data => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
 })
 
 

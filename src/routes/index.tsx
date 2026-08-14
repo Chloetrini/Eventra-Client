@@ -9,6 +9,7 @@ import Onboardinglayout from "./onboarding/layout";
 
 import CreateEventLayout from "./dashboard/create-event/layout";
 import DashBoardLayout from "./dashboard/layout";
+import { RequireOrganizer } from "@/components/require-organizer";
 
 const routes = [
     {
@@ -17,7 +18,7 @@ const routes = [
         ErrorBoundary: ErrorBoundary,
         handle: {
             seo: {
-                title: "EventPulse",
+                title: "Eventra",
                 description: "Event management platform for organizers and attendees.",
             },
         },
@@ -110,6 +111,24 @@ const routes = [
                             const { default: Component } = await import("@/routes/main/organizer-page");
                             return { Component };
                         }
+                    },
+                    {
+                        Component: RequireOrganizer,
+                        children: [
+                            {
+                                path: "organizer/events/:eventId?",
+                                handle: {
+                                    seo: {
+                                        title: "Organizer Event Details",
+                                        description: "Manage your event, view sales metrics, recent attendees, and quick actions.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } = await import("@/routes/main/organizer-event-details");
+                                    return { Component };
+                                }
+                            },
+                        ],
                     },
                     {
                         path: "about",
@@ -441,11 +460,14 @@ const routes = [
 
             },
             {
-                path: "dashboard",
-                Component: DashBoardLayout,
+                Component: RequireOrganizer,
                 children: [
                     {
-                        path: "overview",
+                        path: "dashboard",
+                        Component: DashBoardLayout,
+                        children: [
+                            {
+                                path: "overview",
                         handle: {
                             seo: {
                                 title: "Organizer Dashboard",
@@ -483,6 +505,34 @@ const routes = [
                         lazy: async () => {
                             const { default: Component } =
                                 await import("@/routes/dashboard/attendees/index");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "promote",
+                        handle: {
+                            seo: {
+                                title: "Promote",
+                                description: "Promote your shows.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/promotion/promote");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "check-in",
+                        handle: {
+                            seo: {
+                                title: "Check-in",
+                                description: "Scan or enter a ticket code to check guests in.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/dashboard/check-in");
                             return { Component };
                         },
                     },
@@ -549,6 +599,8 @@ const routes = [
                         ],
                     },
                 ]
+                    },
+                ],
             },
         ],
     },

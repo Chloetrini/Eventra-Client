@@ -1,6 +1,13 @@
 import { api } from "@/lib/api";
 import { formatCompactNaira } from "@/lib/utils";
-import type { DashboardData, DashboardEvent, OrganizerAccountStatus } from "@/types/dashboard";
+import type {
+  DashboardData,
+  DashboardEvent,
+  OrganizerAccountStatus,
+  RevenueSeriesPoint,
+  TicketsByTypeSlice,
+  RevenuePeriod,
+} from "@/types/dashboard";
 import { useQuery } from "@tanstack/react-query";
 
 // ---------------------------------------------------------------------
@@ -26,8 +33,8 @@ type RealOverviewResponse = {
     status: string;
     statusLabel: string;
   }>;
-  revenueSeries: unknown[];
-  ticketsByType: unknown[];
+  revenueSeries: RevenueSeriesPoint[];
+  ticketsByType: TicketsByTypeSlice[];
 };
 
 type RealOrganizerProfile = {
@@ -104,20 +111,21 @@ function adaptOverview(raw: RealOverviewResponse) {
       status: mapEventStatus(e.status),
       imageUrl: e.coverImage,
     })),
+    revenueSeries: raw.revenueSeries,
+    ticketsByType: raw.ticketsByType,
   };
 }
 
 // ---------------------------------------------------------------------
 // Real fetch — combines /organizer/overview + /organizer/profile
 // ---------------------------------------------------------------------
-export async function fetchDashboardReal(): Promise<DashboardData> {
+export async function fetchDashboardReal(period: RevenuePeriod = "30d"): Promise<DashboardData> {
   const [overviewRes, profileRes] = await Promise.all([
-    api.get("/organizers/overview"),
+    api.get(`/organizers/overview?period=${period}`),
     api.get("/organizers/profile"),
   ]);
 
   const overview = overviewRes.body as RealOverviewResponse;
-  console.log("OVERVIEW RESPONSE:", overviewRes.body);
   const profile = profileRes.body as RealOrganizerProfile;
 
   const adapted = adaptOverview(overview);
@@ -135,8 +143,8 @@ export async function fetchDashboardReal(): Promise<DashboardData> {
 // ---------------------------------------------------------------------
 // ONE-LINE SWITCH: flip this when you want mock data instead of live
 // ---------------------------------------------------------------------
-export function fetchDashboard(): Promise<DashboardData> {
-  return fetchDashboardReal();
+export function fetchDashboard(period: RevenuePeriod = "30d"): Promise<DashboardData> {
+  return fetchDashboardReal(period);
   // return fetchDashboardMock(); // if you kept the old mock import around
 }
 

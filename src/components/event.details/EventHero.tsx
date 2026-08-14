@@ -16,7 +16,7 @@ export const EventHero = ({ event,
 
     const { requireAuth } = useAuthGate();
   return (
-    <div className="relative rounded-2xl">
+    <div className={cn("relative rounded-2xl", className)}>
         <img className="rounded-2xl h-74 md:h-131.75 w-full" src={event.coverImage ?? undefined} alt={event.title}/>
       <div className="absolute md:left-10 left-3 md:right-10 right-3 md:top-5 top-3 flex justify-between">
         {event.isPromoted && (

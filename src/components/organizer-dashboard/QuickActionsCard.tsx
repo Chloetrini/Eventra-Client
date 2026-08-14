@@ -15,8 +15,8 @@ export default function QuickActionsCard({
   onDelete,
 }: QuickActionsCardProps) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 space-y-4 shadow-2xs dark:bg-zinc-900 dark:border-zinc-800">
-      <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+    <div className="rounded-2xl border border-border bg-card p-5 space-y-4 shadow-2xs">
+      <h3 className="text-base font-bold text-foreground">
         Quick actions
       </h3>
 
@@ -25,7 +25,7 @@ export default function QuickActionsCard({
           type="button"
           variant="outline"
           onClick={onCheckIn}
-          className="h-8 rounded-lg px-3.5 text-xs font-semibold text-zinc-800 border-zinc-200 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200"
+          className="h-8 rounded-lg px-3.5 text-xs font-semibold text-foreground border-border hover:bg-muted"
         >
           Check in
         </Button>
@@ -34,7 +34,7 @@ export default function QuickActionsCard({
           type="button"
           variant="outline"
           onClick={onViewAttendees}
-          className="h-8 rounded-lg px-3.5 text-xs font-semibold text-zinc-800 border-zinc-200 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200"
+          className="h-8 rounded-lg px-3.5 text-xs font-semibold text-foreground border-border hover:bg-muted"
         >
           Attendees
         </Button>
@@ -43,7 +43,7 @@ export default function QuickActionsCard({
           type="button"
           variant="outline"
           onClick={onEdit}
-          className="h-8 rounded-lg px-3.5 text-xs font-semibold text-zinc-800 border-zinc-200 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200"
+          className="h-8 rounded-lg px-3.5 text-xs font-semibold text-foreground border-border hover:bg-muted"
         >
           Edit
         </Button>

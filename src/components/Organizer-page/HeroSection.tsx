@@ -30,12 +30,12 @@ const HeroSec: React.FC = () => {
         </div>
 
         {/* Main heading */}
-        <h1 className="font-extrabold  text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#1A1523] leading-tight tracking-tight max-w-4xl">
-          Sell tickets. <span className="text-[#0F6E56]">Get paid.</span> No stress.
+        <h1 className="font-extrabold  text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground leading-tight tracking-tight max-w-4xl">
+          Sell tickets. <span className="text-[#0F6E56] dark:text-[#4ADE80]">Get paid.</span> No stress.
         </h1>
 
         {/* Subtitle */}
-        <p className="font-bold text-center text-base sm:text-lg md:text-[18px] text-[#4A4451] max-w-2xl mx-auto md:w-129">
+        <p className="font-bold text-center text-base sm:text-lg md:text-[18px] text-muted-foreground max-w-2xl mx-auto md:w-129">
           Publish a polished event in minutes, sell with real payments, check guests in at the gate and get settled a few days later – all from one dashboard.
         </p>
 
@@ -47,7 +47,7 @@ const HeroSec: React.FC = () => {
             </Button>
           </Link>
           <Link to="/features">
-            <Button variant="outline" size="lg" className="px-16 py-6 text-base font-semibold rounded-xl border-2 hover:bg-white/50 transition-colors">
+            <Button variant="outline" size="lg" className="px-16 py-6 text-base font-semibold rounded-xl border-2 hover:bg-accent/50 transition-colors">
               Talk to us
             </Button>
           </Link>
@@ -62,7 +62,7 @@ const HeroSec: React.FC = () => {
                 key={avatar.id}
                 src={avatar.image}
                 alt="Organizer avatar"
-                className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-white shadow-md object-cover"
+                className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-background shadow-md object-cover"
                 loading="lazy"
               />
             ))}
@@ -75,7 +75,7 @@ const HeroSec: React.FC = () => {
                 <Star key={i} className="w-5 h-5 fill-current" />
               ))}
             </div>
-            <p className="text-[#4A4451] text-sm md:text-base font-medium whitespace-nowrap">
+            <p className="text-muted-foreground text-sm md:text-base font-medium whitespace-nowrap">
               Trusted by 1,000+ organizers
             </p>
           </div>

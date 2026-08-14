@@ -8,11 +8,11 @@ interface StatCardProps {
 
 export function StatCard({ label, value }: StatCardProps) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 sm:p-5 shadow-2xs dark:bg-zinc-900 dark:border-zinc-800 space-y-2">
-      <p className=" text-sm md:text-[16px] font-space font-normal text-[#4A4451] uppercase dark:text-zinc-400">
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-2xs space-y-2">
+      <p className=" text-sm md:text-[16px] font-space font-normal text-muted-foreground uppercase">
         {label}
       </p>
-      <p className="text-xl sm:text-2xl lg:mt-6.25 font-bold font-space tracking-tighter text-[#1A1523] dark:text-zinc-100">
+      <p className="text-xl sm:text-2xl lg:mt-6.25 font-bold font-space tracking-tighter text-foreground">
         {value}
       </p>
     </div>

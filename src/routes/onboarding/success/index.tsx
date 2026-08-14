@@ -24,7 +24,7 @@ const OnboardingSuccess = () => {
                 <h1 className='font-grotesk font-bold text-[34px]'>You're all set!</h1>
                 <p className='font-grotesk line-clamp-4 md:max-w-[550px] font-medium text-center md:text-start'>
                   Your organizer account is created and your details are{" "}
-                  <a href="" className='text-[#0F6E56]'>under review.</a>{" "}
+                  <a href="" className='text-[#0F6E56] dark:text-[#4ADE80]'>under review.</a>{" "}
                   Start creating events now, free events can go live immediately, and paid events unlock once you're verified.
                 </p>
                 <Link to="/dashboard/overview">

@@ -19,7 +19,7 @@ export function FeaturedEventCard({ event, onGetTickets }: FeaturedEventCardProp
   });
 
   return (
-    <article className="flex flex-col md:flex-row overflow-hidden rounded-2xl border border-orange-200 gap-6 md:gap-[35px] w-full  md:h-[231px]">
+    <article className="flex flex-col md:flex-row overflow-hidden rounded-2xl border border-orange-200 dark:border-orange-900/40 gap-6 md:gap-[35px] w-full  md:h-[231px]">
       <div className="relative aspect-[4/3] md:aspect-auto w-full md:w-[314px] md:shrink-0">
         <img
           src={event.coverImage}
@@ -33,19 +33,19 @@ export function FeaturedEventCard({ event, onGetTickets }: FeaturedEventCardProp
       </div>
 
       <div className="flex flex-col gap-3 px-5  pb-2 md:pb-8 md:px-0 md:py-8">
-        <p className="text-[13px] md:text-[12px] font-[400] uppercase tracking-widest text-[#0F6E56] flex items-center gap-2 ">
+        <p className="text-[13px] md:text-[12px] font-[400] uppercase tracking-widest text-[#0F6E56] dark:text-[#4ADE80] flex items-center gap-2 ">
           {event.category}
           {event.subcategory && ` · ${event.subcategory}`}
         </p>
 
-        <h2 className="text-[26px] md:text-[22px] md:text-[28px] font-[700] font-grotesk tracking-tight">{event.title}</h2>
+        <h2 className="text-[26px] md:text-[22px] md:text-[28px] font-[700] font-grotesk tracking-tight text-foreground">{event.title}</h2>
 
         <p className="text-[14px] font-[500] text-muted-foreground ">
           {dateLabel} · {event.venue.name}
         </p>
 
         <div className="mt-2 flex flex-wrap items-center gap-[24px]">
-          <span className="md:text-[20px] text-[18px] font-[700] font-mono text-[#4A4451]">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice)}</span>
+          <span className="md:text-[20px] text-[18px] font-[700] font-mono text-foreground">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice)}</span>
           <Button
             onClick={() => onGetTickets?.(event.slug)}
             className="bg-[#0F6E56] hover:bg-emerald-800 w-[122px] h-[42px] font-[700] text-[15px]"

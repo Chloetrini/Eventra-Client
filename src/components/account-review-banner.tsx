@@ -53,21 +53,21 @@ export function AccountReviewBanner({ status, onDismiss }: AccountReviewBannerPr
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col min-[480px]:flex-row items-start min-[480px]:items-center justify-between gap-4 bg-[#E4F1EB] border border-emerald-200 rounded-lg p-4">
+    <div className="flex flex-col min-[480px]:flex-row items-start min-[480px]:items-center justify-between gap-4 bg-[#E4F1EB] dark:bg-[#0F6E56]/15 border border-emerald-200 dark:border-emerald-800/40 rounded-lg p-4">
       <div className="flex items-start sm:items-center gap-3">
-        <div className="bg-white p-4 rounded-md shrink-0">
+        <div className="bg-card p-4 rounded-md shrink-0">
           <img src={clock} alt="Clock icon" className="size-5 text-[#04241c]" />
         </div>
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-[18px] font-grotesk font-medium text-[#7A4E02]">
+            <p className="text-[18px] font-grotesk font-medium text-[#7A4E02] dark:text-[#F5C875]">
               {config.title}
             </p>
-            <Badge className="bg-[#FFFFFF] text-[#0F6E56] hover:bg-amber-100 text-[13px] font-space">
+            <Badge className="bg-white dark:bg-[#0F6E56]/25 text-[#0F6E56] dark:text-[#4ADE80] hover:bg-amber-100 dark:hover:bg-[#0F6E56]/35 text-[13px] font-space">
               {config.badge}
             </Badge>
           </div>
-          <p className="text-[14px] text-[#4A4451] mt-2">
+          <p className="text-[14px] text-[#4A4451] dark:text-white/70 mt-2">
             {config.description}
           </p>
         </div>
@@ -85,10 +85,10 @@ export function AccountReviewBanner({ status, onDismiss }: AccountReviewBannerPr
         {onDismiss && (
           <button
             onClick={onDismiss}
-            className="text-emerald-700 hover:text-emerald-900 shrink-0"
+            className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 shrink-0"
             aria-label="Dismiss"
           >
-            <X className="size-5 text-[#7A4E02]" />
+            <X className="size-5 text-[#7A4E02] dark:text-[#F5C875]" />
           </button>
         )}
       </div>

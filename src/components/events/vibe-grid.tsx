@@ -37,11 +37,11 @@ export const VibeGrid: React.FC = () => {
         <div className="">
           <div className="flex items-center gap-1.25">
             <div className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
-            <h6 className="font-geist font-regular tracking-[1%] lg:tracking-[16%] uppercase text-[#0F6E56] text-xs">
+            <h6 className="font-geist font-regular tracking-[1%] lg:tracking-[16%] uppercase text-[#0F6E56] dark:text-[#4ADE80] text-xs">
               SOMETHING FOR EVERYONE
             </h6>
           </div>
-          <h2 className="font-geist font-bold text-2xl tracking-[-2%] text-[#1A1523] md:text-[34px]">
+          <h2 className="font-geist font-bold text-2xl tracking-[-2%] text-foreground md:text-[34px]">
             Browse by vibe
           </h2>
         </div>
@@ -49,7 +49,7 @@ export const VibeGrid: React.FC = () => {
           to="/explore"
           className="flex flex-row items-center gap-1 hover:bg-[#0F6E56]/10 rounded-2xl px-2.5 py-1.25 transition-colors duration-300 cursor-pointer"
         >
-          <h5 className="font-geist font-regular text-[#0F6E56]">
+          <h5 className="font-geist font-regular text-[#0F6E56] dark:text-[#4ADE80]">
             All Categories
           </h5>
           <span>

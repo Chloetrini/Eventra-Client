@@ -61,8 +61,8 @@ export default function OrganizerEventDetailsRoute() {
   if (!eventId) {
     return (
       <PageWrapper className="py-12 text-center space-y-4">
-        <h2 className="text-xl font-bold text-zinc-800">No event selected</h2>
-        <p className="text-sm text-zinc-500">
+        <h2 className="text-xl font-bold text-foreground">No event selected</h2>
+        <p className="text-sm text-muted-foreground">
           Pick an event from{" "}
           <Link to="/dashboard/events" className="underline">
             your events list
@@ -84,8 +84,8 @@ export default function OrganizerEventDetailsRoute() {
   if (isError || !event) {
     return (
       <PageWrapper className="py-12 text-center space-y-4">
-        <h2 className="text-xl font-bold text-zinc-800">Event Not Found</h2>
-        <p className="text-sm text-zinc-500">
+        <h2 className="text-xl font-bold text-foreground">Event Not Found</h2>
+        <p className="text-sm text-muted-foreground">
           The requested event could not be retrieved.
         </p>
       </PageWrapper>
@@ -123,7 +123,7 @@ export default function OrganizerEventDetailsRoute() {
           <PromotionsCard
             isPromoted={event.isPromoted}
             message={event.promotionMessage}
-            onPromote={() => navigate(`/dashboard/promote?event=${event.id}`)}
+            onPromote={() => navigate(`/dashboard/promotion?event=${event.id}`)}
           />
         </div>
 

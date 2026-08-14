@@ -21,11 +21,11 @@ export const RelatedEvents = ({ events }: { events: Event[] }) => {
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-wider">{event.tags?.join(' · ') || 'No tags'}</p>
                   <p className="mt-1 text-sm font-bold leading-snug">{event.title}</p>
-                  <p className="mt-1 text-xs font-medium text-[#6E6577]">{formatDate(event.startDate)} · {event.venue.name}</p>
-                  <p className="pt-4 text-sm font-semibold text-[#1A1523]">{formatPrice(event.minPrice ?? 0)}</p>
+                  <p className="mt-1 text-xs font-medium text-muted-foreground">{formatDate(event.startDate)} · {event.venue.name}</p>
+                  <p className="pt-4 text-sm font-semibold text-foreground">{formatPrice(event.minPrice ?? 0)}</p>
                 </div>
-                <div className="rounded-full border h-8.75 w-8.75 flex items-center justify-center bg-[#E4F1EB]">
-                  <MoveUpRight className="h-4 w-4 text-[#0A4F41]"/>
+                <div className="rounded-full border h-8.75 w-8.75 flex items-center justify-center bg-[#E4F1EB] dark:bg-[#0F6E56]/15">
+                  <MoveUpRight className="h-4 w-4 text-[#0A4F41] dark:text-[#4ADE80]"/>
                 </div>
 
               </div>

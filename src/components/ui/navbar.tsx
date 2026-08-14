@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils"
 import PageWrapper from "../pageWrapper"
 import { useAuth } from "@/context/auth.context"
 import { useTheme } from "@/context/theme.context"
+import { UserAvatar } from "@/components/ui/user-avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -96,17 +97,6 @@ function Navbar() {
   const { theme, toggleTheme } = useTheme()
   const isOrganizer = user?.role === "organizer"
 
-  const getInitials = (name?: string) => {
-    if (!name) return "U"
-    return name
-      .split(" ")
-      .filter(Boolean)
-      .map((part) => part[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2)
-  }
-
   const ThemeToggleButton = (
     <button
       type="button"
@@ -153,9 +143,7 @@ function Navbar() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex items-center gap-[10px] border border-[#E8E6E0] rounded-full py-[6px] pl-[6px] pr-[14px] bg-white hover:bg-slate-50 transition-colors focus:outline-none dark:bg-[#18181B] dark:border-white/10 dark:hover:bg-white/10">
-                  <div className="flex h-[38px] w-[38px] items-center justify-center rounded-full bg-[#333333] text-white font-bold text-[14px]">
-                    {getInitials(user.fullname)}
-                  </div>
+                  <UserAvatar avatarUrl={user.avatarUrl} name={user.fullname} className="h-[38px] w-[38px] text-[14px]" />
                   <span className="text-[17px] font-bold text-[#1A1523] dark:text-white">
                     {user.fullname}
                   </span>
@@ -167,9 +155,7 @@ function Navbar() {
                   className="w-[310px] rounded-[24px] border border-[#E8E6E0] p-[24px] shadow-lg bg-white mt-2 dark:bg-[#18181B] dark:border-white/10"
                   >
                   <div className="flex items-center gap-[14px] pb-[20px]">
-                    <div className="flex h-[48px] w-[48px] items-center justify-center rounded-full bg-[#333333] text-white font-bold text-[18px]">
-                      {getInitials(user.fullname)}
-                    </div>
+                    <UserAvatar avatarUrl={user.avatarUrl} name={user.fullname} className="h-[48px] w-[48px] text-[18px]" />
                     <div className="flex flex-col">
                       <span className="text-[20px] font-bold text-[#1A1523] dark:text-white leading-tight">
                         {user.fullname}
@@ -266,9 +252,7 @@ function Navbar() {
               {user ? (
                 <>
                   <div className="flex items-center gap-3 py-2 border-t border-[#E8E6E0] dark:border-white/10">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#333333] text-white font-bold">
-                      {getInitials(user.fullname)}
-                    </div>
+                    <UserAvatar avatarUrl={user.avatarUrl} name={user.fullname} className="h-10 w-10" />
                     <div className="flex flex-col">
                       <span className="font-bold text-[#1A1523] dark:text-white">
                         {user.fullname}

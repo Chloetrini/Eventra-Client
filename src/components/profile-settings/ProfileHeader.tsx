@@ -1,17 +1,32 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { Camera, Loader2 } from 'lucide-react';
+import { UserAvatar } from '@/components/ui/user-avatar';
 
 export interface IProfile {
     fullName: string;
     email: string;
     memberSince: string;
-    initials: string;
+    avatarUrl?: string;
 }
 
 interface ProfileHeaderProps {
     user: IProfile;
+    onAvatarSelect?: (file: File) => void;
+    isUploadingAvatar?: boolean;
 }
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, onAvatarSelect, isUploadingAvatar }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file && onAvatarSelect) {
+            onAvatarSelect(file);
+        }
+        // Reset so picking the same file again still fires onChange
+        e.target.value = '';
+    };
+
     return (
         <div >
             {/* ACCOUNT label */}
@@ -37,8 +52,32 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
 
                 <div className="flex flex-row items-center gap-4 md:gap-7.25 flex-1">
 
-                    <div className="h-16 w-16 md:h-25.5 md:w-25.5 rounded-full bg-[#0A4F41] flex items-center justify-center text-[#FFFFFF] text-[24px] md:text-[34px] font-[700] font-grotesk leading-1 tracking-[-2%]">
-                        {user.initials}
+                    <div className="relative h-16 w-16 md:h-25.5 md:w-25.5 shrink-0">
+                        <UserAvatar
+                            avatarUrl={user.avatarUrl}
+                            name={user.fullName}
+                            className="h-16 w-16 md:h-25.5 md:w-25.5 text-[24px] md:text-[34px] font-[700] font-grotesk leading-1 tracking-[-2%] bg-[#0A4F41]"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploadingAvatar}
+                            title="Change profile picture"
+                            className="absolute bottom-0 right-0 h-7 w-7 md:h-8 md:w-8 rounded-full bg-card border border-border flex items-center justify-center text-foreground hover:bg-accent transition-colors disabled:opacity-60"
+                        >
+                            {isUploadingAvatar ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                                <Camera className="h-3.5 w-3.5" />
+                            )}
+                        </button>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleFileChange}
+                        />
                     </div>
 
                     <div className='flex flex-col gap-4 mt-4                            '>

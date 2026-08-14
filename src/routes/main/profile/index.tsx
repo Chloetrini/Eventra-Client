@@ -1,4 +1,5 @@
 
+import { useState } from 'react';
 import ProfileHeader from '@/components/profile-settings/ProfileHeader';
 import SettingsForm from "@/components/profile-settings/SettingsForm";
 import NToggles from '@/components/profile-settings/NToggles';
@@ -6,12 +7,43 @@ import ProfileSettingsSkeleton from '@/components/profile-settings/ProfileSettin
 import { useAuth } from '@/context/auth.context';
 import { toast } from 'react-toastify';
 import PageWrapper from '@/components/pageWrapper';
+import { updateProfile, uploadAvatar } from '@/lib/user-api';
+import { z } from 'zod';
+import { profileSchema } from '@/lib/schema';
+
+type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function SettingsPage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, refreshUser } = useAuth();
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
-  const handleSave = async (data: any) => {
-    toast.info("Profile update isn't wired to the backend yet.");
+  const handleSave = async (data: ProfileFormValues) => {
+    try {
+      // Email isn't updatable here (the backend doesn't accept it on this
+      // endpoint) — only send the fields it actually supports.
+      await updateProfile({
+        fullname: data.fullName,
+        phone: data.phone,
+        city: data.city,
+      });
+      await refreshUser();
+      toast.success("Profile updated");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not update profile");
+    }
+  };
+
+  const handleAvatarSelect = async (file: File) => {
+    setIsUploadingAvatar(true);
+    try {
+      await uploadAvatar(file);
+      await refreshUser();
+      toast.success("Profile picture updated");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not upload picture");
+    } finally {
+      setIsUploadingAvatar(false);
+    }
   };
 
   if (isLoading) {
@@ -26,29 +58,23 @@ export default function SettingsPage() {
     );
   }
 
-  const initials = (user.fullname ?? "")
-    .split(' ')
-    .map((n) => n[0])
-    .filter(Boolean)
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-    
 const memberSince = typeof user.createdAt === "string"
     ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : '';
 
   return (
     <>
-    
+
       <PageWrapper className='p-[20px]'>
           <ProfileHeader
             user={{
               fullName: user.fullname,
               email: user.email,
               memberSince,
-              initials,
+              avatarUrl: user.avatarUrl,
             }}
+            onAvatarSelect={handleAvatarSelect}
+            isUploadingAvatar={isUploadingAvatar}
             />
           <SettingsForm
             user={{
@@ -60,9 +86,9 @@ const memberSince = typeof user.createdAt === "string"
             onSave={handleSave}
             />
           <NToggles />
-       
+
       </PageWrapper>
-    
+
     </>
   );
 }

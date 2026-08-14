@@ -8,6 +8,7 @@ type User = {
   fullname: string;
   email: string;
   role: "attendee" | "organizer" | "admin";
+  avatarUrl?: string;
   [key: string]: unknown;
 };
 

@@ -24,12 +24,24 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSave }) => {
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      fullName: '',
-      phone: '',
-      email: '',
-      city: '',
+      fullName: user.fullName ?? '',
+      phone: user.phone ?? '',
+      email: user.email ?? '',
+      city: user.city ?? '',
     },
   });
+
+  // The user's data loads async (from /auth/me), so it may not be ready yet
+  // on first render — sync the form once it is, instead of leaving the
+  // fields permanently blank.
+  useEffect(() => {
+    reset({
+      fullName: user.fullName ?? '',
+      phone: user.phone ?? '',
+      email: user.email ?? '',
+      city: user.city ?? '',
+    });
+  }, [user.fullName, user.phone, user.email, user.city, reset]);
 
   return (
     <div className="border border-border rounded-[20px] py-10 px-14  mb-18">
@@ -75,9 +87,11 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSave }) => {
               id="email"
               type="email"
               placeholder="eg. ada@email.com"
-              className="h-12 w-full placeholder:text-[16px] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15"
+              readOnly
+              className="h-12 w-full placeholder:text-[16px] bg-muted cursor-not-allowed"
               {...register('email')}
             />
+            <p className="text-xs text-muted-foreground mt-1">Email can't be changed here.</p>
             {errors.email && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
             )}

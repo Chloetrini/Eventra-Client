@@ -1,6 +1,7 @@
 import React from 'react';
 import { Bell, Plus } from 'lucide-react';
 import { useAuth } from '@/context/auth.context';
+import { UserAvatar } from '@/components/ui/user-avatar';
 
 interface TopBarProps {
   organization: {
@@ -11,20 +12,8 @@ interface TopBarProps {
   title?: string;
 }
 
-function getInitials(name?: string): string {
-  if (!name) return "?";
-  return name
-    .split(" ")
-    .map(n => n[0])
-    .filter(Boolean)
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
-
 const TopBar: React.FC<TopBarProps> = ({ organization, onCreateEvent, title }) => {
   const { user } = useAuth();
-  const initials = getInitials(user?.fullname);
 
   return (
     <header className="bg-card border-b border-border px-6 py-3 flex items-center justify-between gap-4">
@@ -52,10 +41,10 @@ const TopBar: React.FC<TopBarProps> = ({ organization, onCreateEvent, title }) =
         </button>
 
         <button
-          className="h-9 w-9 rounded-full bg-[#0F6E56] text-white flex items-center justify-center font-bold text-sm"
+          className="h-9 w-9 rounded-full overflow-hidden bg-[#0F6E56] text-white flex items-center justify-center font-bold text-sm"
           title={user?.fullname || "Account"}
         >
-          {initials}
+          <UserAvatar avatarUrl={user?.avatarUrl} name={user?.fullname} className="h-9 w-9 text-sm" />
         </button>
       </div>
     </header>

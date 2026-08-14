@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -32,9 +32,20 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSave }) => {
   });
 
   // The user's data loads async (from /auth/me), so it may not be ready yet
-  // on first render — sync the form once it is, instead of leaving the
-  // fields permanently blank.
+  // on first render — sync the form once real data arrives, instead of
+  // leaving the fields permanently blank.
+  //
+  // This must only run ONCE though. The app silently re-fetches the
+  // current user in the background sometimes (e.g. switching back to this
+  // browser tab) — if this effect re-ran on every such change, it would
+  // reset the form back to the server's last-saved values while someone is
+  // mid-edit, silently discarding whatever they'd just typed before they
+  // even hit Save. That's exactly what was happening.
+  const hasSeededForm = useRef(false);
   useEffect(() => {
+    if (hasSeededForm.current) return;
+    if (!user.fullName && !user.email) return; // real data hasn't loaded yet
+    hasSeededForm.current = true;
     reset({
       fullName: user.fullName ?? '',
       phone: user.phone ?? '',

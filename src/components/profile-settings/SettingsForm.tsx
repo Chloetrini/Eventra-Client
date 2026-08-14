@@ -32,9 +32,9 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSave }) => {
   });
 
   return (
-    <div className="border border-[#E8E6E0] rounded-[20px] py-10 px-14  mb-18">
-      <h2 className="font-grotesk 
-      font-semibold text-[#000000] text-[34px] leading-10 md:leading-1 tracking-[-2%] pb-6">
+    <div className="border border-border rounded-[20px] py-10 px-14  mb-18">
+      <h2 className="font-grotesk
+      font-semibold text-foreground text-[34px] leading-10 md:leading-1 tracking-[-2%] pb-6">
         Personal Information
       </h2>
 
@@ -48,18 +48,18 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSave }) => {
           <div className="flex flex-col items-start">
             <Label
               htmlFor="fullName"
-              className="font-medium text-[16px] text-[#232323] tracking-[-0.03em]"
+              className="font-medium text-[16px] text-foreground tracking-[-0.03em]"
             >
               Full Name
             </Label>
             <Input
               id="fullName"
               placeholder="eg. Ada Okafor"
-              className="h-12 w-full placeholder:text-[16px] hover:bg-[#E4F1EB]"
+              className="h-12 w-full placeholder:text-[16px] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15"
               {...register('fullName')}
             />
             {errors.fullName && (
-              <p className="text-sm text-red-600">{errors.fullName.message}</p>
+              <p className="text-sm text-red-600 dark:text-red-400">{errors.fullName.message}</p>
             )}
           </div>
 
@@ -67,7 +67,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSave }) => {
           <div className="flex flex-col items-start">
             <Label
               htmlFor="email"
-              className="font-medium text-[16px] text-[#232323] tracking-[-0.03em]"
+              className="font-medium text-[16px] text-foreground tracking-[-0.03em]"
             >
               Email
             </Label>
@@ -75,11 +75,11 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSave }) => {
               id="email"
               type="email"
               placeholder="eg. ada@email.com"
-              className="h-12 w-full placeholder:text-[16px] hover:bg-[#E4F1EB]"
+              className="h-12 w-full placeholder:text-[16px] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15"
               {...register('email')}
             />
             {errors.email && (
-              <p className="text-sm text-red-600">{errors.email.message}</p>
+              <p className="text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
             )}
           </div>
         </div>
@@ -90,7 +90,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSave }) => {
           <div className="flex flex-col items-start">
             <Label
               htmlFor="phone"
-              className="font-medium text-[16px] text-[#232323] tracking-[-0.03em]"
+              className="font-medium text-[16px] text-foreground tracking-[-0.03em]"
             >
               Phone Number
             </Label>
@@ -98,11 +98,11 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSave }) => {
               id="phone"
               type="tel"
               placeholder="08012345678"
-              className="h-12 w-full placeholder:text-[16px] hover:bg-[#E4F1EB]"
+              className="h-12 w-full placeholder:text-[16px] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15"
               {...register('phone')}
             />
             {errors.phone && (
-              <p className="text-sm text-red-600">{errors.phone.message}</p>
+              <p className="text-sm text-red-600 dark:text-red-400">{errors.phone.message}</p>
             )}
           </div>
 
@@ -110,18 +110,18 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSave }) => {
           <div className="flex flex-col items-start">
             <Label
               htmlFor="city"
-              className="font-medium text-[16px] text-[#232323] tracking-[-0.03em]"
+              className="font-medium text-[16px] text-foreground tracking-[-0.03em]"
             >
               City
             </Label>
             <Input
               id="city"
               placeholder="eg. Lagos"
-              className="h-12 w-full placeholder:text-[16px] hover:bg-[#E4F1EB]"
+              className="h-12 w-full placeholder:text-[16px] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15"
               {...register('city')}
             />
             {errors.city && (
-              <p className="text-sm text-red-600">{errors.city.message}</p>
+              <p className="text-sm text-red-600 dark:text-red-400">{errors.city.message}</p>
             )}
           </div>
         </div>
@@ -131,7 +131,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSave }) => {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="bg-[#0F6E56] hover:bg-[#0d5c47] text-[#FFFFFF] font-medium px-6 py-2 rounded-md h-12 w-auto"
+            className="bg-[#0F6E56] hover:bg-[#0d5c47] text-white font-medium px-6 py-2 rounded-md h-12 w-auto"
           >
             {isSubmitting ? 'Saving...' : 'Save changes'}
           </Button>

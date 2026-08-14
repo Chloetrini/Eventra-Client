@@ -39,10 +39,10 @@ const TicketConfirmation = () => {
     if (!state || tickets.length === 0 || !eventInfo) {
         return (
             <div className='px-4 py-20 text-center'>
-                <p className='mb-4 text-[#6E6577]'>No ticket to show.</p>
+                <p className='mb-4 text-muted-foreground'>No ticket to show.</p>
                 <button
                     onClick={() => navigate('/explore')}
-                    className='text-[#6e6e6e] font-semibold underline'
+                    className='text-muted-foreground font-semibold underline'
                 >
                     Browse events
                 </button>

@@ -82,11 +82,11 @@ export default function Tickets() {
             <header className="flex items-center   mt-5">
                 <div className="mb-5 flex items-center gap-2">
                     <span className="h-[1px] w-[12px] bg-[#F5A524]" />
-                    <span className="text-[10px] md:text-[12px] font-[400] leading-[16px] text-[#0F6E56] tracking-wide uppercase font-sans ">Your Account</span>
+                    <span className="text-[10px] md:text-[12px] font-[400] leading-[16px] text-[#0F6E56] dark:text-[#4ADE80] tracking-wide uppercase font-sans ">Your Account</span>
                 </div>
             </header>
             <div>
-                <h1 className="text-2xl min-[400px]:text-4xl lg:text-[54px] font-bold text-[#1A1523] lg:font-[700] mb-6 font-grotesk">
+                <h1 className="text-2xl min-[400px]:text-4xl lg:text-[54px] font-bold text-foreground lg:font-[700] mb-6 font-grotesk">
                     my tickets
                 </h1>
             </div>
@@ -97,10 +97,10 @@ export default function Tickets() {
                         key={tab.value}
                         onClick={() => handleTabChange(tab.value)}
                         className={cn(
-                            "text-sm min-[400px]:text-[16px] font-medium border-b-2 text-[#1A1523] -mb-px transition-colors",
+                            "text-sm min-[400px]:text-[16px] font-medium border-b-2 text-foreground -mb-px transition-colors",
                             activeTab === tab.value
-                                ? "border-[#4A4451] text-emerald-950"
-                                : "border-transparent text-[#4A4451] hover:text-black",
+                                ? "border-foreground text-foreground"
+                                : "border-transparent text-muted-foreground hover:text-foreground",
                         )}
                     >
                         {tab.label}

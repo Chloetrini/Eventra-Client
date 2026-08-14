@@ -195,7 +195,7 @@ function Navbar() {
                         to="/tickets"
                         className="flex w-full items-center gap-[14px] px-0 py-[6px] text-[18px] font-bold text-[#1A1523] dark:text-white cursor-pointer hover:text-[#0F6E56]"
                         >
-                        <Ticket className="h-5 w-5 text-[#EAB308]" />
+                        <Ticket className="h-5 w-5 text-[#EAB308] dark:text-[#FACC15]" />
                         <span>My tickets</span>
                       </NavLink>
                     </DropdownMenuItem>
@@ -216,9 +216,9 @@ function Navbar() {
                   <div className="pt-[16px]">
                     <DropdownMenuItem
                       onClick={logout}
-                      className="flex items-center gap-[14px] px-0 py-[8px] text-[18px] font-bold text-[#B91C1C] cursor-pointer hover:text-[#991B1B]"
+                      className="flex items-center gap-[14px] px-0 py-[8px] text-[18px] font-bold text-[#B91C1C] cursor-pointer hover:text-[#991B1B] dark:text-red-400 dark:hover:text-red-300"
                       >
-                      <LogOut className="h-5 w-5 text-[#B91C1C]" />
+                      <LogOut className="h-5 w-5 text-[#B91C1C] dark:text-red-400" />
                       <span>Sign out</span>
                     </DropdownMenuItem>
                   </div>
@@ -298,7 +298,7 @@ function Navbar() {
                       logout()
                       closeMenu()
                     }}
-                    className="py-1 text-left text-sm font-bold text-[#B91C1C]"
+                    className="py-1 text-left text-sm font-bold text-[#B91C1C] dark:text-red-400"
                     >
                     Sign out
                   </button>

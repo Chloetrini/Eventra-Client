@@ -16,7 +16,7 @@ const OnboardingNavbar = () => {
 
   return (
     <div>
-      <div className='h-18 border-b-2 border-b-[#E8E6E0] px-5 md:px-10 lg:px-25 py-5 flex justify-between items-center'>
+      <div className='h-18 border-b-2 border-b-border px-5 md:px-10 lg:px-25 py-5 flex justify-between items-center'>
         <div className="flex items-center gap-2" onClick={() => navigate("/")}>
           <img src={eventraLogo} alt="" className="w-6 h-8" />
           <p className="font-extrabold text-[27px]">Eventra</p>
@@ -25,7 +25,7 @@ const OnboardingNavbar = () => {
           <PaymentBtn
             text={"Save & exit"}
             icon={CloudUpload}
-            classname="gap-2 text-black border-0"
+            classname="gap-2 text-foreground border-0"
             onClick={handleSaveAndExit}
           />
           <OnboardingDrawer />

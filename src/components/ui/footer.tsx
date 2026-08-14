@@ -30,7 +30,7 @@ function FooterColumn({
 }) {
     return (
         <div className="flex flex-col gap-4">
-            <h3 className="font-mono font-bold uppercase tracking-widest text-[#1A1523]/70">
+            <h3 className="font-mono font-bold uppercase tracking-widest text-muted-foreground">
                 {heading}
             </h3>
             <ul className="flex flex-col gap-3">
@@ -38,7 +38,7 @@ function FooterColumn({
                     <li key={link.to}>
                         <NavLink
                             to={link.to}
-                            className="text-[15px] text-[#1A1523]/80 transition-colors hover:text-[#1A1523]"
+                            className="text-[15px] text-foreground/80 transition-colors hover:text-foreground"
                         >
                             {link.label}
                         </NavLink>
@@ -85,16 +85,16 @@ export default function Footer() {
     };
 
     return (
-        <footer className="relative overflow-hidden bg-[#E4F1EB]">
+        <footer className="relative overflow-hidden bg-[#E4F1EB] dark:bg-[#0F1F1A]">
             <PageWrapper className="p-[20px]">
             <div className=" w-full ">
                 {/* Newsletter CTA */}
                 <div className="flex flex-col gap-6 py-14 md:flex-row md:items-center md:justify-between md:gap-10">
                     <div>
-                        <h2 className="text-3xl font-bold tracking-tight text-[#1A1523]">
+                        <h2 className="text-3xl font-bold tracking-tight text-foreground">
                             Never miss a good one.
                         </h2>
-                        <p className="mt-2 text-[15px] text-[#1A1523]/70">
+                        <p className="mt-2 text-[15px] text-muted-foreground">
                             Get the week&apos;s best events in your inbox. No spam
                         </p>
                     </div>
@@ -113,7 +113,7 @@ export default function Footer() {
                                     if (error) setError("");
                                 }}
                                 placeholder="eventra@gmail.com"
-                                className="h-12 w-full min-w-0 rounded-[7px] border border-[#1A1523]/10 bg-white px-4 text-[15px] text-[#1A1523] placeholder:text-[#1A1523]/40 focus:outline-none focus:ring-2 focus:ring-[#0F6E56]/40"
+                                className="h-12 w-full min-w-0 rounded-[7px] border border-border bg-background px-4 text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#0F6E56]/40 dark:focus:ring-[#0F6E56]/60"
                             />
                             <button
                                 type="submit"
@@ -124,20 +124,20 @@ export default function Footer() {
                             </button>
                         </form>
                         {error && (
-                            <p className="text-sm text-red-600">{error}</p>
+                            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
                         )}
                     </div>
                 </div>
                 {/* Link columns */}
-                <div className="grid grid-cols-2 gap-x-8 gap-y-10 border-t border-[#1A1523]/10 py-12 sm:grid-cols-4">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-10 border-t border-border py-12 sm:grid-cols-4">
                     <div className="col-span-2 flex flex-col gap-4 sm:col-span-1">
                         <NavLink to="/" className="flex items-center gap-2">
                             <img className="h-8 w-6" src="/src/assets/Eventra-logo.png" alt="Eventra" />
-                            <span className="text-xl font-bold tracking-tight text-[#1A1523]">
+                            <span className="text-xl font-bold tracking-tight text-foreground">
                                 Eventra
                             </span>
                         </NavLink>
-                        <p className="max-w-[26ch] text-[15px] text-[#1A1523]/70">
+                        <p className="max-w-[26ch] text-[15px] text-muted-foreground">
                             The trusted way to discover events and buy tickets in Nigeria.
                         </p>
                     </div>
@@ -148,7 +148,7 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom bar */}
-                <div className="flex flex-col gap-3 border-t border-[#1A1523]/10 py-6 font-Geist text-xs uppercase tracking-widest text-[#1A1523]/50 font-medium sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-3 border-t border-border py-6 font-Geist text-xs uppercase tracking-widest text-muted-foreground font-medium sm:flex-row sm:items-center sm:justify-between">
                     <span>© 2026 Eventra · Lagos, Nigeria</span>
                     <span className="inline-flex items-center gap-1.5">
                         Made for the culture <span aria-hidden="true">◇</span>

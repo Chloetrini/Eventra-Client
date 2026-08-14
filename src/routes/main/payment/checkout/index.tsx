@@ -54,10 +54,10 @@ const Checkout = () => {
     if (!ticket) {
         return (
             <div className='px-4 py-20 text-center'>
-                <p className='mb-4 text-[#6E6577]'>No tickets selected yet.</p>
+                <p className='mb-4 text-muted-foreground'>No tickets selected yet.</p>
                 <button
                     onClick={() => navigate('/explore')}
-                    className='text-[#6e6e6e] font-semibold underline'
+                    className='text-muted-foreground font-semibold underline'
                 >
                     Browse events
                 </button>
@@ -125,12 +125,12 @@ const Checkout = () => {
                 <span className="text-foreground">Checkout</span>
             </nav>
             <div className='flex items-center gap-3 mb-4'>
-                <div className='w-14.5 h-14.5 bg-[#E4F1EB] rounded-full flex items-center justify-center' >
+                <div className='w-14.5 h-14.5 bg-[#E4F1EB] dark:bg-[#0F6E56]/15 rounded-full flex items-center justify-center' >
                     <img src={bag} alt="Shopping Bag" className="w-7.5 h-7.5" />
                 </div>
                 <div>
                     <h1 className="text-3xl font-bold font-grotesk ">Checkout</h1>
-                    <p className="text-[#1A1A1A] font-medium text-sm leading-4">Fill in your details and complete your purchase.</p>
+                    <p className="text-muted-foreground font-medium text-sm leading-4">Fill in your details and complete your purchase.</p>
                 </div>
             </div>
             <div className='flex flex-col-reverse lg:flex-row lg:justify-between gap-10 lg:gap-8 mt-10'>
@@ -168,7 +168,7 @@ const Checkout = () => {
 
                             <div className='flex flex-col gap-5'>
 
-                                <div className='w-full min-h-28 bg-[#E4F1EB] rounded-[20px] border hover:border-[#0A4F41] transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 sm:px-7 py-4 sm:py-0'>
+                                <div className='w-full min-h-28 bg-[#E4F1EB] dark:bg-[#0F6E56]/15 rounded-[20px] border hover:border-[#0A4F41] dark:hover:border-[#4ADE80] transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 sm:px-7 py-4 sm:py-0'>
                                     <div className='flex flex-col md:flex-row items-center gap-3 text-center md:text-start'>
                                         <div>
                                             <img src={paystackLogo} alt="" className='w-32' />

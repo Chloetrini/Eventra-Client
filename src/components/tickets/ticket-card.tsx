@@ -52,8 +52,8 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
   };
   const ticketType = ticketDetails[0].type;
   const { bg: ticketBg, text: ticketText } = ticketTypeConfig[ticketType] ?? {
-    bg: "bg-gray-200",
-    text: "text-gray-700",
+    bg: "bg-muted",
+    text: "text-muted-foreground",
   };
 
   const queryClient = useQueryClient();
@@ -169,7 +169,7 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
           </div>
         </div>
         {/* Qr code section */}
-        <div className="shadow-2xl flex flex-col items-center lg:w-[397px] lg:h-[390px] rounded-lg text-center justify-between p-3 min-[400px]:p-4">
+        <div className="bg-white shadow-2xl flex flex-col items-center lg:w-[397px] lg:h-[390px] rounded-lg text-center justify-between p-3 min-[400px]:p-4">
           <div className="rounded-full border px-4 min-[400px]:px-6 py-1 mb-2 border-[#0F6E56]">
             <p className="text-[#0F6E56] text-xs min-[400px]:text-sm">
               ADMITS {admitsCount}
@@ -207,19 +207,19 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 -mt-4 mb-8">
           <div className="flex items-center gap-2">
             {refundPolicy.type === "refundable" && (
-              <p className="flex items-center gap-1.5 text-xs sm:text-sm text-[#4A4451]">
+              <p className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground">
                 <img src={shieldTick} alt="" className="size-3.5 shrink-0" />
                 {refundPolicy.note || "Refunds allowed until 3 days before the event."}
               </p>
             )}
             {refundPolicy.type === "non-refundable" && (
-              <p className="flex items-center gap-1.5 text-xs sm:text-sm text-[#4A4451] uppercase">
+              <p className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground uppercase">
                 <img src={shieldTick} alt="" className="size-3.5 shrink-0" />
                 Non-refundable
               </p>
             )}
             {refundPolicy.type === "free-cancel" && (
-              <p className="flex items-center gap-1.5 text-xs sm:text-sm text-[#4A4451]">
+              <p className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground">
                 <img src={shieldTick} alt="" className="size-3.5 shrink-0" />
                 Free event · cancel anytime to release your spot.
               </p>

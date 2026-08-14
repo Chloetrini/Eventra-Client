@@ -52,13 +52,13 @@ const { categories } = useCategories();
   return (
     <PageWrapper className="p-[20px] " >
       <header className="space mb-4">
-        <p className=" flex items-center  text-[12px] font-[400] font-sans uppercase tracking-widest  text-[#0A4F41] gap-2">
+        <p className=" flex items-center  text-[12px] font-[400] font-sans uppercase tracking-widest  text-[#0A4F41] dark:text-[#4ADE80] gap-2">
           <span className="inline-block h-px  w-[12px] bg-[#F5A524] " />
           {stateLabel} · {monthLabel}
         </p>
-        <h1 className="text-[32px] md:text-[54px] font-[800] tracking-tight font-grotesk text-[#1A1523]">Explore events</h1>
-        <p className="text-[13px] md:text-[15px] font-[400] font-mono uppercase tracking-wide text-[#6E6577] mt-1">
-          Showing <span className="text-[#4A4451]">{data?.total ?? 0}</span> events·Updated just now
+        <h1 className="text-[32px] md:text-[54px] font-[800] tracking-tight font-grotesk text-foreground">Explore events</h1>
+        <p className="text-[13px] md:text-[15px] font-[400] font-mono uppercase tracking-wide text-muted-foreground mt-1">
+          Showing <span className="text-foreground">{data?.total ?? 0}</span> events·Updated just now
         </p>
       </header>
 

@@ -4,7 +4,7 @@ import ProfileHeader from '@/components/profile-settings/ProfileHeader';
 import SettingsForm from "@/components/profile-settings/SettingsForm";
 import NToggles from '@/components/profile-settings/NToggles';
 import ProfileSettingsSkeleton from '@/components/profile-settings/ProfileSettingsSkeleton';
-import { useAuth } from '@/context/auth.context';
+import { useAuth, type User } from '@/context/auth.context';
 import { toast } from 'react-toastify';
 import PageWrapper from '@/components/pageWrapper';
 import { updateProfile, uploadAvatar } from '@/lib/user-api';
@@ -14,19 +14,22 @@ import { profileSchema } from '@/lib/schema';
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function SettingsPage() {
-  const { user, isLoading, refreshUser } = useAuth();
+  const { user, isLoading, setUser } = useAuth();
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   const handleSave = async (data: ProfileFormValues) => {
     try {
       // Email isn't updatable here (the backend doesn't accept it on this
       // endpoint) — only send the fields it actually supports.
-      await updateProfile({
+      const updatedUser = await updateProfile({
         fullname: data.fullName,
         phone: data.phone,
         city: data.city,
       });
-      await refreshUser();
+      // The endpoint already hands back the fresh user — write it straight
+      // into the shared cache so the navbar/sidebar/this page all update
+      // immediately, instead of relying on a second refetch round-trip.
+      setUser(updatedUser as User);
       toast.success("Profile updated");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not update profile");
@@ -36,8 +39,8 @@ export default function SettingsPage() {
   const handleAvatarSelect = async (file: File) => {
     setIsUploadingAvatar(true);
     try {
-      await uploadAvatar(file);
-      await refreshUser();
+      const updatedUser = await uploadAvatar(file);
+      setUser(updatedUser as User);
       toast.success("Profile picture updated");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not upload picture");

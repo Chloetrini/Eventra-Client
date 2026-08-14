@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { clearOnboardingSubmitted } from "@/lib/onboarding-store";
 
-type User = {
+export type User = {
   id: string;
   fullname: string;
   email: string;
@@ -33,6 +33,10 @@ type AuthContextType = {
   resetPassword: (email: string, otp: string, newPassword: string) => Promise<ApiResult>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  /** Write a fresh user object (e.g. an update endpoint's response) straight
+   * into the shared cache, so every consumer (navbar, sidebar, profile page)
+   * updates immediately without waiting on a refetch round-trip. */
+  setUser: (user: User) => void;
   googleAuth: (accessToken: string, role?: "attendee" | "organizer") => Promise<User>;
 };
 
@@ -67,6 +71,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Manually re-fetch the user (e.g. after login).
   async function refreshUser() {
     await queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });
+  }
+
+  // Write a known-fresh user object straight into the cache — used after
+  // profile/avatar updates, where the update endpoint already hands back
+  // the new user, so there's no reason to wait on a second round-trip.
+  function setUser(updatedUser: User) {
+    queryClient.setQueryData(ME_QUERY_KEY, updatedUser);
   }
 
   // --- Register ---
@@ -137,6 +148,7 @@ async function googleAuth(accessToken: string, role?: "attendee" | "organizer") 
         resetPassword,
         logout,
         refreshUser,
+        setUser,
         googleAuth
       }}
     >

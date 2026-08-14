@@ -22,14 +22,12 @@ import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router";
 import EditPen from "@/assets/magicpen.png"
 import Promote from "@/assets/star.png"
-import Duplicate from "@/assets/3square.png"
 import UserProfile from "@/assets/profile-2user.png"
 import Preview from "@/assets/play.png"
 
 
 interface EventsTableProps {
   events: Event[];
-  onDuplicate: (event: Event) => void;
   onDeleteRequest: (event: Event) => void;
 }
 
@@ -47,7 +45,7 @@ const TYPE_STYLES: Record<Event["EventType"], string> = {
 };
 
 
-export function EventsTable({ events, onDuplicate, onDeleteRequest }: EventsTableProps) {
+export function EventsTable({ events, onDeleteRequest }: EventsTableProps) {
   const navigate = useNavigate();
   return (
     <div className="overflow-x-auto border rounded-xl ">
@@ -162,11 +160,8 @@ export function EventsTable({ events, onDuplicate, onDeleteRequest }: EventsTabl
                       <DropdownMenuItem onClick={() => navigate(`/dashboard/promote?event=${event._id}`)} className="text-[#6E6577] text-[13px]">
                         <img src={Promote} alt="Promote icon" className="size-4" /> Promote
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onDuplicate(event)} className="text-[#6E6577] text-[13px] border-t border-[#E8E6E0]">
-                        <img src={Duplicate} alt="Duplicate icon" className="size-4" /> Duplicate
-                      </DropdownMenuItem>
 
-                      <DropdownMenuItem className="text-[#BE2525] focus:text-[#BE2525] text-[13px]" onClick={() => onDeleteRequest(event)}>
+                      <DropdownMenuItem className="text-[#BE2525] focus:text-[#BE2525] text-[13px] border-t border-[#E8E6E0]" onClick={() => onDeleteRequest(event)}>
                         <Trash2 className="size-4 hover:text-red-600" /> Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>

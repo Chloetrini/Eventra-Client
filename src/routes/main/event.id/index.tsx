@@ -58,7 +58,7 @@ const EventDetailPage = () => {
   const isFree = event.minPrice === 0;
   console.log("EVENT CATEGORY DEBUG:", { category: event.category, categoryId: event.categoryId });
   return (
-    <PageWrapper className="p-[20px]">
+    <PageWrapper className="p-5">
       <nav className="flex items-center gap-1 pb-4 text-xs text-muted-foreground mt-3">
         <Link to={getExploreUrl()} className="hover:text-foreground">
           Explore

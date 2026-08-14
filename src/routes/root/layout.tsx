@@ -5,7 +5,7 @@ import { AuthGateProvider } from "@/context/auth.gate";
 
 const DEFAULT_SEO: SeoHandle = {
   seo: {
-    title: "EventPulse",
+    title: "Eventra",
     description: "Event management platform for organizers and attendees.",
   },
 };

@@ -12,6 +12,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { requestTicketRefund, cancelReservation } from "@/lib/tickets-api";
 import { useQueryClient } from "@tanstack/react-query";
+import { downloadEventIcs } from "@/lib/calendar";
 interface TicketProps {
   ticket: Ticket;
   showActions?: boolean;
@@ -230,6 +231,13 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
               classname="h-9 text-xs sm:text-sm"
               arrow={rightArrow}
               editArrow="w-[18px] h-[18px]"
+              onClick={() =>
+                downloadEventIcs({
+                  title: eventName ?? "Eventra event",
+                  location: eventVenue,
+                  start: eventDateTime,
+                })
+              }
             />
             {refundPolicy.type === "refundable" && (
               <PaymentBtn

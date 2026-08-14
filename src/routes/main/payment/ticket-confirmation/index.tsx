@@ -3,6 +3,7 @@ import { TicketCard } from "@/components/tickets/ticket-card"
 import { useLocation, useNavigate } from "react-router"
 import PaymentBtn from "@/components/ui/pay-method-btn"
 import calendar from "@/assets/calendar.png";
+import { downloadEventIcs } from "@/lib/calendar";
 
 const TicketConfirmation = () => {
     const location = useLocation()
@@ -101,6 +102,13 @@ const TicketConfirmation = () => {
                         text={"Add to calender"}
                         classname="h-[40px] flex-1 sm:w-40 text-xs min-[400px]:text-sm md:w-[343px]"
                         editArrow={"w-[18px] h-[18px]"}
+                        onClick={() =>
+                            downloadEventIcs({
+                                title: eventInfo.eventName,
+                                location: eventInfo.eventVenue,
+                                start: eventInfo.eventDateTime,
+                            })
+                        }
                     />
                     <PaymentBtn
                         text={"View my tickets"}

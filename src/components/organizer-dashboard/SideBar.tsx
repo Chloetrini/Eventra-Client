@@ -6,7 +6,6 @@ import {
   Calendar,
   Users,
   CheckSquare,
-  Wallet,
   Megaphone,
   Settings,
   Home,
@@ -17,13 +16,12 @@ const navItems = [
   { icon: LayoutDashboard, label: 'Overview', path: '/dashboard/overview' },
   { icon: Calendar, label: 'Events', path: '/dashboard/events' },
   { icon: Users, label: 'Attendees', path: '/dashboard/attendees' },
-  { icon: CheckSquare, label: 'Check-in', path: '/organizer/dashboard/checkin' },
-  { icon: Wallet, label: 'Payouts', path: '/organizer/dashboard/payouts' },
-  { icon: Megaphone, label: 'Promotions', path: '/organizer/dashboard/promotions' },
+  { icon: CheckSquare, label: 'Check-in', path: '/dashboard/check-in' },
+  { icon: Megaphone, label: 'Promotions', path: '/dashboard/promote' },
 ];
 
 const bottomItems = [
-  { icon: Settings, label: 'Settings', path: '/profile-settings' },
+  { icon: Settings, label: 'Settings', path: '/profile' },
   { icon: Home, label: 'Back to site', path: '/' },
 ];
 

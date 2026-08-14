@@ -151,7 +151,7 @@ export function EventsTable({ events, onDuplicate, onDeleteRequest }: EventsTabl
                         <img src={EditPen} alt="magic pen" className="size-4 " /> Edit
                       </DropdownMenuItem>
 
-                      <DropdownMenuItem onClick={() => navigate(`/organizer/events/${event._id}`)} className="text-[#6E6577] text-[13px]">
+                      <DropdownMenuItem onClick={() => navigate(`/dashboard/events/${event._id}`)} className="text-[#6E6577] text-[13px]">
                         <img src={Preview} alt="Preview image" className="size-4" /> View details
                       </DropdownMenuItem>
 

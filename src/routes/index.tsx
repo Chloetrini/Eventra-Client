@@ -9,6 +9,7 @@ import Onboardinglayout from "./onboarding/layout";
 
 import CreateEventLayout from "./dashboard/create-event/layout";
 import DashBoardLayout from "./dashboard/layout";
+import { RequireOrganizer } from "@/components/require-organizer";
 
 const routes = [
     {
@@ -112,17 +113,22 @@ const routes = [
                         }
                     },
                     {
-                        path: "organizer/events/:eventId?",
-                        handle: {
-                            seo: {
-                                title: "Organizer Event Details",
-                                description: "Manage your event, view sales metrics, recent attendees, and quick actions.",
-                            }
-                        },
-                        lazy: async () => {
-                            const { default: Component } = await import("@/routes/main/organizer-event-details");
-                            return { Component };
-                        }
+                        Component: RequireOrganizer,
+                        children: [
+                            {
+                                path: "organizer/events/:eventId?",
+                                handle: {
+                                    seo: {
+                                        title: "Organizer Event Details",
+                                        description: "Manage your event, view sales metrics, recent attendees, and quick actions.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } = await import("@/routes/main/organizer-event-details");
+                                    return { Component };
+                                }
+                            },
+                        ],
                     },
                     {
                         path: "about",
@@ -454,11 +460,14 @@ const routes = [
 
             },
             {
-                path: "dashboard",
-                Component: DashBoardLayout,
+                Component: RequireOrganizer,
                 children: [
                     {
-                        path: "overview",
+                        path: "dashboard",
+                        Component: DashBoardLayout,
+                        children: [
+                            {
+                                path: "overview",
                         handle: {
                             seo: {
                                 title: "Organizer Dashboard",
@@ -590,6 +599,8 @@ const routes = [
                         ],
                     },
                 ]
+                    },
+                ],
             },
         ],
     },

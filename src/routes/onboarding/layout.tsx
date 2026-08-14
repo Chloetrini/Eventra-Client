@@ -25,7 +25,7 @@ const emptyValues: OnboardingValues = {
 
 const getSavedValues = (): Partial<OnboardingValues> => {
     try {
-        const raw = sessionStorage.getItem(ONBOARDING_STORAGE_KEY)
+        const raw = localStorage.getItem(ONBOARDING_STORAGE_KEY)
         return raw ? JSON.parse(raw) : {}
     } catch {
         // corrupted / unavailable storage shouldn't block onboarding
@@ -41,28 +41,34 @@ const Onboardinglayout = () => {
      */
     const methods = useForm<OnboardingValues>({
         resolver: zodResolver(onboardingSchema),
-        mode: "onChange",
+        mode: "onBlur",
         defaultValues: { ...emptyValues, ...getSavedValues() },
     })
 
-    // mirror values into sessionStorage so a refresh (or "Save & exit")
+    // mirror values into localStorage so a refresh (or "Save & exit")
     // doesn't lose progress
     useEffect(() => {
         const subscription = methods.watch((values) => {
-            sessionStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(values))
+            try {
+                localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(values))
+            } catch {
+                // storage full or unavailable — form still works in-memory
+            }
         })
         return () => subscription.unsubscribe()
     }, [methods])
 
     return (
         <FormProvider {...methods}>
-            <div>
+            <div className="flex h-screen flex-col">
                 <div>
                     <OnboardingNavbar />
                 </div>
-                <div className="flex">
+                <div className="flex min-h-0 flex-1">
                     <OnboardingSidebar />
-                    <Outlet />
+                    <div className="h-full flex-1 overflow-y-auto">
+                        <Outlet />
+                    </div>
                 </div>
             </div>
         </FormProvider>

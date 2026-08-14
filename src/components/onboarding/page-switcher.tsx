@@ -12,11 +12,14 @@ type PageSwitcherProps = {
     showSubmit?: boolean
     submitOnClick?: () => void
     disableSubmit?: boolean
+    showDraft?: boolean
+    draftOnClick?: () => void
+    disableSkip?: boolean
 }
 
-const PageSwitcher = ({ backOnClick, continueOnClick, disableBack, disablecontinue, skipOnClick, showSkip, showSubmit, submitOnClick, disableSubmit }: PageSwitcherProps) => {
+const PageSwitcher = ({ backOnClick, continueOnClick, disableBack, disablecontinue, skipOnClick, showSkip, showSubmit, submitOnClick, disableSubmit, showDraft, draftOnClick, disableSkip }: PageSwitcherProps) => {
     return (
-        <div className='flex justify-between'>
+        <div className='flex justify-between mb-5'>
             <PaymentBtn
                 text="Back"
                 icon={ArrowLeft}
@@ -32,6 +35,7 @@ const PageSwitcher = ({ backOnClick, continueOnClick, disableBack, disablecontin
                             text="Skip for now"
                             classname={`text-black font-bold ${showSkip ? "block" : "hidden"}`}
                             onClick={skipOnClick}
+                            disabled={disableSkip}
 
                         />
 
@@ -45,17 +49,33 @@ const PageSwitcher = ({ backOnClick, continueOnClick, disableBack, disablecontin
                     </div>
                 )
             }
-            {
-                showSubmit && (
-                        <PaymentBtn
-                            text="Submit for review"
-                            arrow={ArrowRight}
-                            classname='text-[#0F6E56] font-bold hover:text-white hover:bg-[#0F6E56]'
-                            onClick={submitOnClick}
-                            disabled={disableSubmit}
-                        />
-                )
-            }
+
+            {(showDraft || showSubmit) && (
+
+                <div className='flex items-center gap-5'>
+                    {
+                        showDraft && (
+                            <PaymentBtn
+                                text="Save as draft"
+                                classname={`text-black font-bold`}
+                                onClick={skipOnClick}
+
+                            />
+                        )
+                    }
+                    {
+                        showSubmit && (
+                            <PaymentBtn
+                                text="Submit for review"
+                                arrow={ArrowRight}
+                                classname='text-[#0F6E56] font-bold hover:text-white hover:bg-[#0F6E56]'
+                                onClick={submitOnClick}
+                                disabled={disableSubmit}
+                            />
+                        )
+                    }
+                </div>
+            )}
         </div>
     )
 }

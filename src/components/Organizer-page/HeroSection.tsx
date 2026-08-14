@@ -30,7 +30,7 @@ const HeroSec: React.FC = () => {
         </div>
 
         {/* Main heading */}
-        <h1 className="font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#1A1523] leading-tight tracking-tight max-w-4xl">
+        <h1 className="font-extrabold  text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#1A1523] leading-tight tracking-tight max-w-4xl">
           Sell tickets. <span className="text-[#0F6E56]">Get paid.</span> No stress.
         </h1>
 

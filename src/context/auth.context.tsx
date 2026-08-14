@@ -1,6 +1,7 @@
 import { createContext, useContext, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { clearOnboardingSubmitted } from "@/lib/onboarding-store";
 
 type User = {
   id: string;
@@ -31,6 +32,7 @@ type AuthContextType = {
   resetPassword: (email: string, otp: string, newPassword: string) => Promise<ApiResult>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  googleAuth: (accessToken: string, role?: "attendee" | "organizer") => Promise<User>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -101,6 +103,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return api.post("/auth/reset-password", { email, otp, newPassword });
   }
 
+// --- Google OAuth login/register ---
+async function googleAuth(accessToken: string, role?: "attendee" | "organizer") {
+  await api.post("/auth/google", { accessToken, role });
+  const meRes = await api.get("/auth/me");
+  const loggedInUser = meRes.body as User;
+  queryClient.setQueryData(ME_QUERY_KEY, loggedInUser);
+  return loggedInUser;
+}
   // --- Logout: server clears the cookie, we clear the cache ---
   async function logout() {
   try {
@@ -108,7 +118,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   } catch {
     // clear locally regardless
   }
-  localStorage.removeItem("saved-events");   // ← add this
+  localStorage.removeItem("saved-events");
+  clearOnboardingSubmitted();   
   queryClient.setQueryData(ME_QUERY_KEY, null);
 }
 
@@ -125,6 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         resetPassword,
         logout,
         refreshUser,
+        googleAuth
       }}
     >
       {children}

@@ -6,6 +6,8 @@ import PageSwitcher from "@/components/onboarding/page-switcher"
 import { ONBOARDING_STORAGE_KEY } from "../layout"
 import { type OnboardingValues } from "@/lib/schema"
 import PageWrapper from "@/components/pageWrapper"
+import { toast } from "react-toastify"
+import { submitOrganizerProfileForReview } from "@/lib/onboarding-api"
 
 const ReviewPage = () => {
     const navigate = useNavigate()
@@ -17,21 +19,20 @@ const ReviewPage = () => {
         formState: { isValid },
     } = useFormContext<OnboardingValues>()
 
-    // everything the user entered across all three steps arrives here
-    // as one object — one request, not three
+    // All the fields were already saved incrementally at each step —
+    // this final submit just flips the profile to "pending review".
     const onSubmit = async (values: OnboardingValues) => {
-        setIsSubmitting(true)
-        try {
-            // await submitOnboarding(values)
-            console.log("submitting", values)
-
-            // flow is done — don't leave stale draft data behind
-            sessionStorage.removeItem(ONBOARDING_STORAGE_KEY)
-            navigate("/onboarding/success")
-        } finally {
-            setIsSubmitting(false)
-        }
+    setIsSubmitting(true)
+    try {
+        await submitOrganizerProfileForReview({ agreedToTerms: values.terms })
+        localStorage.removeItem(ONBOARDING_STORAGE_KEY)
+        navigate("/onboarding/success")
+    } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Could not submit for review. Please try again.")
+    } finally {
+        setIsSubmitting(false)
     }
+}
 
     return (
         <PageWrapper className="w-full">
@@ -40,7 +41,7 @@ const ReviewPage = () => {
                     <p className='text-[#0F6E56] '>STEP 3 OF 3</p>
                     <h3 className="font-grotesk font-bold text-[34px]">Review & submit</h3>
                     <p className="font-grotesk font-medium text-[18px] text-[#4A4451] max-w-full md:max-w-[500px] line-clamp-4">
-                        We’ll review your details and approve your account, usually within a day. You can start building events right away.
+                        We'll review your details and approve your account, usually within a day. You can start building events right away.
                     </p>
                 </div>
 
@@ -58,7 +59,7 @@ const ReviewPage = () => {
                         />
 
                         <label htmlFor="terms">
-                            I agree to Eventra’s{" "}
+                            I agree to Eventra's{" "}
                             <a href="" className="text-[#0F6E56]">
                                 Organizer Terms
                             </a>{" "}

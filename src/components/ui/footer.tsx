@@ -1,18 +1,17 @@
 import { NavLink } from "react-router"
 import PageWrapper from "@/components/pageWrapper";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
 const DISCOVER_LINKS = [
     { to: "/explore", label: "Explore events" },
-    { to: "/explore?category=concerts", label: "Concerts" },
     { to: "/explore?when=weekend", label: "This weekend" },
     { to: "/explore?price=free", label: "Free events" },
 ] as const
 
 const ORGANIZER_LINKS = [
     { to: "/organizers", label: "Sell tickets" },
-    { to: "/organizers/pricing", label: "Pricing" },
-    { to: "/organizers/dashboard", label: "Dashboard" },
-    { to: "/organizers/promote", label: "Promote an event" },
+    { to: "/organizer/dashboard", label: "Dashboard" },
 ] as const
 
 const COMPANY_LINKS = [
@@ -50,7 +49,41 @@ function FooterColumn({
     )
 }
 
+function isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 export default function Footer() {
+    const [email, setEmail] = useState("");
+    const [error, setError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubscribe = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+
+        if (!email.trim()) {
+            setError("Enter your email to subscribe.");
+            return;
+        }
+        if (!isValidEmail(email)) {
+            setError("Enter a valid email address.");
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            // TODO: wire to a real endpoint once backend confirms one exists
+            // e.g. await api.post("/newsletter/subscribe", { email });
+            toast.info("Newsletter signup isn't wired to the backend yet.");
+            setEmail("");
+        } catch (err) {
+            toast.error("Could not subscribe. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <footer className="relative overflow-hidden bg-[#E4F1EB]">
             <PageWrapper className="p-[20px]">
@@ -66,22 +99,34 @@ export default function Footer() {
                         </p>
                     </div>
 
-                    <form
-                        className="flex w-full max-w-md shrink-0 items-center gap-3"
-                        onSubmit={(e) => e.preventDefault()}
-                    >
-                        <input
-                            type="email"
-                            placeholder="eventra@gmail.com"
-                            className="h-12 w-full min-w-0 rounded-[7px] border border-[#1A1523]/10 bg-white px-4 text-[15px] text-[#1A1523] placeholder:text-[#1A1523]/40 focus:outline-none focus:ring-2 focus:ring-[#0F6E56]/40"
-                        />
-                        <button
-                            type="submit"
-                            className="inline-flex shrink-0 items-center justify-center rounded-[7px] bg-[#0F6E56] px-6 py-3 text-[15px] font-bold text-white transition-colors hover:bg-[#0F6E56]/90"
+                    <div className="flex flex-col w-full max-w-md shrink-0 gap-1.5">
+                        <form
+                            className="flex w-full items-center gap-3"
+                            onSubmit={handleSubscribe}
+                            noValidate
                         >
-                            Subscribe
-                        </button>
-                    </form>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    if (error) setError("");
+                                }}
+                                placeholder="eventra@gmail.com"
+                                className="h-12 w-full min-w-0 rounded-[7px] border border-[#1A1523]/10 bg-white px-4 text-[15px] text-[#1A1523] placeholder:text-[#1A1523]/40 focus:outline-none focus:ring-2 focus:ring-[#0F6E56]/40"
+                            />
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="inline-flex shrink-0 items-center justify-center rounded-[7px] bg-[#0F6E56] px-6 py-3 text-[15px] font-bold text-white transition-colors hover:bg-[#0F6E56]/90 disabled:opacity-60"
+                            >
+                                {isSubmitting ? "Subscribing..." : "Subscribe"}
+                            </button>
+                        </form>
+                        {error && (
+                            <p className="text-sm text-red-600">{error}</p>
+                        )}
+                    </div>
                 </div>
                 {/* Link columns */}
                 <div className="grid grid-cols-2 gap-x-8 gap-y-10 border-t border-[#1A1523]/10 py-12 sm:grid-cols-4">

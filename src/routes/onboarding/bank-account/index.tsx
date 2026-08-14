@@ -5,30 +5,47 @@ import PageSwitcher from "@/components/onboarding/page-switcher"
 import { BANK_FIELDS, type OnboardingValues } from "@/lib/schema"
 import PageWrapper from "@/components/pageWrapper"
 import shieldPay from '@/assets/shieldPaywhite.png'
+import { useState } from "react"
+import { toast } from "react-toastify"
+import { saveOrganizerProfile, listBanks } from "@/lib/onboarding-api"
 
 const BankAccountPage = () => {
     const navigate = useNavigate()
-    const { control, trigger, resetField } = useFormContext<OnboardingValues>()
+    const { control, trigger, resetField, getValues } = useFormContext<OnboardingValues>()
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
-    // useWatch, not watch — watch() subscribes at the root (the layout),
-    // so it won't re-render this page behind <Outlet />
     const [accountHolderName, bank, accountNumber] = useWatch({
         control,
         name: [...BANK_FIELDS],
     })
 
-    // nothing typed yet? then there's nothing to validate or save —
-    // Continue would just be Skip, so we point them at Skip instead
     const isUntouched = !accountHolderName && !bank && !accountNumber
 
     const handleContinue = async () => {
         const isValid = await trigger([...BANK_FIELDS])
-        if (isValid) navigate("/onboarding/review")
+        if (!isValid) return
+
+        setIsSubmitting(true)
+        try {
+            const values = getValues()
+            const banks = await listBanks()
+            const selectedBank = banks.find((b) => b.name === values.bank)
+
+            await saveOrganizerProfile({
+                accountNumber: values.accountNumber,
+                bankName: values.bank,
+                bankCode: selectedBank?.code,
+                accountName: values.accountHolderName,
+            })
+            navigate("/onboarding/review")
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Could not save your bank details. Please try again.")
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     const handleSkip = () => {
-        // clear any half-typed values so the review page and the schema's
-        // "all or nothing" rule both see a cleanly skipped step
         BANK_FIELDS.forEach((field) => resetField(field))
         navigate("/onboarding/review")
     }
@@ -61,7 +78,7 @@ const BankAccountPage = () => {
             <PageSwitcher
                 backOnClick={() => navigate("/onboarding/organisation")}
                 continueOnClick={handleContinue}
-                disablecontinue={isUntouched}
+                disablecontinue={isUntouched || isSubmitting}
                 showSkip
                 skipOnClick={handleSkip}
             />

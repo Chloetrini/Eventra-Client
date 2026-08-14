@@ -7,6 +7,9 @@ import MainLayout from "./main/layout";
 import AuthLayout from "./auth/layout";
 import Onboardinglayout from "./onboarding/layout";
 
+import CreateEventLayout from "./dashboard/create-event/layout";
+import DashBoardLayout from "./dashboard/layout";
+
 const routes = [
     {
         path: "/",
@@ -16,8 +19,7 @@ const routes = [
             seo: {
                 title: "EventPulse",
                 description: "Event management platform for organizers and attendees.",
-
-            }
+            },
         },
         hydrateFallbackElement: <SuspenseUI />,
         children: [
@@ -124,6 +126,20 @@ const routes = [
                     },
 
                     {
+                        path: "profile",
+                        handle: {
+                            seo: {
+                                title: "Profile & Settings",
+                                description: "Manage your account.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/main/profile");
+                            return { Component };
+                        }
+                    },
+
+                    {
                         path: "payment",
                         children: [
                             {
@@ -165,19 +181,7 @@ const routes = [
                     },
                 ]
             },
-            {
-                path: "contact",
-                handle: {
-                    seo: {
-                        title: "Contact",
-                        description: "Get in touch with the Eventra team.",
-                    }
-                },
-                lazy: async () => {
-                    const { default: Component } = await import("@/routes/main/contact");
-                    return { Component };
-                }
-            },
+
 
             {
                 path: "auth",
@@ -305,139 +309,248 @@ const routes = [
                                 },
                             },
                             {
-                        path: "reset-password",
-                        handle: {
-                            seo: {
-                                title: "organizer reset password",
-                                description: "reset your password.",
-                            }
-                        },
+                                path: "reset-password",
+                                handle: {
+                                    seo: {
+                                        title: "organizer reset password",
+                                        description: "reset your password.",
+                                    }
+                                },
 
-                        lazy: async () => {
-                            const { default: Component } =
-                                await import("@/routes/auth/reset-password/index");
-                            return { Component };
-                        },
-                    },
-                    {
-                        path: "check-email",
-                        handle: {
-                            seo: {
-                                title: "organizer check email",
-                                description: "check your email for password reset instructions.",
-                            }
-                        },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/auth/reset-password/index");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "check-email",
+                                handle: {
+                                    seo: {
+                                        title: "organizer check email",
+                                        description: "check your email for password reset instructions.",
+                                    }
+                                },
 
-                        lazy: async () => {
-                            const { default: Component } =
-                                await import("@/routes/auth/check-email/index");
-                            return { Component };
-                        },
-                    },
-                    {
-                        path: "verify-otp",
-                        handle: {
-                            seo: {
-                                title: "organizer verify otp",
-                                description: "verify your otp.",
-                            }
-                        },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/auth/check-email/index");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "verify-otp",
+                                handle: {
+                                    seo: {
+                                        title: "organizer verify otp",
+                                        description: "verify your otp.",
+                                    }
+                                },
 
-                        lazy: async () => {
-                            const { default: Component } =
-                                await import("@/routes/auth/verify-otp/index");
-                            return { Component };
-                        },
-                    },
-                    {
-                        path: "forgot-password",
-                        handle: {
-                            seo: {
-                                title: "organizer forgot password",
-                                description: "reset your password.",
-                            }
-                        },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/auth/verify-otp/index");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "forgot-password",
+                                handle: {
+                                    seo: {
+                                        title: "organizer forgot password",
+                                        description: "reset your password.",
+                                    }
+                                },
 
-                        lazy: async () => {
-                            const { default: Component } =
-                                await import("@/routes/auth/forgot-password/index");
-                            return { Component };
-                        },
-                    },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/auth/forgot-password/index");
+                                    return { Component };
+                                },
+                            },
                         ],
                     },
                 ],
             },
+            {
+                path: "onboarding",
+                Component: Onboardinglayout,
+                children: [
+                    {
+                        index: true,
+                        element: <Navigate to="organisation" replace />,
+                    },
+                    {
+                        path: "organisation",
+                        handle: {
+                            seo: {
+                                title: "Organisation",
+                                description: "Provide details about your organisation.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/onboarding/organisation");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "bank-account",
+                        handle: {
+                            seo: {
+                                title: "Bank Account",
+                                description: "Provide your bank account details.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/onboarding/bank-account");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "review",
+                        handle: {
+                            seo: {
+                                title: "Review",
+                                description: "Submit for approval",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/onboarding/review");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "success",
+                        handle: {
+                            seo: {
+                                title: "Success",
+                                description: "Your onboarding is complete.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/onboarding/success");
+                            return { Component };
+                        },
+                    },
 
-        ],
+                ],
 
-    },
-    {
-        path: "onboarding",
-        Component: Onboardinglayout,
-        children: [
-            {
-                index: true,
-                element: <Navigate to="organisation" replace />,
             },
             {
-                path: "organisation",
-                handle: {
-                    seo: {
-                        title: "Organisation",
-                        description: "Provide details about your organisation.",
-                    }
-                },
-                lazy: async () => {
-                    const { default: Component } =
-                        await import("@/routes/onboarding/organisation");
-                    return { Component };
-                },
-            },
-            {
-                path: "bank-account",
-                handle: {
-                    seo: {
-                        title: "Bank Account",
-                        description: "Provide your bank account details.",
-                    }
-                },
-                lazy: async () => {
-                    const { default: Component } =
-                        await import("@/routes/onboarding/bank-account");
-                    return { Component };
-                },
-            },
-            {
-                path: "review",
-                handle: {
-                    seo: {
-                        title: "Review",
-                        description: "Submit for approval",
-                    }
-                },
-                lazy: async () => {
-                    const { default: Component } =
-                        await import("@/routes/onboarding/review");
-                    return { Component };
-                },
-            },
-            {
-                path: "success",
-                handle: {
-                    seo: {
-                        title: "Success",
-                        description: "Your onboarding is complete.",
-                    }
-                },
-                lazy: async () => {
-                    const { default: Component } =
-                        await import("@/routes/onboarding/success");
-                    return { Component };
-                },
+                path: "dashboard",
+                Component: DashBoardLayout,
+                children: [
+                    {
+                        path: "overview",
+                        handle: {
+                            seo: {
+                                title: "Organizer Dashboard",
+                                description: "Manage your events and organization.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/dashboard/overview/index");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "events",
+                        handle: {
+                            seo: {
+                                title: "Events",
+                                description: "Manage your events, from draft to sold out.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/dashboard/events/index");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "attendees",
+                        handle: {
+                            seo: {
+                                title: "Attendee",
+                                description: "Manage your events, from draft to sold out.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/dashboard/attendees/index");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "create-event",
+                        Component: CreateEventLayout,
+                        children: [
+                            {
+                                path: "type",
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/type");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "basics",
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/basics");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "location",
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/location");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "rsvp",
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/rsvp");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "tickets",
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/tickets");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "details",
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/details");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "review",
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/create-event/review");
+                                    return { Component };
+                                },
+                            },
+                        ],
+                    },
+                ]
             },
         ],
     },
 ] satisfies RouteObject[];
-
 export const router = createBrowserRouter(routes);

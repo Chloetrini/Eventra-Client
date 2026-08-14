@@ -1,42 +1,45 @@
 import PageWrapper from "@/components/pageWrapper";
 import { useEventFilters } from "@/hooks/use-event-filters";
-import { useEvents } from "@/hooks/use-event";
+import { useEvents, useCategories } from "@/hooks/use-event";
 import { EventGrid } from "@/components/events/event-grid";
 import { FeaturedEventCard } from "@/components/events/featured-event-class";
-import { FilterSidebar } from "@/components/filters/filter-sidebar";
+import { FilterSidebar } from "@/components/events/filters/filter-sidebar";
 import { type EventFilters } from "@/types/event-types";
 import { Button } from "@/components/ui/button";
-import { TopBarFilter } from "@/components/filters/filter-topbar";
-import { useEffect } from "react";
+import { TopBarFilter } from "@/components/events/filters/filter-topbar";
+import { useEffect, useMemo } from "react";
 import { ArrowRight } from "lucide-react";
 import { useSavedEvents } from "@/hooks/use-saved-events";
-import { useNavigate } from "react-router";
-import { useLocation } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { saveExploreUrl } from "@/lib/explore.history";
 
 export default function ExplorePage() {
   const navigate = useNavigate();
-  const { filters, setFilter, toggleCategory, clearAll, loadMore } =
+  const { filters, setFilter, toggleCategory, clearAll } =
     useEventFilters();
-  const { data, isLoading, isFetching, isError, refetch } = useEvents(filters);
 
+  const { data, isLoading, isFetching, isError, refetch ,loadMore} = useEvents(filters);
+const { categories } = useCategories();
   const events = data?.events ?? [];
   const featured = events.find((e) => e.isPromoted);
   const rest = events.filter((e) => !e.isPromoted);
   const { savedIds, toggleSave } = useSavedEvents();
+
+
 
   const stateLabel = filters.state || "All Nigeria";
   const monthLabel = new Date().toLocaleString("en-NG", {
     month: "short",
     year: "numeric",
   });
+
   const location = useLocation();
   useEffect(() => {
     saveExploreUrl(location.pathname + location.search);
   }, [location.pathname, location.search]);
+
   if (isError) {
     return (
-
       <PageWrapper className="py-20 text-center">
         <p className="mb-4 text-muted-foreground">
           Couldn't load events. Check your connection and try again.
@@ -72,14 +75,13 @@ export default function ExplorePage() {
           sortOnChange={(v) => setFilter("sort", v as EventFilters["sort"])}
           accessOnClick={(a) => setFilter("access", a as EventFilters["access"])}
         />
-
       </div>
 
       <div className="grid gap-15 grid-cols-1 xl:grid-cols-[220px_1fr]">
         <div className="hidden xl:block">
           <FilterSidebar
             filters={filters}
-            categoryCounts={data?.categoryCounts ?? {}}
+            categories={categories}
             onToggleCategory={toggleCategory}
             onSelectWhen={(w) => setFilter("when", w)}
             onSelectPrice={(p) => setFilter("price", p)}
@@ -99,18 +101,16 @@ export default function ExplorePage() {
             events={rest}
             isLoading={isLoading}
             className="grid-cols-[repeat(auto-fill,294px)]"
-            savedIds={[...savedIds]}      // Set → array, because EventGrid wants string[]
+            savedIds={[...savedIds]}
             onToggleSave={toggleSave}
           />
 
           {data?.hasMore && (
-            <div className="mt-10 flex justify-center  mx-auto">
-              <Button variant="outline" onClick={loadMore} disabled={isFetching} className="text-[15px] font-[700] font-sans  max-w-[177px] min-h-[42px]">
+            <div className="mt-10 flex justify-center mx-auto">
+              <Button variant="outline" onClick={() => loadMore()}disabled={isFetching} className="text-[15px] font-[700] font-sans max-w-[177px] min-h-[42px]">
                 {isFetching ? "Loading…" : "Load more events"}
-
                 <ArrowRight />
               </Button>
-
             </div>
           )}
         </main>

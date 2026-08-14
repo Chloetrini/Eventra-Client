@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { UI_ASSETS } from "@/lib/assets";
-import { Format } from "@/lib/format";
+import { Format } from "@/lib/utils";
 import { Link } from "react-router";
 import type { Event } from "@/types/event-types";
 

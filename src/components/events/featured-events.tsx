@@ -76,8 +76,8 @@ export const FeaturedEvents: React.FC<FeaturedEventsProps> = ({
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
+          <CarouselPrevious className="-left-4" />
+          <CarouselNext className="-right-4" />
         </Carousel>
       </div>
     </section>

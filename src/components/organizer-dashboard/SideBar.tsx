@@ -17,11 +17,11 @@ const navItems = [
   { icon: LayoutDashboard, label: 'Overview', path: '/dashboard/overview' },
   { icon: Calendar, label: 'Events', path: '/dashboard/events' },
   { icon: Users, label: 'Attendees', path: '/dashboard/attendees' },
-  { icon: Megaphone, label: 'Promotions', path: '/dashboard/promotion' },
-  // No payouts page exists yet — kept visible as a placeholder (not a
-  // real link) so the section isn't missing from the nav while it's built.
-  { icon: Wallet, label: 'Payouts', path: null },
   { icon: CheckSquare, label: 'Check-in', path: '/dashboard/check-in' },
+  // No payouts page exists yet — kept visible and styled like a normal
+  // nav item (not greyed out), but it doesn't go anywhere yet.
+  { icon: Wallet, label: 'Payouts', path: null },
+  { icon: Megaphone, label: 'Promotions', path: '/dashboard/promotion' },
 ];
 
 const bottomItems = [
@@ -94,18 +94,17 @@ const SideBar: React.FC<SideBarProps> = ({ organization }) => {
         <p className="px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Manage</p>
         {navItems.map((item) => {
           if (!item.path) {
-            // Placeholder item — no page built yet, so it's shown but not clickable.
+            // Placeholder item — no page built yet, so it's styled and looks
+            // exactly like a normal nav item, but it isn't a real link yet.
             return (
               <div
                 key={item.label}
-                className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground/60 cursor-not-allowed"
-                title="Coming soon"
+                className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-accent transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <item.icon className="h-5 w-5 text-muted-foreground/50" />
+                  <item.icon className="h-5 w-5 text-muted-foreground" />
                   {item.label}
                 </div>
-                <span className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground/60">Soon</span>
               </div>
             );
           }

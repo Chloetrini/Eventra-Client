@@ -10,7 +10,15 @@ export async function updateProfile(payload: {
   currentPassword?: string;
   newPassword?: string;
 }) {
-  const res = await api.patch("/users/profile", payload);
+  // The backend treats each of these as "optional, but if present must be
+  // non-empty" (min-length validation on fullname/phone/city) — an empty
+  // string from a blank form field fails that, even though "field wasn't
+  // touched" was the intent. Drop empty strings so they're omitted
+  // entirely instead of sent as "".
+  const cleaned = Object.fromEntries(
+    Object.entries(payload).filter(([, value]) => value !== undefined && value !== "")
+  );
+  const res = await api.patch("/users/profile", cleaned);
   return res.body;
 }
 

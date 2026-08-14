@@ -24,7 +24,9 @@ function toDisplayTicket(t: any) {
             ? `${t.event.venue.name}, ${t.event.venue.city}`
             : "",
         referenceCode: t.code,
-        orderID: t._id,
+        // Friendly backend-generated ticket id (e.g. "TKT-A1B2C3D4") — never
+        // the raw Mongo _id, which isn't meant to be shown to attendees.
+        orderID: t.ticketId ?? t._id,
         holderName: t.attendeeName,
         ticketDetails: [{ type: t.type === "free" ? "Free" : "General", unitPrice: t.price ?? 0, quantity: 1 }],
         qrImageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t.code)}`,

@@ -13,6 +13,9 @@ const TicketConfirmation = () => {
     const state = location.state as {
         tickets?: Array<{
             _id: string;
+            // Friendly backend-generated ticket id (e.g. "TKT-A1B2C3D4") — the
+            // one meant to be shown to attendees, never the raw Mongo _id.
+            ticketId: string;
             code: string;
             attendeeName: string;
             attendeeEmail: string;
@@ -59,7 +62,7 @@ const TicketConfirmation = () => {
                 <ConfirmatoryMessage
                     _id="1"
                     eventName={eventInfo.eventName}
-                    orderID={tickets[0]._id}
+                    orderID={tickets[0].ticketId ?? tickets[0]._id}
                     eventDateTime={eventInfo.eventDateTime}
                     ticketDetails={[{ type: "Free", unitPrice: 0, quantity: admitsCount }]}
                     slug={eventInfo.slug}
@@ -77,7 +80,7 @@ const TicketConfirmation = () => {
                             eventEntrance: "Main entrance",
                             eventVenue: eventInfo.eventVenue,
                             referenceCode: t.code,
-                            orderID: t._id,
+                            orderID: t.ticketId ?? t._id,
                             holderName: t.attendeeName,
                             ticketDetails: [{ type: "Free", unitPrice: 0, quantity: 1 }],
                             qrImageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t.code)}`,

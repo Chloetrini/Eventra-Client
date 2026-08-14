@@ -519,7 +519,7 @@ const routes = [
                         },
                         lazy: async () => {
                             const { default: Component } =
-                                await import("@/routes/promotion/promote");
+                                await import("@/routes/dashboard/promote");
                             return { Component };
                         },
                     },

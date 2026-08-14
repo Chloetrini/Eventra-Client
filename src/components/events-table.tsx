@@ -7,23 +7,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { formatCompactNaira, formatDateTime, formatNaira } from "@/lib/utils";
 import type { Event } from "@/types/event";
 import GemImage from "@/assets/Group 8.png";
-import Loading from "@/assets/more.png"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Trash2 } from "lucide-react";
-import { useNavigate } from "react-router";
-import EditPen from "@/assets/magicpen.png"
-import Promote from "@/assets/star.png"
-import UserProfile from "@/assets/profile-2user.png"
-import Preview from "@/assets/play.png"
+import { EventActionsMenu } from "@/components/event-actions-menu";
 
 
 interface EventsTableProps {
@@ -46,7 +33,6 @@ const TYPE_STYLES: Record<Event["EventType"], string> = {
 
 
 export function EventsTable({ events, onDeleteRequest }: EventsTableProps) {
-  const navigate = useNavigate();
   return (
     <div className="overflow-x-auto border rounded-xl ">
       <Table className="min-w-[800px]">
@@ -138,34 +124,11 @@ export function EventsTable({ events, onDeleteRequest }: EventsTableProps) {
                 </TableCell>
 
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger
-                      render={<Button variant="ghost" size="icon" />}
-                    >
-                      <img src={Loading} alt="More Option" className="size-6 text-[#292D32]" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => navigate(`/dashboard/create-event/type?eventId=${event._id}`)} className="text-[#6E6577] text-[13px]">
-                        <img src={EditPen} alt="magic pen" className="size-4 " /> Edit
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem onClick={() => navigate(`/dashboard/events/${event._id}`)} className="text-[#6E6577] text-[13px]">
-                        <img src={Preview} alt="Preview image" className="size-4" /> View details
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem onClick={() => navigate(`/dashboard/attendees?event=${event._id}`)} className="text-[#6E6577] text-[13px]">
-                        <img src={UserProfile} alt="User profile" className="size-4" />Attendance
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem onClick={() => navigate(`/dashboard/promote?event=${event._id}`)} className="text-[#6E6577] text-[13px]">
-                        <img src={Promote} alt="Promote icon" className="size-4" /> Promote
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem className="text-[#BE2525] focus:text-[#BE2525] text-[13px] border-t border-[#E8E6E0]" onClick={() => onDeleteRequest(event)}>
-                        <Trash2 className="size-4 hover:text-red-600" /> Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <EventActionsMenu
+                    eventId={event._id}
+                    eventTitle={event.eventTitle}
+                    onDeleteRequest={() => onDeleteRequest(event)}
+                  />
                 </TableCell>
               </TableRow>
             ))

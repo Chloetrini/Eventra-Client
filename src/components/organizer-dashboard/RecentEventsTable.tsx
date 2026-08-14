@@ -1,5 +1,6 @@
 import React from 'react';
-import { MoreHorizontal, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { EventActionsMenu } from '@/components/event-actions-menu';
 
 interface Event {
   id: string;
@@ -86,9 +87,7 @@ const RecentEventsTable: React.FC<RecentEventsTableProps> = ({ events, onViewAll
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <button className="text-gray-400 hover:text-gray-700 p-1 rounded hover:bg-gray-100 transition-colors">
-                    <MoreHorizontal className="h-5 w-5" />
-                  </button>
+                  <EventActionsMenu eventId={event.id} eventTitle={event.title} />
                 </td>
               </tr>
             ))}

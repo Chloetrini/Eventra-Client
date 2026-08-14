@@ -55,9 +55,9 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   const row = payload[0]?.payload;
   if (!row) return null;
   return (
-    <div className="rounded-lg border border-[#E8E6E0] bg-white px-3 py-2 shadow-md">
-      <p className="text-xs font-semibold text-gray-500">{row.name}</p>
-      <p className="text-sm font-bold text-gray-900">
+    <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-md">
+      <p className="text-xs font-semibold text-muted-foreground">{row.name}</p>
+      <p className="text-sm font-bold text-foreground">
         {row.count.toLocaleString()} tickets · {row.percentage}%
       </p>
     </div>
@@ -75,14 +75,14 @@ const TicketsByTypeChart: React.FC<TicketsByTypeChartProps> = ({ data }) => {
   const chartHeight = Math.max(rows.length * 44, 120);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6">
+    <div className="bg-card border border-border rounded-xl p-6">
       <div className="mb-1">
-        <h3 className="text-base font-semibold text-gray-900">Tickets by type</h3>
-        <p className="text-xs text-gray-500 mt-0.5">Paid ticket tiers, by volume</p>
+        <h3 className="text-base font-semibold text-foreground">Tickets by type</h3>
+        <p className="text-xs text-muted-foreground mt-0.5">Paid ticket tiers, by volume</p>
       </div>
 
       {!hasData ? (
-        <div className="h-[160px] flex items-center justify-center text-sm text-gray-500">
+        <div className="h-[160px] flex items-center justify-center text-sm text-muted-foreground">
           No paid ticket sales yet.
         </div>
       ) : (
@@ -113,7 +113,7 @@ const TicketsByTypeChart: React.FC<TicketsByTypeChartProps> = ({ data }) => {
                     dataKey="percentage"
                     position="right"
                     formatter={(value: React.ReactNode) => `${value}%`}
-                    className="fill-gray-900 text-xs font-semibold"
+                    className="fill-foreground text-xs font-semibold"
                   />
                 </Bar>
               </BarChart>
@@ -121,9 +121,9 @@ const TicketsByTypeChart: React.FC<TicketsByTypeChartProps> = ({ data }) => {
           </div>
 
           {/* Legend — always present for 2+ series, so identity never relies on color alone. */}
-          <div className="flex flex-wrap gap-x-4 gap-y-2 mt-4 pt-4 border-t border-gray-100">
+          <div className="flex flex-wrap gap-x-4 gap-y-2 mt-4 pt-4 border-t border-border">
             {rows.map((row) => (
-              <div key={row.name} className="flex items-center gap-1.5 text-xs text-gray-600">
+              <div key={row.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <span
                   className="inline-block size-2.5 rounded-full shrink-0"
                   style={{ backgroundColor: row.color }}

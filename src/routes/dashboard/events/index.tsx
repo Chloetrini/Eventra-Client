@@ -83,7 +83,7 @@ export default function Events() {
 
   if (isError) {
     return (
-      <p className="text-center py-12 text-sm text-red-500">
+      <p className="text-center py-12 text-sm text-destructive">
         Something went wrong loading events.
       </p>
     );

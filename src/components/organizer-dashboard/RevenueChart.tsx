@@ -41,9 +41,9 @@ function CustomTooltip({ active, payload, label, period }: CustomTooltipProps) {
   if (!active || !payload || payload.length === 0) return null;
   const amount = Number(payload[0]?.value ?? 0);
   return (
-    <div className="rounded-lg border border-[#E8E6E0] bg-white px-3 py-2 shadow-md">
-      <p className="text-xs font-semibold text-gray-500">{formatLabel(String(label), period)}</p>
-      <p className="text-sm font-bold text-gray-900">{formatCompactNaira(amount)}</p>
+    <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-md">
+      <p className="text-xs font-semibold text-muted-foreground">{formatLabel(String(label), period)}</p>
+      <p className="text-sm font-bold text-foreground">{formatCompactNaira(amount)}</p>
     </div>
   );
 }
@@ -58,13 +58,13 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period, onPeriodChang
   const hasData = data.length > 0 && data.some((d) => d.amount > 0);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6">
+    <div className="bg-card border border-border rounded-xl p-6">
       <div className="flex items-center justify-between mb-1 flex-wrap gap-3">
         <div>
-          <h3 className="text-base font-semibold text-gray-900">Revenue</h3>
-          <p className="text-xs text-gray-500 mt-0.5">Your earnings over time</p>
+          <h3 className="text-base font-semibold text-foreground">Revenue</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">Your earnings over time</p>
         </div>
-        <div className="flex items-center gap-1 bg-gray-50 border border-gray-200 rounded-lg p-1">
+        <div className="flex items-center gap-1 bg-muted border border-border rounded-lg p-1">
           {PERIODS.map((p) => (
             <button
               key={p.value}
@@ -72,8 +72,8 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period, onPeriodChang
               onClick={() => onPeriodChange(p.value)}
               className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
                 period === p.value
-                  ? "bg-white text-gray-900 shadow-sm border border-gray-200"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-card text-foreground shadow-sm border border-border"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
               aria-pressed={period === p.value}
             >
@@ -84,7 +84,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period, onPeriodChang
       </div>
 
       {!hasData ? (
-        <div className="h-[260px] flex items-center justify-center text-sm text-gray-500">
+        <div className="h-[260px] flex items-center justify-center text-sm text-muted-foreground">
           No revenue yet for this period.
         </div>
       ) : (

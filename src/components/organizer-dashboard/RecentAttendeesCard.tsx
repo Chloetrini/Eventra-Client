@@ -13,7 +13,7 @@ export default function RecentAttendeesCard({
   const renderAttendeeStatusBadge = (status: RecentAttendee['status']) => {
     if (status === 'IN') {
       return (
-        <span className="inline-flex items-center rounded-full bg-[#E4F1EB] px-2.5 py-1.25 text-[10px] font-bold tracking-widest text-[#0F6E56] font-space uppercase">
+        <span className="inline-flex items-center rounded-full bg-[#E4F1EB] px-2.5 py-1.25 text-[10px] font-bold tracking-widest text-[#0F6E56] font-space uppercase dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]">
           IN
         </span>
       );
@@ -26,27 +26,27 @@ export default function RecentAttendeesCard({
   };
 
   return (
-    <div className="rounded-2xl border border-zinc-200/80 bg-white overflow-hidden shadow-2xs dark:bg-zinc-900 dark:border-zinc-800">
+    <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-2xs">
       {/* Card Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-800">
-        <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+        <h3 className="text-base font-bold text-foreground">
           Recent Attendees
         </h3>
         <button
           type="button"
           onClick={onViewAll}
-          className="text-xs font-normal text-[#0F6E56] hover:underline"
+          className="text-xs font-normal text-[#0F6E56] hover:underline dark:text-[#4ADE80]"
         >
           View all
         </button>
       </div>
 
       {/* Attendees List */}
-      <div className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+      <div className="divide-y divide-border">
         {attendees.map((attendee) => (
           <div
             key={attendee.slug}
-            className="flex items-center justify-between px-5 py-3.5 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/40 transition-colors"
+            className="flex items-center justify-between px-5 py-3.5 hover:bg-muted/50 transition-colors"
           >
             {/* Left: Avatar + Details */}
             <div className="flex items-center gap-3">
@@ -55,10 +55,10 @@ export default function RecentAttendeesCard({
               </div>
 
               <div className="space-y-0.5">
-                <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
+                <p className="text-xs font-bold text-foreground">
                   {attendee.name}
                 </p>
-                <p className="text-[11px] font-mono text-zinc-400 uppercase tracking-wide">
+                <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-wide">
                   {attendee.tier} · {attendee.referenceCode}
                 </p>
               </div>

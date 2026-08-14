@@ -75,28 +75,28 @@ export function EventActionsMenu({ eventId, eventTitle, onDeleteRequest }: Event
       <DropdownMenuContent align="end">
         <DropdownMenuItem
           onClick={() => navigate(`/dashboard/create-event/type?eventId=${eventId}`)}
-          className="text-[#6E6577] text-[13px]"
+          className="text-muted-foreground text-[13px]"
         >
           <img src={EditPen} alt="" className="size-4" /> Edit
         </DropdownMenuItem>
 
         <DropdownMenuItem
           onClick={() => navigate(`/dashboard/events/${eventId}`)}
-          className="text-[#6E6577] text-[13px]"
+          className="text-muted-foreground text-[13px]"
         >
           <img src={Preview} alt="" className="size-4" /> View details
         </DropdownMenuItem>
 
         <DropdownMenuItem
           onClick={() => navigate(`/dashboard/attendees?event=${eventId}`)}
-          className="text-[#6E6577] text-[13px]"
+          className="text-muted-foreground text-[13px]"
         >
           <img src={UserProfile} alt="" className="size-4" /> Attendance
         </DropdownMenuItem>
 
         <DropdownMenuItem
           onClick={() => navigate(`/dashboard/promotion?event=${eventId}`)}
-          className="text-[#6E6577] text-[13px]"
+          className="text-muted-foreground text-[13px]"
         >
           <img src={Promote} alt="" className="size-4" /> Promote
         </DropdownMenuItem>
@@ -104,14 +104,14 @@ export function EventActionsMenu({ eventId, eventTitle, onDeleteRequest }: Event
         <DropdownMenuItem
           onClick={() => duplicateMutation.mutate()}
           disabled={duplicateMutation.isPending}
-          className="text-[#6E6577] text-[13px] border-t border-[#E8E6E0]"
+          className="text-muted-foreground text-[13px] border-t border-border"
         >
           <img src={Duplicate} alt="" className="size-4" />
           {duplicateMutation.isPending ? "Duplicating…" : "Duplicate"}
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          className="text-[#BE2525] focus:text-[#BE2525] text-[13px]"
+          className="text-destructive focus:text-destructive text-[13px]"
           onClick={handleDelete}
         >
           <Trash2 className="size-4" /> Delete

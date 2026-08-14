@@ -19,34 +19,34 @@ interface EventsTableProps {
 }
 
 const STATUS_STYLES: Record<Event["status"], string> = {
-  Live: "bg-[#E4F1EB] text-[#0F6E56]",
-  Draft: "bg-[#F4DFB6] text-[#7A4E02]",
-  "Sold out": "bg-[#1A1523] text-white",
-  Past: "bg-[#E8E6E0] text-[#4A4451] border",
-  Rejected: "bg-[#FFC4C4] text-[#BE2525]",
+  Live: "bg-[#E4F1EB] text-[#0F6E56] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]",
+  Draft: "bg-[#F4DFB6] text-[#7A4E02] dark:bg-[#7A4E02]/25 dark:text-[#F4DFB6]",
+  "Sold out": "bg-[#1A1523] text-white dark:bg-white dark:text-[#1A1523]",
+  Past: "bg-muted text-muted-foreground border border-border",
+  Rejected: "bg-[#FFC4C4] text-[#BE2525] dark:bg-[#BE2525]/20 dark:text-[#FF8A8A]",
 };
 
 const TYPE_STYLES: Record<Event["EventType"], string> = {
-  Free: "bg-[#F4DFB6] text-[#7A4E02]",
-  Paid: "bg-[#E4F1EB] text-[#0F6E56]",
+  Free: "bg-[#F4DFB6] text-[#7A4E02] dark:bg-[#7A4E02]/25 dark:text-[#F4DFB6]",
+  Paid: "bg-[#E4F1EB] text-[#0F6E56] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]",
 };
 
 
 export function EventsTable({ events, onDeleteRequest }: EventsTableProps) {
   return (
-    <div className="overflow-x-auto border rounded-xl ">
+    <div className="overflow-x-auto border border-border rounded-xl ">
       <Table className="min-w-[800px]">
         <TableHeader>
           <TableRow>
-            <TableHead className="text-[#6E6577] font-medium font-space "> EVENT </TableHead>
-            <TableHead className="text-[#6E6577] font-medium font-space"> DATE </TableHead>
-            <TableHead className="text-[#6E6577] font-medium font-space"> TYPE </TableHead>
-            <TableHead className="text-[#6E6577] font-medium font-space"> SOLD </TableHead>
-            <TableHead className="text-[#6E6577] font-medium font-space">
+            <TableHead className="text-muted-foreground font-medium font-space "> EVENT </TableHead>
+            <TableHead className="text-muted-foreground font-medium font-space"> DATE </TableHead>
+            <TableHead className="text-muted-foreground font-medium font-space"> TYPE </TableHead>
+            <TableHead className="text-muted-foreground font-medium font-space"> SOLD </TableHead>
+            <TableHead className="text-muted-foreground font-medium font-space">
               {" "}
               REVENUE{" "}
             </TableHead>
-            <TableHead className="text-[#6E6577] font-medium"> STATUS </TableHead>
+            <TableHead className="text-muted-foreground font-medium"> STATUS </TableHead>
             <TableHead className="w-10"></TableHead>
           </TableRow>
         </TableHeader>
@@ -56,17 +56,17 @@ export function EventsTable({ events, onDeleteRequest }: EventsTableProps) {
             <TableRow>
               <TableCell colSpan={7}>
                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <div className="bg-[#E4F1EB] rounded-xl p-10 mb-4">
+                  <div className="bg-[#E4F1EB] dark:bg-[#0F6E56]/15 rounded-xl p-10 mb-4">
                     <img
                       src={GemImage}
                       alt="Gem Image"
                       className="size-6 text-[#0F6E56]"
                     />
                   </div>
-                  <p className="text-base font-bold text-[28px] text-[#1A1523]">
+                  <p className="text-base font-bold text-[28px] text-foreground">
                     No Events here
                   </p>
-                  <p className="text-[15px] text-[#4A4451] mt-1">
+                  <p className="text-[15px] text-muted-foreground mt-1">
                     Nothing matches this filter yet.
                   </p>
                 </div>
@@ -83,17 +83,17 @@ export function EventsTable({ events, onDeleteRequest }: EventsTableProps) {
                       className="size-10 rounded-md object-cover"
                     />
                     <div>
-                      <p className="text-[17px] font-semibold text-[#1A1523]">
+                      <p className="text-[17px] font-semibold text-foreground">
                         {event.eventTitle}
                       </p>
-                      <p className="text-[12px] text-[#6E6577] font-space">
+                      <p className="text-[12px] text-muted-foreground font-space">
                         № {event.eventNumber}· {event.category}
                       </p>
                     </div>
                   </div>
                 </TableCell>
 
-                <TableCell className="text-[16px] text-[#000000] ">
+                <TableCell className="text-[16px] text-foreground ">
                   {event.date ? formatDateTime(event.date, "EEE d MMM") : "--"}
                 </TableCell>
 
@@ -105,13 +105,13 @@ export function EventsTable({ events, onDeleteRequest }: EventsTableProps) {
                   </Badge>
                 </TableCell>
 
-                <TableCell className="text-[16px] font-bold text-[##000000] font-space">
+                <TableCell className="text-[16px] font-bold text-foreground font-space">
                   {event.sold !== null && event.capacity !== null
                     ? `${event.sold} / ${event.capacity}`
                     : "--"}
                 </TableCell>
 
-                <TableCell className="text-[16px] text-[#000000] font-bold font-space ">
+                <TableCell className="text-[16px] text-foreground font-bold font-space ">
                   {event.revenue !== null ? formatCompactNaira(event.revenue) : "--"}
                 </TableCell>
 

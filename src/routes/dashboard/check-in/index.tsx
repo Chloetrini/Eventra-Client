@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -219,3 +220,10 @@ function ResultBadge({ result }: { result: CheckInResult["result"] }) {
     </span>
   );
 }
+=======
+import CheckInContent from '@/components/check-in/CheckInContent';
+
+export default function CheckInRoute() {
+  return <CheckInContent />;
+}
+>>>>>>> 52fb6f5 (feat: completed check-in page and scanner integration)

@@ -3,13 +3,34 @@ import { Clock, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface AccountReviewBannerProps {
+  /** Optional external status control — if provided and equals 'verified' or 'approved', the banner won't render at all. */
+  status?: string;
+  /** Called when the user clicks "View status". Falls back to onViewStatus if provided for backward compatibility. */
+  onAction?: () => void;
+  /** Called when the banner is dismissed via the X button. */
+  onClose?: () => void;
+  /** @deprecated use onAction instead */
   onViewStatus?: () => void;
 }
 
-export default function AccountReviewBanner({ onViewStatus }: AccountReviewBannerProps) {
+export default function AccountReviewBanner({
+  status,
+  onAction,
+  onClose,
+  onViewStatus,
+}: AccountReviewBannerProps) {
   const [isVisible, setIsVisible] = useState(true);
 
+  // Don't render at all if the account is already verified/approved
+  if (status === 'verified' || status === 'approved') return null;
   if (!isVisible) return null;
+
+  const handleAction = onAction ?? onViewStatus;
+
+  const handleDismiss = () => {
+    setIsVisible(false);
+    onClose?.();
+  };
 
   return (
     <div className="relative w-full rounded-2xl bg-[#eaf4ec] border border-[#d2e9d7] p-3.5 sm:p-4 transition-all dark:bg-emerald-950/30 dark:border-emerald-900/50">
@@ -39,7 +60,7 @@ export default function AccountReviewBanner({ onViewStatus }: AccountReviewBanne
         <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
           <Button
             type="button"
-            onClick={onViewStatus}
+            onClick={handleAction}
             className="h-9 px-4 rounded-lg bg-[#1c1d22] text-white text-xs font-semibold hover:bg-zinc-800 transition-colors"
           >
             View status
@@ -47,7 +68,7 @@ export default function AccountReviewBanner({ onViewStatus }: AccountReviewBanne
 
           <button
             type="button"
-            onClick={() => setIsVisible(false)}
+            onClick={handleDismiss}
             className="p-1 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
             aria-label="Dismiss banner"
           >

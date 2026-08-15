@@ -120,15 +120,15 @@ const CreateEventSidebar = () => {
                         return (
                             <div key={flow.paths[0]}>
                                 <button
-                                    className={`group w-[257px] h-[75px] rounded-[7px] flex items-center gap-3 p-[15px]  hover:bg-[#E4F1EB] ${isActive ? "bg-[#E4F1EB]" : ""}`}
+                                    className={`group w-[257px] h-[75px] rounded-[7px] flex items-center gap-3 p-[15px]  hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15 ${isActive ? "bg-[#E4F1EB] dark:bg-[#0F6E56]/15" : ""}`}
                                     onClick={() => handleClick(id, flow.paths)}>
-                                    <div className={`w-[26px] h-[26px] rounded-full flex items-center justify-center  group-hover:bg-[#0F6E56]  group-hover:text-white group-hover:border-0 ${isActive || isCompleted ? "bg-[#0F6E56] text-white" : "border border-[#6E6577] text-[#6E6577]"}`}>
+                                    <div className={`w-[26px] h-[26px] rounded-full flex items-center justify-center  group-hover:bg-[#0F6E56]  group-hover:text-white group-hover:border-0 ${isActive || isCompleted ? "bg-[#0F6E56] text-white" : "border border-[#6E6577] dark:border-muted-foreground text-muted-foreground"}`}>
                                         <p className="font-bold font-space text-[11px]">{id + 1}</p>
                                     </div>
 
-                                    <div className={`text-start  group-hover:text-[#0F6E56]`}>
-                                        <p className={`font-semibold ${isActive ? "text-[#0F6E56]" : "text-[#6E6577]"}`}>{flow.step}</p>
-                                        <p className={`text-[13px] ${isActive ? "text-[#0F6E56]" : "text-[#6E6577]"}`}>{flow.description}</p>
+                                    <div className={`text-start  group-hover:text-[#0F6E56] dark:group-hover:text-[#4ADE80]`}>
+                                        <p className={`font-semibold ${isActive ? "text-[#0F6E56] dark:text-[#4ADE80]" : "text-muted-foreground"}`}>{flow.step}</p>
+                                        <p className={`text-[13px] ${isActive ? "text-[#0F6E56] dark:text-[#4ADE80]" : "text-muted-foreground"}`}>{flow.description}</p>
                                     </div>
 
                                 </button>

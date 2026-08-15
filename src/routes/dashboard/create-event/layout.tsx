@@ -1,11 +1,12 @@
 import CreateEventSidebar from '@/components/dashboard-create-event/create-event-sidebar'
-import { Outlet } from 'react-router'
+import { Outlet, useNavigate } from 'react-router'
 import { FormProvider, useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { eventFormSchema, type EventFormValues } from '@/lib/schema'
 import { useSearchParams } from "react-router";
-import { useEffect, useState } from "react";
-import { getEvent, setCreatedEventId, fetchTicketTypesForEvent, fetchCategories, type EventCategory } from "@/lib/create-event-api";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
+import { getEvent, getCreatedEventId, setCreatedEventId, clearCreatedEventId, fetchTicketTypesForEvent, fetchCategories, type EventCategory } from "@/lib/create-event-api";
 export const CREATE_EVENT_STORAGE_KEY = 'eventra-create-event'
 
 const emptyValues: EventFormValues = {
@@ -58,13 +59,13 @@ const CreateEventLayout = () => {
     defaultValues: { ...emptyValues, ...getSavedValues() },
   })
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const editEventId = searchParams.get("eventId");
   const [isLoadingEdit, setIsLoadingEdit] = useState(Boolean(editEventId));
+  const hasCheckedStaleDraft = useRef(false);
 
   useEffect(() => {
     if (!editEventId) return;
-
-    setCreatedEventId(editEventId);
 
     Promise.all([
       getEvent(editEventId),
@@ -78,6 +79,11 @@ const CreateEventLayout = () => {
       fetchCategories().catch(() => [] as EventCategory[]),
     ]).then(([event, ticketTypes, categories]: [any, any[], EventCategory[]]) => {
       console.log("LOADED EVENT FOR EDIT:", event);
+
+      // Only claim this event as "the" draft once we know it's real —
+      // committing it beforehand meant a broken/edit link could poison
+      // localStorage with an id that 404s on every future step.
+      setCreatedEventId(editEventId);
 
       const hasLineup = Array.isArray(event.lineup) && event.lineup.length > 0
       const hasRefundPolicy = Boolean(event.refundPolicy && event.refundPolicy.type === "refund-until-days-before")
@@ -133,7 +139,33 @@ const CreateEventLayout = () => {
         })),
       });
       setIsLoadingEdit(false);
-    }).catch(() => setIsLoadingEdit(false));
+    }).catch(() => {
+      toast.error("Couldn't load that event — it may have been deleted.");
+      navigate("/dashboard/events");
+    });
+  }, [editEventId]);
+
+  // Not editing an existing event — but a previous, abandoned draft may
+  // still be cached in localStorage (its id + half-filled fields), left
+  // over from a session that never reached Review (the only place that
+  // clears it). If that draft was since deleted from the dashboard, or
+  // came from a wiped/different backend, Review would silently try to
+  // save onto an id that no longer exists ("Event not found") while the
+  // form shows stale data the user never asked to see. Verify the cached
+  // draft is still real before trusting it; if not, wipe it so "Create
+  // Event" actually starts fresh.
+  useEffect(() => {
+    if (editEventId || hasCheckedStaleDraft.current) return;
+    hasCheckedStaleDraft.current = true;
+
+    const cachedId = getCreatedEventId();
+    if (!cachedId) return;
+
+    getEvent(cachedId).catch(() => {
+      clearCreatedEventId();
+      localStorage.removeItem(CREATE_EVENT_STORAGE_KEY);
+      methods.reset(emptyValues);
+    });
   }, [editEventId]);
 
   useEffect(() => {

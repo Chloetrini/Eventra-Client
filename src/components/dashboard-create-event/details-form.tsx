@@ -92,7 +92,7 @@ const DetailsForm = () => {
                                 key={field.id}
                                 className="flex gap-5 items-start animate-in fade-in slide-in-from-top-2 duration-300 ease-out"
                             >
-                                <div className="w-full border p-5 rounded-[20px]">
+                                <div className="w-full border border-border p-5 rounded-[20px]">
                                     <FormBox
                                         type="input"
                                         inputType="input"
@@ -145,7 +145,7 @@ const DetailsForm = () => {
                                     }
                                 }}
                                 disabled={fields.length >= MAX_ACTS}
-                                classname="bg-white text-black border-[#E8E6E0] py-3 px-3.5 hover:text-white h-[46px] w-[119px] font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                                classname="bg-background text-foreground border border-border py-3 px-3.5 hover:text-white h-[46px] w-[119px] font-bold disabled:opacity-40 disabled:cursor-not-allowed"
                             />
                         </div>
                     </>
@@ -176,7 +176,7 @@ const DetailsForm = () => {
                             control={control}
                             register={register}
                             imagePreviewStyle='h-[527px] rounded-[20px]'
-                            imageDefaultStyle='h-[75px] hover:bg-[#E4F1EB]'
+                            imageDefaultStyle='h-[75px] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15'
                             placeholder='Add photos'
                         />
                     </div>

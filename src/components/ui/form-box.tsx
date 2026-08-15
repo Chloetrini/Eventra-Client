@@ -151,7 +151,7 @@ export function FormBox<T extends FieldValues>({
             {...register(name, registerOptions)}
             disabled={disabled}
             placeholder={placeholder}
-            className={cn(' md:py-5.5 resize-none', errors ? 'border-red-600' : '', borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-15" : borderStyle === "createEvent" ? "border-[#E8E6E0] h-11 p-2.5 rounded-[10px]" : 'px-3')}
+            className={cn(' md:py-5.5 resize-none', errors ? 'border-red-600' : '', borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-15" : borderStyle === "createEvent" ? "border-border bg-background text-foreground h-11 p-2.5 rounded-[10px]" : 'px-3')}
             defaultValue={
               defaultValue instanceof Date
                 ? defaultValue.toISOString().split('T')[0]
@@ -178,7 +178,7 @@ export function FormBox<T extends FieldValues>({
             className={cn(
               'w-full rounded-md border bg-transparent outline-none focus:outline-[#E4F1EB] focus:ring-3 focus:ring-[#E4F1EB] text-sm ',
               errors ? 'border-red-600' : '',
-              borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-12 " : borderStyle === "createEvent" ? "border-[#E8E6E0] h-11 p-2.5 rounded-[10px]" : 'px-3'
+              borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-12 " : borderStyle === "createEvent" ? "border-border bg-background text-foreground h-11 p-2.5 rounded-[10px]" : 'px-3'
             )}
           >
             {placeholder && (
@@ -214,7 +214,7 @@ export function FormBox<T extends FieldValues>({
             <Input
               type={isVisible ? 'text' : type}
               placeholder={placeholder}
-              className={cn('focus:outline-[#E4F1EB] focus:ring-[#E4F1EB] py-5.5', errors ? 'border-red-600' : '', borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-15" : borderStyle === "createEvent" ? "border-[#E8E6E0] h-11 p-2.5 rounded-[10px]" : 'px-3')}
+              className={cn('focus:outline-[#E4F1EB] focus:ring-[#E4F1EB] py-5.5', errors ? 'border-red-600' : '', borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-15" : borderStyle === "createEvent" ? "border-border bg-background text-foreground h-11 p-2.5 rounded-[10px]" : 'px-3')}
               id={id}
               max={maxValue}
               min={minValue}

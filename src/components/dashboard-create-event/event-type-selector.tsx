@@ -40,8 +40,8 @@ function EventTypeSelector<T extends FieldValues>({ name, control, error }: Even
                             <button
                                 key={type.tag}
                                 className={cn(
-                                    'w-full h-[148px] border rounded-[15px] hover:bg-[#E4F1EB] px-[15px] py-[25px] flex flex-col justify-between transition',
-                                    field.value === type.tag ? 'bg-[#E4F1EB] border-[#0F6E56]' : ""
+                                    'w-full h-[148px] border border-border rounded-[15px] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15 px-[15px] py-[25px] flex flex-col justify-between transition',
+                                    field.value === type.tag ? 'bg-[#E4F1EB] dark:bg-[#0F6E56]/15 border-[#0F6E56] dark:border-[#4ADE80]' : ""
                                 )}
                                 type='button'
                                 onClick={() => { field.onChange(type.tag), setclicked(true) }}
@@ -50,8 +50,8 @@ function EventTypeSelector<T extends FieldValues>({ name, control, error }: Even
                                     <img src={type.icon} alt="" className='w-[24px] h-[24px]' />
                                 </div>
                                 <div>
-                                    <h5 className='text-[20px] font-bold font-grotesk'>{type.type}</h5>
-                                    <p className='text-[13px] text-[#6E6577]'>{type.description}</p>
+                                    <h5 className='text-[20px] font-bold font-grotesk text-foreground'>{type.type}</h5>
+                                    <p className='text-[13px] text-muted-foreground'>{type.description}</p>
                                 </div>
                             </button>
                         ))}

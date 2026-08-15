@@ -95,10 +95,10 @@ const LocationForm = () => {
                     </div>
 
                     {(!mapPrompt) && (
-                        <div className='w-full h-[118px] bg-[#E4F1EB] border border-[#E8E6E0] flex items-center justify-center animate-in fade-in slide-in-from-top-2 duration-300 ease-out mt-2'>
+                        <div className='w-full h-[118px] bg-[#E4F1EB] dark:bg-[#0F6E56]/15 border border-border flex items-center justify-center animate-in fade-in slide-in-from-top-2 duration-300 ease-out mt-2'>
                             <div className='flex gap-2'>
                                 <img src={mapPin} alt="" className='w-[19px] h-[19px]' />
-                                <p className='text-sm text-[#4A4451]'>Map preview pin shows here</p>
+                                <p className='text-sm text-muted-foreground'>Map preview pin shows here</p>
                             </div>
                         </div>
                     )}
@@ -110,7 +110,7 @@ const LocationForm = () => {
                                 address={address}
                                 // mapQuery={address}
                                 openLabel='Open in Google Maps'
-                                className='border border-[#E8E6E0]'
+                                className='border border-border'
                                 cardClassName='hidden'
                             />
                         </div>
@@ -146,8 +146,8 @@ const LocationForm = () => {
                         borderStyle="createEvent"
                         register={register}
                     />
-                    <div className='w-full bg-[#E4F1EB] p-2.5 rounded-[5px]'>
-                        <p className='text-[14px] text-[#4A4451]'>🔗 The join link is only revealed to attendees after they RSVP or buy</p>
+                    <div className='w-full bg-[#E4F1EB] dark:bg-[#0F6E56]/15 p-2.5 rounded-[5px]'>
+                        <p className='text-[14px] text-muted-foreground'>🔗 The join link is only revealed to attendees after they RSVP or buy</p>
                     </div>
                 </div>
             )}

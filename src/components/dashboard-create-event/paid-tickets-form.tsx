@@ -38,7 +38,7 @@ const PaidTicketsForm = () => {
             {fields.map((field, index) => (
                 <div
                     key={field.id}
-                    className="flex flex-col gap-3 border border-[#E8E6E0] rounded-[15px] p-4 animate-in fade-in slide-in-from-top-2 duration-300 ease-out"
+                    className="flex flex-col gap-3 border border-border rounded-[15px] p-4 animate-in fade-in slide-in-from-top-2 duration-300 ease-out"
                 >
                     <div className="flex items-center justify-end gap-3">
                         <p className="text-sm font-medium">Ticket {index + 1}</p>
@@ -119,7 +119,7 @@ const PaidTicketsForm = () => {
                     }
                 }}
                 disabled={fields.length >= MAX_TICKETS}
-                classname="bg-white text-black border-[#E8E6E0] py-3 px-3.5 hover:text-white h-[46px] w-[168px] font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                classname="bg-background text-foreground border border-border py-3 px-3.5 hover:text-white h-[46px] w-[168px] font-bold disabled:opacity-40 disabled:cursor-not-allowed"
             />
         </div>
     )

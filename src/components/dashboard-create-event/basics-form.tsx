@@ -174,7 +174,7 @@ const BasicsForm = ({ onUploadStatusChange }: BasicsFormProps) => {
           control={control}
           register={register}
           imagePreviewStyle='h-[527px] rounded-[20px]'
-          imageDefaultStyle='h-[75px] hover:bg-[#E4F1EB]'
+          imageDefaultStyle='h-[75px] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15'
           placeholder='Drag a cover image or click to upload'
           onUploadStatusChange={onUploadStatusChange}
         />

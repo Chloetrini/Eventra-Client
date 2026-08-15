@@ -57,7 +57,9 @@ const EventReview = () => {
         },
         {
             label: "Location",
-            value: values.address || "—"
+            value: values.locationType === "online"
+                ? (values.onlinePlatform || "Online")
+                : (values.address || "—")
         },
         ...ticketRows,
     ]
@@ -69,15 +71,15 @@ const EventReview = () => {
                     return (
                         <div
                             key={row.label}
-                            className={`w-full bg-white border-[#E8E6E0] border-b  px-3 py-3 flex items-center justify-between gap-6`}
+                            className={`w-full bg-card border-border border-b  px-3 py-3 flex items-center justify-between gap-6`}
                         >
                             <div className="flex items-center gap-2 md:gap-4 shrink-0">
-                                <p className="font-grotesk text-[#3A3A3A]">
+                                <p className="font-grotesk text-muted-foreground">
                                     {row.label}
                                 </p>
                             </div>
 
-                            <p className="font-grotesk text-[#1A1523] text-right min-w-0 break-words font-medium">
+                            <p className="font-grotesk text-foreground text-right min-w-0 break-words font-medium">
                                 {row.value}
                             </p>
                         </div>

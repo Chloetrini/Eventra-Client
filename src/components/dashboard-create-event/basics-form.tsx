@@ -12,6 +12,8 @@ const BasicsForm = ({ onUploadStatusChange }: BasicsFormProps) => {
   const {
     register,
     control,
+    getValues,
+    setValue,
     formState: { errors },
   } = useFormContext<EventFormValues>()
 
@@ -35,6 +37,22 @@ const BasicsForm = ({ onUploadStatusChange }: BasicsFormProps) => {
       cancelled = true
     }
   }, [])
+
+  // The native <select> below is uncontrolled (registered via `register`),
+  // so its DOM value only gets set once, at the moment defaultValue/reset()
+  // runs. If that happens before these <option>s exist (categories still
+  // loading here), the browser can't match the value and silently falls
+  // back to the first option — and it never re-checks itself once the real
+  // options do load. Once loading finishes, explicitly re-push whatever
+  // category name is already in form state so the select re-syncs against
+  // the now-populated options.
+  useEffect(() => {
+    if (categoriesLoading || categoriesError) return
+    const currentCategory = getValues('category')
+    if (currentCategory) {
+      setValue('category', currentCategory, { shouldValidate: false, shouldDirty: false })
+    }
+  }, [categoriesLoading, categoriesError, categories, getValues, setValue])
 
   // NOTE: options are the category *names* here, matching how FormBox's
   // select is used everywhere else in the wizard (flat string array, value

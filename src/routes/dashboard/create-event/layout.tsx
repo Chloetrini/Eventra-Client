@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { eventFormSchema, type EventFormValues } from '@/lib/schema'
 import { useSearchParams } from "react-router";
 import { useEffect, useState } from "react";
-import { getEvent, setCreatedEventId, fetchTicketTypesForEvent } from "@/lib/create-event-api";
+import { getEvent, setCreatedEventId, fetchTicketTypesForEvent, fetchCategories, type EventCategory } from "@/lib/create-event-api";
 export const CREATE_EVENT_STORAGE_KEY = 'eventra-create-event'
 
 const emptyValues: EventFormValues = {
@@ -72,16 +72,31 @@ const CreateEventLayout = () => {
       // than failing the whole edit load (backend 404s ticket-types for
       // free events, since getOwnedPaidEvent only allows paid ones).
       fetchTicketTypesForEvent(editEventId).catch(() => []),
-    ]).then(([event, ticketTypes]: [any, any[]]) => {
+      // Needed to resolve event.category (which may come back as a raw
+      // ObjectId string rather than a populated { name } object) back to
+      // the category NAME the form/select actually matches on.
+      fetchCategories().catch(() => [] as EventCategory[]),
+    ]).then(([event, ticketTypes, categories]: [any, any[], EventCategory[]]) => {
       console.log("LOADED EVENT FOR EDIT:", event);
 
       const hasLineup = Array.isArray(event.lineup) && event.lineup.length > 0
       const hasRefundPolicy = Boolean(event.refundPolicy && event.refundPolicy.type === "refund-until-days-before")
 
+      // event.category comes back as either a populated { name, ... }
+      // object or a raw ObjectId string depending on the endpoint — handle
+      // both. For the id case, resolve it against the fetched category
+      // list so the select (which stores/matches on category NAME, not id)
+      // actually lands on the right selected option instead of silently
+      // falling back to the first one.
+      const resolvedCategoryName =
+        typeof event.category === "object" && event.category?.name
+          ? event.category.name
+          : categories.find((c) => c._id === event.category)?.name ?? ""
+
       methods.reset({
         eventType: event.type,
         title: event.title ?? "",
-        category: event.category?.name ?? event.category ?? "",
+        category: resolvedCategoryName,
         date: event.startDate ?? "",
         startTime: event.startDate ?? "",
         endTime: event.endDate ?? "",

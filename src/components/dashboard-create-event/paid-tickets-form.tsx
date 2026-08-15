@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { useFormContext, useFieldArray } from "react-hook-form"
+import { useFormContext, useFieldArray, useWatch } from "react-hook-form"
 import type { EventFormValues } from "@/lib/schema"
 import { FormBox } from "../ui/form-box"
 import ActionBtn from "../ui/action-btn"
@@ -14,16 +14,20 @@ const PaidTicketsForm = () => {
         formState: { errors },
     } = useFormContext<EventFormValues>()
 
+    const eventType = useWatch({ control, name: "eventType" })
+
     const { fields, append, remove } = useFieldArray({
         control,
         name: "tickets",
     })
 
     useEffect(() => {
-        if (fields.length === 0) {
-            append({ name: "", price: undefined, quantity: undefined, limitPerPerson: undefined })
+        if (eventType === "paid" && fields.length === 0) {
+            append({ id: undefined, name: "", price: undefined, quantity: undefined, purchaseLimitPerPerson: undefined })
+        } else if (eventType !== "paid" && fields.length > 0) {
+            remove()
         }
-    }, [fields.length, append])
+    }, [eventType, fields.length, append, remove])
 
     return (
         <div className="flex flex-col gap-5">
@@ -63,6 +67,7 @@ const PaidTicketsForm = () => {
                             type="number"
                             label="PRICE (₦)"
                             placeholder="e.g 15000"
+                            minValue={1}
                             id={`tickets.${index}.price`}
                             name={`tickets.${index}.price`}
                             errors={errors.tickets?.[index]?.price}
@@ -79,6 +84,7 @@ const PaidTicketsForm = () => {
                             label="QUANTITY"
                             placeholder="e.g 200"
                             id={`tickets.${index}.quantity`}
+                            minValue={1}
                             name={`tickets.${index}.quantity`}
                             errors={errors.tickets?.[index]?.quantity}
                             register={register}
@@ -91,9 +97,10 @@ const PaidTicketsForm = () => {
                             type="number"
                             label="LIMIT PER PERSON"
                             placeholder="e.g 4"
-                            id={`tickets.${index}.limitPerPerson`}
-                            name={`tickets.${index}.limitPerPerson`}
-                            errors={errors.tickets?.[index]?.limitPerPerson}
+                            id={`tickets.${index}.purchaseLimitPerPerson`}
+                            minValue={1}
+                            name={`tickets.${index}.purchaseLimitPerPerson`}
+                            errors={errors.tickets?.[index]?.purchaseLimitPerPerson}
                             register={register}
                             registerOptions={{ valueAsNumber: true }}
                             classname="w-full"
@@ -108,7 +115,7 @@ const PaidTicketsForm = () => {
                 type="button"
                 onClick={() => {
                     if (fields.length < MAX_TICKETS) {
-                        append({ name: "", price: undefined, quantity: undefined, limitPerPerson: undefined })
+                        append({ id: undefined, name: "", price: undefined, quantity: undefined, purchaseLimitPerPerson: undefined })
                     }
                 }}
                 disabled={fields.length >= MAX_TICKETS}

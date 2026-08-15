@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import ImageUploader from '../ui/image-uploader'
 import { FormBox } from '../ui/form-box'
 import type { EventFormValues } from '@/lib/schema'
+import { fetchCategories, type EventCategory } from '@/lib/create-event-api'
 
 type BasicsFormProps = {
   onUploadStatusChange?: (uploading: boolean) => void
@@ -13,6 +15,34 @@ const BasicsForm = ({ onUploadStatusChange }: BasicsFormProps) => {
     formState: { errors },
   } = useFormContext<EventFormValues>()
 
+  const [categories, setCategories] = useState<EventCategory[]>([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
+  const [categoriesError, setCategoriesError] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    fetchCategories()
+      .then((data) => {
+        if (!cancelled) setCategories(data)
+      })
+      .catch(() => {
+        if (!cancelled) setCategoriesError(true)
+      })
+      .finally(() => {
+        if (!cancelled) setCategoriesLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  // NOTE: options are the category *names* here, matching how FormBox's
+  // select is used everywhere else in the wizard (flat string array, value
+  // === label). This means the form will store the category NAME, not its
+  // id — see the flag in chat about reconciling that with what the backend
+  // (category: ObjectId) actually expects before this goes to Review.
+  const categoryOptions = categories.map((category) => category.name)
+
   return (
     <div>
       <div className='flex flex-col gap-5'>
@@ -22,26 +52,40 @@ const BasicsForm = ({ onUploadStatusChange }: BasicsFormProps) => {
           label='EVENT NAME'
           placeholder="Your event's name"
           id="eventName"
-          errors={errors.eventName}
-          name="eventName"
+          errors={errors.title}
+          name="title"
           classname="w-full"
           borderStyle="createEvent"
           register={register}
         />
         <div className='flex gap-5'>
-          <FormBox
-            inputType="select"
-            type="select"
-            label="CATEGORY"
-            placeholder="Select category"
-            id="category"
-            errors={errors.category}
-            name="category"
-            classname="w-full"
-            borderStyle="createEvent"
-            register={register}
-            options={["Concerts", "Parties", "Conferences", "Comedy", "Sports", "Arts & Theatre", "Food & Drink", "Tech"]}
-          />
+          <div className='w-full'>
+            <FormBox
+              inputType="select"
+              type="select"
+              label="CATEGORY"
+              placeholder={
+                categoriesLoading
+                  ? "Loading categories…"
+                  : categoriesError
+                  ? "Couldn't load categories"
+                  : "Select category"
+              }
+              id="category"
+              errors={errors.category}
+              name="category"
+              classname="w-full"
+              borderStyle="createEvent"
+              register={register}
+              options={categoryOptions}
+              disabled={categoriesLoading || categoriesError}
+            />
+            {categoriesError && (
+              <p className="text-xs text-destructive mt-1">
+                Couldn't load categories. Refresh the page to try again.
+              </p>
+            )}
+          </div>
           <FormBox
             inputType='datePicker'
             type='text'

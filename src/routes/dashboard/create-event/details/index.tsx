@@ -14,9 +14,12 @@ const Details = () => {
 
   const handleContinue = async () => {
     const isValid = await trigger([...DETAILS_FIELDS])
-    if (isValid) navigate("/dashboard/create-event/review")
+    if (isValid) {
+      navigate("/dashboard/create-event/review")
+    } else {
+      console.log("details validation failed")
+    }
 
-      
   }
 
   const handleBack = () => {

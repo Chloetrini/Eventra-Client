@@ -1,5 +1,5 @@
 import type { EventFormValues } from "@/lib/schema"
-import { formatDate, formatTime } from "@/lib/utils"
+import { formatDate, formatNaira, formatTime } from "@/lib/utils"
 import { useFormContext, useWatch } from "react-hook-form"
 
 type EventReviewRow = {
@@ -23,7 +23,7 @@ const EventReview = () => {
                     ? `Ticket ${id + 1}: ${ticket?.name || "—"}`
                     : "Ticket type",
                 value: ticket
-                    ? `₦${ticket.price ?? 0} · ${ticket.quantity ?? "—"} available`
+                    ? `${formatNaira(ticket.price ?? 0)} · ${ticket.quantity ?? "—"} available`
                     : "—",
             }))
             : [{ label: "Ticket types", value: "—" }])
@@ -37,7 +37,7 @@ const EventReview = () => {
     const rows: EventReviewRow[] = [
         {
             label: "Name",
-            value: values.eventName || "—"
+            value: values.title || "—"
         },
         // {
         //     label: "Type",

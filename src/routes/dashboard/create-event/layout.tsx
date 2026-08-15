@@ -5,12 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { eventFormSchema, type EventFormValues } from '@/lib/schema'
 import { useSearchParams } from "react-router";
 import { useEffect, useState } from "react";
-import { getEvent, setCreatedEventId } from "@/lib/create-event-api";
+import { getEvent, setCreatedEventId, fetchTicketTypesForEvent } from "@/lib/create-event-api";
 export const CREATE_EVENT_STORAGE_KEY = 'eventra-create-event'
 
 const emptyValues: EventFormValues = {
   eventType: undefined as any,
-  eventName: '',
+  title: '',
   category: '',
   date: '',
   startTime: '',
@@ -20,17 +20,25 @@ const emptyValues: EventFormValues = {
   locationType: 'physical',
   venueName: '',
   address: '',
-  platform: '',
-  link: '',
+  city: '',
+  state: '',
+  onlinePlatform: '',
+  onlineJoinLink: '',
   hasRsvpLimit: false,
   rsvpLimit: undefined,
   hasLineup: false,
-  acts: [],
-  hasGallery: false,
-  photos: [],
+  acts: [{
+    name: '',
+    role: '',
+    imageUrl: ''
+  }],
+  // hasGallery: false,
+  // photos: [],
   hasAgePolicy: false,
   policyText: '',
   hasRefundPolicy: false,
+  refundPolicyType: undefined,
+  refundDaysBefore: undefined,
   tickets: []
 }
 
@@ -58,11 +66,21 @@ const CreateEventLayout = () => {
 
     setCreatedEventId(editEventId);
 
-    getEvent(editEventId).then((event: any) => {
-       console.log("LOADED EVENT FOR EDIT:", event);
+    Promise.all([
+      getEvent(editEventId),
+      // Free events / events with no ticket types yet -> empty list rather
+      // than failing the whole edit load (backend 404s ticket-types for
+      // free events, since getOwnedPaidEvent only allows paid ones).
+      fetchTicketTypesForEvent(editEventId).catch(() => []),
+    ]).then(([event, ticketTypes]: [any, any[]]) => {
+      console.log("LOADED EVENT FOR EDIT:", event);
+
+      const hasLineup = Array.isArray(event.lineup) && event.lineup.length > 0
+      const hasRefundPolicy = Boolean(event.refundPolicy && event.refundPolicy.type === "refund-until-days-before")
+
       methods.reset({
         eventType: event.type,
-        eventName: event.title ?? "",
+        title: event.title ?? "",
         category: event.category?.name ?? event.category ?? "",
         date: event.startDate ?? "",
         startTime: event.startDate ?? "",
@@ -72,8 +90,32 @@ const CreateEventLayout = () => {
         locationType: event.isOnline ? "online" : "physical",
         venueName: event.venue?.name ?? "",
         address: event.venue?.address ?? "",
-        platform: event.onlinePlatform ?? "",
-        link: event.onlineJoinLink ?? "",
+        city: event.venue?.city ?? "",
+        state: event.venue?.state ?? "",
+        onlinePlatform: event.onlinePlatform ?? "",
+        onlineJoinLink: event.onlineJoinLink ?? "",
+        hasRsvpLimit: event.capacity !== undefined && event.capacity !== null,
+        rsvpLimit: event.capacity ?? undefined,
+        hasLineup,
+        acts: hasLineup
+          ? event.lineup.map((member: any) => ({
+              name: member.name ?? "",
+              role: member.role ?? "",
+              imageUrl: member.imageUrl ?? "",
+            }))
+          : [{ name: "", role: "", imageUrl: "" }],
+        hasAgePolicy: Boolean(event.agePolicy),
+        policyText: event.agePolicy ?? "",
+        hasRefundPolicy,
+        refundPolicyType: event.refundPolicy?.type,
+        refundDaysBefore: event.refundPolicy?.daysBefore,
+        tickets: ticketTypes.map((tt) => ({
+          id: tt._id,
+          name: tt.name,
+          price: tt.price,
+          quantity: tt.quantity,
+          purchaseLimitPerPerson: tt.purchaseLimitPerPerson,
+        })),
       });
       setIsLoadingEdit(false);
     }).catch(() => setIsLoadingEdit(false));

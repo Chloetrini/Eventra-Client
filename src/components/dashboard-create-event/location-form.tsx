@@ -1,8 +1,11 @@
+import { useEffect } from 'react'
 import type { EventFormValues } from '@/lib/schema'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { FormBox } from '../ui/form-box'
 import LocationMap from './location-map'
 import mapPin from '@/assets/map-pin.png'
+import { nigerianStates } from "@/lib/constants"
+
 
 const LocationForm = () => {
 
@@ -10,12 +13,29 @@ const LocationForm = () => {
         register,
         control,
         watch,
+        resetField,
         formState: { errors },
     } = useFormContext<EventFormValues>()
 
     const locationType = useWatch({ control, name: 'locationType' })
     const address = useWatch({ name: 'address' })
     const venue = useWatch({ name: 'venueName' })
+    const city = useWatch({ name: 'city' })
+    const state = useWatch({ name: 'state' })
+
+    const mapPrompt = (address && venue && city && state)
+
+    useEffect(() => {
+        if (locationType === 'physical') {
+            resetField('onlinePlatform', { defaultValue: '' })
+            resetField('onlineJoinLink', { defaultValue: '' })
+        } else if (locationType === 'online') {
+            resetField('venueName', { defaultValue: '' })
+            resetField('address', { defaultValue: '' })
+            resetField('city', { defaultValue: '' })
+            resetField('state', { defaultValue: '' })
+        }
+    }, [locationType, resetField])
 
     return (
         <div>
@@ -37,7 +57,7 @@ const LocationForm = () => {
                         inputType='input'
                         type='text'
                         label='ADDRESS'
-                        placeholder="Street, area, city"
+                        placeholder="1 Ogunlesi St, off Awoyokun Stree..."
                         id="address"
                         errors={errors.address}
                         name="address"
@@ -45,16 +65,45 @@ const LocationForm = () => {
                         borderStyle="createEvent"
                         register={register}
                     />
-                    {(!venue || !address) && (
-                    <div className='w-full h-[118px] bg-[#E4F1EB] border border-[#E8E6E0] flex items-center justify-center animate-in fade-in slide-in-from-top-2 duration-300 ease-out mt-2'>
-                        <div className='flex gap-2'>
-                            <img src={mapPin} alt="" className='w-[19px] h-[19px]'/>
-                            <p className='text-sm text-[#4A4451]'>Map preview pin shows here</p>
-                        </div>
+
+                    <div className='w-full flex gap-5'>
+                        <FormBox
+                            inputType='input'
+                            type='text'
+                            label='CITY'
+                            placeholder="Onipanu"
+                            id="city"
+                            errors={errors.city}
+                            name="city"
+                            classname="w-full"
+                            borderStyle="createEvent"
+                            register={register}
+                        />
+                        <FormBox
+                            inputType='select'
+                            type='select'
+                            label='STATE'
+                            placeholder="select state"
+                            id="state"
+                            errors={errors.state}
+                            name="state"
+                            classname="w-full"
+                            borderStyle="createEvent"
+                            register={register}
+                            options={nigerianStates}
+                        />
                     </div>
+
+                    {(!mapPrompt) && (
+                        <div className='w-full h-[118px] bg-[#E4F1EB] border border-[#E8E6E0] flex items-center justify-center animate-in fade-in slide-in-from-top-2 duration-300 ease-out mt-2'>
+                            <div className='flex gap-2'>
+                                <img src={mapPin} alt="" className='w-[19px] h-[19px]' />
+                                <p className='text-sm text-[#4A4451]'>Map preview pin shows here</p>
+                            </div>
+                        </div>
                     )}
 
-                    {(venue && address) && (
+                    {(mapPrompt) && (
                         <div className='animate-in fade-in slide-in-from-top-2 duration-300 ease-out mt-2'>
                             <LocationMap
                                 name={venue}
@@ -77,8 +126,8 @@ const LocationForm = () => {
                         label='PLATFORM'
                         placeholder="Select Platform"
                         id="platform"
-                        errors={errors.platform}
-                        name="platform"
+                        errors={errors.onlinePlatform}
+                        name="onlinePlatform"
                         classname="w-full"
                         borderStyle="createEvent"
                         register={register}
@@ -91,8 +140,8 @@ const LocationForm = () => {
                         label='JOIN LINK'
                         placeholder="https://..."
                         id="link"
-                        errors={errors.link}
-                        name="link"
+                        errors={errors.onlineJoinLink}
+                        name="onlineJoinLink"
                         classname="w-full"
                         borderStyle="createEvent"
                         register={register}

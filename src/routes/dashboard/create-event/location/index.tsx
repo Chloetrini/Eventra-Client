@@ -20,7 +20,11 @@ const Location = () => {
     const handleContinue = async () => {
         const isValid = await trigger([...LOCATION_FIELDS])
             const eventType = getValues('eventType')
-        if (isValid) navigate(eventType === 'paid' ? '/dashboard/create-event/tickets' : '/dashboard/create-event/rsvp')
+        if (isValid) {
+            navigate(eventType === 'paid' ? '/dashboard/create-event/tickets' : '/dashboard/create-event/rsvp')
+        } else {
+            console.log("location validation failed")
+        }
     }
     return (
         <PageWrapper className='pl-[16px] pr-[34px]'>

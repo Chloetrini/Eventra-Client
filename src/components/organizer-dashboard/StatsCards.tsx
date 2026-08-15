@@ -14,23 +14,23 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, icon, change, subtext
   const isNegative = change && change < 0;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 relative">
-      <div className="absolute top-5 right-5 h-9 w-9 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-[#0F6E56]">
+    <div className="bg-card border border-border rounded-xl p-6 relative">
+      <div className="absolute top-5 right-5 h-9 w-9 rounded-lg bg-muted border border-border flex items-center justify-center text-[#0F6E56] dark:text-[#4ADE80]">
         {icon}
       </div>
-      
-      <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">{label}</p>
-      <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
-      
+
+      <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mt-1">{label}</p>
+      <p className="text-3xl font-bold text-foreground mt-2">{value}</p>
+
       <div className="flex items-center gap-2 mt-4 text-xs font-medium">
         {change !== undefined && (
-          <span className={`flex items-center gap-1 ${isPositive ? 'text-[#0F6E56]' : isNegative ? 'text-red-600' : 'text-gray-400'}`}>
+          <span className={`flex items-center gap-1 ${isPositive ? 'text-[#0F6E56] dark:text-[#4ADE80]' : isNegative ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'}`}>
             {isPositive && <TrendingUp className="h-3 w-3" />}
             {isNegative && <TrendingDown className="h-3 w-3" />}
             {Math.abs(change)}%
           </span>
         )}
-        <span className={`text-gray-500 ${change !== undefined ? 'font-normal' : ''}`}>
+        <span className={`text-muted-foreground ${change !== undefined ? 'font-normal' : ''}`}>
           {change !== undefined ? 'vs last month' : subtext}
         </span>
       </div>

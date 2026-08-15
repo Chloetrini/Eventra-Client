@@ -139,23 +139,23 @@ export default function VerifyOtp() {
     <div className="flex flex-col">
       <Link to="/" className="flex items-center gap-2 mb-8 w-fit">
         <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
-        <span className="text-[22.8px] font-extrabold tracking-[-0.02em] text-[#1A1523]">
+        <span className="text-[22.8px] font-extrabold tracking-[-0.02em] text-foreground">
           Eventra
         </span>
         {isOrganizer && (
-          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
+          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] dark:bg-[#0F6E56]/20 dark:text-[#4ADE80] w-[118px] text-center text-[15px]">
             Organizer
           </span>
         )}
       </Link>
 
-      <h1 className="text-[34px] font-bold leading-[40px] tracking-[-0.02em] text-[#000000] mb-3">
+      <h1 className="text-[34px] font-bold leading-[40px] tracking-[-0.02em] text-foreground mb-3">
         Enter verification code
       </h1>
 
-      <p className="text-[17px] leading-6 text-[#4A4451] mb-10">
+      <p className="text-[17px] leading-6 text-muted-foreground mb-10">
         Enter the 6-digit code we sent to{" "}
-        <span className="font-semibold text-[#232323]">{email}</span>
+        <span className="font-semibold text-foreground">{email}</span>
       </p>
 
       <form onSubmit={onSubmit} noValidate className="space-y-6">
@@ -173,7 +173,7 @@ export default function VerifyOtp() {
               onChange={(e) => handleChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               onPaste={handlePaste}
-              className="h-[56px] w-full max-w-[64px] rounded-[8px] border border-input text-center text-[22px] font-bold focus:outline-none focus:ring-2 focus:ring-primary"
+              className="h-[56px] w-full max-w-[64px] rounded-[8px] border border-input bg-background text-foreground text-center text-[22px] font-bold focus:outline-none focus:ring-2 focus:ring-primary"
             />
           ))}
         </div>
@@ -189,7 +189,7 @@ export default function VerifyOtp() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-[16px] text-[#4A4451] leading-[26px]">
+      <p className="mt-6 text-center text-[16px] text-muted-foreground leading-[26px]">
         {secondsLeft > 0 ? (
           <span>Resend code in {secondsLeft}s</span>
         ) : (
@@ -197,7 +197,7 @@ export default function VerifyOtp() {
             type="button"
             onClick={handleResend}
             disabled={isResending}
-            className="text-[#5f0609] font-semibold hover:underline disabled:opacity-50"
+            className="text-[#5f0609] dark:text-[#f87171] font-semibold hover:underline disabled:opacity-50"
           >
             {isResending ? "Resending..." : "Resend code"}
           </button>
@@ -206,7 +206,7 @@ export default function VerifyOtp() {
 
       <Link
         to={authPath("login", isOrganizer)}
-        className="mt-8 text-center text-[16px] text-[#0F6E56] font-semibold hover:underline leading-[26px]"
+        className="mt-8 text-center text-[16px] text-[#0F6E56] dark:text-[#4ADE80] font-semibold hover:underline leading-[26px]"
       >
         Back to Sign in
       </Link>

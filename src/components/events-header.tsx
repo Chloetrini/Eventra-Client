@@ -10,10 +10,10 @@ export function EventsHeader() {
         <p className="text-[13px] font-medium tracking-wide uppercase text-[#0F6E56] font-space">
           Manage
         </p>
-        <h1 className="text-[28px] font-grotesk min-[480px]:text-2xl sm:text-3xl font-bold text-[#1A1523] mt-1">
+        <h1 className="text-[28px] font-grotesk min-[480px]:text-2xl sm:text-3xl font-bold text-foreground mt-1">
           Events
         </h1>
-        <p className="text-[15px] text-[#4A4451] mt-1">
+        <p className="text-[15px] text-muted-foreground mt-1">
           Create, edit, and track every event, from draft to sold out.
         </p>
       </div>

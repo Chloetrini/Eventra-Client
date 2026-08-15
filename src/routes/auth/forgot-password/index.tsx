@@ -56,20 +56,20 @@ export default function ForgotPassword() {
     <div className="flex flex-col">
       <Link to="/" className="flex items-center gap-2 mb-12 w-fit">
         <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
-        <span className="text-[22.8px] font-extrabold tracking-[-0.02em] text-[#1A1523]">
+        <span className="text-[22.8px] font-extrabold tracking-[-0.02em] text-foreground">
           Eventra
         </span>
         {isOrganizer && (
-          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
+          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] dark:bg-[#0F6E56]/20 dark:text-[#4ADE80] w-[118px] text-center text-[15px]">
             Organizer
           </span>
         )}
       </Link>
-      <h1 className="text-[34px] font-bold leading-[40px] tracking-[-0.02em] text-[#000000] mb-3">
+      <h1 className="text-[34px] font-bold leading-[40px] tracking-[-0.02em] text-foreground mb-3">
         Forgot password
       </h1>
 
-      <p className="text-[17px] leading-6 text-[#4A4451] mb-10">
+      <p className="text-[17px] leading-6 text-muted-foreground mb-10">
         Enter the email on your account and we’ll send you a link to reset it
       </p>
 
@@ -77,7 +77,7 @@ export default function ForgotPassword() {
         <div className="space-y-2">
           <Label
             htmlFor="email"
-            className="text-[16px] font-medium text-[#232323]"
+            className="text-[16px] font-medium text-foreground"
           >
             Email
           </Label>
@@ -86,7 +86,7 @@ export default function ForgotPassword() {
             id="email"
             type="email"
             placeholder="eg you@email.com"
-            className="h-[52px] w-full placeholder:text-[#98A2B3]"
+            className="h-[52px] w-full placeholder:text-muted-foreground"
             {...register("email")}
           />
 
@@ -106,7 +106,7 @@ export default function ForgotPassword() {
 
       <Link
         to={authPath("login", isOrganizer)}
-        className="mt-6 text-center text-[16px] text-[#0F6E56] font-semibold hover:underline leading-[26px]"
+        className="mt-6 text-center text-[16px] text-[#0F6E56] dark:text-[#4ADE80] font-semibold hover:underline leading-[26px]"
       >
         Back to Sign in
       </Link>

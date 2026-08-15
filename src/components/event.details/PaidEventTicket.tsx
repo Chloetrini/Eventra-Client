@@ -27,23 +27,23 @@ const TierRow = ({
         <div>
           <p className="text-sm font-semibold">{tier.type}</p>
           {tier.description && (
-            <p className="text-xs text-[#6E6577]">{tier.description}</p>
+            <p className="text-xs text-muted-foreground">{tier.description}</p>
           )}
           {tier.quantityLeft && (
-            <p className="mt-0.5 text-xs font-semibold tracking-wider text-[#7A4E02]">
+            <p className="mt-0.5 text-xs font-semibold tracking-wider text-[#7A4E02] dark:text-[#F5C877]">
               only {tier.quantityLeft} left
             </p>
           )}
         </div>
         <div className="text-right font-space">
           {tier.originalPrice && (
-            <p className="text-xs text-[#6E6577] font-grotesk line-through">
+            <p className="text-xs text-muted-foreground font-grotesk line-through">
               {formatPrice(tier.originalPrice)}
             </p>
           )}
           <p className="text-sm font-bold">
             {isSoldOut ? (
-              <span className="text-[#FFC4C4]">Sold out</span>
+              <span className="text-[#c14747] dark:text-[#FFC4C4]">Sold out</span>
             ) : (
               formatPrice(tier.unitPrice)
             )}
@@ -75,7 +75,7 @@ const TierRow = ({
       )}
       {isSoldOut && (
         <div className="flex justify-end">
-          <Badge variant="outline" className="text-xs mr-auto text-[#FFC4C4]">
+          <Badge variant="outline" className="text-xs mr-auto text-[#c14747] dark:text-[#FFC4C4]">
             Sold out
           </Badge>
         </div>
@@ -172,7 +172,7 @@ export const PaidEventTicket = ({
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold">Get tickets</h2>
         {isSelling && (
-          <Badge className="bg-[#FCEBC9] font-medium text-[#7A4E02]">
+          <Badge className="bg-[#FCEBC9] dark:bg-[#7A4E02]/20 font-medium text-[#7A4E02] dark:text-[#F5C877]">
             Selling fast
           </Badge>
         )}
@@ -193,11 +193,11 @@ export const PaidEventTicket = ({
       </div>
       <Separator className="my-5" />
       <div className="space-y-2 text-sm">
-        <div className="flex items-center justify-between text-[#4A4451]">
+        <div className="flex items-center justify-between text-muted-foreground">
           <span>Subtotal</span>
           <span>{formatPrice(subtotal)}</span>
         </div>
-        <div className="flex items-center justify-between text-[#4A4451]">
+        <div className="flex items-center justify-between text-muted-foreground">
           <span>Service fee ({feePercent}%)</span>
           <span>{formatPrice(serviceFee)}</span>
         </div>
@@ -214,10 +214,10 @@ export const PaidEventTicket = ({
         Select tickets
       </Button>
       <div className="mt-4 space-y-1.5">
-        <p className="flex items-center gap-1.5 text-xs text-[#6E6577]">
+        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
           🔒 Secure checkout · Card, transfer & USSD
         </p>
-        <p className="flex items-center gap-1.5 text-xs text-[#6E6577]">
+        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
           ✓ Every ticket is a unique QR — it can't be faked
         </p>
       </div>

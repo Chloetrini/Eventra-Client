@@ -52,7 +52,7 @@ const OnboardingDrawer = () => {
             <div
                 role="dialog"
                 aria-label="Onboarding steps"
-                className={`fixed top-0 left-0 h-full w-[280px] bg-white z-50 shadow-xl transition-transform duration-300 ease-in-out overflow-y-auto ${
+                className={`fixed top-0 left-0 h-full w-[280px] bg-white dark:bg-card z-50 shadow-xl transition-transform duration-300 ease-in-out overflow-y-auto ${
                     open ? "translate-x-0" : "-translate-x-full"
                 }`}
             >
@@ -72,7 +72,7 @@ const OnboardingDrawer = () => {
                         <div key={flow.path}>
                             <button
                                 className={`flex flex-col items-start justify-center text-start w-full h-[87px] rounded-[10px] p-5 ${
-                                    flow.path === location.pathname ? "bg-[#E4F1EB]" : ""
+                                    flow.path === location.pathname ? "bg-[#E4F1EB] dark:bg-[#0F6E56]/15" : ""
                                 }`}
                                 onClick={() => handleClick(flow.path)}
                             >
@@ -81,7 +81,7 @@ const OnboardingDrawer = () => {
                                         className={`w-[40px] h-[40px] rounded-full flex items-center justify-center ${
                                             flow.path === location.pathname
                                                 ? "text-white bg-[#0F6E56]"
-                                                : "bg-white border-2"
+                                                : "bg-white dark:bg-card border-2"
                                         }`}
                                     >
                                         <p className="font-semibold">{id + 1}</p>
@@ -89,7 +89,7 @@ const OnboardingDrawer = () => {
 
                                     <div>
                                         <p className="font-medium">{flow.step}</p>
-                                        <p className="text-sm text-[#4A4451]">
+                                        <p className="text-sm text-muted-foreground">
                                             {flow.description}
                                         </p>
                                     </div>

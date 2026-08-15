@@ -5,6 +5,8 @@ import {
 } from "@/lib/schema";
 import { type Event, type EventFilters } from "@/types/event-types";
 import type { Attendee } from "@/types/attendees";
+import type { OrganizerEventDetails } from "@/types/organizer-event";
+import { formatDate } from "@/lib/utils";
 export type EventsResponse = {
   events: Event[];
   total: number;
@@ -205,4 +207,173 @@ export async function fetchEventAttendees(eventId: string): Promise<Attendee[]> 
 
 export async function deleteEvent(eventId: string) {
   await api.delete(`/events/${eventId}`);
+}
+
+// POST /events/:id/duplicate — server clones the event (and its ticket
+// types) as a brand-new draft. Dates, status, and sales counters are
+// deliberately not carried over.
+export async function duplicateEvent(eventId: string): Promise<{ _id: string }> {
+  const res = await api.post(`/events/${eventId}/duplicate`, {});
+  return res.body as { _id: string };
+}
+
+// ---------------------------------------------------------------------
+// Organizer event dashboard — powers the event-details page
+// GET /events/:id/dashboard
+// ---------------------------------------------------------------------
+type RealDashboard = {
+  event: {
+    _id: string;
+    title: string;
+    slug: string;
+    status: string;
+    type: "free" | "paid";
+    category?: string | null;
+    coverImage?: string;
+    startDate: string;
+    isOnline?: boolean;
+    venue?: { name: string; city: string } | null;
+    isPromoted: boolean;
+    promotionStatus?: string;
+  };
+  reservationsCount: number;
+  capacity: number | null;
+  capacityRemaining: number | null;
+  ticketsSoldCount: number;
+  revenueTotal: number;
+  checkedInCount: number;
+  recentAttendees: Array<{
+    _id: string;
+    attendeeName: string;
+    code: string;
+    status: "valid" | "checked_in" | "cancelled" | "refunded";
+    ticketTypeName: string;
+  }>;
+  ticketTypes: Array<{
+    _id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    quantitySold: number;
+    quantityRemaining: number;
+    isActive: boolean;
+  }>;
+  payout: { amountDue: number };
+};
+
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2) || "?";
+}
+
+function mapDashboardStatus(
+  status: string,
+  capacityRemaining: number | null
+): OrganizerEventDetails["status"] {
+  if (status === "rejected" || status === "cancelled") return "REJECTED";
+  if (status === "approved") return capacityRemaining === 0 ? "SOLD OUT" : "LIVE";
+  return "UPCOMING"; // draft, pending_approval, postponed
+}
+
+export async function fetchEventDashboard(eventId: string): Promise<OrganizerEventDetails> {
+  const res = await api.get(`/events/${eventId}/dashboard`);
+  const d = res.body as RealDashboard;
+  const isFree = d.event.type === "free";
+
+  const ticketTypes = isFree
+    ? [
+        {
+          id: "rsvp",
+          slug: "rsvp",
+          name: "General admission (RSVP)",
+          price: 0,
+          sold: d.reservationsCount,
+          left: d.capacity !== null ? Math.max(d.capacity - d.reservationsCount, 0) : null,
+        },
+      ]
+    : d.ticketTypes
+        .filter((t) => t.isActive)
+        .map((t) => ({
+          id: t._id,
+          slug: t._id,
+          name: t.name,
+          price: t.price,
+          sold: t.quantitySold,
+          left: t.quantityRemaining,
+        }));
+
+  const totalTickets = isFree
+    ? d.capacity
+    : d.ticketTypes.reduce((sum, t) => sum + t.quantity, 0) || null;
+  const remainingTickets = isFree
+    ? d.capacityRemaining
+    : d.ticketTypes.reduce((sum, t) => sum + t.quantityRemaining, 0);
+
+  return {
+    id: d.event._id,
+    slug: d.event.slug,
+    title: d.event.title,
+    eventNumber: `EVT-${d.event._id.slice(-6).toUpperCase()}`,
+    category: d.event.category ?? "Uncategorized",
+    status: mapDashboardStatus(d.event.status, d.capacityRemaining),
+    paymentType: isFree ? "FREE" : "PAID",
+    coverImage: d.event.coverImage ?? "",
+    dateText: formatDate(d.event.startDate),
+    venueText: d.event.isOnline
+      ? "Online event"
+      : d.event.venue
+        ? `${d.event.venue.name}, ${d.event.venue.city}`
+        : "Venue TBA",
+    // Driven separately on the page by useOrganizerStatus (real approval status).
+    isAccountUnderReview: false,
+    metrics: {
+      ticketsSold: isFree ? d.reservationsCount : d.ticketsSoldCount,
+      totalTickets,
+      revenue: isFree ? 0 : d.revenueTotal,
+      remainingTickets,
+      checkedInCount: d.checkedInCount,
+    },
+    ticketTypes,
+    recentAttendees: d.recentAttendees.map((a) => ({
+      id: a._id,
+      slug: a._id,
+      name: a.attendeeName,
+      avatarInitials: getInitials(a.attendeeName),
+      tier: a.ticketTypeName,
+      referenceCode: a.code,
+      status: a.status === "checked_in" ? "IN" : "GOING",
+    })),
+    isPromoted: d.event.isPromoted,
+    promotionMessage:
+      d.event.promotionStatus === "pending"
+        ? "Your promotion request is pending admin approval."
+        : "This event is not promoted yet. Boost it for a featured spot on homepage and explore",
+  };
+}
+
+// ---------------------------------------------------------------------
+// Check-in — scan/enter a ticket code at the door
+// POST /events/:eventId/check-in
+// ---------------------------------------------------------------------
+export type CheckInResult = {
+  result: "valid" | "already_used" | "invalid";
+  checkedInAt?: string | null;
+  ticket?: {
+    _id: string;
+    code: string;
+    attendeeName: string;
+    attendeeEmail: string;
+    type: "free" | "paid";
+    status: string;
+  };
+};
+
+export async function checkInTicket(eventId: string, code: string): Promise<CheckInResult> {
+  const res = await api.post(`/events/${eventId}/check-in`, { code });
+  return res.body as CheckInResult;
 }

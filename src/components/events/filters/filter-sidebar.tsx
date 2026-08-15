@@ -24,7 +24,7 @@ export function FilterSidebar({
   return (
     <aside className="space-y-8 w-full lg:w-[248px] lg:shrink-0">
       <Button variant="ghost" size="sm" onClick={onClearAll}
-      className="text-[12px] text-[#6E6577] font-[400] font-sans p-0 m-0 pb-4  ">
+      className="text-[12px] text-muted-foreground font-[400] font-sans p-0 m-0 pb-4  ">
         Clear all filters
       </Button>
 
@@ -46,7 +46,7 @@ export function FilterSidebar({
                 />
                 <label
                   htmlFor={`cat-${cat._id}`}
-                  className="flex-1 cursor-pointer text-[15px] font-sans text-[#6E6577] font-[400]"
+                  className="flex-1 cursor-pointer text-[15px] font-sans text-muted-foreground font-[400]"
                 >
                   {cat.name}
                 </label>
@@ -60,7 +60,7 @@ export function FilterSidebar({
         <hr className="mt-7" />
       </section>
       <section className="font-sans">
-        <h3 className="mb-3 text-[12px] uppercase tracking-wide text-muted-foreground font-[600] text-[#4A4451]">
+        <h3 className="mb-3 text-[12px] uppercase tracking-wide text-muted-foreground font-[600]">
           Price
         </h3>
         <ul className="space-y-2">
@@ -72,7 +72,7 @@ export function FilterSidebar({
                 onCheckedChange={() => onSelectPrice(key)}
                className="w-[19px] h-[19px] data-[state=checked]:!bg-green-500 data-[state=checked]:!border-green-500 data-[state=checked]:!text-white"
               />
-              <label htmlFor={`price-${key}`} className="cursor-pointer text-[15px] text-[#6E6577] font-[400] font-sans">
+              <label htmlFor={`price-${key}`} className="cursor-pointer text-[15px] text-muted-foreground font-[400] font-sans">
                 {PRICE_TIERS[key].label}
               </label>
             </li>

@@ -62,18 +62,6 @@ export default function Events() {
   }
 };
 
-  const handleDuplicate = (event: Event) => {
-    const duplicated: Event = {
-        ...event,
-        _id: crypto.randomUUID(),   //crypto.randomUUID() is a built-in browser function that generates a random unique string,
-        eventTitle:`${event.eventTitle} (copy)`,
-        status: "Draft"
-    };
-    setEvents((prev) => [duplicated, ...prev])
-  }
-
-
-
   const filteredEvents = events?.filter((event) => {
     const matchesStatus =
       activeStatus === "all" || event.status === STATUS_MAP[activeStatus];
@@ -95,7 +83,7 @@ export default function Events() {
 
   if (isError) {
     return (
-      <p className="text-center py-12 text-sm text-red-500">
+      <p className="text-center py-12 text-sm text-destructive">
         Something went wrong loading events.
       </p>
     );
@@ -107,7 +95,6 @@ export default function Events() {
       <EventsHeader />
       <EventsFilterBar />
       <EventsTable events={filteredEvents}
-      onDuplicate={handleDuplicate}
       onDeleteRequest={setDeletingEvent} />
 
       <DeleteEventDialog event={deletingEvent} 

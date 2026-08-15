@@ -23,7 +23,7 @@ const PageSwitcher = ({ backOnClick, continueOnClick, disableBack, disablecontin
             <PaymentBtn
                 text="Back"
                 icon={ArrowLeft}
-                classname='text-[#0F6E56] font-bold hover:text-white hover:bg-[#0F6E56]'
+                classname='text-[#0F6E56] dark:text-[#4ADE80] font-bold hover:text-white hover:bg-[#0F6E56]'
                 onClick={backOnClick}
                 disabled={disableBack}
             />
@@ -33,7 +33,7 @@ const PageSwitcher = ({ backOnClick, continueOnClick, disableBack, disablecontin
                     <div className='flex gap-3'>
                         <PaymentBtn
                             text="Skip for now"
-                            classname={`text-black font-bold ${showSkip ? "block" : "hidden"}`}
+                            classname={`text-foreground font-bold ${showSkip ? "block" : "hidden"}`}
                             onClick={skipOnClick}
                             disabled={disableSkip}
 
@@ -42,7 +42,7 @@ const PageSwitcher = ({ backOnClick, continueOnClick, disableBack, disablecontin
                         <PaymentBtn
                             text="Continue"
                             arrow={ArrowRight}
-                            classname='text-[#0F6E56] font-bold hover:text-white hover:bg-[#0F6E56]'
+                            classname='text-[#0F6E56] dark:text-[#4ADE80] font-bold hover:text-white hover:bg-[#0F6E56]'
                             onClick={continueOnClick}
                             disabled={disablecontinue}
                         />
@@ -57,7 +57,7 @@ const PageSwitcher = ({ backOnClick, continueOnClick, disableBack, disablecontin
                         showDraft && (
                             <PaymentBtn
                                 text="Save as draft"
-                                classname={`text-black font-bold`}
+                                classname={`text-foreground font-bold`}
                                 onClick={skipOnClick}
 
                             />
@@ -68,7 +68,7 @@ const PageSwitcher = ({ backOnClick, continueOnClick, disableBack, disablecontin
                             <PaymentBtn
                                 text="Submit for review"
                                 arrow={ArrowRight}
-                                classname='text-[#0F6E56] font-bold hover:text-white hover:bg-[#0F6E56]'
+                                classname='text-[#0F6E56] dark:text-[#4ADE80] font-bold hover:text-white hover:bg-[#0F6E56]'
                                 onClick={submitOnClick}
                                 disabled={disableSubmit}
                             />

@@ -9,6 +9,7 @@ import Onboardinglayout from "./onboarding/layout";
 
 import CreateEventLayout from "./dashboard/create-event/layout";
 import DashBoardLayout from "./dashboard/layout";
+import { RequireOrganizer } from "@/components/require-organizer";
 
 const routes = [
     {
@@ -17,7 +18,7 @@ const routes = [
         ErrorBoundary: ErrorBoundary,
         handle: {
             seo: {
-                title: "EventPulse",
+                title: "Eventra",
                 description: "Event management platform for organizers and attendees.",
             },
         },
@@ -187,6 +188,10 @@ const routes = [
                 path: "auth",
                 Component: AuthLayout,
                 children: [
+                    {
+                        index: true,
+                        element: <Navigate to="login" replace />,
+                    },
                     {
                         path: "register",
                         handle: {
@@ -441,11 +446,18 @@ const routes = [
 
             },
             {
-                path: "dashboard",
-                Component: DashBoardLayout,
+                Component: RequireOrganizer,
                 children: [
                     {
-                        path: "overview",
+                        path: "dashboard",
+                        Component: DashBoardLayout,
+                        children: [
+                            {
+                                index: true,
+                                element: <Navigate to="overview" replace />,
+                            },
+                            {
+                                path: "overview",
                         handle: {
                             seo: {
                                 title: "Organizer Dashboard",
@@ -460,17 +472,36 @@ const routes = [
                     },
                     {
                         path: "events",
-                        handle: {
-                            seo: {
-                                title: "Events",
-                                description: "Manage your events, from draft to sold out.",
-                            }
-                        },
-                        lazy: async () => {
-                            const { default: Component } =
-                                await import("@/routes/dashboard/events/index");
-                            return { Component };
-                        },
+                        children: [
+                            {
+                                index: true,
+                                handle: {
+                                    seo: {
+                                        title: "Events",
+                                        description: "Manage your events, from draft to sold out.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/events/index");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: ":eventId",
+                                handle: {
+                                    seo: {
+                                        title: "Event Details",
+                                        description: "Manage your event, view sales metrics, recent attendees, and quick actions.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/main/organizer-event-details");
+                                    return { Component };
+                                },
+                            },
+                        ],
                     },
                     {
                         path: "attendees",
@@ -483,6 +514,34 @@ const routes = [
                         lazy: async () => {
                             const { default: Component } =
                                 await import("@/routes/dashboard/attendees/index");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "promotion",
+                        handle: {
+                            seo: {
+                                title: "Promote",
+                                description: "Promote your shows.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/dashboard/promotion");
+                            return { Component };
+                        },
+                    },
+                    {
+                        path: "check-in",
+                        handle: {
+                            seo: {
+                                title: "Check-in",
+                                description: "Scan or enter a ticket code to check guests in.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/dashboard/check-in");
                             return { Component };
                         },
                     },
@@ -549,6 +608,8 @@ const routes = [
                         ],
                     },
                 ]
+                    },
+                ],
             },
         ],
     },

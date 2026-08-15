@@ -33,7 +33,7 @@ const ConfirmatoryMessage = ({
                 <Check color='white' className='w-10 h-10' />
             </div>
             <p className='text-2xl sm:text-[28px] font-grotesk font-bold'>You’re in!</p>
-            <div className='text-center text-[#4A4451]'>
+            <div className='text-center text-muted-foreground'>
                 <p>Your {totalTickets}  <span>{totalTickets === 1 ? "ticket" : "tickets"}</span> to <span className='font-semibold hover:underline'><a href={`/events/${slug}`}>{eventName}</a></span> are confirmed.</p>
                 <p>ORDER.{orderID} - {isFree ? "" : formatNaira(total)} {isFree ? "FREE" : "PAID"}</p>
             </div>

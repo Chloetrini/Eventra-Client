@@ -33,23 +33,25 @@ export function useCheckIn(eventId: string) {
     });
 
     // ─── Mutation: Manual Check-in ──────────────────────────────
+    // The backend only checks in by ticket code — attendee.ticketReference
+    // IS that code, not attendee.id (the ticket's database id).
     const { mutateAsync: manualCheckInMutation, isPending: isCheckingIn } = useMutation({
-        mutationFn: ({ attendeeId }: { attendeeId: string }) =>
-            manualCheckIn(eventId, attendeeId),
+        mutationFn: ({ ticketReference }: { ticketReference: string }) =>
+            manualCheckIn(eventId, ticketReference),
         onSuccess: (response, variables) => {
             queryClient.setQueryData(
                 checkInKeys.attendees(eventId),
                 (oldData: any) => {
                     if (!oldData) return oldData;
                     const updatedAttendees = oldData.attendees.map((a: Attendee) =>
-                        a.id === variables.attendeeId
+                        a.ticketReference === variables.ticketReference
                             ? { ...a, checkedIn: true, checkedInAt: new Date().toISOString(), isScanned: true }
                             : a
                     );
                     return {
                         ...oldData,
                         attendees: updatedAttendees,
-                        recentScan: updatedAttendees.find((a: Attendee) => a.id === variables.attendeeId),
+                        recentScan: updatedAttendees.find((a: Attendee) => a.ticketReference === variables.ticketReference),
                         stats: {
                             ...oldData.stats,
                             checkedIn: oldData.stats.checkedIn + 1,
@@ -118,7 +120,7 @@ export function useCheckIn(eventId: string) {
                 toast(`${attendee.name} is already checked in`);
                 return;
             }
-            await manualCheckInMutation({ attendeeId: attendee.id });
+            await manualCheckInMutation({ ticketReference: attendee.ticketReference });
         },
         [manualCheckInMutation]
     );

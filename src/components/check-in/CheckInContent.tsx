@@ -1,8 +1,10 @@
 import React, { useState, useCallback } from 'react';
-import { useParams } from 'react-router';
-import { useDashboard } from '@/hooks/useDashboard';
+import { useSearchParams } from 'react-router';
+import { useQuery } from '@tanstack/react-query';
+import { fetchMyEvents } from '@/lib/events-api';
+import { useOrganizerStatus } from '@/lib/organizer-api';
 import { useCheckIn } from '@/hooks/useCheckIn';
-import StatsBanner from '@/components/organizer-dashboard/AccountReviewBanner';
+import { AccountReviewBanner } from '@/components/account-review-banner';
 import CheckInGateSection from './CheckInGateSection';
 import CheckInManualLookup from './CheckInManualLookup';
 import QRScannerModal from './QRScannerModal';
@@ -13,8 +15,26 @@ import { Switch } from '@/components/ui/switch';
 import { QrCode, Loader2 } from 'lucide-react';
 
 export default function CheckInContent() {
-  const { eventId = '1' } = useParams<{ eventId: string }>();
-  const { data: dashboardData, isLoading: dashboardLoading } = useDashboard();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { status } = useOrganizerStatus();
+
+  // Every event that links here (QuickActionsCard, EventActionsMenu, the
+  // single-event details page) passes ?event=<id> — this was previously
+  // read from a route param that the route never actually declared, so
+  // it silently always fell back to a hardcoded '1'. Falls back to the
+  // organizer's first event when opened from the sidebar with no event
+  // pre-selected.
+  const { data: events = [], isLoading: eventsLoading } = useQuery({
+    queryKey: ['my-events'],
+    queryFn: fetchMyEvents,
+  });
+  const eventId = searchParams.get('event') ?? events[0]?._id ?? '';
+
+  const handleEventChange = useCallback((id: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('event', id);
+    setSearchParams(params);
+  }, [searchParams, setSearchParams]);
 
   // ─── MODAL STATE ──────────────────────────────────────────────
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -48,11 +68,22 @@ export default function CheckInContent() {
     [handleQRCheckIn]
   );
 
-  if (isLoading || dashboardLoading) {
+  if (eventsLoading || (eventId && isLoading)) {
     return <CheckInSkeleton />;
   }
 
-  if (isError || !dashboardData) {
+  if (!eventsLoading && events.length === 0) {
+    return (
+      <div className="max-w-[700px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        <AccountReviewBanner status={status} />
+        <p className="text-sm text-muted-foreground text-center py-12">
+          You don't have any events to check guests in for yet.
+        </p>
+      </div>
+    );
+  }
+
+  if (isError) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center space-y-4">
@@ -74,29 +105,25 @@ export default function CheckInContent() {
   return (
     <div className="space-y-6 pb-8 max-w-7xl mx-auto px-4 sm:px-6 relative">
       {/* Status Banner */}
-      <StatsBanner
-        status={dashboardData.accountStatus}
-        onAction={() => console.log('Action clicked')}
-        onClose={() => console.log('Banner closed')}
-      />
+      <AccountReviewBanner status={status} />
 
       {/* TOP HEADER */}
       <div className="relative mt-8 mb-2 flex flex-col sm:flex-row items-start sm:items-center justify-between">
         <div className="space-y-1">
-          <span className="font-sans text-[#0F6E56] font-medium text-sm md:text-[17px] leading-6 tracking-normal">At the Gate</span>
-          <h1 className="text-3xl font-bold text-foreground">Check-in</h1>
+          <span className="font-sans text-[#0F6E56] dark:text-[#4ADE80] font-medium text-sm md:text-[17px] leading-6 tracking-normal">At the Gate</span>
+          <h1 className="text-3xl font-grotesk font-bold text-foreground">Check-in</h1>
           <p className="text-muted-foreground text-sm">scan tickets at the door, fast, even offline</p>
         </div>
 
         {/* ACTIVE MODE TOGGLE */}
         <div className=" flex flex-col items-start sm:items-end gap-1.5 mt-4 sm:mt-0 shrink-0">
-          <span className="font-sans font-normal text-xs md:text-[16px] text-[#000000] leading-6.5 tracking-normal">Active mode</span>
+          <span className="font-sans font-normal text-xs md:text-[16px] text-foreground leading-6.5 tracking-normal">Active mode</span>
           <div className="flex items-center gap-2">
             <span
-              className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-[#0F6E56]' : 'bg-gray-300'
+              className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-[#0F6E56] dark:bg-[#4ADE80]' : 'bg-gray-300 dark:bg-zinc-600'
                 }`}
             />
-            <span className="font-sans font-light text-sm md:text-[14px] text-[#0F6E56] leading-5.25 tracking-normal ">
+            <span className="font-sans font-light text-sm md:text-[14px] text-[#0F6E56] dark:text-[#4ADE80] leading-5.25 tracking-normal ">
               {isOnline ? 'online' : 'offline'}
             </span>
             <Switch
@@ -111,6 +138,10 @@ export default function CheckInContent() {
       {/* MIDDLE ROW: DROPDOWN + PROGRESS */}
       <div className="mb-14">
         <CheckInGateSection
+          events={events}
+          selectedEventId={eventId}
+          onEventChange={handleEventChange}
+          eventsLoading={eventsLoading}
           eventName={eventName || 'Event'}
           eventImage={eventImage}
           checkedInCount={stats.checkedIn}
@@ -122,7 +153,7 @@ export default function CheckInContent() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
 
         {/* LEFT COLUMN — wrapped per Frame 1171277892 (border, padding, gap) */}
-        <div className="flex flex-col gap-3 pt-5 pr-2.5 pb-5 pl-2.5 rounded-lg border border-[#E8E6E0]">
+        <div className="flex flex-col gap-3 pt-5 pr-2.5 pb-5 pl-2.5 rounded-lg border border-border">
 
           {/* Scanner placeholder — "Scanner" component: 470x260, radius 10, bg #0E0A14 */}
           <div className="relative aspect-470/260 bg-[#0E0A14] rounded-lg overflow-hidden flex items-center justify-center">
@@ -151,7 +182,7 @@ export default function CheckInContent() {
           <Button
             onClick={() => setIsScannerOpen(true)}
             className="w-full bg-[#0F6E56] hover:bg-[#0A5240] h-12 text-base font-medium rounded-lg flex items-center justify-center gap-2"
-            disabled={isScanning}
+            disabled={isScanning || !eventId}
           >
             {isScanning ? <Loader2 className="h-5 w-5 animate-spin" /> : <QrCode className="h-5 w-5" />}
             {isScanning ? 'Verifying...' : 'Scan'}

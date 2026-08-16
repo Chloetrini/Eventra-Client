@@ -1,219 +1,115 @@
-import type { Attendee, CheckInResponse, EventCheckInData, CheckInStats } from '@/types/check-in';
+import type { Attendee, CheckInResponse, EventCheckInData } from '@/types/check-in';
 import { api } from '@/lib/api';
+import { fetchMyEvents } from '@/lib/events-api';
+
+// ─── Real backend shapes ────────────────────────────────────────
+// GET /events/:eventId/attendees, POST /events/:eventId/check-in
+// (ticket.controller.ts's listEventAttendees / checkInTicket)
+
+type RealTicket = {
+  _id: string;
+  code: string;
+  type: 'free' | 'paid';
+  price: number;
+  attendeeName: string;
+  attendeeEmail: string;
+  status: 'valid' | 'checked_in' | 'cancelled' | 'refunded';
+  checkedInAt?: string | null;
+  ticketType?: { name: string } | null;
+};
+
+function mapTicketToAttendee(t: RealTicket, eventId: string, eventName: string): Attendee {
+  return {
+    id: t._id,
+    name: t.attendeeName,
+    email: t.attendeeEmail,
+    ticketType: t.type === 'free' ? 'RSVP' : (t.ticketType?.name ?? 'General'),
+    ticketReference: t.code,
+    checkedIn: t.status === 'checked_in',
+    checkedInAt: t.checkedInAt ?? null,
+    eventId,
+    eventName,
+    isScanned: t.status === 'checked_in',
+  };
+}
 
 // ─── API Endpoints ──────────────────────────────────────────────
 
 /**
- * Fetch all attendees for a specific event
- * GET /api/events/:eventId/attendees
+ * Fetch all attendees for a specific event, plus the counts that drive
+ * the "X of Y checked in" progress bar.
+ * GET /events/:eventId/attendees
  */
 export const fetchEventAttendees = async (eventId: string): Promise<EventCheckInData> => {
-  // ─── UNCOMMENT FOR REAL API ──────────────────────────────────
-  // const response = await api.get(`/events/${eventId}/attendees`);
-  // return response.data;
+  const [attendeesRes, myEvents] = await Promise.all([
+    api.get(`/events/${eventId}/attendees?limit=500`),
+    // Attendees endpoint doesn't include the event's title/cover image —
+    // both already live in the organizer's own event list, which
+    // react-query dedupes against every other page that fetches it.
+    fetchMyEvents(),
+  ]);
 
-  // ─── MOCK DATA (DELETE WHEN REAL API IS READY) ──────────────
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        eventId,
-        eventName: 'Afrobeats Night Market',
-        eventImage: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop', // replace with real event image field once wired to your API
-        stats: {
-          totalAttendees: 8,
-          checkedIn: 3,
-          remaining: 5,
-          checkInRate: 37.5,
-        },
-        recentScan: {
-          id: '6',
-          name: 'Fola Adeyemi',
-          email: 'folake@example.com',
-          ticketType: 'VIP',
-          ticketReference: 'EVT-TBL5',
-          checkedIn: true,
-          checkedInAt: '2024-02-14T13:45:00Z',
-          eventId,
-          eventName: 'Afrobeats Night Market',
-          tableNumber: '5',
-          ticketTier: 'VIP',
-          isScanned: true,
-        },
-        attendees: [
-          {
-            id: '1',
-            name: 'Ada Okafor',
-            email: 'ada@example.com',
-            ticketType: 'VIP',
-            ticketReference: 'EVT-BFQ2',
-            checkedIn: false,
-            checkedInAt: null,
-            eventId,
-            eventName: 'Afrobeats Night Market',
-            tableNumber: '5',
-            ticketTier: 'VIP',
-            isScanned: false,
-          },
-          {
-            id: '2',
-            name: 'Musa Ibrahim',
-            email: 'musa@example.com',
-            ticketType: 'Regular',
-            ticketReference: 'EVT-9qw1',
-            checkedIn: false,
-            checkedInAt: null,
-            eventId,
-            eventName: 'Afrobeats Night Market',
-            ticketTier: 'Regular',
-            isScanned: false,
-          },
-          {
-            id: '3',
-            name: 'Tunde Bello',
-            email: 'tunde@example.com',
-            ticketType: 'Regular',
-            ticketReference: 'EVT-1A20',
-            checkedIn: false,
-            checkedInAt: null,
-            eventId,
-            eventName: 'Afrobeats Night Market',
-            ticketTier: 'Regular',
-            isScanned: false,
-          },
-          {
-            id: '4',
-            name: 'Chioma Eze',
-            email: 'chioma@example.com',
-            ticketType: 'Regular',
-            ticketReference: 'EVT-77kp',
-            checkedIn: false,
-            checkedInAt: null,
-            eventId,
-            eventName: 'Afrobeats Night Market',
-            ticketTier: 'Regular',
-            isScanned: false,
-          },
-          {
-            id: '5',
-            name: 'Zainab Yusuf',
-            email: 'zainab@example.com',
-            ticketType: 'Regular',
-            ticketReference: 'EVT-882m',
-            checkedIn: false,
-            checkedInAt: null,
-            eventId,
-            eventName: 'Afrobeats Night Market',
-            ticketTier: 'Regular',
-            isScanned: false,
-          },
-          {
-            id: '6',
-            name: 'Fola Adeyemi',
-            email: 'folake@example.com',
-            ticketType: 'VIP',
-            ticketReference: 'EVT-TBL5',
-            checkedIn: true,
-            checkedInAt: '2024-02-14T13:45:00Z',
-            eventId,
-            eventName: 'Afrobeats Night Market',
-            tableNumber: '5',
-            ticketTier: 'VIP',
-            isScanned: true,
-          },
-          {
-            id: '7',
-            name: 'Oluwaseun Johnson',
-            email: 'seun@example.com',
-            ticketType: 'Regular',
-            ticketReference: 'EVT-3k9p',
-            checkedIn: false,
-            checkedInAt: null,
-            eventId,
-            eventName: 'Afrobeats Night Market',
-            ticketTier: 'Regular',
-            isScanned: false,
-          },
-          {
-            id: '8',
-            name: 'Amina Bello',
-            email: 'amina@example.com',
-            ticketType: 'Regular',
-            ticketReference: 'EVT-7h2q',
-            checkedIn: false,
-            checkedInAt: null,
-            eventId,
-            eventName: 'Afrobeats Night Market',
-            ticketTier: 'Regular',
-            isScanned: false,
-          },
-        ],
-      });
-    }, 500);
-  });
+  const body = attendeesRes.body as {
+    tickets: RealTicket[];
+    stats: { total: number; checkedIn: number; notIn: number };
+  };
+  const event = myEvents.find((e) => e._id === eventId);
+  const eventName = event?.eventTitle ?? 'Event';
+
+  return {
+    eventId,
+    eventName,
+    eventImage: event?.coverImage ?? null,
+    attendees: body.tickets.map((t) => mapTicketToAttendee(t, eventId, eventName)),
+    stats: {
+      totalAttendees: body.stats.total,
+      checkedIn: body.stats.checkedIn,
+      remaining: body.stats.notIn,
+      checkInRate: body.stats.total > 0 ? (body.stats.checkedIn / body.stats.total) * 100 : 0,
+    },
+  };
 };
 
 /**
- * Check-in an attendee by scanning QR code
- * POST /api/events/:eventId/check-in
+ * Check in an attendee by their ticket code — this is what both the QR
+ * scanner (decoded text) and manual lookup (ticket reference) actually
+ * submit; the backend has one check-in route, not two.
+ * POST /events/:eventId/check-in
  */
 export const checkInAttendee = async (
   eventId: string,
   ticketReference: string
 ): Promise<CheckInResponse> => {
-  // ─── UNCOMMENT FOR REAL API ──────────────────────────────────
-  // const response = await api.post(`/events/${eventId}/check-in`, {
-  //   ticketReference,
-  // });
-  // return response.data;
+  const res = await api.post(`/events/${eventId}/check-in`, { code: ticketReference });
+  const body = res.body as {
+    result: 'valid' | 'already_used' | 'invalid';
+    checkedInAt?: string | null;
+    ticket?: RealTicket;
+  };
 
-  // ─── MOCK DATA (DELETE WHEN REAL API IS READY) ──────────────
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (ticketReference.length < 3) {
-        reject(new Error('Invalid ticket reference'));
-      }
-      resolve({
-        success: true,
-        message: `Successfully checked in attendee`,
-        attendee: {
-          id: Date.now().toString(),
-          name: 'Scanned Attendee',
-          email: 'scanned@example.com',
-          ticketType: 'Regular',
-          ticketReference: ticketReference,
-          checkedIn: true,
-          checkedInAt: new Date().toISOString(),
-          eventId,
-          eventName: 'Afrobeats Night Market',
-          ticketTier: 'Regular',
-          isScanned: true,
-        },
-      });
-    }, 300);
-  });
+  if (body.result === 'invalid') {
+    throw new Error('Not a valid ticket for this event');
+  }
+  if (body.result === 'already_used') {
+    throw new Error('This ticket has already been checked in');
+  }
+
+  return {
+    success: true,
+    message: body.ticket?.attendeeName ? `${body.ticket.attendeeName} checked in` : 'Checked in',
+    attendee: body.ticket ? mapTicketToAttendee(body.ticket, eventId, '') : undefined,
+  };
 };
 
 /**
- * Manually check-in an attendee by ID
- * POST /api/events/:eventId/check-in/manual
+ * Manual lookup check-in — the backend has no separate "check in by
+ * attendee id" route, only check-in-by-ticket-code, so this reuses the
+ * same endpoint as the QR scanner. ticketReference is the attendee's
+ * ticket code (Attendee.ticketReference), not their database id.
  */
 export const manualCheckIn = async (
   eventId: string,
-  attendeeId: string
+  ticketReference: string
 ): Promise<CheckInResponse> => {
-  // ─── UNCOMMENT FOR REAL API ──────────────────────────────────
-  // const response = await api.post(`/events/${eventId}/check-in/manual`, {
-  //   attendeeId,
-  // });
-  // return response.data;
-
-  // ─── MOCK DATA (DELETE WHEN REAL API IS READY) ──────────────
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        success: true,
-        message: 'Attendee checked in successfully',
-      });
-    }, 300);
-  });
+  return checkInAttendee(eventId, ticketReference);
 };

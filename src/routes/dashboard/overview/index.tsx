@@ -99,7 +99,7 @@ export default function DashboardPage() {
         <TicketsByTypeChart data={data.ticketsByType} />
       </div>
 
-      <RecentEventsTable events={data.recentEvents} />
+      <RecentEventsTable events={data.recentEvents} onViewAll={() => navigate("/dashboard/events")} />
     </>
   );
 }

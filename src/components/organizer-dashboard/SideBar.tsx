@@ -122,9 +122,6 @@ const SideBar: React.FC<SideBarProps> = ({ organization }) => {
                 <item.icon className={`h-5 w-5 ${isActive ? 'text-[#0F6E56] dark:text-[#4ADE80]' : 'text-muted-foreground'}`} />
                 {item.label}
               </div>
-              {item.label === 'Attendees' && (
-                <span className="bg-[#F59E0B] text-white text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center">3</span>
-              )}
             </Link>
           );
         })}

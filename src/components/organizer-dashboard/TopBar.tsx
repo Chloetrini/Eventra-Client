@@ -35,9 +35,11 @@ const TopBar: React.FC<TopBarProps> = ({ organization, onCreateEvent, title }) =
 
         <div className="h-8 w-px bg-border mx-2" />
 
+        {/* No notifications backend exists yet — showing a permanently-on
+            dot here was pure decoration, not a real signal. Re-add it once
+            there's an actual notifications endpoint to drive it. */}
         <button className="relative text-muted-foreground hover:text-foreground transition-colors bg-muted border border-border p-2 rounded-lg">
           <Bell className="h-5 w-5" />
-          <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 bg-[#F59E0B] rounded-full border-2 border-card" />
         </button>
 
         <button

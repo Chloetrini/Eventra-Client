@@ -185,9 +185,9 @@ const CreateEventLayout = () => {
   return (
     <FormProvider {...methods}>
       <div className='h-full min-h-0'>
-        <div className='flex pt-10 h-full min-h-0'>
+        <div className='flex flex-col lg:flex-row gap-4 lg:gap-8 pt-4 lg:pt-10 h-full min-h-0'>
           <CreateEventSidebar />
-          <div className='flex-1 min-h-0 overflow-y-auto'>
+          <div className='flex-1 min-w-0 min-h-0 overflow-y-auto'>
             <Outlet />
           </div>
         </div>

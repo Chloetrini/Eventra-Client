@@ -79,7 +79,7 @@ export default function OrganizerEventHeader({
         <h1 className="text-2xl sm:text-3xl font-grotesk font-bold text-foreground tracking-tight">
           {event.title}
         </h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
             type="button"
             variant="outline"

@@ -546,16 +546,16 @@ const routes = [
                         },
                     },
                     {
-                        path: "check-in",
+                        path: "payouts",
                         handle: {
                             seo: {
-                                title: "Check-in",
-                                description: "Scan or enter a ticket code to check guests in.",
+                                title: "Payouts",
+                                description: "Track earnings per event and your payout history.",
                             }
                         },
                         lazy: async () => {
                             const { default: Component } =
-                                await import("@/routes/dashboard/check-in");
+                                await import("@/routes/dashboard/payouts");
                             return { Component };
                         },
                     },

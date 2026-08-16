@@ -18,6 +18,7 @@ import {
   type PromotionPackageId,
   type PromotionStatus,
 } from "@/lib/promotion-api"
+import { PromotionSkeleton } from "@/components/promotion-skeleton"
 
 const wherePromotedEventsAppear = [
   {
@@ -104,6 +105,10 @@ const Promotions = () => {
 
   const selectedPackage = packages.find(p => p.id === selectedPackageId)
   const effectivePackageId = selectedPackageId ?? (packages.find(p => p.popular)?.id ?? packages[0]?.id ?? null)
+
+  if (eventsLoading || packagesLoading) {
+    return <PromotionSkeleton />
+  }
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6">

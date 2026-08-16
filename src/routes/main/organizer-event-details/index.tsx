@@ -11,7 +11,7 @@ import TicketTypesTable from "@/components/organizer-dashboard/TicketTypesTable"
 import RecentAttendeesCard from "@/components/organizer-dashboard/RecentAttendeesCard";
 import PromotionsCard from "@/components/organizer-dashboard/PromotionsCard";
 import QuickActionsCard from "@/components/organizer-dashboard/QuickActionsCard";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { OrganizerEventDetailsSkeleton } from "@/components/organizer-event-details/organizer-event-details-skeleton";
 import { DeleteEventDialog } from "@/components/delete-event-dialog";
 import { CancelEventDialog } from "@/components/cancel-event-dialog";
 import { PostponeEventDialog } from "@/components/postpone-event-dialog";
@@ -120,8 +120,8 @@ export default function OrganizerEventDetailsRoute() {
 
   if (isLoading) {
     return (
-      <PageWrapper className="py-12 flex justify-center items-center">
-        <LoadingSpinner />
+      <PageWrapper className="py-6 px-4 md:px-8 max-w-6xl mx-auto">
+        <OrganizerEventDetailsSkeleton />
       </PageWrapper>
     );
   }

@@ -12,6 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 import { AttendeeList } from "@/components/attendee-list";
+import { AttendeesSkeleton } from "@/components/attendees-skeleton";
 import { useOrganizerStatus } from "@/lib/organizer-api";
 
 const FILTERS = [
@@ -87,11 +88,7 @@ export default function Attendees() {
   });
 
   if (eventsLoading || attendeesLoading) {
-    return (
-      <p className="text-center py-12 text-sm text-muted-foreground">
-        Loading Attendees...
-      </p>
-    );
+    return <AttendeesSkeleton />;
   }
   if (isError) {
     return (

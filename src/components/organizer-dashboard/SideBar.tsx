@@ -18,9 +18,7 @@ const navItems = [
   { icon: Calendar, label: 'Events', path: '/dashboard/events' },
   { icon: Users, label: 'Attendees', path: '/dashboard/attendees' },
   { icon: CheckSquare, label: 'Check-in', path: '/dashboard/check-in' },
-  // No payouts page exists yet — kept visible and styled like a normal
-  // nav item (not greyed out), but it doesn't go anywhere yet.
-  { icon: Wallet, label: 'Payouts', path: null },
+  { icon: Wallet, label: 'Payouts', path: '/dashboard/payouts' },
   { icon: Megaphone, label: 'Promotions', path: '/dashboard/promotion' },
 ];
 

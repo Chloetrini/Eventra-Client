@@ -6,6 +6,7 @@ import { AccountReviewBanner } from "@/components/account-review-banner";
 import { EventsHeader } from "@/components/events-header";
 import { EventsFilterBar } from "@/components/events-filter-bar";
 import { EventsTable } from "@/components/events-table";
+import { EventsSkeleton } from "@/components/events-skeleton";
 import { useEffect, useState } from "react";
 import { useOrganizerStatus } from "@/lib/organizer-api";
 
@@ -60,11 +61,7 @@ export default function Events() {
   });
 
   if (isLoading) {
-    return (
-      <p className="text-center py-12 text-sm text-muted-foreground">
-        Loading Events...
-      </p>
-    );
+    return <EventsSkeleton />;
   }
 
   if (isError) {

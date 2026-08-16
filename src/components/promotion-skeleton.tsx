@@ -3,7 +3,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
 export function PromotionSkeleton() {
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6 animate-pulse">
+    <div className="flex flex-col gap-6 animate-pulse">
       {/* Header */}
       <div className="space-y-2">
         <Skeleton className="h-3 w-10" />

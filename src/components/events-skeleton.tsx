@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function EventsSkeleton() {
   return (
-    <div className="max-w-[1145px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 animate-pulse">
+    <div className="space-y-6 animate-pulse">
       {/* Header */}
       <div className="flex flex-col min-[480px]:flex-row items-start justify-between gap-4">
         <div className="space-y-2 w-full min-[480px]:w-auto">

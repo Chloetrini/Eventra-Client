@@ -39,12 +39,16 @@ function combineDateAndTime(dateIso: string, timeIso: string): string {
 // Maps the wizard's frontend field names/shapes to what the backend Event
 // model actually expects. hasX toggles are UI-only — they gate which
 // underlying fields get sent, not fields the backend stores itself.
-function buildEventPayload(values: EventFormValues, categoryId: string) {
+// categoryId is optional here (unlike at submit time) because a draft can
+// be saved before every step — including category — has been filled in;
+// updateEventSchema on the backend is fully .partial(), so an omitted
+// category just leaves whatever was there before untouched.
+function buildEventPayload(values: EventFormValues, categoryId?: string) {
   const isOnline = values.locationType === "online"
 
   return {
     title: values.title,
-    category: categoryId,
+    ...(categoryId ? { category: categoryId } : {}),
     description: values.description,
     coverImage: values.coverImage,
     isOnline,
@@ -89,9 +93,11 @@ const Review = () => {
   const { currentStep, totalSteps } = useCreateEventStep()
   const navigate = useNavigate()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSavingDraft, setIsSavingDraft] = useState(false)
   const {
     handleSubmit,
     trigger,
+    getValues,
     formState: { isValid },
   } = useFormContext<EventFormValues>()
 
@@ -111,6 +117,21 @@ const Review = () => {
     trigger()
   }, [trigger])
 
+  // Reuse an existing draft id if one's already around (e.g. editing an
+  // in-progress event) rather than creating a duplicate event. Shared by
+  // both Submit and Save as draft — the only difference between the two
+  // is what happens *after* this (submitEventForApproval or nothing).
+  const getOrCreateEvent = async (eventType: EventFormValues["eventType"]): Promise<{ _id: string } | null> => {
+    const existingEventId = getCreatedEventId()
+    if (existingEventId) return { _id: existingEventId }
+    try {
+      return await createEvent({ type: eventType })
+    } catch {
+      toast.error("Couldn't create your event. Please try again.")
+      return null
+    }
+  }
+
   const onSubmit = async (values: EventFormValues) => {
     setIsSubmitting(true)
     try {
@@ -120,21 +141,8 @@ const Review = () => {
         return
       }
 
-      // Reuse an existing draft id if one's already around (e.g. editing
-      // an in-progress event) rather than creating a duplicate event.
-      const existingEventId = getCreatedEventId()
-      let event: { _id: string }
-
-      if (existingEventId) {
-        event = { _id: existingEventId }
-      } else {
-        try {
-          event = await createEvent({ type: values.eventType })
-        } catch {
-          toast.error("Couldn't create your event. Please try again.")
-          return
-        }
-      }
+      const event = await getOrCreateEvent(values.eventType)
+      if (!event) return
 
 try {
   await updateEvent(event._id, buildEventPayload(values, categoryId))
@@ -230,6 +238,77 @@ try {
     }
   }
 
+  // Same underlying save as Submit — create/reuse the draft, patch its
+  // fields, sync whatever ticket rows are actually filled in — just without
+  // the final submitEventForApproval call, and without requiring the whole
+  // form to be valid first (that's the entire point of a draft: it's fine
+  // to leave it unfinished and come back later via Events > Edit).
+  const handleSaveDraft = async () => {
+    setIsSavingDraft(true)
+    try {
+      const values = getValues()
+
+      if (!values.eventType) {
+        toast.error("Pick an event type before saving.")
+        return
+      }
+
+      const categoryId = categories.find((c) => c.name === values.category)?._id
+
+      const event = await getOrCreateEvent(values.eventType)
+      if (!event) return
+
+      try {
+        await updateEvent(event._id, buildEventPayload(values, categoryId))
+      } catch (err: any) {
+        console.error("updateEvent (draft) failed:", err.message)
+        toast.error("Couldn't save your draft. Please try again.")
+        return
+      }
+
+      // Best-effort ticket sync — only rows that already look complete;
+      // an incomplete row is just left for later rather than blocking the
+      // whole draft save or sending the backend a half-filled ticket type.
+      if (values.eventType === "paid" && values.tickets.length > 0) {
+        const isCompleteTicket = (t: (typeof values.tickets)[number]) =>
+          Boolean(t.name) &&
+          Number.isFinite(Number(t.price)) &&
+          Number.isFinite(Number(t.quantity)) &&
+          Number(t.quantity) > 0
+
+        const toPayload = (ticket: (typeof values.tickets)[number]) => ({
+          name: ticket.name!,
+          price: Number(ticket.price),
+          quantity: Number(ticket.quantity),
+          purchaseLimitPerPerson:
+            ticket.purchaseLimitPerPerson !== undefined
+              ? Number(ticket.purchaseLimitPerPerson)
+              : undefined,
+        })
+
+        const completeTickets = values.tickets.filter(isCompleteTicket)
+        const creates = completeTickets.filter((t) => !t.id)
+        const updates = completeTickets.filter((t) => t.id)
+
+        try {
+          await Promise.allSettled([
+            ...creates.map((ticket) => createTicketType(event._id, toPayload(ticket))),
+            ...updates.map((ticket) => updateTicketType(event._id, ticket.id!, toPayload(ticket))),
+          ])
+        } catch {
+          // Non-fatal for a draft — the event itself is already saved.
+        }
+      }
+
+      toast.success("Draft saved")
+      localStorage.removeItem(CREATE_EVENT_STORAGE_KEY)
+      clearCreatedEventId()
+      navigate("/dashboard/events")
+    } finally {
+      setIsSavingDraft(false)
+    }
+  }
+
   return (
     <PageWrapper className='pl-[16px] pr-[34px]'>
       <div>
@@ -244,9 +323,12 @@ try {
         <PageSwitcher
           backOnClick={() => navigate("/dashboard/create-event/details")}
           showDraft
+          draftOnClick={handleSaveDraft}
+          draftText={isSavingDraft ? "Saving…" : "Save as draft"}
+          disableDraft={isSavingDraft || isSubmitting}
           showSubmit
           submitOnClick={handleSubmit(onSubmit)}
-          disableSubmit={!isValid || isSubmitting} />
+          disableSubmit={!isValid || isSubmitting || isSavingDraft} />
       </div>
     </PageWrapper>
   )

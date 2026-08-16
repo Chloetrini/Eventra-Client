@@ -74,7 +74,7 @@ export default function CheckInContent() {
 
   if (!eventsLoading && events.length === 0) {
     return (
-      <div className="max-w-[700px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <div className="space-y-6">
         <AccountReviewBanner status={status} />
         <p className="text-sm text-muted-foreground text-center py-12">
           You don't have any events to check guests in for yet.
@@ -103,7 +103,7 @@ export default function CheckInContent() {
   }
 
   return (
-    <div className="space-y-6 pb-8 max-w-7xl mx-auto px-4 sm:px-6 relative">
+    <div className="space-y-6 pb-8 relative">
       {/* Status Banner */}
       <AccountReviewBanner status={status} />
 

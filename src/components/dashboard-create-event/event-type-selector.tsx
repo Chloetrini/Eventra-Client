@@ -1,7 +1,7 @@
 import tickets from '@/assets/tickets.png'
 import freestar from '@/assets/freestar.png'
 import { Controller, type Control, type FieldValues, type Path } from 'react-hook-form'
-import { cn } from '@/services/utils'
+import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { AlertTriangle } from 'lucide-react'

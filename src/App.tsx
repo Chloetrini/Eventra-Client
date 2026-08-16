@@ -3,7 +3,7 @@ import { ToastContainer, Bounce } from 'react-toastify';
 import { QueryClientProvider } from '@tanstack/react-query'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { router } from './routes'
-import { queryClient } from './services/utils';
+import { queryClient } from './lib/utils';
 import { AuthProvider } from '@/context/auth.context';
 import { ThemeProvider } from '@/context/theme.context';
 

@@ -1,7 +1,7 @@
 import { useFormContext, useWatch } from "react-hook-form"
 import { useLocation } from "react-router"
 import { stepsFlow } from "@/components/onboarding/sidebar"
-import { ORGANISATION_FIELDS, BANK_FIELDS, type OnboardingValues } from "@/services/schema"
+import { ORGANISATION_FIELDS, BANK_FIELDS, type OnboardingValues } from "@/lib/schema"
 
 /**
  * Shared by the sidebar and the mobile drawer so clicking a step directly

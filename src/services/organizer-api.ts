@@ -1,5 +1,5 @@
 import { api } from "@/services/api";
-import { formatCompactNaira } from "@/services/utils";
+import { formatCompactNaira } from "@/lib/utils";
 import type {
   DashboardData,
   DashboardEvent,

@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/services/utils";
+import { cn } from "@/lib/utils";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 import { AttendeeList } from "@/components/attendee-list";
 import { AttendeesSkeleton } from "@/components/skeletons/attendees-skeleton";

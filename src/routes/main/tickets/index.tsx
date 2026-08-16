@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams } from "react-router";
 import { TicketCard } from "@/components/tickets/ticket-card";
-import { cn } from "@/services/utils";
+import { cn } from "@/lib/utils";
 import PageWrapper from "@/components/page-wrapper";
 import { useEffect } from "react";
 import { useAuth } from "@/context/auth.context";

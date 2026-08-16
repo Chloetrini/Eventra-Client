@@ -2,12 +2,12 @@ import BasicsForm from '@/components/dashboard-create-event/basics-form'
 import { useCreateEventStep } from '@/components/dashboard-create-event/create-event-sidebar'
 import PageSwitcher from '@/components/onboarding/page-switcher'
 import PageWrapper from '@/components/page-wrapper'
-import { BASICS_FIELDS, type EventFormValues } from '@/services/schema'
+import { BASICS_FIELDS, type EventFormValues } from '@/lib/schema'
 import { useFormContext } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import { updateEvent, getCreatedEventId } from '@/services/create-event-api'
+
 
 const Basics = () => {
   const { currentStep, totalSteps } = useCreateEventStep()

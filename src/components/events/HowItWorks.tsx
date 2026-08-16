@@ -1,5 +1,5 @@
 import React from "react";
-import { UI_ASSETS } from "@/services/assets";
+import { UI_ASSETS } from "@/lib/assets";
 
 const steps = [
   {

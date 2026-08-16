@@ -12,7 +12,7 @@ import {
   Sun,
   Moon,
 } from "lucide-react"
-import { cn } from "@/services/utils"
+import { cn } from "@/lib/utils"
 import PageWrapper from "../page-wrapper"
 import { useAuth } from "@/context/auth.context"
 import { useTheme } from "@/context/theme.context"

@@ -2,7 +2,7 @@
 
 import { Switch } from "@/components/ui/switch"
 import { Controller, type Control, type FieldValues, type Path } from "react-hook-form"
-import { cn } from "@/services/utils"
+import { cn } from "@/lib/utils"
 
 type SwitchInputProps<T extends FieldValues> = {
   name: Path<T>

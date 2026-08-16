@@ -4,7 +4,7 @@ import { useFormContext, useWatch } from 'react-hook-form'
 import { FormBox } from '../ui/form-box'
 import LocationMap from './location-map'
 import mapPin from '@/assets/map-pin.png'
-import { nigerianStates } from "@/services/constants"
+import { nigerianStates } from "@/lib/constants"
 
 
 const LocationForm = () => {

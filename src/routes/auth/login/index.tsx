@@ -11,7 +11,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { loginSchema } from "@/services/schema";
+import { loginSchema } from "@/lib/schema";
 import EventraLogo from "@/assets/Eventra-logo.png";
 import { authPath } from "@/services/auth-path";
 import type { User } from "@/context/auth.context";

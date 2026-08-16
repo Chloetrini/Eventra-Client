@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Alert, AlertTitle, AlertDescription, AlertAction } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { cn, formatDate } from "@/services/utils"
+import { cn, formatDate } from "@/lib/utils"
 import { fetchMyEvents } from "@/services/events-api"
 import { useOrganizerStatus } from "@/services/organizer-api"
 import {

@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Button } from '../ui/button';
-import { profileSchema }  from "@/services/schema";
+import { profileSchema }  from "@/lib/schema";
 
 
 type ProfileFormValues = z.infer<typeof profileSchema>;

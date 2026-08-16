@@ -1,7 +1,7 @@
 import { useAuth } from "@/context/auth.context";
 import { EventCard } from "./event-card";
 import { EventCardSkeleton } from "./event-card-skeleton";
-import { cn } from "@/services/utils";
+import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event-types";
 
 type EventGridProps = {

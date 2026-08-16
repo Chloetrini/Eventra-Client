@@ -2,11 +2,11 @@ import { z } from "zod";
 import { api } from "@/services/api";
 import {
   eventSchema,
-} from "@/services/schema";
+} from "@/lib/schema";
 import { type Event, type EventFilters } from "@/types/event-types";
 import type { Attendee } from "@/types/attendees";
 import type { OrganizerEventDetails } from "@/types/organizer-event";
-import { formatDate } from "@/services/utils";
+import { formatDate } from "@/lib/utils";
 export type EventsResponse = {
   events: Event[];
   total: number;

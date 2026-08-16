@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
-import { HERO_DATA, AVATAR_IMAGES } from "@/services/organizer-constants"; // import avatar images
+import { HERO_DATA, AVATAR_IMAGES } from "@/lib/organizer-constants"; // import avatar images
 import { Star } from "lucide-react";
 import image from '@/assets/image-12.png'
 // import { Dot } from "lucide-react";

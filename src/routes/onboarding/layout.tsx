@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Outlet } from "react-router"
 import OnboardingNavbar from "@/components/onboarding/navbar"
 import OnboardingSidebar from "@/components/onboarding/sidebar"
-import { onboardingSchema, type OnboardingValues } from "@/services/schema"
+import { onboardingSchema, type OnboardingValues } from "@/lib/schema"
 
 export const ONBOARDING_STORAGE_KEY = "eventra-onboarding"
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { FormBox } from "@/components/ui/form-box"
 import { useFormContext } from "react-hook-form"
-import { nigerianStates } from "@/services/constants"
+import { nigerianStates } from "@/lib/constants"
 import type { OnboardingValues } from "@/services/schema"
 import { fetchCategories, type EventCategory } from "@/services/create-event-api"
 import city from "@/assets/city.png"

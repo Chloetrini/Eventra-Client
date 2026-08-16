@@ -1,5 +1,5 @@
 
-import {  ticketTypeSchema } from "@/services/schema";
+import {  ticketTypeSchema } from "@/lib/schema";
 import type { EventTickets } from "@/types/ticket-tiers";
 import type { Ticket } from "@/types/ticket";
 import { api } from "@/services/api";

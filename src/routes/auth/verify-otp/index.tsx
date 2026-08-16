@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import { Button } from "@/components/ui/button";
-import { verifyEmailSchema } from "@/services/schema";
+import { verifyEmailSchema } from "@/lib/schema";
 import EventraLogo from "@/assets/Eventra-logo.png";
 import { authPath } from "@/services/auth-path";
 import { useAuth } from "@/context/auth.context";

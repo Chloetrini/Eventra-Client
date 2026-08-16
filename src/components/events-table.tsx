@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { formatCompactNaira, formatDateTime, formatNaira } from "@/services/utils";
+import { formatCompactNaira, formatDateTime, formatNaira } from "@/lib/utils";
 import type { Event } from "@/types/event";
 import GemImage from "@/assets/Group 8.png";
 import { EventActionsMenu } from "@/components/event-actions-menu";

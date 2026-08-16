@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { type Event } from "@/types/event-types";
 import { type TicketTier } from "@/types/ticket-tiers";
-import { formatPrice } from "@/services/utils";
-import { cn } from "@/services/utils";
+import { formatPrice } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -190,11 +190,11 @@ export const PaidEventTicket = ({
       <div className="space-y-2 text-sm">
         <div className="flex items-center justify-between text-muted-foreground">
           <span>Subtotal</span>
-          <span>{formatPrice(subtotal)}</span>
+          <span>{subtotal === 0 ? "₦0" : formatPrice(subtotal)}</span>
         </div>
         <div className="flex items-center justify-between text-muted-foreground">
           <span>Service fee ({feePercent}%)</span>
-          <span>{formatPrice(serviceFee)}</span>
+          <span>{serviceFee === 0 ? "₦0" : formatPrice(serviceFee)}</span>
         </div>
         <div className="flex items-center justify-between font-bold">
           <span>Total</span>

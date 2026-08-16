@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 
 // Fallback images for categories, keyed by category name.
 // Extend this map as more categories get their own art, or fall back to a generic one.
-import { UI_ASSETS } from "@/services/assets";
+import { UI_ASSETS } from "@/lib/assets";
 
 const CATEGORY_IMAGE_MAP: Record<string, string> = {
   "Music & Concerts": UI_ASSETS.concert,

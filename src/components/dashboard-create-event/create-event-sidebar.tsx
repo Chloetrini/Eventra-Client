@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router"
 import { useFormContext } from "react-hook-form"
 import type { Path } from "react-hook-form"
-import type { EventFormValues } from "@/services/schema"
+import type { EventFormValues } from "@/lib/schema"
 import {
     TYPE_FIELDS,
     BASICS_FIELDS,
@@ -9,7 +9,7 @@ import {
     RSVP_FIELDS,
     TICKETS_FIELDS,
     DETAILS_FIELDS,
-} from "@/services/schema"
+} from "@/lib/schema"
 
 export const createEventFlow = [
     {

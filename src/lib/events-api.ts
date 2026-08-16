@@ -133,6 +133,7 @@ type RealMyEvent = {
   type: "free" | "paid";
   status: string;
   startDate?: string;
+  endDate?: string;
   capacity?: number | null;
   ticketsSoldCount?: number;
   reservationsCount?: number;
@@ -156,7 +157,12 @@ function mapMyEventStatus(e: RealMyEvent): "Live" | "Draft" | "Pending" | "Sold 
 
   const sold = e.type === "free" ? e.reservationsCount ?? 0 : e.ticketsSoldCount ?? 0;
   if (e.capacity != null && sold >= e.capacity) return "Sold out";
-  if (e.startDate && new Date(e.startDate).getTime() < Date.now()) return "Past";
+  // Use endDate when the event has one (a multi-day event that started
+  // in the past but hasn't finished yet is still "Live", not "Past") —
+  // falls back to startDate for single-day events. Mirrors the backend's
+  // own deriveEventDisplayStatus (eventStatus.ts).
+  const endsAt = e.endDate ?? e.startDate;
+  if (endsAt && new Date(endsAt).getTime() < Date.now()) return "Past";
   return "Live";
 }
 

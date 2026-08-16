@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react"
 import { FormBox } from "@/components/ui/form-box"
 import { useFormContext } from "react-hook-form"
-import { nigerianStates } from "@/lib/constants"
-import type { OnboardingValues } from "@/lib/schema"
+import { nigerianStates } from "@/services/constants"
+import type { OnboardingValues } from "@/services/schema"
+import { fetchCategories, type EventCategory } from "@/services/create-event-api"
 import city from "@/assets/city.png"
 import Tag from "@/assets/Tag.png"
 import location from "@/assets/location.png"
@@ -15,6 +17,29 @@ const OrganisationForm = () => {
         register,
         formState: { errors },
     } = useFormContext<OnboardingValues>()
+
+    const [categories, setCategories] = useState<EventCategory[]>([])
+    const [categoriesLoading, setCategoriesLoading] = useState(true)
+    const [categoriesError, setCategoriesError] = useState(false)
+
+    useEffect(() => {
+        let cancelled = false
+        fetchCategories()
+            .then((data) => {
+                if (!cancelled) setCategories(data)
+            })
+            .catch(() => {
+                if (!cancelled) setCategoriesError(true)
+            })
+            .finally(() => {
+                if (!cancelled) setCategoriesLoading(false)
+            })
+        return () => {
+            cancelled = true
+        }
+    }, [])
+
+    const categoryOptions = categories.map((category) => category.name)
 
     return (
         <div>
@@ -50,15 +75,27 @@ const OrganisationForm = () => {
                             inputType="select"
                             type="select"
                             label="CATEGORY"
-                            placeholder="Select category"
+                            placeholder={
+                                categoriesLoading
+                                    ? "Loading categories…"
+                                    : categoriesError
+                                    ? "Couldn't load categories"
+                                    : "Select category"
+                            }
                             id="category"
                             errors={errors.category}
                             name="category"
                             classname="w-full"
                             borderStyle="onboarding"
                             register={register}
-                            options={["Music & concerts", "Option 2", "Option 3"]}
+                            options={categoryOptions}
+                            disabled={categoriesLoading || categoriesError}
                         />
+                        {categoriesError && (
+                            <p className="text-xs text-destructive mt-1">
+                                Couldn't load categories. Refresh the page to try again.
+                            </p>
+                        )}
                     </span>
 
                     <span className="h-full w-full relative">

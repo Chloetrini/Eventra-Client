@@ -1,9 +1,21 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
+import { clearCreatedEventId } from "@/services/create-event-api";
+import { CREATE_EVENT_STORAGE_KEY } from "@/routes/dashboard/create-event/layout";
 
 export function EventsHeader() {
   const navigate = useNavigate()
+
+  const handleCreateEvent = () => {
+    // This button always means "start a brand new event" — clear any
+    // abandoned draft so the wizard doesn't resume old data (or a
+    // since-deleted event's id) instead of starting fresh.
+    clearCreatedEventId();
+    localStorage.removeItem(CREATE_EVENT_STORAGE_KEY);
+    navigate("/dashboard/create-event/type");
+  };
+
   return (
     <div className="flex flex-col min-[480px]:flex-row items-start min-[480px]:items-start justify-between gap-4">
       <div>
@@ -18,7 +30,7 @@ export function EventsHeader() {
         </p>
       </div>
 
-      <Button  onClick={()=> navigate("/dashboard/create-event/type")} className="bg-[#0F6E56] rounded-[7px] text-[13px] px-4 py-3 hover:bg-[#0F6E56]/90 text-[#FFFFFF] mt-8 font-bold font-700 py-4 gap-1.5 shrink-0 w-full min-[480px]:w-auto">
+      <Button  onClick={handleCreateEvent} className="bg-[#0F6E56] rounded-[7px] text-[13px] px-4 py-3 hover:bg-[#0F6E56]/90 text-[#FFFFFF] mt-8 font-bold font-700 py-4 gap-1.5 shrink-0 w-full min-[480px]:w-auto">
         <Plus className="size-3" />
         Create Event
       </Button>

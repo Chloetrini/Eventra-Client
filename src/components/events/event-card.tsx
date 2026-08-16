@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 import { Heart, ArrowUpRight, Star } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/services/utils";
 import type { Event } from "@/types/event-types";
-import { formatNaira } from "@/lib/utils"
+import { formatNaira } from "@/services/utils"
 import { useAuthGate } from "@/context/auth.gate";
 
 type EventCardProps = {

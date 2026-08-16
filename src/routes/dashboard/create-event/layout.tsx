@@ -1,16 +1,17 @@
 import CreateEventSidebar from '@/components/dashboard-create-event/create-event-sidebar'
-import { Outlet } from 'react-router'
+import { Outlet, useNavigate } from 'react-router'
 import { FormProvider, useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { eventFormSchema, type EventFormValues } from '@/lib/schema'
+import { eventFormSchema, type EventFormValues } from '@/services/schema'
 import { useSearchParams } from "react-router";
-import { useEffect, useState } from "react";
-import { getEvent, setCreatedEventId } from "@/lib/create-event-api";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
+import { getEvent, getCreatedEventId, setCreatedEventId, clearCreatedEventId, fetchTicketTypesForEvent, fetchCategories, type EventCategory } from "@/services/create-event-api";
 export const CREATE_EVENT_STORAGE_KEY = 'eventra-create-event'
 
 const emptyValues: EventFormValues = {
   eventType: undefined as any,
-  eventName: '',
+  title: '',
   category: '',
   date: '',
   startTime: '',
@@ -20,17 +21,25 @@ const emptyValues: EventFormValues = {
   locationType: 'physical',
   venueName: '',
   address: '',
-  platform: '',
-  link: '',
+  city: '',
+  state: '',
+  onlinePlatform: '',
+  onlineJoinLink: '',
   hasRsvpLimit: false,
   rsvpLimit: undefined,
   hasLineup: false,
-  acts: [],
-  hasGallery: false,
-  photos: [],
+  acts: [{
+    name: '',
+    role: '',
+    imageUrl: ''
+  }],
+  // hasGallery: false,
+  // photos: [],
   hasAgePolicy: false,
   policyText: '',
   hasRefundPolicy: false,
+  refundPolicyType: undefined,
+  refundDaysBefore: undefined,
   tickets: []
 }
 
@@ -50,20 +59,48 @@ const CreateEventLayout = () => {
     defaultValues: { ...emptyValues, ...getSavedValues() },
   })
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const editEventId = searchParams.get("eventId");
   const [isLoadingEdit, setIsLoadingEdit] = useState(Boolean(editEventId));
+  const hasCheckedStaleDraft = useRef(false);
 
   useEffect(() => {
     if (!editEventId) return;
 
-    setCreatedEventId(editEventId);
+    Promise.all([
+      getEvent(editEventId),
+      // Free events / events with no ticket types yet -> empty list rather
+      // than failing the whole edit load (backend 404s ticket-types for
+      // free events, since getOwnedPaidEvent only allows paid ones).
+      fetchTicketTypesForEvent(editEventId).catch(() => []),
+      // Needed to resolve event.category (which may come back as a raw
+      // ObjectId string rather than a populated { name } object) back to
+      // the category NAME the form/select actually matches on.
+      fetchCategories().catch(() => [] as EventCategory[]),
+    ]).then(([event, ticketTypes, categories]: [any, any[], EventCategory[]]) => {
+      // Only claim this event as "the" draft once we know it's real —
+      // committing it beforehand meant a broken/edit link could poison
+      // localStorage with an id that 404s on every future step.
+      setCreatedEventId(editEventId);
 
-    getEvent(editEventId).then((event: any) => {
-       console.log("LOADED EVENT FOR EDIT:", event);
+      const hasLineup = Array.isArray(event.lineup) && event.lineup.length > 0
+      const hasRefundPolicy = Boolean(event.refundPolicy && event.refundPolicy.type === "refund-until-days-before")
+
+      // event.category comes back as either a populated { name, ... }
+      // object or a raw ObjectId string depending on the endpoint — handle
+      // both. For the id case, resolve it against the fetched category
+      // list so the select (which stores/matches on category NAME, not id)
+      // actually lands on the right selected option instead of silently
+      // falling back to the first one.
+      const resolvedCategoryName =
+        typeof event.category === "object" && event.category?.name
+          ? event.category.name
+          : categories.find((c) => c._id === event.category)?.name ?? ""
+
       methods.reset({
         eventType: event.type,
-        eventName: event.title ?? "",
-        category: event.category?.name ?? event.category ?? "",
+        title: event.title ?? "",
+        category: resolvedCategoryName,
         date: event.startDate ?? "",
         startTime: event.startDate ?? "",
         endTime: event.endDate ?? "",
@@ -72,11 +109,71 @@ const CreateEventLayout = () => {
         locationType: event.isOnline ? "online" : "physical",
         venueName: event.venue?.name ?? "",
         address: event.venue?.address ?? "",
-        platform: event.onlinePlatform ?? "",
-        link: event.onlineJoinLink ?? "",
+        city: event.venue?.city ?? "",
+        state: event.venue?.state ?? "",
+        onlinePlatform: event.onlinePlatform ?? "",
+        onlineJoinLink: event.onlineJoinLink ?? "",
+        hasRsvpLimit: event.capacity !== undefined && event.capacity !== null,
+        rsvpLimit: event.capacity ?? undefined,
+        hasLineup,
+        acts: hasLineup
+          ? event.lineup.map((member: any) => ({
+              name: member.name ?? "",
+              role: member.role ?? "",
+              imageUrl: member.imageUrl ?? "",
+            }))
+          : [{ name: "", role: "", imageUrl: "" }],
+        hasAgePolicy: Boolean(event.agePolicy),
+        policyText: event.agePolicy ?? "",
+        hasRefundPolicy,
+        refundPolicyType: event.refundPolicy?.type,
+        refundDaysBefore: event.refundPolicy?.daysBefore,
+        tickets: ticketTypes.map((tt) => ({
+          id: tt._id,
+          name: tt.name,
+          price: tt.price,
+          quantity: tt.quantity,
+          purchaseLimitPerPerson: tt.purchaseLimitPerPerson,
+        })),
       });
       setIsLoadingEdit(false);
-    }).catch(() => setIsLoadingEdit(false));
+    }).catch(() => {
+      toast.error("Couldn't load that event — it may have been deleted.");
+      navigate("/dashboard/events");
+    });
+  }, [editEventId]);
+
+  // Not editing an existing event — but a previous, abandoned draft may
+  // still be cached in localStorage (its id + half-filled fields), left
+  // over from a session that never reached Review (the only place that
+  // clears it). If that draft was since deleted from the dashboard, or
+  // came from a wiped/different backend, Review would silently try to
+  // save onto an id that no longer exists ("Event not found") while the
+  // form shows stale data the user never asked to see. Verify the cached
+  // draft is still real before trusting it; if not, wipe it so "Create
+  // Event" actually starts fresh.
+  useEffect(() => {
+    if (editEventId || hasCheckedStaleDraft.current) return;
+    hasCheckedStaleDraft.current = true;
+
+    const cachedId = getCreatedEventId();
+    if (!cachedId) {
+      // No event id was ever committed, but the form-values watcher below
+      // mirrors every keystroke to localStorage regardless — including on
+      // the very first step, before Continue (and createEvent) has even
+      // been clicked. With no id to verify against the backend, the only
+      // safe move is to drop it: otherwise picking a type on this step
+      // alone is enough to leave data behind for whoever uses this device
+      // next.
+      localStorage.removeItem(CREATE_EVENT_STORAGE_KEY);
+      return;
+    }
+
+    getEvent(cachedId).catch(() => {
+      clearCreatedEventId();
+      localStorage.removeItem(CREATE_EVENT_STORAGE_KEY);
+      methods.reset(emptyValues);
+    });
   }, [editEventId]);
 
   useEffect(() => {
@@ -98,9 +195,9 @@ const CreateEventLayout = () => {
   return (
     <FormProvider {...methods}>
       <div className='h-full min-h-0'>
-        <div className='flex pt-10 h-full min-h-0'>
+        <div className='flex flex-col lg:flex-row gap-4 lg:gap-8 pt-4 lg:pt-10 h-full min-h-0'>
           <CreateEventSidebar />
-          <div className='flex-1 min-h-0 overflow-y-auto'>
+          <div className='flex-1 min-w-0 min-h-0 overflow-y-auto'>
             <Outlet />
           </div>
         </div>

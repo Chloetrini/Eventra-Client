@@ -8,16 +8,17 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Alert, AlertTitle, AlertDescription, AlertAction } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { cn, formatDate } from "@/lib/utils"
-import { fetchMyEvents } from "@/lib/events-api"
-import { useOrganizerStatus } from "@/lib/organizer-api"
+import { cn, formatDate } from "@/services/utils"
+import { fetchMyEvents } from "@/services/events-api"
+import { useOrganizerStatus } from "@/services/organizer-api"
 import {
   fetchPromotionPackages,
   fetchMyPromotions,
   requestPromotion,
   type PromotionPackageId,
   type PromotionStatus,
-} from "@/lib/promotion-api"
+} from "@/services/promotion-api"
+import { PromotionSkeleton } from "@/components/skeletons/promotion-skeleton"
 
 const wherePromotedEventsAppear = [
   {
@@ -105,8 +106,12 @@ const Promotions = () => {
   const selectedPackage = packages.find(p => p.id === selectedPackageId)
   const effectivePackageId = selectedPackageId ?? (packages.find(p => p.popular)?.id ?? packages[0]?.id ?? null)
 
+  if (eventsLoading || packagesLoading) {
+    return <PromotionSkeleton />
+  }
+
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6">
+    <div className="flex flex-col gap-6">
 
       <div>
         <p className="flex items-center gap-1.5 text-xs text-muted-foreground">

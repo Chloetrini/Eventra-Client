@@ -1,9 +1,9 @@
 import React from 'react';
-import HeroSection from '@/components/Organizer-page/HeroSection';
-import SectionTwo from '@/components/Organizer-page/SectionTwo';
-import SectionThree from '@/components/Organizer-page/SectionThree';
-import SectionFour from '@/components/Organizer-page/SectionFour';
-import PageWrapper from '@/components/pageWrapper';
+import HeroSection from '@/components/organizer-landing/HeroSection';
+import SectionTwo from '@/components/organizer-landing/SectionTwo';
+import SectionThree from '@/components/organizer-landing/SectionThree';
+import SectionFour from '@/components/organizer-landing/SectionFour';
+import PageWrapper from '@/components/page-wrapper';
 const OrganizerPage: React.FC = () => {
   return (
     <PageWrapper className='p-5'>

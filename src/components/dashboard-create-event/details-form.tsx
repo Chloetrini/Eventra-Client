@@ -1,10 +1,11 @@
-import type { EventFormValues } from "@/lib/schema"
+import type { EventFormValues } from "@/services/schema"
 import { FormBox } from "../ui/form-box"
-import { useFormContext, useFieldArray, useWatch } from "react-hook-form"
+import { useFormContext, useFieldArray, useWatch, type FieldError } from "react-hook-form"
+import { useEffect } from "react"
 import ActionBtn from "../ui/action-btn"
 import { CircleX } from "lucide-react"
 import ImageUploader from "../ui/image-uploader"
-import { FieldSuccess } from "../ui/field" // adjust path to wherever you place it
+import { FieldSuccess } from "../ui/field"
 
 
 const MAX_ACTS = 10
@@ -13,11 +14,12 @@ const DetailsForm = () => {
     const {
         register,
         control,
+        setValue,
         formState: { errors },
     } = useFormContext<EventFormValues>()
 
     const hasLineup = useWatch({ control, name: 'hasLineup' })
-    const hasGallery = useWatch({ control, name: 'hasGallery' })
+    // const hasGallery = useWatch({ control, name: 'hasGallery' })
     const hasAgePolicy = useWatch({ control, name: 'hasAgePolicy' })
 
     const { fields, append, remove } = useFieldArray({
@@ -25,8 +27,41 @@ const DetailsForm = () => {
         name: "acts",
     })
 
+    useEffect(() => {
+        if (hasLineup && fields.length === 0) {
+            append({ name: "", role: "", imageUrl: "" })
+        } else if (!hasLineup && fields.length > 0) {
+            remove()
+        }
+    }, [hasLineup, fields.length, append, remove])
+
+    useEffect(() => {
+        if (!hasAgePolicy) {
+            setValue("policyText", "", { shouldValidate: false, shouldDirty: false })
+        }
+    }, [hasAgePolicy, setValue])
+
     const hasRefundPolicy = useWatch({ control, name: 'hasRefundPolicy' })
+    const refundDaysBefore = useWatch({ control, name: 'refundDaysBefore' })
     const eventType = useWatch({ control, name: 'eventType' })
+
+    // "hasRefundPolicy" only ever means one thing on this form — refunds
+    // allowed up until some number of days before the event — so the
+    // policy type is derived from the switch rather than asking the
+    // organizer to pick it separately. Turning the switch off clears both
+    // the type and the days value, same pattern as hasAgePolicy/policyText above.
+    useEffect(() => {
+        if (hasRefundPolicy) {
+            setValue("refundPolicyType", "refund-until-days-before", { shouldValidate: false, shouldDirty: false })
+        } else {
+            setValue("refundPolicyType", undefined, { shouldValidate: false, shouldDirty: false })
+            setValue("refundDaysBefore", undefined, { shouldValidate: false, shouldDirty: false })
+        }
+    }, [hasRefundPolicy, setValue])
+
+    // Only counts as "complete" once there's a real, positive number of days
+    // — this is what gates the confirmation message below.
+    const hasValidRefundDays = Number(refundDaysBefore) > 0
 
 
     return (
@@ -55,23 +90,47 @@ const DetailsForm = () => {
                         {fields.map((field, index) => (
                             <div
                                 key={field.id}
-                                className="flex gap-5 items-center animate-in fade-in slide-in-from-top-2 duration-300 ease-out"
+                                className="flex gap-5 items-start animate-in fade-in slide-in-from-top-2 duration-300 ease-out"
                             >
-                                <FormBox
-                                    type="input"
-                                    inputType="input"
-                                    placeholder="Act/session Name"
-                                    id={`acts.${index}.name`}
-                                    name={`acts.${index}.name`}
-                                    register={register}
-                                    errors={errors.acts?.[index]?.name}
-                                    classname="w-full"
-                                />
+                                <div className="w-full border border-border p-5 rounded-[20px]">
+                                    <FormBox
+                                        type="input"
+                                        inputType="input"
+                                        placeholder="Act/session Name"
+                                        id={`acts.${index}.name`}
+                                        name={`acts.${index}.name`}
+                                        register={register}
+                                        errors={errors.acts?.[index]?.name}
+                                        classname="w-full"
+                                    />
+                                    <FormBox
+                                        type="input"
+                                        inputType="input"
+                                        placeholder="Role"
+                                        id={`acts.${index}.role`}
+                                        name={`acts.${index}.role`}
+                                        register={register}
+                                        errors={errors.acts?.[index]?.role}
+                                        classname="w-full"
+                                    />
+                                    <FormBox
+                                        type="imageUpload"
+                                        inputType="imageUpload"
+                                        control={control}
+                                        placeholder="Upload Photo"
+                                        id={`acts.${index}.imageUrl`}
+                                        name={`acts.${index}.imageUrl`}
+                                        register={register}
+                                        errors={errors.acts?.[index]?.imageUrl}
+                                        classname="mt-1"
+                                        imageVariant="avatar"
+                                    />
+                                </div>
                                 <button
                                     type="button"
                                     onClick={() => remove(index)}
                                 >
-                                    <CircleX className="w-7.5 h-7.5 hover:text-red-600 transition" />
+                                    <CircleX className={`w-7.5 h-7.5 transition hover:text-red-600`} />
                                 </button>
                             </div>
                         ))}
@@ -82,17 +141,17 @@ const DetailsForm = () => {
                                 type="button"
                                 onClick={() => {
                                     if (fields.length < MAX_ACTS) {
-                                        append({ name: "" })
+                                        append({ name: "", role: "", imageUrl: "" })
                                     }
                                 }}
                                 disabled={fields.length >= MAX_ACTS}
-                                classname="bg-white text-black border-[#E8E6E0] py-3 px-3.5 hover:text-white h-[46px] w-[119px] font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                                classname="bg-background text-foreground border border-border py-3 px-3.5 hover:text-white h-[46px] w-[119px] font-bold disabled:opacity-40 disabled:cursor-not-allowed"
                             />
                         </div>
                     </>
                 )}
             </div>
-            <div className="flex flex-col gap-4">
+            {/* <div className="flex flex-col gap-4">
 
                 <FormBox
                     inputType='switch'
@@ -113,16 +172,16 @@ const DetailsForm = () => {
                             type='text'
                             id="photos"
                             name="photos"
-                            // errors={errors.photos}
+                            errors={errors.photos as FieldError | undefined}
                             control={control}
                             register={register}
                             imagePreviewStyle='h-[527px] rounded-[20px]'
-                            imageDefaultStyle='h-[75px] hover:bg-[#E4F1EB]'
+                            imageDefaultStyle='h-[75px] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15'
                             placeholder='Add photos'
                         />
                     </div>
                 )}
-            </div>
+            </div> */}
             <div className="flex flex-col gap-4">
 
                 <FormBox
@@ -170,10 +229,27 @@ const DetailsForm = () => {
                             borderStyle='createEvent'
                             switchInputClassName='data-[state=checked]:!bg-[#0F6E56]'
                         />
+
                         {hasRefundPolicy && (
-                            <FieldSuccess className="animate-in fade-in slide-in-from-top-2 duration-300 ease-out">
-                                Refunds allowed until 3 days before
-                            </FieldSuccess>
+                            <div className="animate-in fade-in slide-in-from-top-2 duration-300 ease-out">
+                                <FormBox
+                                    type="number"
+                                    inputType="input"
+                                    placeholder="Days before the event"
+                                    id="refundDaysBefore"
+                                    name="refundDaysBefore"
+                                    register={register}
+                                    errors={errors.refundDaysBefore}
+                                    classname="w-full"
+                                    minValue={1}
+                                />
+
+                                {hasValidRefundDays && (
+                                    <FieldSuccess className="animate-in fade-in slide-in-from-top-2 duration-300 ease-out">
+                                        Refunds allowed until {refundDaysBefore} day(s) before
+                                    </FieldSuccess>
+                                )}
+                            </div>
                         )}
                     </div>
                 )}

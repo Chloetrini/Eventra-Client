@@ -7,12 +7,12 @@ import calendar from "@/assets/calendar.png";
 import rightArrow from "@/assets/rightArrow.png";
 import backward from "@/assets/backward.png";
 import PaymentBtn from "@/components/ui/pay-method-btn";
-import { formatDateTime } from "@/lib/utils";
+import { formatDateTime } from "@/services/utils";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { requestTicketRefund, cancelReservation } from "@/lib/tickets-api";
+import { requestTicketRefund, cancelReservation } from "@/services/tickets-api";
 import { useQueryClient } from "@tanstack/react-query";
-import { downloadEventIcs } from "@/lib/calendar";
+import { downloadEventIcs } from "@/services/calendar";
 interface TicketProps {
   ticket: Ticket;
   showActions?: boolean;

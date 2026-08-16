@@ -1,10 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import ActionBtn from "@/components/ui/action-btn"
-import { registerSchema } from "@/lib/schema"
+import { registerSchema } from "@/services/schema"
 import { z } from "zod"
 import { useState } from "react"
-import { api } from "@/lib/api"
+import { api } from "@/services/api"
 import { useMutation } from "@tanstack/react-query"
 import { FormBox } from "@/components/ui/form-box"
 import { toast } from "react-hot-toast"
@@ -25,17 +25,12 @@ export default function Register() {
     mutationFn: (data: registerSchemaType) => {
       return api.post('/auth/register', data)
     },
-    onSuccess: res => {
-      console.log("suss", res)
-    },
     onError: err => {
-      console.log("err", err)
       toast.error(err.message)
     },
   })
 
   const onFormSubmit = (data: registerSchemaType) => {
-    console.log(data)
     mutation.mutate(data)
   }
 

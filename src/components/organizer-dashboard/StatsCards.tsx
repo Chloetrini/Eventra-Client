@@ -19,8 +19,8 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, icon, change, subtext
         {icon}
       </div>
 
-      <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mt-1">{label}</p>
-      <p className="text-3xl font-bold text-foreground mt-2">{value}</p>
+      <p className="text-xs font-bold font-space text-muted-foreground uppercase tracking-wider mt-1">{label}</p>
+      <p className="text-3xl font-bold font-space text-foreground mt-2">{value}</p>
 
       <div className="flex items-center gap-2 mt-4 text-xs font-medium">
         {change !== undefined && (

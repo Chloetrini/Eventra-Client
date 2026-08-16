@@ -10,7 +10,8 @@ import {
   Megaphone,
   Settings,
   Home,
-  ChevronDown
+  ChevronDown,
+  X
 } from 'lucide-react';
 
 const navItems = [
@@ -18,9 +19,7 @@ const navItems = [
   { icon: Calendar, label: 'Events', path: '/dashboard/events' },
   { icon: Users, label: 'Attendees', path: '/dashboard/attendees' },
   { icon: CheckSquare, label: 'Check-in', path: '/dashboard/check-in' },
-  // No payouts page exists yet — kept visible and styled like a normal
-  // nav item (not greyed out), but it doesn't go anywhere yet.
-  { icon: Wallet, label: 'Payouts', path: null },
+  { icon: Wallet, label: 'Payouts', path: '/dashboard/payouts' },
   { icon: Megaphone, label: 'Promotions', path: '/dashboard/promotion' },
 ];
 
@@ -34,6 +33,12 @@ interface SideBarProps {
     name: string;
     logo?: string | null;
   };
+  // Below the `lg` breakpoint the sidebar renders as an off-canvas drawer
+  // instead of a permanent column — isOpen/onClose control that drawer.
+  // Both are optional so any other caller can keep rendering the desktop
+  // (always-visible) sidebar without wiring up the mobile state.
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 function getInitials(name?: string): string {
@@ -47,23 +52,46 @@ function getInitials(name?: string): string {
     .slice(0, 2);
 }
 
-const SideBar: React.FC<SideBarProps> = ({ organization }) => {
+const SideBar: React.FC<SideBarProps> = ({ organization, isOpen = false, onClose }) => {
   const location = useLocation();
   const orgInitials = getInitials(organization?.name);
   const navigate = useNavigate();
   return (
-    <aside className="w-64 bg-card border-r border-border flex flex-col h-screen">
+    <>
+      {/* Mobile backdrop — only rendered (and only intercepts clicks) while the drawer is open */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border flex flex-col h-screen transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
       {/* Logo Section */}
-      <div className="flex items-center gap-3 px-6 pt-6 pb-4">
-        <div className='flex flex-row items-center'>
-          <img src={EventraLogo} onClick={() => navigate('/')} alt="Eventra Logo" className="h-8 w-8" />
-          <span className="text-2xl font-[Schibsted Grotesk] font-bold text-foreground">Eventra</span>
+      <div className="flex items-center justify-between gap-3 px-6 pt-6 pb-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className='flex flex-row items-center'>
+            <img src={EventraLogo} onClick={() => navigate('/')} alt="Eventra Logo" className="h-8 w-8" />
+            <span className="text-2xl font-grotesk font-bold text-foreground">Eventra</span>
+          </div>
+          <div className="bg-[#BBE0CF] dark:bg-[#0F6E56]/15 px-2 py-0.5 rounded-[6px] shrink-0">
+            <p className="font-space text-[10px] font-bold text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-wider">
+              ORGANIZER
+            </p>
+          </div>
         </div>
-        <div className="bg-[#BBE0CF] dark:bg-[#0F6E56]/15 px-2 py-0.5 rounded-[6px]">
-          <p className="font-[Space Mono] text-[10px] font-bold text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-wider">
-            ORGANIZER
-          </p>
-        </div>
+        <button
+          onClick={onClose}
+          className="lg:hidden shrink-0 text-muted-foreground hover:text-foreground p-1"
+          aria-label="Close menu"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </div>
 
       {/* Organization Selector */}
@@ -113,6 +141,7 @@ const SideBar: React.FC<SideBarProps> = ({ organization }) => {
             <Link
               key={item.path}
               to={item.path}
+              onClick={onClose}
               className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
                   ? 'bg-[#EBF8F1] text-[#0F6E56] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]'
                   : 'text-muted-foreground hover:bg-accent'
@@ -122,9 +151,6 @@ const SideBar: React.FC<SideBarProps> = ({ organization }) => {
                 <item.icon className={`h-5 w-5 ${isActive ? 'text-[#0F6E56] dark:text-[#4ADE80]' : 'text-muted-foreground'}`} />
                 {item.label}
               </div>
-              {item.label === 'Attendees' && (
-                <span className="bg-[#F59E0B] text-white text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center">3</span>
-              )}
             </Link>
           );
         })}
@@ -137,6 +163,7 @@ const SideBar: React.FC<SideBarProps> = ({ organization }) => {
           <Link
             key={item.path}
             to={item.path}
+            onClick={onClose}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-accent transition-colors"
           >
             <item.icon className="h-5 w-5" />
@@ -144,7 +171,8 @@ const SideBar: React.FC<SideBarProps> = ({ organization }) => {
           </Link>
         ))}
       </div>
-    </aside>
+      </aside>
+    </>
   );
 };
 

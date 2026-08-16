@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchDashboard } from '@/lib/organizer-api';
+import { fetchDashboard } from '@/services/organizer-api';
 import type { RevenuePeriod } from '@/types/dashboard';
 
 export const DASHBOARD_QUERY_KEY = 'dashboard';

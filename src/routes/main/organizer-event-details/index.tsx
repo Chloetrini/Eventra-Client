@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { toast } from "react-toastify";
-import PageWrapper from "@/components/pageWrapper";
+import { useQueryClient } from "@tanstack/react-query";
+import PageWrapper from "@/components/page-wrapper";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 import OrganizerEventHeader from "@/components/organizer-dashboard/OrganizerEventHeader";
 import OrganizerEventHero from "@/components/organizer-dashboard/OrganizerEventHero";
@@ -10,21 +11,38 @@ import TicketTypesTable from "@/components/organizer-dashboard/TicketTypesTable"
 import RecentAttendeesCard from "@/components/organizer-dashboard/RecentAttendeesCard";
 import PromotionsCard from "@/components/organizer-dashboard/PromotionsCard";
 import QuickActionsCard from "@/components/organizer-dashboard/QuickActionsCard";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { OrganizerEventDetailsSkeleton } from "@/components/organizer-event-details/organizer-event-details-skeleton";
+import { DeleteEventDialog } from "@/components/dialogs/delete-event-dialog";
+import { CancelEventDialog } from "@/components/dialogs/cancel-event-dialog";
+import { PostponeEventDialog } from "@/components/dialogs/postpone-event-dialog";
 import { useOrganizerEventDetails } from "@/hooks/use-organizer-event-details";
-import { useOrganizerStatus } from "@/lib/organizer-api";
-import { deleteEvent } from "@/lib/events-api";
+import { useOrganizerStatus } from "@/services/organizer-api";
+import { deleteEvent, cancelEvent, postponeEvent } from "@/services/events-api";
+import { DASHBOARD_QUERY_KEY } from "@/hooks/useDashboard";
 
 export default function OrganizerEventDetailsRoute() {
   const { eventId } = useParams<{ eventId?: string }>();
   const navigate = useNavigate();
   const { status } = useOrganizerStatus();
+  const queryClient = useQueryClient();
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [confirmingCancel, setConfirmingCancel] = useState(false);
+  const [confirmingPostpone, setConfirmingPostpone] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [isPostponing, setIsPostponing] = useState(false);
 
   const {
     data: event,
     isLoading,
     isError,
   } = useOrganizerEventDetails(eventId);
+
+  const invalidateEventQueries = () => {
+    queryClient.invalidateQueries({ queryKey: ["my-events"] });
+    queryClient.invalidateQueries({ queryKey: ["events"] });
+    queryClient.invalidateQueries({ queryKey: [DASHBOARD_QUERY_KEY] });
+    queryClient.invalidateQueries({ queryKey: ["organizer-event-details", eventId] });
+  };
 
   const handleShare = async () => {
     if (!event) return;
@@ -46,15 +64,42 @@ export default function OrganizerEventDetailsRoute() {
     toast.success("Event link copied to clipboard");
   };
 
-  const handleDelete = async () => {
-    if (!event) return;
-    if (!window.confirm(`Delete "${event.title}"? This can't be undone.`)) return;
+  const handleDeleteConfirmed = async (id: string) => {
     try {
-      await deleteEvent(event.id);
+      await deleteEvent(id);
       toast.success("Event deleted");
+      invalidateEventQueries();
       navigate("/dashboard/events");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not delete event. Please try again.");
+    }
+  };
+
+  const handleCancelConfirmed = async (id: string, reason: string) => {
+    setIsCancelling(true);
+    try {
+      await cancelEvent(id, reason);
+      toast.success("Event cancelled. Attendees are being notified and refunded where paid.");
+      invalidateEventQueries();
+      setConfirmingCancel(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not cancel event. Please try again.");
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
+  const handlePostponeConfirmed = async (id: string, newStartDate: string, reason?: string) => {
+    setIsPostponing(true);
+    try {
+      await postponeEvent(id, newStartDate, reason);
+      toast.success("Event postponed. Attendees are being notified of the new date.");
+      invalidateEventQueries();
+      setConfirmingPostpone(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not postpone event. Please try again.");
+    } finally {
+      setIsPostponing(false);
     }
   };
 
@@ -75,8 +120,8 @@ export default function OrganizerEventDetailsRoute() {
 
   if (isLoading) {
     return (
-      <PageWrapper className="py-12 flex justify-center items-center">
-        <LoadingSpinner />
+      <PageWrapper className="py-6 px-4 md:px-8 max-w-6xl mx-auto">
+        <OrganizerEventDetailsSkeleton />
       </PageWrapper>
     );
   }
@@ -141,10 +186,37 @@ export default function OrganizerEventDetailsRoute() {
               navigate(`/dashboard/attendees?event=${event.id}`)
             }
             onEdit={() => navigate(`/dashboard/create-event/type?eventId=${event.id}`)}
-            onDelete={handleDelete}
+            onDelete={() => setConfirmingDelete(true)}
+            onCancel={() => setConfirmingCancel(true)}
+            onPostpone={() => setConfirmingPostpone(true)}
+            canCancel={event.canCancel}
+            canPostpone={event.canPostpone}
           />
         </div>
       </div>
+
+      <DeleteEventDialog
+        event={confirmingDelete ? { id: event.id, title: event.title } : null}
+        open={confirmingDelete}
+        onOpenChange={setConfirmingDelete}
+        onConfirm={handleDeleteConfirmed}
+      />
+
+      <CancelEventDialog
+        event={confirmingCancel ? { id: event.id, title: event.title } : null}
+        open={confirmingCancel}
+        onOpenChange={setConfirmingCancel}
+        onConfirm={handleCancelConfirmed}
+        isSubmitting={isCancelling}
+      />
+
+      <PostponeEventDialog
+        event={confirmingPostpone ? { id: event.id, title: event.title } : null}
+        open={confirmingPostpone}
+        onOpenChange={setConfirmingPostpone}
+        onConfirm={handlePostponeConfirmed}
+        isSubmitting={isPostponing}
+      />
     </PageWrapper>
   );
 }

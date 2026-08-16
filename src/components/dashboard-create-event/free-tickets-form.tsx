@@ -1,15 +1,23 @@
 import { FormBox } from '../ui/form-box'
 import { useFormContext, useWatch } from 'react-hook-form'
-import type { EventFormValues } from '@/lib/schema'
+import { useEffect } from 'react'
+import type { EventFormValues } from '@/services/schema'
 
 const FreeTicketsForm = () => {
     const {
         register,
         control,
+        resetField,
         formState: { errors },
     } = useFormContext<EventFormValues>()
 
     const hasRsvpLimit = useWatch({ control, name: 'hasRsvpLimit' })
+
+    useEffect(() => {
+        if (!hasRsvpLimit) {
+            resetField("rsvpLimit", { defaultValue: undefined })
+        }
+    }, [hasRsvpLimit, resetField])
 
     return (
         <div className='flex flex-col gap-5'>
@@ -29,10 +37,11 @@ const FreeTicketsForm = () => {
                 <div className='animate-in fade-in slide-in-from-top-2 duration-300 ease-out'>
                     <FormBox
                         inputType='input'
-                        type='text'
+                        type='number'
                         label='MAXIMUM SPOTS'
                         placeholder="e.g 200"
                         id="rsvpLimit"
+                        minValue={1}
                         errors={errors.rsvpLimit}
                         name="rsvpLimit"
                         classname="w-full"

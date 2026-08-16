@@ -3,7 +3,7 @@ import bag from '@/assets/bag.png'
 import paystackLogo from '@/assets/paystackLogo.png'
 import { FormBox } from '@/components/ui/form-box'
 import { useForm } from 'react-hook-form'
-import { checkoutSchema, type CheckoutFormValues } from '@/lib/schema'
+import { checkoutSchema, type CheckoutFormValues } from '@/services/schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Check, ChevronRight } from 'lucide-react'
 import PaymentBtn from '@/components/ui/pay-method-btn'
@@ -13,10 +13,10 @@ import hashTag from '@/assets/hash.png'
 import qrcode from '@/assets/qrcode2.png'
 import TicketPreview from '@/components/tickets/ticket-preview'
 import { useLocation, useNavigate, Link } from 'react-router'
-import PageWrapper from '@/components/pageWrapper'
+import PageWrapper from '@/components/page-wrapper'
 import { toast } from 'react-toastify'
-import { rsvpFreeEvent, initializeCheckout } from '@/lib/tickets-api'
-import { getExploreUrl } from '@/lib/explore.history'
+import { rsvpFreeEvent, initializeCheckout } from '@/services/tickets-api'
+import { getExploreUrl } from '@/services/explore-history'
 
 const Checkout = () => {
     const location = useLocation()
@@ -75,7 +75,6 @@ const Checkout = () => {
                 guestEmail: data.email,
                 guestPhone: data.phoneNumber,
             })
-            console.log("RSVP RESULT:", tickets)
             toast.success('Reservation confirmed')
             navigate('/payment/ticket-confirmation', {
                 state: { tickets, event: ticket, buyer: data, type: 'free' },

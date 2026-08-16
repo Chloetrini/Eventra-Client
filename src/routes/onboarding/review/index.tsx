@@ -4,10 +4,10 @@ import { useNavigate } from "react-router"
 import ReviewSummary from "@/components/onboarding/review-summary"
 import PageSwitcher from "@/components/onboarding/page-switcher"
 import { ONBOARDING_STORAGE_KEY } from "../layout"
-import { type OnboardingValues } from "@/lib/schema"
-import PageWrapper from "@/components/pageWrapper"
+import { type OnboardingValues } from "@/services/schema"
+import PageWrapper from "@/components/page-wrapper"
 import { toast } from "react-toastify"
-import { submitOrganizerProfileForReview } from "@/lib/onboarding-api"
+import { submitOrganizerProfileForReview } from "@/services/onboarding-api"
 
 const ReviewPage = () => {
     const navigate = useNavigate()

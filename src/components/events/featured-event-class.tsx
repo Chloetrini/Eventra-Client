@@ -1,7 +1,7 @@
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Event } from "@/types/event-types";
-import { formatNaira } from "@/lib/utils";
+import { formatNaira } from "@/services/utils";
 type FeaturedEventCardProps = {
   event: Event;
   onGetTickets?: (id: string) => void;

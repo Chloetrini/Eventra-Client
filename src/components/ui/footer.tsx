@@ -1,5 +1,5 @@
 import { NavLink } from "react-router"
-import PageWrapper from "@/components/pageWrapper";
+import PageWrapper from "@/components/page-wrapper";
 import { useState } from "react";
 import { toast } from "react-toastify";
 

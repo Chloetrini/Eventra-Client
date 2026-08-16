@@ -1,7 +1,7 @@
 import { useQuery, useInfiniteQuery, keepPreviousData } from "@tanstack/react-query";
-import { fetchEvents, fetchEventBySlug, fetchCategories } from "@/lib/events-api";
+import { fetchEvents, fetchEventBySlug, fetchCategories } from "@/services/events-api";
 import type { EventFilters } from "@/types/event-types";
-import { fetchEventTickets, fetchMyTickets } from "@/lib/tickets-api";
+import { fetchEventTickets, fetchMyTickets } from "@/services/tickets-api";
 
 export const eventKeys = {
   all: ["events"] as const,

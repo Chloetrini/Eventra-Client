@@ -2,11 +2,11 @@ import { useFormContext } from "react-hook-form"
 import { useNavigate } from "react-router"
 import OrganisationForm from "@/components/onboarding/organisation-form"
 import PageSwitcher from "@/components/onboarding/page-switcher"
-import { ORGANISATION_FIELDS, type OnboardingValues } from "@/lib/schema"
-import PageWrapper from "@/components/pageWrapper"
+import { ORGANISATION_FIELDS, type OnboardingValues } from "@/services/schema"
+import PageWrapper from "@/components/page-wrapper"
 import { useState } from "react"
 import { toast } from "react-toastify"
-import { saveOrganizerProfile } from "@/lib/onboarding-api"
+import { saveOrganizerProfile } from "@/services/onboarding-api"
 
 const OrganisationPage = () => {
     const navigate = useNavigate()

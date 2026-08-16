@@ -1,4 +1,4 @@
-import PageWrapper from "@/components/pageWrapper";
+import PageWrapper from "@/components/page-wrapper";
 import { useEventFilters } from "@/hooks/use-event-filters";
 import { useEvents, useCategories } from "@/hooks/use-event";
 import { EventGrid } from "@/components/events/event-grid";
@@ -11,7 +11,7 @@ import { useEffect, useMemo } from "react";
 import { ArrowRight } from "lucide-react";
 import { useSavedEvents } from "@/hooks/use-saved-events";
 import { useNavigate, useLocation } from "react-router";
-import { saveExploreUrl } from "@/lib/explore.history";
+import { saveExploreUrl } from "@/services/explore-history";
 
 export default function ExplorePage() {
   const navigate = useNavigate();

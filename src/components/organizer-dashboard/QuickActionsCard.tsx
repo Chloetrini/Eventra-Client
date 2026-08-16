@@ -6,6 +6,10 @@ interface QuickActionsCardProps {
   onViewAttendees?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  onCancel?: () => void;
+  onPostpone?: () => void;
+  canCancel?: boolean;
+  canPostpone?: boolean;
 }
 
 export default function QuickActionsCard({
@@ -13,6 +17,10 @@ export default function QuickActionsCard({
   onViewAttendees,
   onEdit,
   onDelete,
+  onCancel,
+  onPostpone,
+  canCancel,
+  canPostpone,
 }: QuickActionsCardProps) {
   return (
     <div className="rounded-2xl border border-border bg-card p-5 space-y-4 shadow-2xs">
@@ -47,6 +55,28 @@ export default function QuickActionsCard({
         >
           Edit
         </Button>
+
+        {canPostpone && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onPostpone}
+            className="h-8 rounded-lg px-3.5 text-xs font-semibold text-[#9A3412] border-[#FDE4C8] hover:bg-[#FDE4C8]/40 dark:border-[#9A3412]/40 dark:text-[#FDE4C8] dark:hover:bg-[#9A3412]/20"
+          >
+            Postpone
+          </Button>
+        )}
+
+        {canCancel && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            className="h-8 rounded-lg px-3.5 text-xs font-semibold text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-950/30"
+          >
+            Cancel event
+          </Button>
+        )}
 
         <Button
           type="button"

@@ -15,7 +15,7 @@ import {
   type Path,
 } from "react-hook-form"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/services/utils"
 
 type BorderStyle = "checkout" | "auth" | "onboarding" | "createEvent"
 

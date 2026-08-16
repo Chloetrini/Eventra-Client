@@ -12,8 +12,8 @@ import {
   Sun,
   Moon,
 } from "lucide-react"
-import { cn } from "@/lib/utils"
-import PageWrapper from "../pageWrapper"
+import { cn } from "@/services/utils"
+import PageWrapper from "../page-wrapper"
 import { useAuth } from "@/context/auth.context"
 import { useTheme } from "@/context/theme.context"
 import { UserAvatar } from "@/components/ui/user-avatar"

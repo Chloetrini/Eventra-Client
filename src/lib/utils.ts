@@ -1,7 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { QueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
+// import { format } from "date-fns";
+import type { EventEarning } from "@/types/OrganizerPayouts";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -40,9 +41,26 @@ export const formatPrice = (price: number) => {
   return `₦${price.toLocaleString()}`
 }
 
+export const formatMillions = (n: number): string => {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`
+  return n.toLocaleString()
+}
+
+// Extracts last 4 digits from a full account number string
+export const getLastFour = (accountNumber: string): string => {
+  return accountNumber.slice(-4)
+}
+
+// Calculates gross sales for one earning from its tier sales
+export const calcGrossSales = (earning: EventEarning): number => {
+  if (earning.isFree) return 0
+  return earning.tierSales.reduce((sum, t) => sum + t.price * t.quantitySold, 0)
+}
+
 // --- Chloe's formatters (restored after merge) ---
 export const formatDateTime = (eventDateTime: string, displayFormat: string) => {
-  return format(new Date(eventDateTime), displayFormat);
+  return (new Date(eventDateTime), displayFormat);
 };
 
 export const formatNaira = (amount: number): string =>

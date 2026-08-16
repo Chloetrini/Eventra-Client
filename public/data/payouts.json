@@ -1,0 +1,99 @@
+{
+  "accountStatus": "pending",
+  "payoutSetupStatus": "not_started",
+  "commissionPercent": 5,
+  "stats": {
+    "ticketsSoldChangePercent": 12,
+    "revenueChangePercent": 8,
+    "nextPayoutDays": 4
+  },
+  "earnings": [
+    {
+      "id": 1,
+      "eventId": 1,
+      "eventName": "Afrobeats Night Market",
+      "eventNumber": "No 0001",
+      "eventCategory": "CONCERTS",
+      "coverImageUrl": "/images/events/afrobeats-night-market.jpg",
+      "isFree": false,
+      "status": "held",
+      "tierSales": [
+        { "tierId": 1, "tierName": "Regular", "price": 15000, "quantitySold": 200 },
+        { "tierId": 2, "tierName": "VIP", "price": 35000, "quantitySold": 48 }
+      ]
+    },
+    {
+      "id": 2,
+      "eventId": 2,
+      "eventName": "Lagos Frontend Meetup",
+      "eventNumber": "No 0002",
+      "eventCategory": "CONFERENCES",
+      "coverImageUrl": "/images/events/lagos-frontend-meetup.jpg",
+      "isFree": false,
+      "status": "held",
+      "tierSales": [
+        { "tierId": 3, "tierName": "General", "price": 15000, "quantitySold": 400 },
+        { "tierId": 4, "tierName": "VIP", "price": 35000, "quantitySold": 142 }
+      ]
+    },
+    {
+      "id": 3,
+      "eventId": 3,
+      "eventName": "Afrobeats Night Market",
+      "eventNumber": "No 0003",
+      "eventCategory": "CONCERTS",
+      "coverImageUrl": "/images/events/afrobeats-night-market.jpg",
+      "isFree": false,
+      "status": "ready",
+      "tierSales": [
+        { "tierId": 5, "tierName": "Regular", "price": 15000, "quantitySold": 80 },
+        { "tierId": 6, "tierName": "VIP", "price": 35000, "quantitySold": 12 }
+      ]
+    },
+    {
+      "id": 4,
+      "eventId": 4,
+      "eventName": "Afrobeats Night Market",
+      "eventNumber": "No 0004",
+      "eventCategory": "CONCERTS",
+      "coverImageUrl": "/images/events/afrobeats-night-market.jpg",
+      "isFree": true,
+      "status": "free",
+      "tierSales": []
+    }
+  ],
+  "payoutHistory": [
+    {
+      "id": 1,
+      "date": "2026-01-20T00:00:00.000Z",
+      "amount": 1368000,
+      "bankName": "GTBank",
+      "accountNumber": "0123456321",
+      "status": "paid"
+    },
+    {
+      "id": 2,
+      "date": "2025-12-30T00:00:00.000Z",
+      "amount": 2100000,
+      "bankName": "GTBank",
+      "accountNumber": "0123456321",
+      "status": "paid"
+    },
+    {
+      "id": 3,
+      "date": "2025-12-02T00:00:00.000Z",
+      "amount": 850000,
+      "bankName": "GTBank",
+      "accountNumber": "0123456321",
+      "status": "paid"
+    },
+    {
+      "id": 4,
+      "date": "2025-11-18T00:00:00.000Z",
+      "amount": 3900000,
+      "bankName": "GTBank",
+      "accountNumber": "0123456321",
+      "status": "paid"
+    }
+  ]
+}

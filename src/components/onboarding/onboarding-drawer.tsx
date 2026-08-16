@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router"
 import { Menu, X } from "lucide-react"
 import { stepsFlow } from "./sidebar"
-import { useStepGuard } from "@/services/use-step-guard"
+import { useStepGuard } from "@/lib/use-step-guard"
 
 const OnboardingDrawer = () => {
     const navigate = useNavigate()

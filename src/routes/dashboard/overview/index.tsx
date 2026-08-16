@@ -4,7 +4,7 @@ import StatsCards from "@/components/organizer-dashboard/StatsCards";
 import RecentEventsTable from "@/components/organizer-dashboard/RecentEventsTable";
 import RevenueChart from "@/components/organizer-dashboard/RevenueChart";
 import TicketsByTypeChart from "@/components/organizer-dashboard/TicketsByTypeChart";
-import { useOrganizerStatus } from "@/services/organizer-api";
+import { useOrganizerStatus } from "@/lib/organizer-api";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 import type { RevenuePeriod } from "@/types/dashboard";
 

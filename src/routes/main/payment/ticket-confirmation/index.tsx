@@ -3,7 +3,7 @@ import { TicketCard } from "@/components/tickets/ticket-card"
 import { useLocation, useNavigate } from "react-router"
 import PaymentBtn from "@/components/ui/pay-method-btn"
 import calendar from "@/assets/calendar.png";
-import { downloadEventIcs } from "@/services/calendar";
+import { downloadEventIcs } from "@/lib/calendar";
 
 const TicketConfirmation = () => {
     const location = useLocation()

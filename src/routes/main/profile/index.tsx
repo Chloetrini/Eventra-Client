@@ -7,7 +7,7 @@ import ProfileSettingsSkeleton from '@/components/profile-settings/ProfileSettin
 import { useAuth, type User } from '@/context/auth.context';
 import { toast } from 'react-toastify';
 import PageWrapper from '@/components/page-wrapper';
-import { updateProfile, uploadAvatar } from '@/services/user-api';
+import { updateProfile, uploadAvatar } from '@/lib/user-api';
 import { z } from 'zod';
 import { profileSchema } from '@/lib/schema';
 

@@ -6,7 +6,7 @@ import type { OnboardingValues } from "@/lib/schema"
 import user from "@/assets/user.png"
 import bankImg from "@/assets/onboarding-bank.png"
 import lock from "@/assets/onboarding-lock.png"
-import { listBanks, resolveBankAccount } from "@/services/onboarding-api"
+import { listBanks, resolveBankAccount } from "@/lib/onboarding-api"
 import { CheckCircle2, Loader2 } from "lucide-react"
 
 const BankDetailsForm = () => {

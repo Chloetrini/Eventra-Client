@@ -21,7 +21,7 @@ import {
   FAQ_ITEMS,
   TESTIMONIALS,
 } from "@/lib/home-constants";
-import { fetchEvents } from "@/services/events-api";
+import { fetchEvents } from "@/lib/events-api";
 import { DEFAULT_FILTERS } from "@/types/event-types";
 import { Format } from "@/lib/utils";
 import HowItWorks from "@/components/events/HowItWorks";

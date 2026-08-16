@@ -6,7 +6,7 @@ import { eventFormSchema, type EventFormValues } from '@/lib/schema'
 import { useSearchParams } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { getEvent, getCreatedEventId, setCreatedEventId, clearCreatedEventId, fetchTicketTypesForEvent, fetchCategories, type EventCategory } from "@/services/create-event-api";
+import { getEvent, getCreatedEventId, setCreatedEventId, clearCreatedEventId, fetchTicketTypesForEvent, fetchCategories, type EventCategory } from "@/lib/create-event-api";
 export const CREATE_EVENT_STORAGE_KEY = 'eventra-create-event'
 
 const emptyValues: EventFormValues = {

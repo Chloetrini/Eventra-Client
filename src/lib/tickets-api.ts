@@ -2,7 +2,7 @@
 import {  ticketTypeSchema } from "@/lib/schema";
 import type { EventTickets } from "@/types/ticket-tiers";
 import type { Ticket } from "@/types/ticket";
-import { api } from "@/services/api";
+import { api } from "@/lib/api";
 import z from "zod";
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 

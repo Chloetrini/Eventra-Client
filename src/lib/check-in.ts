@@ -1,6 +1,6 @@
 import type { Attendee, CheckInResponse, EventCheckInData } from '@/types/check-in';
-import { api } from '@/services/api';
-import { fetchMyEvents } from '@/services/events-api';
+import { api } from '@/lib/api';
+import { fetchMyEvents } from '@/lib/events-api';
 
 // ─── Real backend shapes ────────────────────────────────────────
 // GET /events/:eventId/attendees, POST /events/:eventId/check-in

@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import ImageUploader from '../ui/image-uploader'
 import { FormBox } from '../ui/form-box'
-import type { EventFormValues } from '@/services/schema'
-import { fetchCategories, type EventCategory } from '@/services/create-event-api'
+import type { EventFormValues } from '@/lib/schema'
+import { fetchCategories, type EventCategory } from '@/lib/create-event-api'
 
 type BasicsFormProps = {
   onUploadStatusChange?: (uploading: boolean) => void

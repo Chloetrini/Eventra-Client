@@ -1,4 +1,4 @@
-import { axiosClient } from "@/services/api";
+import { axiosClient } from "@/lib/api";
 
 export async function uploadEventCoverImage(file: File): Promise<string> {
   const formData = new FormData();

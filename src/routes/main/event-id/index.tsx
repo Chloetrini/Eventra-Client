@@ -4,8 +4,8 @@ import { ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Separator } from "@/components/ui/separator";
-import { fetchEventBySlug, fetchEvents } from "@/services/events-api";
-import { fetchEventTickets } from "@/services/tickets-api";
+import { fetchEventBySlug, fetchEvents } from "@/lib/events-api";
+import { fetchEventTickets } from "@/lib/tickets-api";
 import { DEFAULT_FILTERS } from "@/types/event-types";
 import { EventHero } from "@/components/event-details/EventHero";
 import { EventInfo } from "@/components/event-details/EventInfo";
@@ -21,7 +21,7 @@ import { useSavedEvents } from "@/hooks/use-saved-events";
 
 import PageWrapper from "@/components/page-wrapper";
 import { useAuth } from "@/context/auth.context";
-import { getExploreUrl } from "@/services/explore-history";
+import { getExploreUrl } from "@/lib/explore-history";
 import { useEvent, useEventTickets } from "@/hooks/use-event";
 
 const EventDetailPage = () => {

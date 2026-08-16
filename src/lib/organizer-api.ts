@@ -170,3 +170,22 @@ export function useOrganizerStatus() {
   });
   return { status: data ?? "unverified", isLoading };
 }
+
+// Slightly richer than useOrganizerStatus — also exposes isPayoutReady
+// (bank details on file), which is tracked independently of approval:
+// a free-events-only organizer can be fully "verified" and still never
+// have added a bank account. The Payouts page needs both signals.
+export function useOrganizerProfile() {
+  const { data, isLoading } = useQuery({
+    queryKey: ["organizer-profile"],
+    queryFn: async () => {
+      const res = await api.get("/organizers/profile");
+      return res.body as RealOrganizerProfile;
+    },
+  });
+  return {
+    status: mapApprovalStatus(data?.approvalStatus),
+    isPayoutReady: data?.isPayoutReady ?? false,
+    isLoading,
+  };
+}

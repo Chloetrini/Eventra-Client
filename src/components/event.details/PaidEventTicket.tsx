@@ -198,7 +198,10 @@ export const PaidEventTicket = ({
         </div>
         <div className="flex items-center justify-between font-bold">
           <span>Total</span>
-          <span>{formatPrice(total)}</span>
+          {/* formatPrice shows "Free" for a genuinely free tier, which is
+              correct everywhere else it's used — but here 0 just means
+              "nothing picked yet" on a paid event, so show ₦0 instead. */}
+          <span>{total === 0 ? "₦0" : formatPrice(total)}</span>
         </div>
       </div>
       <Button

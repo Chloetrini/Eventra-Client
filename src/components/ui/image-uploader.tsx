@@ -12,7 +12,6 @@ type ImageUploaderProps = {
   classname?: string
   previewStyle?: string
   defaultStyle?: string
-  imageStyle?: string
   placeholder?: string
   errors?: FieldErrorType | undefined
   isUploading?: boolean
@@ -28,7 +27,6 @@ const ImageUploader = ({
   classname,
   previewStyle,
   defaultStyle,
-  imageStyle,
   placeholder,
   errors,
   isUploading,

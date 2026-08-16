@@ -157,7 +157,17 @@ const CreateEventLayout = () => {
     hasCheckedStaleDraft.current = true;
 
     const cachedId = getCreatedEventId();
-    if (!cachedId) return;
+    if (!cachedId) {
+      // No event id was ever committed, but the form-values watcher below
+      // mirrors every keystroke to localStorage regardless — including on
+      // the very first step, before Continue (and createEvent) has even
+      // been clicked. With no id to verify against the backend, the only
+      // safe move is to drop it: otherwise picking a type on this step
+      // alone is enough to leave data behind for whoever uses this device
+      // next.
+      localStorage.removeItem(CREATE_EVENT_STORAGE_KEY);
+      return;
+    }
 
     getEvent(cachedId).catch(() => {
       clearCreatedEventId();

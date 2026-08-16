@@ -121,6 +121,7 @@ const EventDetailPage = () => {
                 return {
                   id: tt._id,
                   type: tt.name,
+                  description: tt.description,
                   unitPrice: tt.price,
                   quantityLeft: remaining,
                   availability: remaining <= 0 ? "sold out" as const

@@ -132,6 +132,7 @@ export const lineupMemberSchema = z.object({
 export const ticketTypeSchema = z.object({
   _id: z.string(),
   name: z.string(),
+  description: z.string().optional(),
   price: z.number(),
   quantity: z.number(),
   quantitySold: z.number(),

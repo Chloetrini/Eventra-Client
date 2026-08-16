@@ -67,7 +67,7 @@ const EventReview = () => {
     return (
         <div className="w-full flex flex-col">
             <div className="">
-                {rows.map((row, id) => {
+                {rows.map((row) => {
                     return (
                         <div
                             key={row.label}

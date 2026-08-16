@@ -36,11 +36,6 @@ const TierRow = ({
           )}
         </div>
         <div className="text-right font-space">
-          {tier.originalPrice && (
-            <p className="text-xs text-muted-foreground font-grotesk line-through">
-              {formatPrice(tier.originalPrice)}
-            </p>
-          )}
           <p className="text-sm font-bold">
             {isSoldOut ? (
               <span className="text-[#c14747] dark:text-[#FFC4C4]">Sold out</span>

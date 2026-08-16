@@ -3,6 +3,7 @@
 export type TicketTier = {
   id: string;
   type: string;
+  description?: string;
   unitPrice: number;
   quantityLeft: number;
   availability: "sold out" | "scarce" | "available";

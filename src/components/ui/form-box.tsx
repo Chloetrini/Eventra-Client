@@ -141,6 +141,7 @@ export function FormBox<T extends FieldValues>({
             errors={errors}
             variant={imageVariant}
             onFileSelected={onImageFileSelected}
+            onUploadStatusChange={onUploadStatusChange}
           />
         )
 

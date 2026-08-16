@@ -131,7 +131,21 @@ async function googleAuth(accessToken: string, role?: "attendee" | "organizer") 
     // clear locally regardless
   }
   localStorage.removeItem("saved-events");
-  clearOnboardingSubmitted();   
+  clearOnboardingSubmitted();
+  // These wizards mirror their in-progress form values to localStorage on
+  // every keystroke so a refresh or "Save & exit" doesn't lose progress —
+  // but that means they're keyed by browser, not by account. Without this,
+  // logging out and having a different organizer log in on the same
+  // device (or the same phone) would silently pre-fill their forms with
+  // whoever used it last, business name/bank details and all. Raw string
+  // literals here on purpose — importing the constants would pull in the
+  // route modules themselves (see ONBOARDING_STORAGE_KEY in
+  // routes/onboarding/layout.tsx, CREATE_EVENT_STORAGE_KEY in
+  // routes/dashboard/create-event/layout.tsx, and CREATED_EVENT_ID_KEY in
+  // lib/create-event-api.ts — keep these in sync if any of those rename).
+  localStorage.removeItem("eventra-onboarding");
+  localStorage.removeItem("eventra-create-event");
+  localStorage.removeItem("eventra-create-event-id");
   queryClient.setQueryData(ME_QUERY_KEY, null);
 }
 

@@ -7,7 +7,7 @@ import calendar from "@/assets/calendar.png";
 import rightArrow from "@/assets/rightArrow.png";
 import backward from "@/assets/backward.png";
 import PaymentBtn from "@/components/ui/pay-method-btn";
-import { formatDateTime } from "@/services/utils";
+import { formatDateTime } from "@/lib/utils";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { requestTicketRefund, cancelReservation } from "@/services/tickets-api";

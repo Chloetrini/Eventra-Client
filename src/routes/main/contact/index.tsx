@@ -10,7 +10,7 @@ import crowdImage from "@/assets/crowd.png";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormBox } from "@/components/ui/form-box";
-import { contactSchema } from "@/services/schema";
+import { contactSchema } from "@/lib/schema";
 import { z } from "zod";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";

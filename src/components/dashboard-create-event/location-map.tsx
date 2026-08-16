@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ArrowUpRight, MapPin } from 'lucide-react'
 import { Card } from '@/components/ui/card'
-import { cn } from '@/services/utils'
+import { cn } from '@/lib/utils'
 import eventraMapLoading from '@/assets/eventraMapLoading.png'
 
 interface LocationMapProps {

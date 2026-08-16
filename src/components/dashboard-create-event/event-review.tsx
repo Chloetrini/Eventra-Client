@@ -1,5 +1,5 @@
 import type { EventFormValues } from "@/services/schema"
-import { formatDate, formatNaira, formatTime } from "@/services/utils"
+import { formatDate, formatNaira, formatTime } from "@/lib/utils"
 import { useFormContext, useWatch } from "react-hook-form"
 
 type EventReviewRow = {

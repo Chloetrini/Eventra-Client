@@ -1,5 +1,5 @@
 import { Check } from 'lucide-react'
-import { formatNaira } from '@/services/utils'
+import { formatNaira } from '@/lib/utils'
 
 type ConfirmatoryMessageProps = {
     _id?: string

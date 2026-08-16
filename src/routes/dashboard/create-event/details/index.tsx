@@ -2,7 +2,7 @@ import { useCreateEventStep } from '@/components/dashboard-create-event/create-e
 import DetailsForm from '@/components/dashboard-create-event/details-form'
 import PageSwitcher from '@/components/onboarding/page-switcher'
 import PageWrapper from '@/components/page-wrapper'
-import { DETAILS_FIELDS, type EventFormValues } from '@/services/schema'
+import { DETAILS_FIELDS, type EventFormValues } from '@/lib/schema'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 

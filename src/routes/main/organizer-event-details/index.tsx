@@ -11,7 +11,7 @@ import TicketTypesTable from "@/components/organizer-dashboard/TicketTypesTable"
 import RecentAttendeesCard from "@/components/organizer-dashboard/RecentAttendeesCard";
 import PromotionsCard from "@/components/organizer-dashboard/PromotionsCard";
 import QuickActionsCard from "@/components/organizer-dashboard/QuickActionsCard";
-import { OrganizerEventDetailsSkeleton } from "@/components/organizer-event-details/organizer-event-details-skeleton";
+import { OrganizerEventDetailsSkeleton } from "@/components/skeletons/organizer-event-details-skeleton";
 import { DeleteEventDialog } from "@/components/dialogs/delete-event-dialog";
 import { CancelEventDialog } from "@/components/dialogs/cancel-event-dialog";
 import { PostponeEventDialog } from "@/components/dialogs/postpone-event-dialog";

@@ -4,7 +4,7 @@ import * as React from "react"
 import { CalendarIcon } from "lucide-react"
 import { Controller, type Control, type FieldError as FieldErrorType, type FieldValues, type Path } from "react-hook-form"
 
-import { cn } from "@/services/utils"
+import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
 import { FieldError, FieldLabel } from "@/components/ui/field"
 import {

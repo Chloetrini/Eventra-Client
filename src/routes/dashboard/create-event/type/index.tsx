@@ -1,7 +1,7 @@
 import EventTypeSelector from '@/components/dashboard-create-event/event-type-selector'
 import PageSwitcher from '@/components/onboarding/page-switcher'
 import PageWrapper from '@/components/page-wrapper'
-import { TYPE_FIELDS, type EventFormValues } from '@/services/schema'
+import { TYPE_FIELDS, type EventFormValues } from '@/lib/schema'
 import { useFormContext } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import { useCreateEventStep } from "@/components/dashboard-create-event/create-event-sidebar"

@@ -1,7 +1,7 @@
 import FreeTicketsForm from '@/components/dashboard-create-event/free-tickets-form'
 import PageSwitcher from '@/components/onboarding/page-switcher'
 import PageWrapper from '@/components/page-wrapper'
-import { RSVP_FIELDS, type EventFormValues } from '@/services/schema'
+import { RSVP_FIELDS, type EventFormValues } from '@/lib/schema'
 import { useFormContext } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import { useCreateEventStep } from "@/components/dashboard-create-event/create-event-sidebar"

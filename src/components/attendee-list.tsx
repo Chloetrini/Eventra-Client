@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { formatDateTime } from "@/services/utils";
+import { formatDateTime } from "@/lib/utils";
 import type { Attendee } from "@/types/attendees";
 
 interface AttendeeListProps {

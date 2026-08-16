@@ -1,5 +1,5 @@
 import React from 'react'
-import { formatDateTime, formatNaira } from '@/services/utils'
+import { formatDateTime, formatNaira } from '@/lib/utils'
 import { CalendarDays, MapPin } from 'lucide-react'
 import PaymentBtn from '../ui/pay-method-btn'
 import lock from '@/assets/lock.png'

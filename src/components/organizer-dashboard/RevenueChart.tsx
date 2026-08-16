@@ -9,7 +9,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { formatCompactNaira } from "@/services/utils";
+import { formatCompactNaira } from "@/lib/utils";
 import type { RevenuePeriod, RevenueSeriesPoint } from "@/types/dashboard";
 
 interface CustomTooltipProps {

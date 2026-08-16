@@ -1,5 +1,5 @@
 import React from "react";
-import { SECTION_TWO_FEATURES } from "@/services/organizer-constants";
+import { SECTION_TWO_FEATURES } from "@/lib/organizer-constants";
 import { PencilIcon, Coins, ScanLine, ZapIcon } from "lucide-react";
 
 // Map icon names to Lucide components

@@ -4,7 +4,7 @@ import MapPreview from '@/components/dashboard-create-event/map-preview'
 import PageSwitcher from '@/components/onboarding/page-switcher'
 import PageWrapper from '@/components/page-wrapper'
 import { useFormContext } from 'react-hook-form'
-import { LOCATION_FIELDS, type EventFormValues } from '@/services/schema'
+import { LOCATION_FIELDS, type EventFormValues } from '@/lib/schema'
 import { useNavigate } from 'react-router'
 import { useCreateEventStep } from '@/components/dashboard-create-event/create-event-sidebar'
 

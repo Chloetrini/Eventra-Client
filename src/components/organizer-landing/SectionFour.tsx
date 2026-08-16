@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { SECTION_FOUR_DATA } from '@/services/organizer-constants';
+import { SECTION_FOUR_DATA } from '@/lib/organizer-constants';
 import { CtaBanner } from '../ui/ctaBanner';
-import { UI_ASSETS } from '@/services/assets';
+import { UI_ASSETS } from '@/lib/assets';
 
 const SectionFour: React.FC = () => {
  

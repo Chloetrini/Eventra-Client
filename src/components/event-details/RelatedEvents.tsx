@@ -1,4 +1,4 @@
-import { formatDate, formatPrice } from "@/services/utils"
+import { formatDate, formatPrice } from "@/lib/utils"
 import { type Event } from "@/types/event-types"
 import { Link } from "react-router"
 import { Card } from "@/components/ui/card"

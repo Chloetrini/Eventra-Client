@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import PageWrapper from '@/components/page-wrapper';
 import { updateProfile, uploadAvatar } from '@/services/user-api';
 import { z } from 'zod';
-import { profileSchema } from '@/services/schema';
+import { profileSchema } from '@/lib/schema';
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 

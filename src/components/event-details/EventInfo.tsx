@@ -1,5 +1,5 @@
 import { type Event } from "@/types/event-types"
-import { formatDate, formatTime } from "@/services/utils"
+import { formatDate, formatTime } from "@/lib/utils"
 import { MapPin, Users } from "lucide-react"
 import { Clock } from "lucide-react"
 

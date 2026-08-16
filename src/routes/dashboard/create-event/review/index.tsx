@@ -1,6 +1,6 @@
 import PageSwitcher from '@/components/onboarding/page-switcher'
 import PageWrapper from '@/components/page-wrapper'
-import type { EventFormValues } from '@/services/schema'
+import type { EventFormValues } from '@/lib/schema'
 import React, { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useNavigate } from 'react-router'

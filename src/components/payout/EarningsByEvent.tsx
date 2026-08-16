@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { cn, formatNaira } from "@/services/utils";
+import { cn, formatNaira } from "@/lib/utils";
 import type { EarningsByEventRow, PayoutEventStatus } from "@/services/payouts-api";
 
 const STATUS_STYLE: Record<PayoutEventStatus, string> = {

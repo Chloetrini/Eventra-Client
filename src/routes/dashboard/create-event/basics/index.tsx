@@ -21,8 +21,8 @@ const Basics = () => {
 
   const handleContinue = async () => {
     const isValid = await trigger([...BASICS_FIELDS])
-    if (!isValid) return console.log("basics validation failed");
-    
+    if (!isValid) return;
+
 
     // const eventId = getCreatedEventId()
     // if (!eventId) {

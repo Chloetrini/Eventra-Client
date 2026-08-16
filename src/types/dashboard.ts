@@ -10,7 +10,7 @@ export interface DashboardEvent {
   subtitle?: string;
   date: string;
   sold: string;
-  status: 'Live' | 'Sold out' | 'Draft' | 'Past';
+  status: 'Live' | 'Sold out' | 'Draft' | 'Pending' | 'Past' | 'Rejected' | 'Cancelled' | 'Postponed';
   imageUrl?: string;
 }
 

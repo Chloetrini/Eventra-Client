@@ -8,7 +8,7 @@ interface Event {
   subtitle?: string;
   date: string;
   sold: string;
-  status: 'Live' | 'Sold out' | 'Draft' | 'Past';
+  status: 'Live' | 'Sold out' | 'Draft' | 'Pending' | 'Past' | 'Rejected' | 'Cancelled' | 'Postponed';
   imageUrl?: string;
 }
 
@@ -21,7 +21,11 @@ const statusColors = {
   'Live': 'bg-[#E6F6F0] text-[#0F6E56] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]',
   'Sold out': 'bg-gray-900 text-white dark:bg-white dark:text-gray-900',
   'Draft': 'bg-muted text-muted-foreground',
+  'Pending': 'bg-[#DCEAFB] text-[#1D4ED8] dark:bg-[#1D4ED8]/20 dark:text-[#93C5FD]',
   'Past': 'bg-muted text-muted-foreground',
+  'Rejected': 'bg-[#FFC4C4] text-[#BE2525] dark:bg-[#BE2525]/20 dark:text-[#FF8A8A]',
+  'Cancelled': 'bg-[#FFC4C4] text-[#BE2525] dark:bg-[#BE2525]/20 dark:text-[#FF8A8A]',
+  'Postponed': 'bg-[#FDE4C8] text-[#9A3412] dark:bg-[#9A3412]/25 dark:text-[#FDE4C8]',
 };
 
 const RecentEventsTable: React.FC<RecentEventsTableProps> = ({ events, onViewAll }) => {
@@ -29,7 +33,7 @@ const RecentEventsTable: React.FC<RecentEventsTableProps> = ({ events, onViewAll
     return (
       <div className="bg-card border border-border rounded-xl overflow-hidden mt-8">
         <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-          <h3 className="text-base font-semibold text-foreground">Recent events</h3>
+          <h3 className="text-base font-grotesk font-semibold text-foreground">Recent events</h3>
         </div>
         <div className="text-center py-12 text-muted-foreground">No recent events to display.</div>
       </div>
@@ -40,7 +44,7 @@ const RecentEventsTable: React.FC<RecentEventsTableProps> = ({ events, onViewAll
     <div className="bg-card border border-border rounded-xl overflow-hidden mt-8">
       {/* Table Header */}
       <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-        <h3 className="text-base font-semibold text-foreground">Recent events</h3>
+        <h3 className="text-base font-grotesk font-semibold text-foreground">Recent events</h3>
         <button
           onClick={onViewAll}
           className="text-sm font-medium text-[#0F6E56] hover:underline flex items-center gap-1"
@@ -52,12 +56,12 @@ const RecentEventsTable: React.FC<RecentEventsTableProps> = ({ events, onViewAll
       {/* Table Body */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
-          <thead className="text-muted-foreground text-xs font-medium tracking-wider border-b border-border">
+          <thead className="text-muted-foreground text-xs font-medium font-space tracking-wider border-b border-border">
             <tr>
-              <th className="px-6 py-3">EVENT</th>
-              <th className="px-6 py-3">DATE</th>
-              <th className="px-6 py-3">SOLD</th>
-              <th className="px-6 py-3">STATUS</th>
+              <th className="px-6 py-3 font-space">EVENT</th>
+              <th className="px-6 py-3 font-space">DATE</th>
+              <th className="px-6 py-3 font-space">SOLD</th>
+              <th className="px-6 py-3 font-space">STATUS</th>
               <th className="px-6 py-3 w-10"></th>
             </tr>
           </thead>
@@ -82,7 +86,7 @@ const RecentEventsTable: React.FC<RecentEventsTableProps> = ({ events, onViewAll
                 <td className="px-6 py-4 text-muted-foreground font-medium">{event.date}</td>
                 <td className="px-6 py-4 text-muted-foreground font-medium">{event.sold}</td>
                 <td className="px-6 py-4">
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${statusColors[event.status]}`}>
+                  <span className={`px-3 py-1 rounded-full text-[10px] font-bold font-space uppercase tracking-wide ${statusColors[event.status]}`}>
                     {event.status}
                   </span>
                 </td>

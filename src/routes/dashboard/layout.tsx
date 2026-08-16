@@ -1,7 +1,17 @@
-import { Outlet } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import Sidebar from "@/components/organizer-dashboard/SideBar";
 import TopBar from "@/components/organizer-dashboard/TopBar";
 import { useDashboard } from "@/hooks/useDashboard";
+import { clearCreatedEventId } from "@/lib/create-event-api";
+import { CREATE_EVENT_STORAGE_KEY } from "@/routes/dashboard/create-event/layout";
+
+const PAGE_TITLES: Record<string, string> = {
+  "/dashboard/overview": "Overview",
+  "/dashboard/events": "Events",
+  "/dashboard/attendees": "Attendees",
+  "/dashboard/check-in": "Check-in",
+  "/dashboard/promotion": "Promotions",
+};
 
 const LayoutSkeleton = () => (
   <div className="flex h-screen bg-background animate-pulse">
@@ -37,6 +47,17 @@ const LayoutSkeleton = () => (
 
 export default function DashBoardLayout() {
   const { data, isLoading, isError } = useDashboard();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleCreateEvent = () => {
+    // Same "start fresh" guard as the Events page's own Create Event
+    // button — clears any abandoned draft so the wizard doesn't resume
+    // stale data.
+    clearCreatedEventId();
+    localStorage.removeItem(CREATE_EVENT_STORAGE_KEY);
+    navigate("/dashboard/create-event/type");
+  };
 
   if (isLoading) return <LayoutSkeleton />;
 
@@ -56,8 +77,8 @@ export default function DashBoardLayout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopBar
           organization={data.organization}
-          onCreateEvent={() => console.log("Create event")}
-          title="Overview"
+          onCreateEvent={handleCreateEvent}
+          title={PAGE_TITLES[location.pathname] ?? "Overview"}
         />
         <main className="flex-1 overflow-y-auto px-8 py-6">
           <Outlet />

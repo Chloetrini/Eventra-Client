@@ -78,8 +78,6 @@ const CreateEventLayout = () => {
       // the category NAME the form/select actually matches on.
       fetchCategories().catch(() => [] as EventCategory[]),
     ]).then(([event, ticketTypes, categories]: [any, any[], EventCategory[]]) => {
-      console.log("LOADED EVENT FOR EDIT:", event);
-
       // Only claim this event as "the" draft once we know it's real —
       // committing it beforehand meant a broken/edit link could poison
       // localStorage with an id that 404s on every future step.

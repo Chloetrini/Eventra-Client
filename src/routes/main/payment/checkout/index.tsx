@@ -75,7 +75,6 @@ const Checkout = () => {
                 guestEmail: data.email,
                 guestPhone: data.phoneNumber,
             })
-            console.log("RSVP RESULT:", tickets)
             toast.success('Reservation confirmed')
             navigate('/payment/ticket-confirmation', {
                 state: { tickets, event: ticket, buyer: data, type: 'free' },

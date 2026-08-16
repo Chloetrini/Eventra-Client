@@ -77,7 +77,7 @@ const TicketsByTypeChart: React.FC<TicketsByTypeChartProps> = ({ data }) => {
   return (
     <div className="bg-card border border-border rounded-xl p-6">
       <div className="mb-1">
-        <h3 className="text-base font-semibold text-foreground">Tickets by type</h3>
+        <h3 className="text-base font-grotesk font-semibold text-foreground">Tickets by type</h3>
         <p className="text-xs text-muted-foreground mt-0.5">Paid ticket tiers, by volume</p>
       </div>
 

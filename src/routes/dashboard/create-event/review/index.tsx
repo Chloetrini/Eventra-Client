@@ -92,9 +92,8 @@ const Review = () => {
   const {
     handleSubmit,
     trigger,
-    formState: { isValid, errors },
+    formState: { isValid },
   } = useFormContext<EventFormValues>()
-  console.log("form errors:", errors)
 
   const [categories, setCategories] = useState<EventCategory[]>([])
 
@@ -115,8 +114,6 @@ const Review = () => {
   const onSubmit = async (values: EventFormValues) => {
     setIsSubmitting(true)
     try {
-      console.log("submitting", values)
-
       const categoryId = categories.find((c) => c.name === values.category)?._id
       if (!categoryId) {
         toast.error("Couldn't match your selected category. Please reselect it and try again.")

@@ -57,10 +57,10 @@ const SideBar: React.FC<SideBarProps> = ({ organization }) => {
       <div className="flex items-center gap-3 px-6 pt-6 pb-4">
         <div className='flex flex-row items-center'>
           <img src={EventraLogo} onClick={() => navigate('/')} alt="Eventra Logo" className="h-8 w-8" />
-          <span className="text-2xl font-[Schibsted Grotesk] font-bold text-foreground">Eventra</span>
+          <span className="text-2xl font-grotesk font-bold text-foreground">Eventra</span>
         </div>
         <div className="bg-[#BBE0CF] dark:bg-[#0F6E56]/15 px-2 py-0.5 rounded-[6px]">
-          <p className="font-[Space Mono] text-[10px] font-bold text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-wider">
+          <p className="font-space text-[10px] font-bold text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-wider">
             ORGANIZER
           </p>
         </div>

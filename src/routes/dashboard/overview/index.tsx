@@ -81,10 +81,10 @@ export default function DashboardPage() {
       <AccountReviewBanner status={status} />
 
       <div className="mb-6">
-        <p className="text-[10px] font-bold text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-widest mb-1">
+        <p className="text-[10px] font-bold font-space text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-widest mb-1">
           DASHBOARD
         </p>
-        <h1 className="text-2xl font-bold text-foreground">
+        <h1 className="text-2xl font-grotesk font-bold text-foreground">
           Welcome back, {data.organization.name} 👋
         </h1>
         <p className="text-sm text-muted-foreground mt-1">

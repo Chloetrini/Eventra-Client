@@ -15,15 +15,18 @@ import { EventActionsMenu } from "@/components/event-actions-menu";
 
 interface EventsTableProps {
   events: Event[];
-  onDeleteRequest: (event: Event) => void;
+  onEventDeleted?: (eventId: string) => void;
 }
 
 const STATUS_STYLES: Record<Event["status"], string> = {
   Live: "bg-[#E4F1EB] text-[#0F6E56] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]",
   Draft: "bg-[#F4DFB6] text-[#7A4E02] dark:bg-[#7A4E02]/25 dark:text-[#F4DFB6]",
+  Pending: "bg-[#DCEAFB] text-[#1D4ED8] dark:bg-[#1D4ED8]/20 dark:text-[#93C5FD]",
   "Sold out": "bg-[#1A1523] text-white dark:bg-white dark:text-[#1A1523]",
   Past: "bg-muted text-muted-foreground border border-border",
   Rejected: "bg-[#FFC4C4] text-[#BE2525] dark:bg-[#BE2525]/20 dark:text-[#FF8A8A]",
+  Cancelled: "bg-[#FFC4C4] text-[#BE2525] dark:bg-[#BE2525]/20 dark:text-[#FF8A8A]",
+  Postponed: "bg-[#FDE4C8] text-[#9A3412] dark:bg-[#9A3412]/25 dark:text-[#FDE4C8]",
 };
 
 const TYPE_STYLES: Record<Event["EventType"], string> = {
@@ -32,7 +35,7 @@ const TYPE_STYLES: Record<Event["EventType"], string> = {
 };
 
 
-export function EventsTable({ events, onDeleteRequest }: EventsTableProps) {
+export function EventsTable({ events, onEventDeleted }: EventsTableProps) {
   return (
     <div className="overflow-x-auto border border-border rounded-xl ">
       <Table className="min-w-[800px]">
@@ -127,7 +130,7 @@ export function EventsTable({ events, onDeleteRequest }: EventsTableProps) {
                   <EventActionsMenu
                     eventId={event._id}
                     eventTitle={event.eventTitle}
-                    onDeleteRequest={() => onDeleteRequest(event)}
+                    onDeleted={() => onEventDeleted?.(event._id)}
                   />
                 </TableCell>
               </TableRow>

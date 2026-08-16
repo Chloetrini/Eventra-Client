@@ -56,11 +56,19 @@ type RealOrganizerProfile = {
 // ---------------------------------------------------------------------
 // Adapters — reshape real backend data into what the Dashboard UI expects
 // ---------------------------------------------------------------------
+// The backend's /dashboard endpoint already resolves each event down to
+// its display status via deriveEventDisplayStatus (draft, pending_approval,
+// rejected, cancelled, postponed, sold_out, live, past) — this just maps
+// those exact values onto the capitalized labels the UI renders.
 function mapEventStatus(status: string): DashboardEvent["status"] {
   const s = status.toLowerCase();
   if (s === "live") return "Live";
   if (s === "sold_out" || s === "sold out") return "Sold out";
   if (s === "draft") return "Draft";
+  if (s === "pending_approval" || s === "pending") return "Pending";
+  if (s === "rejected") return "Rejected";
+  if (s === "cancelled") return "Cancelled";
+  if (s === "postponed") return "Postponed";
   return "Past";
 }
 

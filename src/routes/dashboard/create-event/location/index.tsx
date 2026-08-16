@@ -22,8 +22,6 @@ const Location = () => {
             const eventType = getValues('eventType')
         if (isValid) {
             navigate(eventType === 'paid' ? '/dashboard/create-event/tickets' : '/dashboard/create-event/rsvp')
-        } else {
-            console.log("location validation failed")
         }
     }
     return (

@@ -18,9 +18,7 @@ export function clearCreatedEventId() {
 // --- Step 1: creates the draft event, returns its real _id ---
 export async function createEvent(payload: { type: "free" | "paid" }) {
   const res = await api.post("/events", payload);
-  console.log("FULL RES:", JSON.stringify(res, null, 2));
   const event = res.body as { _id: string };
-  console.log("EVENT ID FIELD:", event._id);
   setCreatedEventId(event._id);
   return event;
 }

@@ -61,7 +61,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period, onPeriodChang
     <div className="bg-card border border-border rounded-xl p-6">
       <div className="flex items-center justify-between mb-1 flex-wrap gap-3">
         <div>
-          <h3 className="text-base font-semibold text-foreground">Revenue</h3>
+          <h3 className="text-base font-grotesk font-semibold text-foreground">Revenue</h3>
           <p className="text-xs text-muted-foreground mt-0.5">Your earnings over time</p>
         </div>
         <div className="flex items-center gap-1 bg-muted border border-border rounded-lg p-1">

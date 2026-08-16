@@ -7,18 +7,17 @@ import { EventsHeader } from "@/components/events-header";
 import { EventsFilterBar } from "@/components/events-filter-bar";
 import { EventsTable } from "@/components/events-table";
 import { useEffect, useState } from "react";
-import { DeleteEventDialog } from "@/components/delete-event-dialog";
 import { useOrganizerStatus } from "@/lib/organizer-api";
-import { deleteEvent } from "@/lib/events-api";
-import { toast } from "react-toastify";
-import { useQueryClient } from "@tanstack/react-query";
 
 const STATUS_MAP: Record<string, Event["status"]> = {
   live: "Live",
   draft: "Draft",
+  pending: "Pending",
   "sold-out": "Sold out",
   past: "Past",
   rejected: "Rejected",
+  cancelled: "Cancelled",
+  postponed: "Postponed",
 };
 
 export default function Events() {
@@ -30,16 +29,8 @@ export default function Events() {
     queryKey: ["events"],
     queryFn: fetchMyEvents,
   });
-  console.log(
-    "events data:",
-    "isLoading:",
-    isLoading,
-    "isError:",
-    isError,
-  );
   const { status } = useOrganizerStatus();
   const [events, setEvents] = useState<Event[]> ([])
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (data) setEvents (data)
@@ -49,18 +40,13 @@ export default function Events() {
   const [searchParams] = useSearchParams();
   const activeStatus = searchParams.get("status") ?? "all";
   const searchQuery = searchParams.get("q") ?? "";
-  const [deletingEvent, setDeletingEvent] =  useState<Event | null>(null)
 
- const handleDelete = async (eventId: string) => {
-  try {
-    await deleteEvent(eventId);
+  // EventActionsMenu already deletes the event and invalidates the query
+  // cache itself — this just drops the row immediately instead of
+  // waiting on the next refetch.
+  const handleEventDeleted = (eventId: string) => {
     setEvents((prev) => prev.filter((e) => e._id !== eventId));
-    queryClient.invalidateQueries({ queryKey: ["my-events"] }); // ensures fresh data on next load
-    toast.success("Event deleted");
-  } catch (err) {
-    toast.error(err instanceof Error ? err.message : "Could not delete event. Please try again.");
-  }
-};
+  };
 
   const filteredEvents = events?.filter((event) => {
     const matchesStatus =
@@ -94,15 +80,7 @@ export default function Events() {
       <AccountReviewBanner status={status} />
       <EventsHeader />
       <EventsFilterBar />
-      <EventsTable events={filteredEvents}
-      onDeleteRequest={setDeletingEvent} />
-
-      <DeleteEventDialog event={deletingEvent} 
-      open={deletingEvent !== null}
-      onOpenChange={(open) => !open && setDeletingEvent(null)}
-      onConfirm={handleDelete}/>
-       
-      
+      <EventsTable events={filteredEvents} onEventDeleted={handleEventDeleted} />
     </div>
   );
 }

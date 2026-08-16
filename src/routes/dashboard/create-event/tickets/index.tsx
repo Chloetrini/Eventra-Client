@@ -2,8 +2,8 @@ import { useCreateEventStep } from '@/components/dashboard-create-event/create-e
 import TicketsForm from '@/components/dashboard-create-event/free-tickets-form'
 import PaidTicketsForm from '@/components/dashboard-create-event/paid-tickets-form'
 import PageSwitcher from '@/components/onboarding/page-switcher'
-import PageWrapper from '@/components/pageWrapper'
-import { RSVP_FIELDS, TICKETS_FIELDS, type EventFormValues } from '@/lib/schema'
+import PageWrapper from '@/components/page-wrapper'
+import { RSVP_FIELDS, TICKETS_FIELDS, type EventFormValues } from '@/services/schema'
 import { useFormContext } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 

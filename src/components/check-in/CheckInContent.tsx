@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
-import { fetchMyEvents } from '@/lib/events-api';
-import { useOrganizerStatus } from '@/lib/organizer-api';
+import { fetchMyEvents } from '@/services/events-api';
+import { useOrganizerStatus } from '@/services/organizer-api';
 import { useCheckIn } from '@/hooks/useCheckIn';
 import { AccountReviewBanner } from '@/components/account-review-banner';
 import CheckInGateSection from './CheckInGateSection';

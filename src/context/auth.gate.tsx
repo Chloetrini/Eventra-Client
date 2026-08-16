@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { useAuth } from "@/context/auth.context";
-import { authPath } from "@/lib/auth-path";
-import { AuthGateModal } from "@/components/auth.gate.modal";
+import { authPath } from "@/services/auth-path";
+import { AuthGateModal } from "@/components/dialogs/auth-gate-modal";
 
 type GateAction = "save-event" | "my-tickets" | "saved-events" | "buy-ticket";
 

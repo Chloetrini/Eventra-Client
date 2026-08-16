@@ -1,4 +1,4 @@
-import { eventSchema, eventVenueSchema, lineupMemberSchema } from "@/lib/schema";
+import { eventSchema, eventVenueSchema, lineupMemberSchema } from "@/services/schema";
 import z from "zod";
 
 export const STATES = [

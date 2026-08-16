@@ -1,6 +1,6 @@
 import { Wallet, Clock3, BadgeCheck } from "lucide-react";
-import type { EarningsByEventRow, PayoutHistoryRow } from "@/lib/payouts-api";
-import { formatNaira } from "@/lib/utils";
+import type { EarningsByEventRow, PayoutHistoryRow } from "@/services/payouts-api";
+import { formatNaira } from "@/services/utils";
 
 interface StatCardsProps {
   earnings: EarningsByEventRow[];

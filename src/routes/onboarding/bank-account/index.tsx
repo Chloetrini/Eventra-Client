@@ -2,12 +2,12 @@ import { useFormContext, useWatch } from "react-hook-form"
 import { useNavigate } from "react-router"
 import BankDetailsForm from "@/components/onboarding/bank-details-form"
 import PageSwitcher from "@/components/onboarding/page-switcher"
-import { BANK_FIELDS, type OnboardingValues } from "@/lib/schema"
-import PageWrapper from "@/components/pageWrapper"
+import { BANK_FIELDS, type OnboardingValues } from "@/services/schema"
+import PageWrapper from "@/components/page-wrapper"
 import shieldPay from '@/assets/shieldPaywhite.png'
 import { useState } from "react"
 import { toast } from "react-toastify"
-import { saveOrganizerProfile, listBanks } from "@/lib/onboarding-api"
+import { saveOrganizerProfile, listBanks } from "@/services/onboarding-api"
 
 const BankAccountPage = () => {
     const navigate = useNavigate()

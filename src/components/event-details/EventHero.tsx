@@ -1,7 +1,7 @@
 import { type Event } from "@/types/event-types"
 import { Heart, MoveUpRight, MapPin, Calendar } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
-import { cn, formatDate, formatTime } from "@/lib/utils"
+import { cn, formatDate, formatTime } from "@/services/utils"
 import { useAuthGate } from "@/context/auth.gate";
 type EventHeroProps = {
   event: Event;

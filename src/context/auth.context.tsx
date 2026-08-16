@@ -1,7 +1,7 @@
 import { createContext, useContext, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/api";
-import { clearOnboardingSubmitted } from "@/lib/onboarding-store";
+import { api } from "@/services/api";
+import { clearOnboardingSubmitted } from "@/services/onboarding-store";
 
 export type User = {
   id: string;

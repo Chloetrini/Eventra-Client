@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { data, useSearchParams } from "react-router";
-import { fetchMyEvents } from "@/lib/events-api";
+import { fetchMyEvents } from "@/services/events-api";
 import type { Event } from "@/types/event";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 import { EventsHeader } from "@/components/events-header";
 import { EventsFilterBar } from "@/components/events-filter-bar";
 import { EventsTable } from "@/components/events-table";
-import { EventsSkeleton } from "@/components/events-skeleton";
+import { EventsSkeleton } from "@/components/skeletons/events-skeleton";
 import { useEffect, useState } from "react";
-import { useOrganizerStatus } from "@/lib/organizer-api";
+import { useOrganizerStatus } from "@/services/organizer-api";
 
 const STATUS_MAP: Record<string, Event["status"]> = {
   live: "Live",

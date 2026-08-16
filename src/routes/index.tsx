@@ -82,7 +82,7 @@ const routes = [
                             }
                         },
                         lazy: async () => {
-                            const { default: Component } = await import("@/routes/main/event.id");
+                            const { default: Component } = await import("@/routes/main/event-id");
                             return { Component };
                         },
                     },

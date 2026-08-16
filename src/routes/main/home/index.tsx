@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/select";
 import gpsUrl from "@/assets/gps.svg";
 import downUrl from "@/assets/down.svg";
-import { UI_ASSETS } from "@/lib/assets";
-import PageWrapper from "@/components/pageWrapper";
+import { UI_ASSETS } from "@/services/assets";
+import PageWrapper from "@/components/page-wrapper";
 import { VibeGrid } from "@/components/events/vibe-grid";
 import { FeaturedEvents } from "@/components/events/featured-events";
 import { CtaBanner } from "@/components/ui/ctaBanner";
@@ -20,10 +20,10 @@ import {
   STATS,
   FAQ_ITEMS,
   TESTIMONIALS,
-} from "@/lib/home-constants";
-import { fetchEvents } from "@/lib/events-api";
+} from "@/services/home-constants";
+import { fetchEvents } from "@/services/events-api";
 import { DEFAULT_FILTERS } from "@/types/event-types";
-import { Format } from "@/lib/utils";
+import { Format } from "@/services/utils";
 import HowItWorks from "@/components/events/HowItWorks";
 import { OrganizersCta } from "@/components/events/OrganizersCta";
 

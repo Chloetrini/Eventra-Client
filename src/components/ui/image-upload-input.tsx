@@ -1,7 +1,7 @@
 import { Controller, type Control, type FieldError as FieldErrorType, type FieldValues, type Path } from "react-hook-form"
 import { useState } from "react"
 import ImageUploader from "./image-uploader"
-import { uploadEventCoverImage, uploadLineupPhoto } from "@/lib/upload-api"
+import { uploadEventCoverImage, uploadLineupPhoto } from "@/services/upload-api"
 import { toast } from "react-toastify"
 
 type ImageUploadInputProps<T extends FieldValues> = {

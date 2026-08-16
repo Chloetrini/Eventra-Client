@@ -1,7 +1,7 @@
 import online from '@/assets/online.png'
 import { User } from 'lucide-react'
 import { Controller, type Control, type FieldValues, type Path } from 'react-hook-form'
-import { cn } from '@/lib/utils'
+import { cn } from '@/services/utils'
 
 type LocationSelectorProps<T extends FieldValues> = {
   name: Path<T>

@@ -3,7 +3,7 @@ import { PRICE_TIERS } from "@/types/event-types";
 import { Button } from "@/components/ui/button";
 import type { EventFilters } from "@/types/event-types";
 import type { DateWindow, PriceTier } from "@/types/event-types";
-import type { EventCategory } from "@/lib/events-api";
+import type { EventCategory } from "@/services/events-api";
 
 type FilterSidebarProps = {
   filters: EventFilters;

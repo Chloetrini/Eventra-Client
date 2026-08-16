@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
-import PageWrapper from "@/components/pageWrapper";
+import PageWrapper from "@/components/page-wrapper";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 import OrganizerEventHeader from "@/components/organizer-dashboard/OrganizerEventHeader";
 import OrganizerEventHero from "@/components/organizer-dashboard/OrganizerEventHero";
@@ -12,12 +12,12 @@ import RecentAttendeesCard from "@/components/organizer-dashboard/RecentAttendee
 import PromotionsCard from "@/components/organizer-dashboard/PromotionsCard";
 import QuickActionsCard from "@/components/organizer-dashboard/QuickActionsCard";
 import { OrganizerEventDetailsSkeleton } from "@/components/organizer-event-details/organizer-event-details-skeleton";
-import { DeleteEventDialog } from "@/components/delete-event-dialog";
-import { CancelEventDialog } from "@/components/cancel-event-dialog";
-import { PostponeEventDialog } from "@/components/postpone-event-dialog";
+import { DeleteEventDialog } from "@/components/dialogs/delete-event-dialog";
+import { CancelEventDialog } from "@/components/dialogs/cancel-event-dialog";
+import { PostponeEventDialog } from "@/components/dialogs/postpone-event-dialog";
 import { useOrganizerEventDetails } from "@/hooks/use-organizer-event-details";
-import { useOrganizerStatus } from "@/lib/organizer-api";
-import { deleteEvent, cancelEvent, postponeEvent } from "@/lib/events-api";
+import { useOrganizerStatus } from "@/services/organizer-api";
+import { deleteEvent, cancelEvent, postponeEvent } from "@/services/events-api";
 import { DASHBOARD_QUERY_KEY } from "@/hooks/useDashboard";
 
 export default function OrganizerEventDetailsRoute() {

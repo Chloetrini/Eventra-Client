@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { api } from "@/lib/api";
+import { api } from "@/services/api";
 import {
   eventSchema,
-} from "@/lib/schema";
+} from "@/services/schema";
 import { type Event, type EventFilters } from "@/types/event-types";
 import type { Attendee } from "@/types/attendees";
 import type { OrganizerEventDetails } from "@/types/organizer-event";
-import { formatDate } from "@/lib/utils";
+import { formatDate } from "@/services/utils";
 export type EventsResponse = {
   events: Event[];
   total: number;

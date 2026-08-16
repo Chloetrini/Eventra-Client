@@ -1,5 +1,5 @@
 // One purchasable tier, in DISPLAY shape (already transformed from the
-// backend's raw TicketType — see the mapping in event.id/index.tsx).
+// backend's raw TicketType — see the mapping in routes/main/event-id/index.tsx).
 export type TicketTier = {
   id: string;
   type: string;

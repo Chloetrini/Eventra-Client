@@ -1,6 +1,6 @@
 import PageSwitcher from '@/components/onboarding/page-switcher'
-import PageWrapper from '@/components/pageWrapper'
-import type { EventFormValues } from '@/lib/schema'
+import PageWrapper from '@/components/page-wrapper'
+import type { EventFormValues } from '@/services/schema'
 import React, { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useNavigate } from 'react-router'
@@ -20,7 +20,7 @@ import {
   deleteTicketType,
   fetchTicketTypesForEvent,
   type EventCategory,
-} from '@/lib/create-event-api'
+} from '@/services/create-event-api'
 
 // date/startTime/endTime are each their own field, but only carry one
 // meaningful piece each: `date`'s time-of-day is arbitrary (whatever the

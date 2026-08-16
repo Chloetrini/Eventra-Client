@@ -9,9 +9,9 @@ import { TbScan } from "react-icons/tb";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import Celeb from "@/assets/Celeb.png";
 import Combined from "@/assets/Combined.png"
-import PageWrapper from "@/components/pageWrapper";
+import PageWrapper from "@/components/page-wrapper";
 import { CtaBanner } from "@/components/ui/ctaBanner";
-import { UI_ASSETS } from "@/lib/assets";
+import { UI_ASSETS } from "@/services/assets";
 
 export default function About() {
 

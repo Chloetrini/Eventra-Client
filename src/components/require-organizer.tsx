@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation, Outlet } from "react-router";
 import { useAuth } from "@/context/auth.context";
-import { authPath } from "@/lib/auth-path";
+import { authPath } from "@/services/auth-path";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 /**

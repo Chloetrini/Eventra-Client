@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate } from "react-router";
 import Sidebar from "@/components/organizer-dashboard/SideBar";
 import TopBar from "@/components/organizer-dashboard/TopBar";
 import { useDashboard } from "@/hooks/useDashboard";
-import { clearCreatedEventId } from "@/lib/create-event-api";
+import { clearCreatedEventId } from "@/services/create-event-api";
 import { CREATE_EVENT_STORAGE_KEY } from "@/routes/dashboard/create-event/layout";
 
 const PAGE_TITLES: Record<string, string> = {

@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
-import { formatDate, formatNaira } from "@/lib/utils";
-import type { PayoutHistoryRow } from "@/lib/payouts-api";
+import { formatDate, formatNaira } from "@/services/utils";
+import type { PayoutHistoryRow } from "@/services/payouts-api";
 
 interface PayoutHistoryProps {
   history: PayoutHistoryRow[];

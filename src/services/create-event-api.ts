@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { api } from "@/lib/api";
+import { api } from "@/services/api";
 
 const CREATED_EVENT_ID_KEY = "eventra-create-event-id";
 

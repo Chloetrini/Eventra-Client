@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router'
 import onboardingSidebarImage from '@/assets/onboarding sidebar image.png'
 import sidebarBankImg from '@/assets/sidebarBankImg.png'
 import onboardingReviewimg from '@/assets/onboardingReviewimg.png'
-import { useStepGuard } from '@/lib/use-step-guard'
+import { useStepGuard } from '@/services/use-step-guard'
 
 export const stepsFlow = [
   {

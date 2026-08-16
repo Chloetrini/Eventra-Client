@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
-import { clearCreatedEventId } from "@/lib/create-event-api";
+import { clearCreatedEventId } from "@/services/create-event-api";
 import { CREATE_EVENT_STORAGE_KEY } from "@/routes/dashboard/create-event/layout";
 
 export function EventsHeader() {

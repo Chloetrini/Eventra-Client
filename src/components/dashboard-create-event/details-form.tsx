@@ -1,4 +1,4 @@
-import type { EventFormValues } from "@/lib/schema"
+import type { EventFormValues } from "@/services/schema"
 import { FormBox } from "../ui/form-box"
 import { useFormContext, useFieldArray, useWatch, type FieldError } from "react-hook-form"
 import { useEffect } from "react"

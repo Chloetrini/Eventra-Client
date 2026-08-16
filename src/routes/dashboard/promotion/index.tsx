@@ -8,17 +8,17 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Alert, AlertTitle, AlertDescription, AlertAction } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { cn, formatDate } from "@/lib/utils"
-import { fetchMyEvents } from "@/lib/events-api"
-import { useOrganizerStatus } from "@/lib/organizer-api"
+import { cn, formatDate } from "@/services/utils"
+import { fetchMyEvents } from "@/services/events-api"
+import { useOrganizerStatus } from "@/services/organizer-api"
 import {
   fetchPromotionPackages,
   fetchMyPromotions,
   requestPromotion,
   type PromotionPackageId,
   type PromotionStatus,
-} from "@/lib/promotion-api"
-import { PromotionSkeleton } from "@/components/promotion-skeleton"
+} from "@/services/promotion-api"
+import { PromotionSkeleton } from "@/components/skeletons/promotion-skeleton"
 
 const wherePromotedEventsAppear = [
   {

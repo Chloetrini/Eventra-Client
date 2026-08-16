@@ -1,4 +1,4 @@
-import { api } from "@/lib/api";
+import { api } from "@/services/api";
 
 // ---------------------------------------------------------------------
 // Update the signed-in user's profile — PATCH /users/profile

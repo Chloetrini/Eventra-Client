@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
-import type { EventFormValues } from '@/lib/schema'
+import type { EventFormValues } from '@/services/schema'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { FormBox } from '../ui/form-box'
 import LocationMap from './location-map'
 import mapPin from '@/assets/map-pin.png'
-import { nigerianStates } from "@/lib/constants"
+import { nigerianStates } from "@/services/constants"
 
 
 const LocationForm = () => {

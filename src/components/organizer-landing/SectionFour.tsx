@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { SECTION_FOUR_DATA } from '@/lib/organizer-constants';
+import { SECTION_FOUR_DATA } from '@/services/organizer-constants';
 import { CtaBanner } from '../ui/ctaBanner';
-import { UI_ASSETS } from '@/lib/assets';
+import { UI_ASSETS } from '@/services/assets';
 
 const SectionFour: React.FC = () => {
  
@@ -37,7 +37,7 @@ export default SectionFour;
 // import React from 'react';
 // import { Link } from 'react-router-dom';
 // import { useEventCTA } from '@/hooks/useEventData';
-// import { SECTION_FOUR_DATA } from '@/lib/organizer-constants';
+// import { SECTION_FOUR_DATA } from '@/services/organizer-constants';
 // import SectionSkeleton from '@/components/ui/SectionSkeleton';
 // import { Button } from '@/components/ui/button';
 

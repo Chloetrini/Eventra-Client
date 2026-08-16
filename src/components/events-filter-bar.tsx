@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
 import { useSearchParams } from "react-router";
-import { cn } from "@/lib/utils";
+import { cn } from "@/services/utils";
 
 const STATUS_FILTERS = [
   { value: "all", label: "All" },

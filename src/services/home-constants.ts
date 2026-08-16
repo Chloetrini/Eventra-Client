@@ -1,4 +1,4 @@
-import { UI_ASSETS } from "@/lib/assets";
+import { UI_ASSETS } from "@/services/assets";
 import { type EventItem } from "@/types/types";
 import { type VibeCategory } from "@/types/types";
 

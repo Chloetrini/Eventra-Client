@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router";
 
-import { SECTION_THREE_FEATURES } from "@/lib/organizer-constants";
+import { SECTION_THREE_FEATURES } from "@/services/organizer-constants";
 import { Button } from "@/components/ui/button";
 import {
   Ticket,

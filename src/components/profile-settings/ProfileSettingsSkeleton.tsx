@@ -1,5 +1,5 @@
 import React from 'react';
-import PageWrapper from '../pageWrapper';
+import PageWrapper from '../page-wrapper';
 
 export default function ProfileSettingsSkeleton() {
   return (

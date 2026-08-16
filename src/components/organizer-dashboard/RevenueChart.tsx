@@ -1,14 +1,15 @@
 import React from "react";
 import {
-  Bar,
-  BarChart,
+  Area,
+  AreaChart,
   CartesianGrid,
+  Dot,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
-import { formatCompactNaira } from "@/lib/utils";
+import { formatCompactNaira } from "@/services/utils";
 import type { RevenuePeriod, RevenueSeriesPoint } from "@/types/dashboard";
 
 interface CustomTooltipProps {
@@ -22,7 +23,7 @@ interface CustomTooltipProps {
 // "Live" status pill. A single-series chart needs no categorical
 // validation (there's nothing to confuse it with), so the app's own
 // brand color is used directly.
-const BAR_COLOR = "#0F6E56";
+const LINE_COLOR = "#0F6E56";
 
 const PERIODS: { value: RevenuePeriod; label: string }[] = [
   { value: "7d", label: "7 days" },
@@ -88,9 +89,17 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period, onPeriodChang
           No revenue yet for this period.
         </div>
       ) : (
-        <div className="h-[260px] mt-4" role="img" aria-label="Bar chart of revenue over time">
+        <div className="h-[260px] mt-4" role="img" aria-label="Area chart of revenue over time">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} barCategoryGap="20%" margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+            <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <defs>
+                {/* Area fill at ~10% opacity, fading to nothing — a wash
+                    under the line, never a saturated block. */}
+                <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={LINE_COLOR} stopOpacity={0.1} />
+                  <stop offset="100%" stopColor={LINE_COLOR} stopOpacity={0} />
+                </linearGradient>
+              </defs>
               <CartesianGrid vertical={false} stroke="#F0EFEC" />
               <XAxis
                 dataKey="label"
@@ -108,7 +117,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period, onPeriodChang
                 width={56}
               />
               <Tooltip
-                cursor={{ fill: "#0F6E56", fillOpacity: 0.06 }}
+                cursor={{ stroke: "#E8E6E0", strokeWidth: 1 }}
                 content={(props) => (
                   <CustomTooltip
                     active={props.active}
@@ -118,8 +127,25 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period, onPeriodChang
                   />
                 )}
               />
-              <Bar dataKey="amount" fill={BAR_COLOR} radius={[4, 4, 0, 0]} maxBarSize={36} />
-            </BarChart>
+              <Area
+                type="monotone"
+                dataKey="amount"
+                stroke={LINE_COLOR}
+                strokeWidth={2}
+                fill="url(#revenueFill)"
+                activeDot={(props: any) => (
+                  <Dot
+                    cx={props.cx}
+                    cy={props.cy}
+                    r={4}
+                    fill={LINE_COLOR}
+                    stroke="var(--card)"
+                    strokeWidth={2}
+                  />
+                )}
+                dot={false}
+              />
+            </AreaChart>
           </ResponsiveContainer>
         </div>
       )}

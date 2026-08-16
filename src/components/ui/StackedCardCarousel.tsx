@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { UI_ASSETS } from "@/lib/assets";
-import { Format } from "@/lib/utils";
+import { UI_ASSETS } from "@/services/assets";
+import { Format } from "@/services/utils";
 import { Link } from "react-router";
 import type { Event } from "@/types/event-types";
 

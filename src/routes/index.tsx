@@ -178,6 +178,25 @@ const routes = [
                                     return { Component };
                                 },
                             },
+                            {
+                                path: "checkout",
+                                children: [
+                                    {
+                                        path: "callback",
+                                        handle: {
+                                            seo: {
+                                                title: "Confirming payment",
+                                                description: "Confirming your payment.",
+                                            },
+                                        },
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/main/payment/checkout-callback");
+                                            return { Component };
+                                        },
+                                    },
+                                ],
+                            },
                         ],
                     },
                 ]
@@ -458,170 +477,170 @@ const routes = [
                             },
                             {
                                 path: "overview",
-                        handle: {
-                            seo: {
-                                title: "Organizer Dashboard",
-                                description: "Manage your events and organization.",
-                            }
-                        },
-                        lazy: async () => {
-                            const { default: Component } =
-                                await import("@/routes/dashboard/overview/index");
-                            return { Component };
-                        },
-                    },
-                    {
-                        path: "events",
-                        children: [
-                            {
-                                index: true,
                                 handle: {
                                     seo: {
-                                        title: "Events",
+                                        title: "Organizer Dashboard",
+                                        description: "Manage your events and organization.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/overview/index");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "events",
+                                children: [
+                                    {
+                                        index: true,
+                                        handle: {
+                                            seo: {
+                                                title: "Events",
+                                                description: "Manage your events, from draft to sold out.",
+                                            }
+                                        },
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/dashboard/events/index");
+                                            return { Component };
+                                        },
+                                    },
+                                    {
+                                        path: ":eventId",
+                                        handle: {
+                                            seo: {
+                                                title: "Event Details",
+                                                description: "Manage your event, view sales metrics, recent attendees, and quick actions.",
+                                            }
+                                        },
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/main/organizer-event-details");
+                                            return { Component };
+                                        },
+                                    },
+                                ],
+                            },
+                            {
+                                path: "attendees",
+                                handle: {
+                                    seo: {
+                                        title: "Attendee",
                                         description: "Manage your events, from draft to sold out.",
                                     }
                                 },
                                 lazy: async () => {
                                     const { default: Component } =
-                                        await import("@/routes/dashboard/events/index");
+                                        await import("@/routes/dashboard/attendees/index");
                                     return { Component };
                                 },
                             },
+                            // ─── Check-In Route ──────────────────────────────────────
                             {
-                                path: ":eventId",
+                                path: "check-in",
+                                lazy: async () => {
+                                    const { default: Component } = await import("@/routes/dashboard/check-in/index");
+                                    return { Component };
+                                },
                                 handle: {
                                     seo: {
-                                        title: "Event Details",
-                                        description: "Manage your event, view sales metrics, recent attendees, and quick actions.",
+                                        title: "Check-in | EVENTRA",
+                                        description: "Check in attendees for your events.",
+                                    },
+                                },
+                            },
+                            {
+                                path: "promotion",
+                                handle: {
+                                    seo: {
+                                        title: "Promote",
+                                        description: "Promote your shows.",
                                     }
                                 },
                                 lazy: async () => {
                                     const { default: Component } =
-                                        await import("@/routes/main/organizer-event-details");
-                                    return { Component };
-                                },
-                            },
-                        ],
-                    },
-                    {
-                        path: "attendees",
-                        handle: {
-                            seo: {
-                                title: "Attendee",
-                                description: "Manage your events, from draft to sold out.",
-                            }
-                        },
-                        lazy: async () => {
-                            const { default: Component } =
-                                await import("@/routes/dashboard/attendees/index");
-                            return { Component };
-                        },
-                    },
-                    // ─── Check-In Route ──────────────────────────────────────
-                    {
-                        path: "check-in",
-                        lazy: async () => {
-                            const { default: Component } = await import("@/routes/dashboard/check-in/index");
-                            return { Component };
-                        },
-                        handle: {
-                            seo: {
-                                title: "Check-in | EVENTRA",
-                                description: "Check in attendees for your events.",
-                            },
-                        },
-                    },
-                    {
-                        path: "promotion",
-                        handle: {
-                            seo: {
-                                title: "Promote",
-                                description: "Promote your shows.",
-                            }
-                        },
-                        lazy: async () => {
-                            const { default: Component } =
-                                await import("@/routes/dashboard/promotion");
-                            return { Component };
-                        },
-                    },
-                    {
-                        path: "payouts",
-                        handle: {
-                            seo: {
-                                title: "Payouts",
-                                description: "Track earnings per event and your payout history.",
-                            }
-                        },
-                        lazy: async () => {
-                            const { default: Component } =
-                                await import("@/routes/dashboard/payouts");
-                            return { Component };
-                        },
-                    },
-                    {
-                        path: "create-event",
-                        Component: CreateEventLayout,
-                        children: [
-                            {
-                                path: "type",
-                                lazy: async () => {
-                                    const { default: Component } =
-                                        await import("@/routes/dashboard/create-event/type");
+                                        await import("@/routes/dashboard/promotion");
                                     return { Component };
                                 },
                             },
                             {
-                                path: "basics",
+                                path: "payouts",
+                                handle: {
+                                    seo: {
+                                        title: "Payouts",
+                                        description: "Track earnings per event and your payout history.",
+                                    }
+                                },
                                 lazy: async () => {
                                     const { default: Component } =
-                                        await import("@/routes/dashboard/create-event/basics");
+                                        await import("@/routes/dashboard/payouts");
                                     return { Component };
                                 },
                             },
                             {
-                                path: "location",
-                                lazy: async () => {
-                                    const { default: Component } =
-                                        await import("@/routes/dashboard/create-event/location");
-                                    return { Component };
-                                },
+                                path: "create-event",
+                                Component: CreateEventLayout,
+                                children: [
+                                    {
+                                        path: "type",
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/dashboard/create-event/type");
+                                            return { Component };
+                                        },
+                                    },
+                                    {
+                                        path: "basics",
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/dashboard/create-event/basics");
+                                            return { Component };
+                                        },
+                                    },
+                                    {
+                                        path: "location",
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/dashboard/create-event/location");
+                                            return { Component };
+                                        },
+                                    },
+                                    {
+                                        path: "rsvp",
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/dashboard/create-event/rsvp");
+                                            return { Component };
+                                        },
+                                    },
+                                    {
+                                        path: "tickets",
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/dashboard/create-event/tickets");
+                                            return { Component };
+                                        },
+                                    },
+                                    {
+                                        path: "details",
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/dashboard/create-event/details");
+                                            return { Component };
+                                        },
+                                    },
+                                    {
+                                        path: "review",
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/dashboard/create-event/review");
+                                            return { Component };
+                                        },
+                                    },
+                                ],
                             },
-                            {
-                                path: "rsvp",
-                                lazy: async () => {
-                                    const { default: Component } =
-                                        await import("@/routes/dashboard/create-event/rsvp");
-                                    return { Component };
-                                },
-                            },
-                            {
-                                path: "tickets",
-                                lazy: async () => {
-                                    const { default: Component } =
-                                        await import("@/routes/dashboard/create-event/tickets");
-                                    return { Component };
-                                },
-                            },
-                            {
-                                path: "details",
-                                lazy: async () => {
-                                    const { default: Component } =
-                                        await import("@/routes/dashboard/create-event/details");
-                                    return { Component };
-                                },
-                            },
-                            {
-                                path: "review",
-                                lazy: async () => {
-                                    const { default: Component } =
-                                        await import("@/routes/dashboard/create-event/review");
-                                    return { Component };
-                                },
-                            },
-                        ],
-                    },
-                ]
+                        ]
                     },
                 ],
             },

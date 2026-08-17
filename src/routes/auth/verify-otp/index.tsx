@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { verifyEmailSchema } from "@/lib/schema";
 import EventraLogo from "@/assets/Eventra-logo.png";
-import { authPath } from "@/services/auth-path";
+import { authPath } from "@/lib/auth-path";
 import { useAuth } from "@/context/auth.context";
 
 const OTP_LENGTH = 6;

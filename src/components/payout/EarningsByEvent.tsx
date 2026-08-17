@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { cn, formatNaira } from "@/lib/utils";
-import type { EarningsByEventRow, PayoutEventStatus } from "@/services/payouts-api";
+import type { EarningsByEventRow, PayoutEventStatus } from "@/lib/payouts-api";
 
 const STATUS_STYLE: Record<PayoutEventStatus, string> = {
   paid: "bg-[#E4F1EB] text-[#0F6E56] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]",

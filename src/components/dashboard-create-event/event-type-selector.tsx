@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { AlertTriangle } from 'lucide-react'
-import { useOrganizerStatus } from '@/services/organizer-api'
+import { useOrganizerStatus } from '@/lib/organizer-api'
 
 const eventTypes = [
     {

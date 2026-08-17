@@ -15,8 +15,8 @@ import TicketPreview from '@/components/tickets/ticket-preview'
 import { useLocation, useNavigate, Link } from 'react-router'
 import PageWrapper from '@/components/page-wrapper'
 import { toast } from 'react-toastify'
-import { rsvpFreeEvent, initializeCheckout } from '@/services/tickets-api'
-import { getExploreUrl } from '@/services/explore-history'
+import { rsvpFreeEvent, initializeCheckout } from '@/lib/tickets-api'
+import { getExploreUrl } from '@/lib/explore-history'
 
 const Checkout = () => {
     const location = useLocation()

@@ -7,7 +7,7 @@ import PageWrapper from "@/components/page-wrapper"
 import shieldPay from '@/assets/shieldPaywhite.png'
 import { useState } from "react"
 import { toast } from "react-toastify"
-import { saveOrganizerProfile, listBanks } from "@/services/onboarding-api"
+import { saveOrganizerProfile, listBanks } from "@/lib/onboarding-api"
 
 const BankAccountPage = () => {
     const navigate = useNavigate()

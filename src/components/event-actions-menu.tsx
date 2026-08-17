@@ -10,7 +10,7 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { duplicateEvent, deleteEvent } from "@/services/events-api";
+import { duplicateEvent, deleteEvent } from "@/lib/events-api";
 import { DASHBOARD_QUERY_KEY } from "@/hooks/useDashboard";
 import { DeleteEventDialog } from "@/components/dialogs/delete-event-dialog";
 import Loading from "@/assets/more.png";

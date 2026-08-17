@@ -20,7 +20,7 @@ import {
   deleteTicketType,
   fetchTicketTypesForEvent,
   type EventCategory,
-} from '@/services/create-event-api'
+} from '@/lib/create-event-api'
 
 // date/startTime/endTime are each their own field, but only carry one
 // meaningful piece each: `date`'s time-of-day is arbitrary (whatever the

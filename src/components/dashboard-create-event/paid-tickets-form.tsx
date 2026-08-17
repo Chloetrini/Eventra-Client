@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useFormContext, useFieldArray, useWatch } from "react-hook-form"
-import type { EventFormValues } from "@/services/schema"
+import type { EventFormValues } from "@/lib/schema"
 import { FormBox } from "../ui/form-box"
 import ActionBtn from "../ui/action-btn"
 import { CircleX } from "lucide-react"

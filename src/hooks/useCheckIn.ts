@@ -5,7 +5,7 @@ import {
     fetchEventAttendees,
     checkInAttendee,
     manualCheckIn,
-} from '@/services/check-in';
+} from '@/lib/check-in';
 import toast from 'react-hot-toast';
 
 // ─── Query Keys ──────────────────────────────────────────────────

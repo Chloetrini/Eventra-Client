@@ -4,7 +4,7 @@ import successTick from '@/assets/successTick.png'
 import PageWrapper from '@/components/page-wrapper'
 import PaymentBtn from '@/components/ui/pay-method-btn'
 import { ArrowRight } from 'lucide-react'
-import { markOnboardingSubmitted } from '@/services/onboarding-store'
+import { markOnboardingSubmitted } from '@/lib/onboarding-store'
 import { ONBOARDING_STORAGE_KEY } from '@/routes/onboarding/layout'
 
 const OnboardingSuccess = () => {

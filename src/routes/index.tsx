@@ -579,6 +579,20 @@ const routes = [
                                 },
                             },
                             {
+                                path: "settings",
+                                handle: {
+                                    seo: {
+                                        title: "Settings",
+                                        description: "Your organization profile, bank account and verification.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/dashboard/settings");
+                                    return { Component };
+                                },
+                            },
+                            {
                                 path: "create-event",
                                 Component: CreateEventLayout,
                                 children: [

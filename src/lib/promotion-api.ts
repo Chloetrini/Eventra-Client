@@ -1,4 +1,4 @@
-import { api } from "@/services/api";
+import { api } from "@/lib/api";
 
 export type PromotionPackageId = "spotlight" | "featured" | "homepage-hero";
 

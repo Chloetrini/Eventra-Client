@@ -1,4 +1,4 @@
-import { api } from "@/services/api";
+import { api } from "@/lib/api";
 
 export async function saveOrganizerProfile(payload: {
   businessName?: string;

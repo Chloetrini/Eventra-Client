@@ -1,4 +1,4 @@
-import { api } from "@/services/api";
+import { api } from "@/lib/api";
 
 export type PayoutEventStatus = "held" | "ready" | "paid" | "free_no_payout";
 

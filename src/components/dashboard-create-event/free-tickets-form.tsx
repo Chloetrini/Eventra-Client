@@ -1,7 +1,7 @@
 import { FormBox } from '../ui/form-box'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { useEffect } from 'react'
-import type { EventFormValues } from '@/services/schema'
+import type { EventFormValues } from '@/lib/schema'
 
 const FreeTicketsForm = () => {
     const {

@@ -7,8 +7,8 @@ import { EarningsByEvent } from "../../../components/payout/EarningsByEvent";
 import { PayoutHistory } from "../../../components/payout/PayoutHistory";
 import { StatCards } from "./StatCards";
 import { PayoutsSkeleton } from "@/components/skeletons/payouts-skeleton";
-import { fetchPayouts } from "@/services/payouts-api";
-import { useOrganizerProfile } from "@/services/organizer-api";
+import { fetchPayouts } from "@/lib/payouts-api";
+import { useOrganizerProfile } from "@/lib/organizer-api";
 
 export default function Payouts() {
   const [showSetupBanner, setShowSetupBanner] = useState(true);

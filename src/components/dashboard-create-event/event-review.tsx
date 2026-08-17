@@ -1,4 +1,4 @@
-import type { EventFormValues } from "@/services/schema"
+import type { EventFormValues } from "@/lib/schema"
 import { formatDate, formatNaira, formatTime } from "@/lib/utils"
 import { useFormContext, useWatch } from "react-hook-form"
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router";
-import { getOrderByReference } from "@/services/tickets-api";
+import { getOrderByReference } from "@/lib/tickets-api";
 import { useAuth } from "@/context/auth.context";
 import PageWrapper from "@/components/page-wrapper";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";

@@ -105,7 +105,7 @@ export default HeroSec;
 // import { useEventData } from "@/hooks/useEventData";
 // import { Button } from "@/components/ui/button";
 // import LoadingSpinner from "@/components/ui/LoadingSpinner";
-// import { HERO_DATA } from "@/services/organizer-constants";
+// import { HERO_DATA } from "@/lib/organizer-constants";
 // import { StarIcon } from "lucide-react";
 
 // const HeroSec: React.FC = () => {

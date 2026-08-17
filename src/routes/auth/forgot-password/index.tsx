@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { forgotPasswordSchema } from "@/lib/schema";
 import EventraLogo from "@/assets/Eventra-logo.png";
-import { authPath } from "@/services/auth-path";
+import { authPath } from "@/lib/auth-path";
 import { useAuth } from "@/context/auth.context";
 
 type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;

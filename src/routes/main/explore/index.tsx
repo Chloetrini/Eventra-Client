@@ -11,7 +11,7 @@ import { useEffect, useMemo } from "react";
 import { ArrowRight } from "lucide-react";
 import { useSavedEvents } from "@/hooks/use-saved-events";
 import { useNavigate, useLocation } from "react-router";
-import { saveExploreUrl } from "@/services/explore-history";
+import { saveExploreUrl } from "@/lib/explore-history";
 
 export default function ExplorePage() {
   const navigate = useNavigate();

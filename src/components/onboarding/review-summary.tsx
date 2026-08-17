@@ -1,6 +1,6 @@
 import { useFormContext, useWatch } from "react-hook-form"
 import { Building2, Tag, Mail, Landmark, type LucideIcon } from "lucide-react"
-import type { OnboardingValues } from "@/services/schema"
+import type { OnboardingValues } from "@/lib/schema"
 
 type ReviewRow = {
     icon: LucideIcon

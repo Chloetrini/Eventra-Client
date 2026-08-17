@@ -10,9 +10,9 @@ import PaymentBtn from "@/components/ui/pay-method-btn";
 import { formatDateTime } from "@/lib/utils";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { requestTicketRefund, cancelReservation } from "@/services/tickets-api";
+import { requestTicketRefund, cancelReservation } from "@/lib/tickets-api";
 import { useQueryClient } from "@tanstack/react-query";
-import { downloadEventIcs } from "@/services/calendar";
+import { downloadEventIcs } from "@/lib/calendar";
 interface TicketProps {
   ticket: Ticket;
   showActions?: boolean;

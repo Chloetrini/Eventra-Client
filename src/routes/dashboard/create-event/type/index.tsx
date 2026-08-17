@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router'
 import { useCreateEventStep } from "@/components/dashboard-create-event/create-event-sidebar"
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import { createEvent, getCreatedEventId, setCreatedEventId } from '@/services/create-event-api'
+import { createEvent, getCreatedEventId, setCreatedEventId } from '@/lib/create-event-api'
 
 const EventType = () => {
   const { currentStep, totalSteps } = useCreateEventStep()

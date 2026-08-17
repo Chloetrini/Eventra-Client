@@ -87,12 +87,15 @@ function adaptOverview(raw: RealOverviewResponse) {
     stats: {
       ticketsSold: {
         value: raw.ticketsSold.toLocaleString(),
-        change: raw.ticketsSoldChangePct ?? 0,
+        // Keep null as null (no prior-period data to compare against) —
+        // coercing it to 0 here made the card always claim "0% vs last
+        // month" instead of "No prior data" for a brand-new account.
+        change: raw.ticketsSoldChangePct,
         subtext: changeSubtext(raw.ticketsSoldChangePct),
       },
       revenue: {
         value: formatCompactNaira(raw.revenue),
-        change: raw.revenueChangePct ?? 0,
+        change: raw.revenueChangePct,
         subtext: changeSubtext(raw.revenueChangePct),
       },
       liveEvents: {

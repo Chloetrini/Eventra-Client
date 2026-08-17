@@ -15,8 +15,10 @@ export interface DashboardEvent {
 }
 
 export interface DashboardStats {
-  ticketsSold: { value: string; change: number; subtext: string };
-  revenue: { value: string; change: number; subtext: string };
+  // null = no prior-period data to compare against (e.g. a brand new
+  // account's first month) — distinct from an actual 0% change.
+  ticketsSold: { value: string; change: number | null; subtext: string };
+  revenue: { value: string; change: number | null; subtext: string };
   liveEvents: { value: string; subtext: string };
   payoutDue: { value: string; subtext: string };
 }

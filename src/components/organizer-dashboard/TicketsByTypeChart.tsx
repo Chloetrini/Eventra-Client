@@ -13,20 +13,19 @@ interface CustomTooltipProps {
   payload?: Array<{ payload: TicketsByTypeSlice }>;
 }
 
-// Validated categorical order (dataviz skill default palette) — fixed
-// slot order, never cycled per-render. Passes CVD/contrast checks for
-// adjacent bar pairs in both light and dark; the two lowest-contrast
-// slots (aqua, yellow) get their "relief": every bar already carries a
-// visible text label, so identity never depends on the fill color alone.
+// Brand-matched categorical order (green/amber/indigo/rose/blue), validated
+// separately for light and dark via the dataviz skill's validate_palette.js
+// (lightness band, chroma floor, CVD separation, contrast all pass in both
+// modes — see the --chart-cat-* custom properties in index.css). Referenced
+// as CSS vars so each slot repaints correctly across the light/dark toggle;
+// fixed slot order, never cycled per-render. Every slice also carries a
+// visible legend label, so identity never depends on fill color alone.
 const CATEGORICAL_PALETTE = [
-  "#2a78d6", // blue
-  "#eb6834", // orange
-  "#1baf7a", // aqua
-  "#eda100", // yellow
-  "#e87ba4", // magenta
-  "#008300", // green
-  "#4a3aa7", // violet
-  "#e34948", // red
+  "var(--chart-cat-1)", // green
+  "var(--chart-cat-2)", // amber
+  "var(--chart-cat-3)", // indigo
+  "var(--chart-cat-4)", // rose
+  "var(--chart-cat-5)", // blue
 ];
 
 const MAX_SLOTS = CATEGORICAL_PALETTE.length;

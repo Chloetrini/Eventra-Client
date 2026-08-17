@@ -9,7 +9,7 @@ import {
 import gpsUrl from "@/assets/gps.svg";
 import downUrl from "@/assets/down.svg";
 import { UI_ASSETS } from "@/lib/assets";
-import PageWrapper from "@/components/pageWrapper";
+import PageWrapper from "@/components/page-wrapper";
 import { VibeGrid } from "@/components/events/vibe-grid";
 import { FeaturedEvents } from "@/components/events/featured-events";
 import { CtaBanner } from "@/components/ui/ctaBanner";

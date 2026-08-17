@@ -6,7 +6,7 @@ import NToggles from '@/components/profile-settings/NToggles';
 import ProfileSettingsSkeleton from '@/components/profile-settings/ProfileSettingsSkeleton';
 import { useAuth, type User } from '@/context/auth.context';
 import { toast } from 'react-toastify';
-import PageWrapper from '@/components/pageWrapper';
+import PageWrapper from '@/components/page-wrapper';
 import { updateProfile, uploadAvatar } from '@/lib/user-api';
 import { z } from 'zod';
 import { profileSchema } from '@/lib/schema';

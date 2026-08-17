@@ -36,11 +36,6 @@ const TierRow = ({
           )}
         </div>
         <div className="text-right font-space">
-          {tier.originalPrice && (
-            <p className="text-xs text-muted-foreground font-grotesk line-through">
-              {formatPrice(tier.originalPrice)}
-            </p>
-          )}
           <p className="text-sm font-bold">
             {isSoldOut ? (
               <span className="text-[#c14747] dark:text-[#FFC4C4]">Sold out</span>
@@ -195,15 +190,18 @@ export const PaidEventTicket = ({
       <div className="space-y-2 text-sm">
         <div className="flex items-center justify-between text-muted-foreground">
           <span>Subtotal</span>
-          <span>{formatPrice(subtotal)}</span>
+          <span>{subtotal === 0 ? "₦0" : formatPrice(subtotal)}</span>
         </div>
         <div className="flex items-center justify-between text-muted-foreground">
           <span>Service fee ({feePercent}%)</span>
-          <span>{formatPrice(serviceFee)}</span>
+          <span>{serviceFee === 0 ? "₦0" : formatPrice(serviceFee)}</span>
         </div>
         <div className="flex items-center justify-between font-bold">
           <span>Total</span>
-          <span>{formatPrice(total)}</span>
+          {/* formatPrice shows "Free" for a genuinely free tier, which is
+              correct everywhere else it's used — but here 0 just means
+              "nothing picked yet" on a paid event, so show ₦0 instead. */}
+          <span>{total === 0 ? "₦0" : formatPrice(total)}</span>
         </div>
       </div>
       <Button

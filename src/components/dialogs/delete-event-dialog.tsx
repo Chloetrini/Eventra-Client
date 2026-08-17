@@ -1,10 +1,13 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import type { Event } from "@/types/event";
 
+// Deliberately a minimal { id, title } shape rather than the full Event
+// type — this dialog is shared by every place an event row can be
+// deleted from (Events list, Overview's Recent events, the single-event
+// details page), and those don't all have the same event shape on hand.
 interface DeleteEventDialogProps {
-    event: Event | null;
+    event: { id: string; title: string } | null;
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onConfirm: (eventId: string) => void;
@@ -16,7 +19,7 @@ export function DeleteEventDialog ({
     if (!event) return null;
 
     const handleConfirm = () => {
-        onConfirm (event._id);
+        onConfirm (event.id);
         onOpenChange(false)
     }
 
@@ -28,7 +31,7 @@ export function DeleteEventDialog ({
                         Delete event
                     </DialogTitle>
                     <DialogDescription>
-                        Are you sure you want to delete <strong>{event.eventTitle}</strong>? This action cannot be undone.
+                        Are you sure you want to delete <strong>{event.title}</strong>? This action cannot be undone.
                     </DialogDescription>
                 </DialogHeader>
 

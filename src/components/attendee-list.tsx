@@ -1,7 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
 import type { Attendee } from "@/types/attendees";
-import { tr } from "zod/v4/locales";
 
 interface AttendeeListProps {
   attendees: Attendee[];

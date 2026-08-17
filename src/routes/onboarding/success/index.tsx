@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router'
 import successTick from '@/assets/successTick.png'
-import PageWrapper from '@/components/pageWrapper'
+import PageWrapper from '@/components/page-wrapper'
 import PaymentBtn from '@/components/ui/pay-method-btn'
 import { ArrowRight } from 'lucide-react'
 import { markOnboardingSubmitted } from '@/lib/onboarding-store'

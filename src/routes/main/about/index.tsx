@@ -7,14 +7,14 @@ import { HiOutlineTag } from "react-icons/hi";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { TbScan } from "react-icons/tb";
 import { HiOutlineLocationMarker } from "react-icons/hi";
-import Celeb from "@/assets/Celeb.png";
 import Combined from "@/assets/Combined.png"
-import PageWrapper from "@/components/pageWrapper";
+import PageWrapper from "@/components/page-wrapper";
 import { CtaBanner } from "@/components/ui/ctaBanner";
 import { UI_ASSETS } from "@/lib/assets";
+import { useNavigate } from "react-router";
 
 export default function About() {
-
+  const navigate = useNavigate()
     const principles = [
         {
             icon: <FaShield size={24} />,
@@ -86,7 +86,7 @@ export default function About() {
                                 with confidence and organizer get paid without stress.
                             </p>
                         </div>
-                        <button className="hidden md:block w-[140px] h-[42px] rounded-md py-2 px-4 bg-[#0F6E56] font-geist font-bold text-sm text-[#E8E6E0] cursor-pointer hover:bg-[#0D5B4A] transition-colors duration-300">
+                        <button onClick={()=> navigate("/explore")} className="hidden md:block w-[140px] h-[42px] rounded-md py-2 px-4 bg-[#0F6E56] font-geist font-bold text-sm text-[#E8E6E0] cursor-pointer hover:bg-[#0D5B4A] transition-colors duration-300">
                             Explore event
                         </button>
                     </div>

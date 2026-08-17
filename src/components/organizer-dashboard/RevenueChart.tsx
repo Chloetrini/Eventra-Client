@@ -1,8 +1,9 @@
 import React from "react";
 import {
-  Bar,
-  BarChart,
+  Area,
+  AreaChart,
   CartesianGrid,
+  Dot,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -21,8 +22,10 @@ interface CustomTooltipProps {
 // Brand green — the same hue StatsCards uses for positive trends and the
 // "Live" status pill. A single-series chart needs no categorical
 // validation (there's nothing to confuse it with), so the app's own
-// brand color is used directly.
-const BAR_COLOR = "#0F6E56";
+// brand color is used directly. Referenced via CSS var (see --chart-line
+// in index.css) so it swaps to a lighter step in dark mode — a dark green
+// fill at 10% opacity is invisible against the dark card surface otherwise.
+const LINE_COLOR = "var(--chart-line)";
 
 const PERIODS: { value: RevenuePeriod; label: string }[] = [
   { value: "7d", label: "7 days" },
@@ -61,7 +64,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period, onPeriodChang
     <div className="bg-card border border-border rounded-xl p-6">
       <div className="flex items-center justify-between mb-1 flex-wrap gap-3">
         <div>
-          <h3 className="text-base font-semibold text-foreground">Revenue</h3>
+          <h3 className="text-base font-grotesk font-semibold text-foreground">Revenue</h3>
           <p className="text-xs text-muted-foreground mt-0.5">Your earnings over time</p>
         </div>
         <div className="flex items-center gap-1 bg-muted border border-border rounded-lg p-1">
@@ -88,27 +91,35 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period, onPeriodChang
           No revenue yet for this period.
         </div>
       ) : (
-        <div className="h-[260px] mt-4" role="img" aria-label="Bar chart of revenue over time">
+        <div className="h-[260px] mt-4" role="img" aria-label="Area chart of revenue over time">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} barCategoryGap="20%" margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-              <CartesianGrid vertical={false} stroke="#F0EFEC" />
+            <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <defs>
+                {/* Area fill at ~10% opacity, fading to nothing — a wash
+                    under the line, never a saturated block. */}
+                <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={LINE_COLOR} stopOpacity={0.1} />
+                  <stop offset="100%" stopColor={LINE_COLOR} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} stroke="var(--border)" />
               <XAxis
                 dataKey="label"
                 tickFormatter={(v) => formatLabel(v, period)}
                 tickLine={false}
-                axisLine={{ stroke: "#E8E6E0" }}
-                tick={{ fill: "#6E6577", fontSize: 11 }}
+                axisLine={{ stroke: "var(--border)" }}
+                tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
                 interval="preserveStartEnd"
               />
               <YAxis
                 tickLine={false}
                 axisLine={false}
-                tick={{ fill: "#6E6577", fontSize: 11 }}
+                tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
                 tickFormatter={(v) => formatCompactNaira(v)}
                 width={56}
               />
               <Tooltip
-                cursor={{ fill: "#0F6E56", fillOpacity: 0.06 }}
+                cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
                 content={(props) => (
                   <CustomTooltip
                     active={props.active}
@@ -118,8 +129,25 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period, onPeriodChang
                   />
                 )}
               />
-              <Bar dataKey="amount" fill={BAR_COLOR} radius={[4, 4, 0, 0]} maxBarSize={36} />
-            </BarChart>
+              <Area
+                type="monotone"
+                dataKey="amount"
+                stroke={LINE_COLOR}
+                strokeWidth={2}
+                fill="url(#revenueFill)"
+                activeDot={(props: any) => (
+                  <Dot
+                    cx={props.cx}
+                    cy={props.cy}
+                    r={4}
+                    fill={LINE_COLOR}
+                    stroke="var(--card)"
+                    strokeWidth={2}
+                  />
+                )}
+                dot={false}
+              />
+            </AreaChart>
           </ResponsiveContainer>
         </div>
       )}

@@ -13,7 +13,9 @@ export type PromotionPackage = {
 };
 
 export async function fetchPromotionPackages(): Promise<PromotionPackage[]> {
-  const res = await api.get("/promotion/packages");
+  // Backend mounts this router at /api/v1/promotions (plural) — see
+  // index.ts's app.use('/api/v1/promotions', promotionRoutes).
+  const res = await api.get("/promotions/packages");
   return res.body as PromotionPackage[];
 }
 
@@ -35,7 +37,7 @@ export type MyPromotion = {
 };
 
 export async function fetchMyPromotions(): Promise<MyPromotion[]> {
-  const res = await api.get("/promotion/mine");
+  const res = await api.get("/promotions/mine");
   return res.body as MyPromotion[];
 }
 

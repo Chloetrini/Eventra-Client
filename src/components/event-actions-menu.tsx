@@ -7,10 +7,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useNavigate } from "react-router";
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { duplicateEvent, deleteEvent } from "@/lib/events-api";
 import { DASHBOARD_QUERY_KEY } from "@/hooks/useDashboard";
+import { DeleteEventDialog } from "@/components/dialogs/delete-event-dialog";
 import Loading from "@/assets/more.png";
 import EditPen from "@/assets/magicpen.png";
 import Promote from "@/assets/star.png";
@@ -21,23 +23,29 @@ import Duplicate from "@/assets/3square.png";
 interface EventActionsMenuProps {
   eventId: string;
   eventTitle: string;
-  /** If provided, called instead of the built-in window.confirm delete —
-   * use this to open a richer delete dialog (see dashboard/events). */
-  onDeleteRequest?: () => void;
+  /** Called after a successful delete, in addition to the automatic
+   * list-refresh below — use this when the caller keeps its own local
+   * copy of the event list (e.g. dashboard/events, which filters
+   * client-side) and needs to remove the row immediately. */
+  onDeleted?: () => void;
 }
 
 /**
  * The one "..." menu used everywhere an event row appears (the Events
- * list and the dashboard Overview's Recent events). Edit/View
- * details/Attendance/Promote navigate; Duplicate and Delete call the
- * real backend directly so every menu behaves identically.
+ * list, the dashboard Overview's Recent events, and the single-event
+ * details page). Edit/View details/Attendance/Promote navigate;
+ * Duplicate and Delete call the real backend directly, and Delete always
+ * confirms through the same modal dialog — never a native window.confirm
+ * — so every menu behaves identically.
  */
-export function EventActionsMenu({ eventId, eventTitle, onDeleteRequest }: EventActionsMenuProps) {
+export function EventActionsMenu({ eventId, eventTitle, onDeleted }: EventActionsMenuProps) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const invalidateEventLists = () => {
     queryClient.invalidateQueries({ queryKey: ["my-events"] });
+    queryClient.invalidateQueries({ queryKey: ["events"] });
     queryClient.invalidateQueries({ queryKey: [DASHBOARD_QUERY_KEY] });
   };
 
@@ -52,20 +60,17 @@ export function EventActionsMenu({ eventId, eventTitle, onDeleteRequest }: Event
     },
   });
 
-  const handleDelete = async () => {
-    if (onDeleteRequest) {
-      onDeleteRequest();
-      return;
-    }
-    if (!window.confirm(`Delete "${eventTitle}"? This can't be undone.`)) return;
-    try {
-      await deleteEvent(eventId);
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteEvent(eventId),
+    onSuccess: () => {
       toast.success("Event deleted");
       invalidateEventLists();
-    } catch (err) {
+      onDeleted?.();
+    },
+    onError: (err) => {
       toast.error(err instanceof Error ? err.message : "Could not delete event. Please try again.");
-    }
-  };
+    },
+  });
 
   return (
     <DropdownMenu>
@@ -112,11 +117,18 @@ export function EventActionsMenu({ eventId, eventTitle, onDeleteRequest }: Event
 
         <DropdownMenuItem
           className="text-destructive focus:text-destructive text-[13px]"
-          onClick={handleDelete}
+          onClick={() => setConfirmingDelete(true)}
         >
           <Trash2 className="size-4" /> Delete
         </DropdownMenuItem>
       </DropdownMenuContent>
+
+      <DeleteEventDialog
+        event={confirmingDelete ? { id: eventId, title: eventTitle } : null}
+        open={confirmingDelete}
+        onOpenChange={setConfirmingDelete}
+        onConfirm={() => deleteMutation.mutate()}
+      />
     </DropdownMenu>
   );
 }

@@ -1,13 +1,13 @@
 import BasicsForm from '@/components/dashboard-create-event/basics-form'
 import { useCreateEventStep } from '@/components/dashboard-create-event/create-event-sidebar'
 import PageSwitcher from '@/components/onboarding/page-switcher'
-import PageWrapper from '@/components/pageWrapper'
+import PageWrapper from '@/components/page-wrapper'
 import { BASICS_FIELDS, type EventFormValues } from '@/lib/schema'
 import { useFormContext } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import { updateEvent, getCreatedEventId } from '@/lib/create-event-api'
+
 
 const Basics = () => {
   const { currentStep, totalSteps } = useCreateEventStep()
@@ -21,7 +21,8 @@ const Basics = () => {
 
   const handleContinue = async () => {
     const isValid = await trigger([...BASICS_FIELDS])
-    if (!isValid) return
+    if (!isValid) return;
+
 
     // const eventId = getCreatedEventId()
     // if (!eventId) {
@@ -63,9 +64,9 @@ const Basics = () => {
   return (
     <PageWrapper className='pl-[16px] pr-[34px]'>
       <div>
-        <p className='font-space text-[13px] text-[#0F6E56]'>STEP {currentStep} OF {totalSteps}</p>
+        <p className='font-space text-[13px] text-[#0F6E56] dark:text-[#4ADE80]'>STEP {currentStep} OF {totalSteps}</p>
         <h1 className='text-[28px] font-bold font-grotesk'>Basics</h1>
-        <p className='font-medium text-[14px] text-[#4A4451]'>Give your events name and essentials</p>
+        <p className='font-medium text-[14px] text-muted-foreground'>Give your events name and essentials</p>
       </div>
       <div className='mt-6 flex flex-col gap-8'>
         <BasicsForm onUploadStatusChange={setIsUploadingImage} />

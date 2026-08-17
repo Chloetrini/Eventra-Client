@@ -12,6 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 import { AttendeeList } from "@/components/attendee-list";
+import { AttendeesSkeleton } from "@/components/skeletons/attendees-skeleton";
 import { useOrganizerStatus } from "@/lib/organizer-api";
 
 const FILTERS = [
@@ -87,11 +88,7 @@ export default function Attendees() {
   });
 
   if (eventsLoading || attendeesLoading) {
-    return (
-      <p className="text-center py-12 text-sm text-muted-foreground">
-        Loading Attendees...
-      </p>
-    );
+    return <AttendeesSkeleton />;
   }
   if (isError) {
     return (
@@ -102,7 +99,7 @@ export default function Attendees() {
   }
 
   return (
-    <div className="max-w-[1147px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <div className="space-y-6">
       <AccountReviewBanner status={status} />
       <div>
         <p className="text-[16px] min-[400px]:text-sm lg:text-[16px] font-medium tracking-wide uppercase text-[#0A4F41] dark:text-[#4ADE80]">

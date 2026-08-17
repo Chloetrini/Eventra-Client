@@ -14,7 +14,7 @@ import { contactSchema } from "@/lib/schema";
 import { z } from "zod";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import PageWrapper from "@/components/pageWrapper";
+import PageWrapper from "@/components/page-wrapper";
 
 // Ensure leaflet marker images resolve correctly
 delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })._getIconUrl;

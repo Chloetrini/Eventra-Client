@@ -7,21 +7,21 @@ import { Separator } from "@/components/ui/separator";
 import { fetchEventBySlug, fetchEvents } from "@/lib/events-api";
 import { fetchEventTickets } from "@/lib/tickets-api";
 import { DEFAULT_FILTERS } from "@/types/event-types";
-import { EventHero } from "@/components/event.details/EventHero";
-import { EventInfo } from "@/components/event.details/EventInfo";
-import { AboutEvent } from "@/components/event.details/AboutEvent";
-import { EventLineUp } from "@/components/event.details/EventLineUp";
-import { EventMap } from "@/components/event.details/EventMap";
-import { EventOrganizer } from "@/components/event.details/EventOrganizer";
-import { GoodToKnow } from "@/components/event.details/GoodToKnow";
-import { RelatedEvents } from "@/components/event.details/RelatedEvents";
-import { FreeEventTicket } from "../../../components/event.details/FreeEventTicket";
-import { PaidEventTicket } from "../../../components/event.details/PaidEventTicket";
+import { EventHero } from "@/components/event-details/EventHero";
+import { EventInfo } from "@/components/event-details/EventInfo";
+import { AboutEvent } from "@/components/event-details/AboutEvent";
+import { EventLineUp } from "@/components/event-details/EventLineUp";
+import { EventMap } from "@/components/event-details/EventMap";
+import { EventOrganizer } from "@/components/event-details/EventOrganizer";
+import { GoodToKnow } from "@/components/event-details/GoodToKnow";
+import { RelatedEvents } from "@/components/event-details/RelatedEvents";
+import { FreeEventTicket } from "@/components/event-details/FreeEventTicket";
+import { PaidEventTicket } from "@/components/event-details/PaidEventTicket";
 import { useSavedEvents } from "@/hooks/use-saved-events";
 
-import PageWrapper from "@/components/pageWrapper";
+import PageWrapper from "@/components/page-wrapper";
 import { useAuth } from "@/context/auth.context";
-import { getExploreUrl } from "@/lib/explore.history";
+import { getExploreUrl } from "@/lib/explore-history";
 import { useEvent, useEventTickets } from "@/hooks/use-event";
 
 const EventDetailPage = () => {
@@ -56,7 +56,6 @@ const EventDetailPage = () => {
     );
   }
   const isFree = event.minPrice === 0;
-  console.log("EVENT CATEGORY DEBUG:", { category: event.category, categoryId: event.categoryId });
   return (
     <PageWrapper className="p-5">
       <nav className="flex items-center gap-1 pb-4 text-xs text-muted-foreground mt-3">
@@ -122,6 +121,7 @@ const EventDetailPage = () => {
                 return {
                   id: tt._id,
                   type: tt.name,
+                  description: tt.description,
                   unitPrice: tt.price,
                   quantityLeft: remaining,
                   availability: remaining <= 0 ? "sold out" as const

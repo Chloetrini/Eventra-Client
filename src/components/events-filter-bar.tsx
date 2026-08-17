@@ -6,9 +6,12 @@ const STATUS_FILTERS = [
   { value: "all", label: "All" },
   { value: "live", label: "Live" },
   { value: "draft", label: "Draft" },
+  { value: "pending", label: "Pending" },
   { value: "sold-out", label: "Sold out" },
   { value: "past", label: "Past" },
   { value: "rejected", label: "Rejected" },
+  { value: "cancelled", label: "Cancelled" },
+  { value: "postponed", label: "Postponed" },
 ] as const;
 
 export function EventsFilterBar() {

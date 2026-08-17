@@ -13,10 +13,10 @@ import hashTag from '@/assets/hash.png'
 import qrcode from '@/assets/qrcode2.png'
 import TicketPreview from '@/components/tickets/ticket-preview'
 import { useLocation, useNavigate, Link } from 'react-router'
-import PageWrapper from '@/components/pageWrapper'
+import PageWrapper from '@/components/page-wrapper'
 import { toast } from 'react-toastify'
 import { rsvpFreeEvent, initializeCheckout } from '@/lib/tickets-api'
-import { getExploreUrl } from '@/lib/explore.history'
+import { getExploreUrl } from '@/lib/explore-history'
 
 const Checkout = () => {
     const location = useLocation()
@@ -75,7 +75,6 @@ const Checkout = () => {
                 guestEmail: data.email,
                 guestPhone: data.phoneNumber,
             })
-            console.log("RSVP RESULT:", tickets)
             toast.success('Reservation confirmed')
             navigate('/payment/ticket-confirmation', {
                 state: { tickets, event: ticket, buyer: data, type: 'free' },

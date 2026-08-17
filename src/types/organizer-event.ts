@@ -46,4 +46,9 @@ export interface OrganizerEventDetails {
   recentAttendees: RecentAttendee[];
   isPromoted: boolean;
   promotionMessage?: string;
+  /** Only an approved or already-postponed event can be cancelled;
+   * only an approved event can be postponed — mirrors the backend's own
+   * cancelEvent/postponeEvent guards. */
+  canCancel: boolean;
+  canPostpone: boolean;
 }

@@ -1,13 +1,10 @@
 import React from "react";
 import {
-  Bar,
-  BarChart,
   Cell,
-  LabelList,
+  Pie,
+  PieChart,
   ResponsiveContainer,
   Tooltip,
-  XAxis,
-  YAxis,
 } from "recharts";
 import type { TicketsByTypeSlice } from "@/types/dashboard";
 
@@ -16,20 +13,19 @@ interface CustomTooltipProps {
   payload?: Array<{ payload: TicketsByTypeSlice }>;
 }
 
-// Validated categorical order (dataviz skill default palette) — fixed
-// slot order, never cycled per-render. Passes CVD/contrast checks for
-// adjacent bar pairs in both light and dark; the two lowest-contrast
-// slots (aqua, yellow) get their "relief": every bar already carries a
-// visible text label, so identity never depends on the fill color alone.
+// Brand-matched categorical order (green/amber/indigo/rose/blue), validated
+// separately for light and dark via the dataviz skill's validate_palette.js
+// (lightness band, chroma floor, CVD separation, contrast all pass in both
+// modes — see the --chart-cat-* custom properties in index.css). Referenced
+// as CSS vars so each slot repaints correctly across the light/dark toggle;
+// fixed slot order, never cycled per-render. Every slice also carries a
+// visible legend label, so identity never depends on fill color alone.
 const CATEGORICAL_PALETTE = [
-  "#2a78d6", // blue
-  "#eb6834", // orange
-  "#1baf7a", // aqua
-  "#eda100", // yellow
-  "#e87ba4", // magenta
-  "#008300", // green
-  "#4a3aa7", // violet
-  "#e34948", // red
+  "var(--chart-cat-1)", // green
+  "var(--chart-cat-2)", // amber
+  "var(--chart-cat-3)", // indigo
+  "var(--chart-cat-4)", // rose
+  "var(--chart-cat-5)", // blue
 ];
 
 const MAX_SLOTS = CATEGORICAL_PALETTE.length;
@@ -71,13 +67,12 @@ interface TicketsByTypeChartProps {
 const TicketsByTypeChart: React.FC<TicketsByTypeChartProps> = ({ data }) => {
   const rows = toChartRows(data);
   const hasData = rows.length > 0;
-  // Taller list of ticket types gets more vertical room; short lists stay compact.
-  const chartHeight = Math.max(rows.length * 44, 120);
+  const total = rows.reduce((sum, row) => sum + row.count, 0);
 
   return (
     <div className="bg-card border border-border rounded-xl p-6">
       <div className="mb-1">
-        <h3 className="text-base font-semibold text-foreground">Tickets by type</h3>
+        <h3 className="text-base font-grotesk font-semibold text-foreground">Tickets by type</h3>
         <p className="text-xs text-muted-foreground mt-0.5">Paid ticket tiers, by volume</p>
       </div>
 
@@ -87,37 +82,34 @@ const TicketsByTypeChart: React.FC<TicketsByTypeChartProps> = ({ data }) => {
         </div>
       ) : (
         <>
-          <div style={{ height: chartHeight }} className="mt-4" role="img" aria-label="Horizontal bar chart of tickets sold by ticket type">
+          <div className="relative h-[220px] mt-4" role="img" aria-label="Donut chart of tickets sold by ticket type">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={rows}
-                layout="vertical"
-                barCategoryGap="24%"
-                margin={{ top: 0, right: 48, left: 0, bottom: 0 }}
-              >
-                <XAxis type="number" hide />
-                <YAxis
-                  type="category"
-                  dataKey="name"
-                  tickLine={false}
-                  axisLine={false}
-                  width={96}
-                  tick={{ fill: "#1A1523", fontSize: 12, fontWeight: 600 }}
-                />
-                <Tooltip cursor={{ fill: "#1A1523", fillOpacity: 0.04 }} content={<CustomTooltip />} />
-                <Bar dataKey="count" radius={[0, 4, 4, 0]} maxBarSize={22}>
+              <PieChart>
+                <Pie
+                  data={rows}
+                  dataKey="count"
+                  nameKey="name"
+                  innerRadius="68%"
+                  outerRadius="100%"
+                  // 2px surface-color gap between touching segments,
+                  // instead of a stroke around each one.
+                  stroke="var(--card)"
+                  strokeWidth={2}
+                  startAngle={90}
+                  endAngle={-270}
+                >
                   {rows.map((row) => (
                     <Cell key={row.name} fill={row.color} />
                   ))}
-                  <LabelList
-                    dataKey="percentage"
-                    position="right"
-                    formatter={(value: React.ReactNode) => `${value}%`}
-                    className="fill-foreground text-xs font-semibold"
-                  />
-                </Bar>
-              </BarChart>
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+              </PieChart>
             </ResponsiveContainer>
+            {/* Center total — the hero number this chart leads with. */}
+            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+              <p className="text-2xl font-bold text-foreground font-grotesk">{total.toLocaleString()}</p>
+              <p className="text-[11px] font-medium tracking-wider text-muted-foreground">TICKETS</p>
+            </div>
           </div>
 
           {/* Legend — always present for 2+ series, so identity never relies on color alone. */}
@@ -128,7 +120,7 @@ const TicketsByTypeChart: React.FC<TicketsByTypeChartProps> = ({ data }) => {
                   className="inline-block size-2.5 rounded-full shrink-0"
                   style={{ backgroundColor: row.color }}
                 />
-                {row.name}
+                {row.name} · {row.percentage}%
               </div>
             ))}
           </div>

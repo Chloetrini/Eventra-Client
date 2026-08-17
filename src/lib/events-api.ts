@@ -133,19 +133,37 @@ type RealMyEvent = {
   type: "free" | "paid";
   status: string;
   startDate?: string;
+  endDate?: string;
   capacity?: number | null;
   ticketsSoldCount?: number;
   reservationsCount?: number;
   revenueTotal?: number;
 };
 
-function mapMyEventStatus(status: string): "Live" | "Draft" | "Sold out" | "Past" | "Rejected" {
-  const s = status.toLowerCase();
-  if (s === "live") return "Live";
+// GET /events/mine returns the event's raw moderation status ("draft",
+// "pending_approval", "approved", "rejected", "cancelled", "postponed") —
+// unlike the dashboard-overview endpoint, it does NOT already resolve
+// "approved" down to a display status (live/sold_out/past). That
+// resolution is mirrored here so an approved, on-sale event actually
+// shows as "Live" instead of silently falling through to "Past".
+function mapMyEventStatus(e: RealMyEvent): "Live" | "Draft" | "Pending" | "Sold out" | "Past" | "Rejected" | "Cancelled" | "Postponed" {
+  const s = e.status.toLowerCase();
   if (s === "draft") return "Draft";
-  if (s === "sold_out" || s === "sold out") return "Sold out";
+  if (s === "pending_approval" || s === "pending") return "Pending";
   if (s === "rejected") return "Rejected";
-  return "Past";
+  if (s === "cancelled") return "Cancelled";
+  if (s === "postponed") return "Postponed";
+  if (s !== "approved") return "Past";
+
+  const sold = e.type === "free" ? e.reservationsCount ?? 0 : e.ticketsSoldCount ?? 0;
+  if (e.capacity != null && sold >= e.capacity) return "Sold out";
+  // Use endDate when the event has one (a multi-day event that started
+  // in the past but hasn't finished yet is still "Live", not "Past") —
+  // falls back to startDate for single-day events. Mirrors the backend's
+  // own deriveEventDisplayStatus (eventStatus.ts).
+  const endsAt = e.endDate ?? e.startDate;
+  if (endsAt && new Date(endsAt).getTime() < Date.now()) return "Past";
+  return "Live";
 }
 
 function getMyEventCategoryName(category: RealMyEvent["category"]): string {
@@ -168,7 +186,7 @@ export async function fetchMyEvents() {
     sold: e.type === "free" ? e.reservationsCount ?? 0 : e.ticketsSoldCount ?? 0,
     capacity: e.capacity ?? null,
     revenue: e.revenueTotal ?? null,
-    status: mapMyEventStatus(e.status),
+    status: mapMyEventStatus(e),
   }));
 }
 
@@ -353,7 +371,25 @@ export async function fetchEventDashboard(eventId: string): Promise<OrganizerEve
       d.event.promotionStatus === "pending"
         ? "Your promotion request is pending admin approval."
         : "This event is not promoted yet. Boost it for a featured spot on homepage and explore",
+    canCancel: d.event.status === "approved" || d.event.status === "postponed",
+    canPostpone: d.event.status === "approved",
   };
+}
+
+// ---------------------------------------------------------------------
+// Cancel / postpone — organizer-initiated lifecycle changes. The backend
+// emails every attendee holding a live ticket automatically (and refunds
+// paid orders on cancel) — nothing extra to trigger from the frontend.
+// PATCH /events/:id/cancel, PATCH /events/:id/postpone
+// ---------------------------------------------------------------------
+export async function cancelEvent(eventId: string, reason: string) {
+  const res = await api.patch(`/events/${eventId}/cancel`, { reason });
+  return res.body;
+}
+
+export async function postponeEvent(eventId: string, newStartDate: string, reason?: string) {
+  const res = await api.patch(`/events/${eventId}/postpone`, { newStartDate, reason });
+  return res.body;
 }
 
 // ---------------------------------------------------------------------

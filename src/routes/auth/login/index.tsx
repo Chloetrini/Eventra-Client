@@ -14,10 +14,24 @@ import { Label } from "@/components/ui/label";
 import { loginSchema } from "@/lib/schema";
 import EventraLogo from "@/assets/Eventra-logo.png";
 import { authPath } from "@/lib/auth-path";
+import type { User } from "@/context/auth.context";
 
 const attendeeLoginSchema = loginSchema;
 
 type AttendeeLoginValues = z.infer<typeof attendeeLoginSchema>;
+
+// An organizer who's never submitted the onboarding wizard (no profile yet,
+// or one that's still sitting in "draft") shouldn't land on the dashboard —
+// they'd just see an empty shell with a banner telling them to go finish
+// onboarding anyway. Send them straight there instead. Once they've
+// submitted (pending/approved/rejected), the dashboard is the right place —
+// that's exactly where AccountReviewBanner surfaces the review status.
+function getPostLoginPath(user: User): string {
+  if (user.role !== "organizer") return "/";
+  const approvalStatus = (user.organizerProfile as { approvalStatus?: string } | undefined)?.approvalStatus;
+  if (!approvalStatus || approvalStatus === "draft") return "/onboarding/organisation";
+  return "/dashboard/overview";
+}
 
 export default function Login() {
   const navigate = useNavigate();
@@ -51,7 +65,7 @@ export default function Login() {
         return;
       }
       toast.success("Logged in successfully.");
-      navigate(user.role === "organizer" ? "/dashboard/overview" : "/");
+      navigate(getPostLoginPath(user));
     },
     onError: (error: Error) => {
       toast.error(error.message || "Something went wrong.");
@@ -77,7 +91,7 @@ export default function Login() {
           return;
         }
         toast.success("Logged in successfully.");
-        navigate(user.role === "organizer" ? "/dashboard/overview" : "/");
+        navigate(getPostLoginPath(user));
       } catch (err) {
         toast.error(err instanceof Error ? err.message : "Google sign-in failed");
       }

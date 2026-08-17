@@ -23,6 +23,8 @@ type FormFieldProps<T extends FieldValues> = {
   classname?: string
   disabled?: boolean
   defaultValue?: string | Date | number | boolean
+  minValue?: number
+  maxValue?: number
   inputType?: 'input' | 'textarea' | 'select' | 'switch' | 'datePicker' | 'time' | "imageUpload"
   registerOptions?: RegisterOptions<T>
   control?: Control<T>
@@ -38,6 +40,7 @@ type FormFieldProps<T extends FieldValues> = {
   imageAccept?: string
   imagePreviewStyle?: string
   imageDefaultStyle?: string
+  imageVariant?: 'default' | 'avatar'
   onImageFileSelected?: (file: File | null) => void
   onUploadStatusChange?: (uploading: boolean) => void
 }
@@ -55,6 +58,8 @@ export function FormBox<T extends FieldValues>({
   classname,
   disabled = false,
   defaultValue,
+  minValue,
+  maxValue,
   inputType,
   registerOptions,
   borderStyle,
@@ -70,6 +75,7 @@ export function FormBox<T extends FieldValues>({
   imageAccept,
   imagePreviewStyle,
   imageDefaultStyle,
+  imageVariant,
   onImageFileSelected,
   onUploadStatusChange
 }: FormFieldProps<T>) {
@@ -133,7 +139,9 @@ export function FormBox<T extends FieldValues>({
             defaultStyle={imageDefaultStyle}
             placeholder={placeholder}
             errors={errors}
+            variant={imageVariant}
             onFileSelected={onImageFileSelected}
+            onUploadStatusChange={onUploadStatusChange}
           />
         )
 
@@ -144,7 +152,7 @@ export function FormBox<T extends FieldValues>({
             {...register(name, registerOptions)}
             disabled={disabled}
             placeholder={placeholder}
-            className={cn(' md:py-5.5 resize-none', errors ? 'border-red-600' : '', borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-15" : borderStyle === "createEvent" ? "border-[#E8E6E0] h-11 p-2.5 rounded-[10px]" : 'px-3')}
+            className={cn(' md:py-5.5 resize-none', errors ? 'border-red-600' : '', borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-15" : borderStyle === "createEvent" ? "border-border bg-background text-foreground h-11 p-2.5 rounded-[10px]" : 'px-3')}
             defaultValue={
               defaultValue instanceof Date
                 ? defaultValue.toISOString().split('T')[0]
@@ -171,7 +179,7 @@ export function FormBox<T extends FieldValues>({
             className={cn(
               'w-full rounded-md border bg-transparent outline-none focus:outline-[#E4F1EB] focus:ring-3 focus:ring-[#E4F1EB] text-sm ',
               errors ? 'border-red-600' : '',
-              borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-12 " : borderStyle === "createEvent" ? "border-[#E8E6E0] h-11 p-2.5 rounded-[10px]" : 'px-3'
+              borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-12 " : borderStyle === "createEvent" ? "border-border bg-background text-foreground h-11 p-2.5 rounded-[10px]" : 'px-3'
             )}
           >
             {placeholder && (
@@ -201,35 +209,16 @@ export function FormBox<T extends FieldValues>({
             className={switchInputClassName}
           />
         )
-        case 'imageUpload':
-        if (!control) {
-          throw new Error(
-            `FormBox: "control" prop is required when inputType="imageUpload" (field: ${String(name)})`
-          )
-        }
-        return (
-          <ImageUploadInput
-            name={name}
-            control={control}
-            label={label}
-            accept={imageAccept}
-            classname={classname}
-            previewStyle={imagePreviewStyle}
-            defaultStyle={imageDefaultStyle}
-            placeholder={placeholder}
-            errors={errors}
-            onFileSelected={onImageFileSelected}
-            onUploadStatusChange={onUploadStatusChange}
-          />
-        )
       default:
         return (
           <div className="relative">
             <Input
               type={isVisible ? 'text' : type}
               placeholder={placeholder}
-              className={cn('focus:outline-[#E4F1EB] focus:ring-[#E4F1EB] py-5.5', errors ? 'border-red-600' : '', borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-15" : borderStyle === "createEvent" ? "border-[#E8E6E0] h-11 p-2.5 rounded-[10px]" : 'px-3')}
+              className={cn('focus:outline-[#E4F1EB] focus:ring-[#E4F1EB] py-5.5', errors ? 'border-red-600' : '', borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-15" : borderStyle === "createEvent" ? "border-border bg-background text-foreground h-11 p-2.5 rounded-[10px]" : 'px-3')}
               id={id}
+              max={maxValue}
+              min={minValue}
               {...register(name, registerOptions)}
               disabled={disabled}
               defaultValue={

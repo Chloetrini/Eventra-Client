@@ -56,11 +56,19 @@ type RealOrganizerProfile = {
 // ---------------------------------------------------------------------
 // Adapters — reshape real backend data into what the Dashboard UI expects
 // ---------------------------------------------------------------------
+// The backend's /dashboard endpoint already resolves each event down to
+// its display status via deriveEventDisplayStatus (draft, pending_approval,
+// rejected, cancelled, postponed, sold_out, live, past) — this just maps
+// those exact values onto the capitalized labels the UI renders.
 function mapEventStatus(status: string): DashboardEvent["status"] {
   const s = status.toLowerCase();
   if (s === "live") return "Live";
   if (s === "sold_out" || s === "sold out") return "Sold out";
   if (s === "draft") return "Draft";
+  if (s === "pending_approval" || s === "pending") return "Pending";
+  if (s === "rejected") return "Rejected";
+  if (s === "cancelled") return "Cancelled";
+  if (s === "postponed") return "Postponed";
   return "Past";
 }
 
@@ -79,12 +87,15 @@ function adaptOverview(raw: RealOverviewResponse) {
     stats: {
       ticketsSold: {
         value: raw.ticketsSold.toLocaleString(),
-        change: raw.ticketsSoldChangePct ?? 0,
+        // Keep null as null (no prior-period data to compare against) —
+        // coercing it to 0 here made the card always claim "0% vs last
+        // month" instead of "No prior data" for a brand-new account.
+        change: raw.ticketsSoldChangePct,
         subtext: changeSubtext(raw.ticketsSoldChangePct),
       },
       revenue: {
         value: formatCompactNaira(raw.revenue),
-        change: raw.revenueChangePct ?? 0,
+        change: raw.revenueChangePct,
         subtext: changeSubtext(raw.revenueChangePct),
       },
       liveEvents: {
@@ -161,4 +172,23 @@ export function useOrganizerStatus() {
     },
   });
   return { status: data ?? "unverified", isLoading };
+}
+
+// Slightly richer than useOrganizerStatus — also exposes isPayoutReady
+// (bank details on file), which is tracked independently of approval:
+// a free-events-only organizer can be fully "verified" and still never
+// have added a bank account. The Payouts page needs both signals.
+export function useOrganizerProfile() {
+  const { data, isLoading } = useQuery({
+    queryKey: ["organizer-profile"],
+    queryFn: async () => {
+      const res = await api.get("/organizers/profile");
+      return res.body as RealOrganizerProfile;
+    },
+  });
+  return {
+    status: mapApprovalStatus(data?.approvalStatus),
+    isPayoutReady: data?.isPayoutReady ?? false,
+    isLoading,
+  };
 }

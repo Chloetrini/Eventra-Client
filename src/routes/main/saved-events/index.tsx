@@ -1,4 +1,4 @@
-import PageWrapper from "@/components/pageWrapper";
+import PageWrapper from "@/components/page-wrapper";
 import { EventGrid } from "@/components/events/event-grid"; // adjust path if different
 import { useEvents } from "@/hooks/use-event";
 import { useSavedEvents } from "@/hooks/use-saved-events";

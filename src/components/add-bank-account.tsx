@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Lock, Loader2 } from "lucide-react";
-import { fetchBanks, resolveBankAccount } from "@/lib/api/settings";
+import { fetchBanks, resolveBankAccount } from "@/lib/settings";
 import type { BankAccount } from "@/types/settings";
 
 interface AddBankAccountDialogProps {

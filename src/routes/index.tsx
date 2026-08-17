@@ -446,7 +446,7 @@ const routes = [
 
             },
             {
-                Component: RequireOrganizer,
+                // Component: RequireOrganizer,
                 children: [
                     {
                         path: "dashboard",
@@ -515,20 +515,6 @@ const routes = [
                             const { default: Component } =
                                 await import("@/routes/dashboard/attendees/index");
                             return { Component };
-                        },
-                    },
-                    // ─── Check-In Route ──────────────────────────────────────
-                    {
-                        path: "check-in",
-                        lazy: async () => {
-                            const { default: Component } = await import("@/routes/dashboard/check-in/index");
-                            return { Component };
-                        },
-                        handle: {
-                            seo: {
-                                title: "Check-in | EVENTRA",
-                                description: "Check in attendees for your events.",
-                            },
                         },
                     },
                     {

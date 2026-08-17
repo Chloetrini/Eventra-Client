@@ -6,7 +6,7 @@ import {
   updateBankAccount,
   updateNotificationPreferences,
   updateOrganizationProfile,
-} from "@/lib/api/settings";
+} from "@/lib/settings";
 import { useOrganizerStatus } from "@/lib/organizer-api";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 import { Button } from "@/components/ui/button";

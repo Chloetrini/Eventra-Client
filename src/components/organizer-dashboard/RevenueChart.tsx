@@ -22,8 +22,10 @@ interface CustomTooltipProps {
 // Brand green — the same hue StatsCards uses for positive trends and the
 // "Live" status pill. A single-series chart needs no categorical
 // validation (there's nothing to confuse it with), so the app's own
-// brand color is used directly.
-const LINE_COLOR = "#0F6E56";
+// brand color is used directly. Referenced via CSS var (see --chart-line
+// in index.css) so it swaps to a lighter step in dark mode — a dark green
+// fill at 10% opacity is invisible against the dark card surface otherwise.
+const LINE_COLOR = "var(--chart-line)";
 
 const PERIODS: { value: RevenuePeriod; label: string }[] = [
   { value: "7d", label: "7 days" },
@@ -100,24 +102,24 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period, onPeriodChang
                   <stop offset="100%" stopColor={LINE_COLOR} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid vertical={false} stroke="#F0EFEC" />
+              <CartesianGrid vertical={false} stroke="var(--border)" />
               <XAxis
                 dataKey="label"
                 tickFormatter={(v) => formatLabel(v, period)}
                 tickLine={false}
-                axisLine={{ stroke: "#E8E6E0" }}
-                tick={{ fill: "#6E6577", fontSize: 11 }}
+                axisLine={{ stroke: "var(--border)" }}
+                tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
                 interval="preserveStartEnd"
               />
               <YAxis
                 tickLine={false}
                 axisLine={false}
-                tick={{ fill: "#6E6577", fontSize: 11 }}
+                tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
                 tickFormatter={(v) => formatCompactNaira(v)}
                 width={56}
               />
               <Tooltip
-                cursor={{ stroke: "#E8E6E0", strokeWidth: 1 }}
+                cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
                 content={(props) => (
                   <CustomTooltip
                     active={props.active}

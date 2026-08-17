@@ -5,13 +5,19 @@ interface StatCardProps {
   label: string;
   value: string;
   icon: React.ReactNode;
-  change?: number;
+  // null means "no prior-period data to compare against" (e.g. a brand
+  // new account's first month) — distinct from an actual 0% change, and
+  // undefined means this stat never shows a change at all (Live events,
+  // Payout due). Collapsing null into 0 upstream was the bug: it made
+  // every stat with no prior data silently claim "0% vs last month".
+  change?: number | null;
   subtext?: string;
 }
 
 const StatCard: React.FC<StatCardProps> = ({ label, value, icon, change, subtext }) => {
-  const isPositive = change && change > 0;
-  const isNegative = change && change < 0;
+  const hasChange = change !== undefined && change !== null;
+  const isPositive = hasChange && change > 0;
+  const isNegative = hasChange && change < 0;
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 relative">
@@ -23,15 +29,15 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, icon, change, subtext
       <p className="text-3xl font-bold font-space text-foreground mt-2">{value}</p>
 
       <div className="flex items-center gap-2 mt-4 text-xs font-medium">
-        {change !== undefined && (
+        {hasChange && (
           <span className={`flex items-center gap-1 ${isPositive ? 'text-[#0F6E56] dark:text-[#4ADE80]' : isNegative ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'}`}>
             {isPositive && <TrendingUp className="h-3 w-3" />}
             {isNegative && <TrendingDown className="h-3 w-3" />}
             {Math.abs(change)}%
           </span>
         )}
-        <span className={`text-muted-foreground ${change !== undefined ? 'font-normal' : ''}`}>
-          {change !== undefined ? 'vs last month' : subtext}
+        <span className={`text-muted-foreground ${hasChange ? 'font-normal' : ''}`}>
+          {hasChange ? 'vs last month' : subtext}
         </span>
       </div>
     </div>
@@ -40,8 +46,8 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, icon, change, subtext
 
 interface StatsCardsProps {
   stats?: {
-    ticketsSold: { value: string; change: number; subtext: string };
-    revenue: { value: string; change: number; subtext: string };
+    ticketsSold: { value: string; change: number | null; subtext: string };
+    revenue: { value: string; change: number | null; subtext: string };
     liveEvents: { value: string; subtext: string };
     payoutDue: { value: string; subtext: string };
   };
@@ -50,8 +56,8 @@ interface StatsCardsProps {
 const StatsCards: React.FC<StatsCardsProps> = ({ stats }) => {
   // Fallback if stats are undefined
   const safeStats = stats || {
-    ticketsSold: { value: '0', change: 0, subtext: '' },
-    revenue: { value: '0', change: 0, subtext: '' },
+    ticketsSold: { value: '0', change: null, subtext: '' },
+    revenue: { value: '0', change: null, subtext: '' },
     liveEvents: { value: '0', subtext: '' },
     payoutDue: { value: '0', subtext: '' },
   };

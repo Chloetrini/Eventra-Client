@@ -2,6 +2,7 @@ import { type Event } from "@/types/event-types"
 import { formatDate, formatTime } from "@/lib/utils"
 import { MapPin, Users } from "lucide-react"
 import { Clock } from "lucide-react"
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
 
 export const EventInfo = ({ event }: { event: Event }) => {
   // The backend never actually sends gatesOpenTime/doorsCloseTime (no such
@@ -31,7 +32,14 @@ export const EventInfo = ({ event }: { event: Event }) => {
         <div className="flex flex-col justify-center gap-1">
           <p className="text-[11px] font-light tracking-wider">LOCATION</p>
           <p className="text-sm font-medium">{event.venue.name}</p>
-          <p className="text-xs font-light line-clamp-2">{event.venue.address ? `${event.venue.address}, ` : ""}{event.venue.city}, {event.venue.state}</p>
+          <Tooltip>
+            <TooltipTrigger render={<p className="text-left text-xs font-light line-clamp-2" />}>
+              {event.venue.address ? `${event.venue.address}, ` : ""}{event.venue.city}, {event.venue.state}
+            </TooltipTrigger>
+            <TooltipContent>
+              {event.venue.address ? `${event.venue.address}, ` : ""}{event.venue.city}, {event.venue.state}
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
 

@@ -48,8 +48,13 @@ const STATUS_CONFIG: Record<BannerKind, BannerConfig> = {
     badge: "PENDING",
     description:
       "We usually approve within a day. Free events can go live now, paid events unlock once you're verified.",
+    // Was "/dashboard/overview" — pointless when the banner is already
+    // showing ON the overview page, so clicking it did nothing visible.
+    // Settings already has a fuller "Under review"/"Verified" status card
+    // (icon + description of what's unlocked), so that's the actual detail
+    // view this button should take people to.
     actionLabel: "View status",
-    actionTo: "/dashboard/overview",
+    actionTo: "/dashboard/settings",
   },
   rejected: {
     title: "Your application wasn't approved",

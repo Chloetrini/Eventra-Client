@@ -1,8 +1,9 @@
 import { type Event } from "@/types/event-types"
-import { Heart, MoveUpRight, MapPin, Calendar } from 'lucide-react'
+import { Heart, MapPin, Calendar } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import { cn, formatDate, formatTime } from "@/lib/utils"
 import { useAuthGate } from "@/context/auth.gate";
+import { ShareButton } from "@/components/ui/share-button";
 type EventHeroProps = {
   event: Event;
   isSaved?: boolean;
@@ -47,9 +48,13 @@ export const EventHero = ({ event,
               />
             </button>
           )}
-          <button className="flex h-8 w-8 md:h-12 md:w-12 items-center justify-center border rounded-md bg-[#5A4C6AA3] transition hover:bg-white/30">
-            <MoveUpRight className="md:h-8 md:w-8 w-5 h-5 text-white"/>
-          </button>
+          {/* Was a MoveUpRight arrow button with no onClick at all — looked
+              like a share button but did nothing. This is that button,
+              actually wired up. */}
+          <ShareButton
+            title={event.title}
+            url={typeof window !== "undefined" ? `${window.location.origin}/events/${event.slug}` : `/events/${event.slug}`}
+          />
         </div>
       </div>
 

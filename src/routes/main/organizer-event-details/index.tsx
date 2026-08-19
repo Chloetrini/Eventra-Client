@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
 import { toast } from "react-toastify";
-import { useQueryClient } from "@tanstack/react-query";
 import PageWrapper from "@/components/page-wrapper";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 import OrganizerEventHeader from "@/components/organizer-dashboard/OrganizerEventHeader";
@@ -17,8 +16,8 @@ import { CancelEventDialog } from "@/components/dialogs/cancel-event-dialog";
 import { PostponeEventDialog } from "@/components/dialogs/postpone-event-dialog";
 import { useOrganizerEventDetails } from "@/hooks/use-organizer-event-details";
 import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
-import { deleteEvent, cancelEvent, postponeEvent } from "@/lib/events-api";
 import { DASHBOARD_QUERY_KEY } from "@/hooks/useDashboard";
+import { useDeleteEvent, useCancelEvent, usePostponeEvent } from "@/hooks/use-event-actions";
 
 export default function OrganizerEventDetailsRoute() {
   const { eventId } = useParams<{ eventId?: string }>();
@@ -30,8 +29,6 @@ export default function OrganizerEventDetailsRoute() {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [confirmingCancel, setConfirmingCancel] = useState(false);
   const [confirmingPostpone, setConfirmingPostpone] = useState(false);
-  const [isCancelling, setIsCancelling] = useState(false);
-  const [isPostponing, setIsPostponing] = useState(false);
 
   const {
     data: event,
@@ -39,12 +36,9 @@ export default function OrganizerEventDetailsRoute() {
     isError,
   } = useOrganizerEventDetails(eventId);
 
-  const invalidateEventQueries = () => {
-    queryClient.invalidateQueries({ queryKey: ["my-events"] });
-    queryClient.invalidateQueries({ queryKey: ["events"] });
-    queryClient.invalidateQueries({ queryKey: [DASHBOARD_QUERY_KEY] });
-    queryClient.invalidateQueries({ queryKey: ["organizer-event-details", eventId] });
-  };
+  const deleteMutation = useDeleteEvent();
+  const cancelMutation = useCancelEvent();
+  const postponeMutation = usePostponeEvent();
 
   const handleShare = async () => {
     if (!event) return;
@@ -68,9 +62,8 @@ export default function OrganizerEventDetailsRoute() {
 
   const handleDeleteConfirmed = async (id: string) => {
     try {
-      await deleteEvent(id);
+      await deleteMutation.mutateAsync(id);
       toast.success("Event deleted");
-      invalidateEventQueries();
       navigate("/dashboard/events");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not delete event. Please try again.");
@@ -78,31 +71,39 @@ export default function OrganizerEventDetailsRoute() {
   };
 
   const handleCancelConfirmed = async (id: string, reason: string) => {
-    setIsCancelling(true);
     try {
-      await cancelEvent(id, reason);
+      await cancelMutation.mutateAsync({ eventId: id, reason });
       toast.success("Event cancelled. Attendees are being notified and refunded where paid.");
-      invalidateEventQueries();
       setConfirmingCancel(false);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not cancel event. Please try again.");
-    } finally {
-      setIsCancelling(false);
     }
   };
 
   const handlePostponeConfirmed = async (id: string, newStartDate: string, reason?: string) => {
-    setIsPostponing(true);
     try {
-      await postponeEvent(id, newStartDate, reason);
+      await postponeMutation.mutateAsync({ eventId: id, newStartDate, reason });
       toast.success("Event postponed. Attendees are being notified of the new date.");
-      invalidateEventQueries();
       setConfirmingPostpone(false);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not postpone event. Please try again.");
-    } finally {
-      setIsPostponing(false);
     }
+  };
+
+  // Only a draft/rejected event can actually be saved from the wizard (see
+  // event.canEdit — mirrors the backend's EDITABLE_STATUSES guard). For a
+  // live/pending/postponed event, stop here with a clear explanation
+  // instead of letting the organizer fill out the whole form and fail at
+  // the very end with a confusing error.
+  const handleEditClick = () => {
+    if (!event) return;
+    if (!event.canEdit) {
+      toast.error(
+        "Live events can't be edited directly. Use Cancel or Postpone above for date/venue/price changes."
+      );
+      return;
+    }
+    navigate(`/dashboard/create-event/type?eventId=${event.id}`);
   };
 
   if (!eventId) {
@@ -152,7 +153,7 @@ export default function OrganizerEventDetailsRoute() {
         onBack={() => navigate(-1)}
         onPreview={() => navigate(`/events/${event.slug}`)}
         onShare={handleShare}
-        onEdit={() => navigate(`/dashboard/create-event/type?eventId=${event.id}`)}
+        onEdit={handleEditClick}
       />
 
       <OrganizerEventHero event={event} />
@@ -165,9 +166,7 @@ export default function OrganizerEventDetailsRoute() {
         <div className="space-y-6">
           <TicketTypesTable
             ticketTypes={event.ticketTypes}
-            onEdit={() =>
-              navigate(`/dashboard/create-event/type?eventId=${event.id}`)
-            }
+            onEdit={handleEditClick}
           />
           <PromotionsCard
             isPromoted={event.isPromoted}
@@ -189,7 +188,7 @@ export default function OrganizerEventDetailsRoute() {
             onViewAttendees={() =>
               navigate(`/dashboard/attendees?event=${event.id}`)
             }
-            onEdit={() => navigate(`/dashboard/create-event/type?eventId=${event.id}`)}
+            onEdit={handleEditClick}
             onDelete={() => setConfirmingDelete(true)}
             onCancel={() => setConfirmingCancel(true)}
             onPostpone={() => setConfirmingPostpone(true)}
@@ -211,7 +210,7 @@ export default function OrganizerEventDetailsRoute() {
         open={confirmingCancel}
         onOpenChange={setConfirmingCancel}
         onConfirm={handleCancelConfirmed}
-        isSubmitting={isCancelling}
+        isSubmitting={cancelMutation.isPending}
       />
 
       <PostponeEventDialog
@@ -219,7 +218,7 @@ export default function OrganizerEventDetailsRoute() {
         open={confirmingPostpone}
         onOpenChange={setConfirmingPostpone}
         onConfirm={handlePostponeConfirmed}
-        isSubmitting={isPostponing}
+        isSubmitting={postponeMutation.isPending}
       />
     </PageWrapper>
   );

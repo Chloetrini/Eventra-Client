@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Lock, Loader2 } from "lucide-react";
-import { fetchBanks, resolveBankAccount } from "@/lib/settings";
+import { useOrganizerBanks, useResolveOrganizerBankAccount } from "@/hooks/use-organizer-banks";
 import type { BankAccount } from "@/types/settings";
 
 interface AddBankAccountDialogProps {
@@ -32,17 +31,12 @@ export function AddBankAccountDialog({
   onOpenChange,
   onSave,
 }: AddBankAccountDialogProps) {
-  const { data: banks = [] } = useQuery({
-    queryKey: ["organizer-banks"],
-    queryFn: fetchBanks,
-    enabled: open,
-    staleTime: Infinity,
-  });
+  const { data: banks = [] } = useOrganizerBanks(open);
+  const resolveAccountMutation = useResolveOrganizerBankAccount();
 
   const [bankCode, setBankCode] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [resolvedName, setResolvedName] = useState<string | null>(null);
-  const [resolving, setResolving] = useState(false);
   const [resolveError, setResolveError] = useState<string | null>(null);
 
   // Reset the form each time the dialog is reopened, rather than carrying
@@ -67,10 +61,10 @@ export function AddBankAccountDialog({
     }
 
     let cancelled = false;
-    setResolving(true);
     setResolveError(null);
 
-    resolveBankAccount(accountNumber, bankCode)
+    resolveAccountMutation
+      .mutateAsync({ accountNumber, bankCode })
       .then(({ accountName }) => {
         if (cancelled) return;
         setResolvedName(accountName);
@@ -81,16 +75,15 @@ export function AddBankAccountDialog({
         setResolveError(
           error instanceof Error ? error.message : "Could not verify this account number"
         );
-      })
-      .finally(() => {
-        if (!cancelled) setResolving(false);
       });
 
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountNumber, bankCode]);
 
+  const resolving = resolveAccountMutation.isPending;
   const selectedBank = banks.find((b) => b.code === bankCode);
 
   const handleContinue = () => {

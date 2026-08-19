@@ -2,6 +2,7 @@ import React from "react";
 import { useCategories } from "@/hooks/use-event";
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
+import { VibeGridSkeleton } from "@/components/skeletons/vibe-grid-skeleton";
 
 // Fallback images for categories, keyed by category name.
 // Extend this map as more categories get their own art, or fall back to a generic one.
@@ -27,8 +28,12 @@ export const VibeGrid: React.FC = () => {
   // advertise empty categories with 0 events.
   const displayCategories = categories.filter((c) => c.eventCount > 0);
 
-  if (isLoading || displayCategories.length === 0) {
-    return null; // or a skeleton, if you want a loading state here
+  if (isLoading) {
+    return <VibeGridSkeleton />;
+  }
+
+  if (displayCategories.length === 0) {
+    return null;
   }
 
   return (

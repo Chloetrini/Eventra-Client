@@ -5,14 +5,16 @@ import PageSwitcher from "@/components/onboarding/page-switcher"
 import { BANK_FIELDS, type OnboardingValues } from "@/lib/schema"
 import PageWrapper from "@/components/page-wrapper"
 import shieldPay from '@/assets/shieldPaywhite.png'
-import { useState } from "react"
 import { toast } from "react-toastify"
-import { saveOrganizerProfile, listBanks } from "@/lib/onboarding-api"
+import { useSaveOrganizerProfile, useListBanks } from "@/hooks/use-onboarding"
 
 const BankAccountPage = () => {
     const navigate = useNavigate()
     const { control, trigger, resetField, getValues } = useFormContext<OnboardingValues>()
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    const saveProfileMutation = useSaveOrganizerProfile()
+    // Same ["banks"] query BankDetailsForm below already reads (staleTime:
+    // Infinity) — sharing the cache here instead of a second raw fetch.
+    const { data: banks = [] } = useListBanks()
 
     const [accountHolderName, bank, accountNumber] = useWatch({
         control,
@@ -25,13 +27,11 @@ const BankAccountPage = () => {
         const isValid = await trigger([...BANK_FIELDS])
         if (!isValid) return
 
-        setIsSubmitting(true)
         try {
             const values = getValues()
-            const banks = await listBanks()
             const selectedBank = banks.find((b) => b.name === values.bank)
 
-            await saveOrganizerProfile({
+            await saveProfileMutation.mutateAsync({
                 accountNumber: values.accountNumber,
                 bankName: values.bank,
                 bankCode: selectedBank?.code,
@@ -40,8 +40,6 @@ const BankAccountPage = () => {
             navigate("/onboarding/review")
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Could not save your bank details. Please try again.")
-        } finally {
-            setIsSubmitting(false)
         }
     }
 
@@ -78,7 +76,7 @@ const BankAccountPage = () => {
             <PageSwitcher
                 backOnClick={() => navigate("/onboarding/organisation")}
                 continueOnClick={handleContinue}
-                disablecontinue={isUntouched || isSubmitting}
+                disablecontinue={isUntouched || saveProfileMutation.isPending}
                 showSkip
                 skipOnClick={handleSkip}
             />

@@ -4,23 +4,21 @@ import OrganisationForm from "@/components/onboarding/organisation-form"
 import PageSwitcher from "@/components/onboarding/page-switcher"
 import { ORGANISATION_FIELDS, type OnboardingValues } from "@/lib/schema"
 import PageWrapper from "@/components/page-wrapper"
-import { useState } from "react"
 import { toast } from "react-toastify"
-import { saveOrganizerProfile } from "@/lib/onboarding-api"
+import { useSaveOrganizerProfile } from "@/hooks/use-onboarding"
 
 const OrganisationPage = () => {
     const navigate = useNavigate()
     const { trigger, getValues } = useFormContext<OnboardingValues>()
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    const saveProfileMutation = useSaveOrganizerProfile()
 
     const handleContinue = async () => {
         const isValid = await trigger([...ORGANISATION_FIELDS])
         if (!isValid) return
 
-        setIsSubmitting(true)
         try {
             const values = getValues()
-            await saveOrganizerProfile({
+            await saveProfileMutation.mutateAsync({
                 businessName: values.organizationName,
                 category: values.category,
                 city: values.city,
@@ -31,8 +29,6 @@ const OrganisationPage = () => {
             navigate("/onboarding/bank-account")
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Could not save this step. Please try again.")
-        } finally {
-            setIsSubmitting(false)
         }
     }
 
@@ -51,7 +47,7 @@ const OrganisationPage = () => {
                     <PageSwitcher
                         disableBack={true}
                         continueOnClick={handleContinue}
-                        disablecontinue={isSubmitting}
+                        disablecontinue={saveProfileMutation.isPending}
                     />
                 </div>
             </div>

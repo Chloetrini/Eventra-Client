@@ -23,6 +23,7 @@ import PageWrapper from "@/components/page-wrapper";
 import { useAuth } from "@/context/auth.context";
 import { getExploreUrl } from "@/lib/explore-history";
 import { useEvent, useEventTickets } from "@/hooks/use-event";
+import { EventDetailsSkeleton } from "@/components/skeletons/event-details-skeleton";
 
 const EventDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -41,11 +42,7 @@ const EventDetailPage = () => {
   );
 
   if (isLoading) {
-    return (
-      <div className="mx-auto max-w-6xl px-4 py-10 md:px-8">
-        <div className="h-96 w-full animate-pulse rounded-2xl bg-muted" />
-      </div>
-    );
+    return <EventDetailsSkeleton />;
   }
 
   if (!event) {

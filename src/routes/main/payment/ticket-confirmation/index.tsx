@@ -5,6 +5,14 @@ import PaymentBtn from "@/components/ui/pay-method-btn"
 import calendar from "@/assets/calendar.png";
 import { downloadEventIcs } from "@/lib/calendar";
 
+// Real tier name when we have one (e.g. "VIP"), else "Free" for a free
+// RSVP, else a plain "Paid" fallback for the rare case a paid ticket's
+// tier name didn't come through.
+function ticketLabel(t: { type: 'free' | 'paid'; ticketType?: { name: string } | null }) {
+    if (t.type === "free") return "Free";
+    return t.ticketType?.name ?? "Paid";
+}
+
 const TicketConfirmation = () => {
     const location = useLocation()
     const navigate = useNavigate()
@@ -23,6 +31,9 @@ const TicketConfirmation = () => {
             type: 'free' | 'paid';
             price: number;
             event?: string;
+            // Real tier name the organizer set (e.g. "VIP", "Regular",
+            // "Table") — null/absent for free RSVPs, which have no tier.
+            ticketType?: { name: string } | null;
         }>;
         event?: {
             eventId: string
@@ -65,7 +76,15 @@ const TicketConfirmation = () => {
                     eventName={eventInfo.eventName}
                     orderID={tickets[0].ticketId ?? tickets[0]._id}
                     eventDateTime={eventInfo.eventDateTime}
-                    ticketDetails={[{ type: "Free", unitPrice: 0, quantity: admitsCount }]}
+                    ticketDetails={[{
+                        // Was hardcoded to "Free"/0 regardless of the actual
+                        // purchase — every confirmation screen showed "Free"
+                        // and ₦0 even for paid tickets. Use the real type/price
+                        // that's already sitting in `tickets`, just unused.
+                        type: ticketLabel(tickets[0]),
+                        unitPrice: tickets.reduce((sum, t) => sum + (t.price ?? 0), 0),
+                        quantity: admitsCount,
+                    }]}
                     slug={eventInfo.slug}
                 />
             </div>
@@ -83,12 +102,19 @@ const TicketConfirmation = () => {
                             referenceCode: t.code,
                             orderID: t.ticketId ?? t._id,
                             holderName: t.attendeeName,
-                            ticketDetails: [{ type: "Free", unitPrice: 0, quantity: 1 }],
+                            // Same bug as above — was always "Free"/0 no matter
+                            // what was actually purchased.
+                            ticketDetails: [{ type: ticketLabel(t), unitPrice: t.price ?? 0, quantity: 1 }],
                             qrImageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t.code)}`,
-                            refundPolicy: {
-                                type: "non-refundable",
-                                note: "Free reservations can be cancelled from My Tickets.",
-                            },
+                            refundPolicy: t.type === "free"
+                                ? {
+                                    type: "free-cancel",
+                                    note: "Free event · cancel anytime to release your spot.",
+                                }
+                                : {
+                                    type: "refundable",
+                                    note: "Refunds allowed until 3 days before the event.",
+                                },
                         }}
                     />
                 ))}

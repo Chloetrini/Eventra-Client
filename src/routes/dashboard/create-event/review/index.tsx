@@ -9,20 +9,19 @@ import { CREATE_EVENT_STORAGE_KEY } from '../layout'
 import EventReview from '@/components/dashboard-create-event/event-review'
 import { useCreateEventStep } from '@/components/dashboard-create-event/create-event-sidebar'
 import {
-  createEvent,
-  updateEvent,
-  submitEventForApproval,
   getCreatedEventId,
   clearCreatedEventId,
-  fetchCategories,
-  createTicketType,
-  updateTicketType,
-  deleteTicketType,
   fetchTicketTypesForEvent,
-  type EventCategory,
 } from '@/lib/create-event-api'
-import { queryClient } from '@/lib/utils'
-
+import {
+  useCreateEvent,
+  useUpdateEvent,
+  useSubmitEvent,
+  useCreateTicketType,
+  useUpdateTicketType,
+  useDeleteTicketType,
+} from '@/hooks/use-create-event'
+import { useCategories } from '@/hooks/use-event'
 // date/startTime/endTime are each their own field, but only carry one
 // meaningful piece each: `date`'s time-of-day is arbitrary (whatever the
 // calendar/typed value happened to produce), and startTime/endTime's date
@@ -208,17 +207,17 @@ const Review = () => {
     formState: { isValid, errors },
   } = useFormContext<EventFormValues>()
 
-  const [categories, setCategories] = useState<EventCategory[]>([])
+  // Non-fatal if this errors — if it does, the categoryId lookup in
+  // onSubmit just won't find a match and submission is blocked with a
+  // clear toast, rather than silently sending a bad category value.
+  const { categories: categories = [] } = useCategories()
 
-  useEffect(() => {
-    fetchCategories()
-      .then(setCategories)
-      .catch(() => {
-        // Non-fatal here — if this fails, the categoryId lookup in onSubmit
-        // just won't find a match and submission is blocked with a clear
-        // toast, rather than silently sending a bad category value.
-      })
-  }, [])
+  const createEventMutation = useCreateEvent()
+  const updateEventMutation = useUpdateEvent()
+  const submitEventMutation = useSubmitEvent()
+  const createTicketTypeMutation = useCreateTicketType()
+  const updateTicketTypeMutation = useUpdateTicketType()
+  const deleteTicketTypeMutation = useDeleteTicketType()
 
   useEffect(() => {
     trigger()
@@ -232,7 +231,7 @@ const Review = () => {
     const existingEventId = getCreatedEventId()
     if (existingEventId) return { _id: existingEventId }
     try {
-      return await createEvent({ type: eventType })
+      return await createEventMutation.mutateAsync({ type: eventType })
     } catch {
       toast.error("Couldn't create your event. Please try again.")
       return null
@@ -251,13 +250,16 @@ const Review = () => {
       const event = await getOrCreateEvent(values.eventType)
       if (!event) return
 
-      try {
-        await updateEvent(event._id, buildEventPayload(values, categoryId))
-      } catch (err: any) {
-        console.error("updateEvent failed:", err.message)
-        toast.error("Couldn't save your event details. Your draft is safe — try submitting again.")
-        return
-      }
+try {
+  await updateEventMutation.mutateAsync({ eventId: event._id, payload: buildEventPayload(values, categoryId) })
+} catch (err: any) {
+  console.error("updateEvent failed:", err.message)
+  // Show the backend's actual reason (e.g. "Only draft or rejected events
+  // can be edited" for a live event) instead of a generic draft-flavored
+  // message that's actively misleading once the event is no longer a draft.
+  toast.error(err?.message || "Couldn't save your event details. Please try again.")
+  return
+}
 
       if (values.eventType === "paid") {
         // Diff against what's actually on the backend for this event —
@@ -290,13 +292,13 @@ const Review = () => {
         })
 
         const createResults = await Promise.allSettled(
-          creates.map((ticket) => createTicketType(event._id, toPayload(ticket)))
+          creates.map((ticket) => createTicketTypeMutation.mutateAsync({ eventId: event._id, payload: toPayload(ticket) }))
         )
         const updateResults = await Promise.allSettled(
-          updates.map((ticket) => updateTicketType(event._id, ticket.id!, toPayload(ticket)))
+          updates.map((ticket) => updateTicketTypeMutation.mutateAsync({ eventId: event._id, ticketTypeId: ticket.id!, payload: toPayload(ticket) }))
         )
         const deleteResults = await Promise.allSettled(
-          idsToDelete.map((id) => deleteTicketType(event._id, id))
+          idsToDelete.map((id) => deleteTicketTypeMutation.mutateAsync({ eventId: event._id, ticketTypeId: id }))
         )
 
         const anyCreateFailed = createResults.some((r) => r.status === "rejected")
@@ -311,7 +313,7 @@ const Review = () => {
           const createdOk = createResults.filter(
             (r): r is PromiseFulfilledResult<{ _id: string }> => r.status === "fulfilled"
           )
-          await Promise.allSettled(createdOk.map((r) => deleteTicketType(event._id, r.value._id)))
+          await Promise.allSettled(createdOk.map((r) => deleteTicketTypeMutation.mutateAsync({ eventId: event._id, ticketTypeId: r.value._id })))
 
           toast.error(
             anyUpdateFailed || anyDeleteFailed
@@ -322,13 +324,13 @@ const Review = () => {
         }
       }
 
-      try {
-        await submitEventForApproval(event._id)
-      } catch (err: any) {
-        console.error("submitEventForApproval failed:", err.message)
-        toast.error(err.message)
-        return
-      }
+try {
+  await submitEventMutation.mutateAsync(event._id)
+} catch (err: any) {
+  console.error("submitEventForApproval failed:", err.message)
+  toast.error(err.message)
+  return
+}
 
       // TODO: create ticket types here next (paid events only), once that
       // flow is wired up — this is the point in the chain they belong,
@@ -371,10 +373,10 @@ const Review = () => {
       if (!event) return
 
       try {
-        await updateEvent(event._id, buildEventPayload(values, categoryId))
+        await updateEventMutation.mutateAsync({ eventId: event._id, payload: buildEventPayload(values, categoryId) })
       } catch (err: any) {
         console.error("updateEvent (draft) failed:", err.message)
-        toast.error("Couldn't save your draft. Please try again.")
+        toast.error(err?.message || "Couldn't save your draft. Please try again.")
         return
       }
 
@@ -404,8 +406,8 @@ const Review = () => {
 
         try {
           await Promise.allSettled([
-            ...creates.map((ticket) => createTicketType(event._id, toPayload(ticket))),
-            ...updates.map((ticket) => updateTicketType(event._id, ticket.id!, toPayload(ticket))),
+            ...creates.map((ticket) => createTicketTypeMutation.mutateAsync({ eventId: event._id, payload: toPayload(ticket) })),
+            ...updates.map((ticket) => updateTicketTypeMutation.mutateAsync({ eventId: event._id, ticketTypeId: ticket.id!, payload: toPayload(ticket) })),
           ])
         } catch {
           // Non-fatal for a draft — the event itself is already saved.

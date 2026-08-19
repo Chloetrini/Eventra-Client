@@ -64,6 +64,12 @@
 }
 
 :root {
+    /* Without this, the browser renders native UI (select/dropdown popups,
+       date pickers, scrollbars) using its OS light theme regardless of our
+       .dark class — Tailwind's dark class only affects our own CSS, not
+       browser-native chrome. This is what made category/time dropdowns
+       show up white-on-white in dark mode. */
+    color-scheme: light;
     --background: oklch(1 0 0);
     --foreground: oklch(0.148 0.004 228.8);
     --card: oklch(1 0 0);
@@ -114,6 +120,7 @@
 }
 
 .dark {
+    color-scheme: dark;
     --background: oklch(0.148 0.004 228.8);
     --foreground: oklch(0.987 0.002 197.1);
     --card: oklch(0.218 0.008 223.9);

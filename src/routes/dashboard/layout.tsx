@@ -12,6 +12,11 @@ const PAGE_TITLES: Record<string, string> = {
   "/dashboard/attendees": "Attendees",
   "/dashboard/check-in": "Check-in",
   "/dashboard/promotion": "Promotions",
+  // Missing before — these two pages silently fell back to the "Overview"
+  // default below and never showed their own title in the top bar.
+  "/dashboard/payouts": "Payouts",
+  "/dashboard/settings": "Settings",
+  "/dashboard/create-event": "Create event",
 };
 
 const LayoutSkeleton = () => (
@@ -93,8 +98,15 @@ export default function DashBoardLayout() {
           onMenuClick={() => setSidebarOpen(true)}
           title={PAGE_TITLES[location.pathname] ?? "Overview"}
         />
+        {/* max-w + mx-auto here, not per-page — Settings was the only
+            dashboard page capping/centering its own content, so every
+            other page (Overview, Attendees, Check-in, Payouts, ...)
+            stretched full-width instead. Centralizing it here means every
+            dashboard page matches Settings' width automatically. */}
         <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6">
-          <Outlet />
+          <div className="max-w-[1147px] mx-auto">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

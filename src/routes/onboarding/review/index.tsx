@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { useNavigate } from "react-router"
 import ReviewSummary from "@/components/onboarding/review-summary"
@@ -7,11 +6,11 @@ import { ONBOARDING_STORAGE_KEY } from "../layout"
 import { type OnboardingValues } from "@/lib/schema"
 import PageWrapper from "@/components/page-wrapper"
 import { toast } from "react-toastify"
-import { submitOrganizerProfileForReview } from "@/lib/onboarding-api"
+import { useSubmitOrganizerProfileForReview } from "@/hooks/use-onboarding"
 
 const ReviewPage = () => {
     const navigate = useNavigate()
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    const submitForReviewMutation = useSubmitOrganizerProfileForReview()
 
     const {
         register,
@@ -22,15 +21,12 @@ const ReviewPage = () => {
     // All the fields were already saved incrementally at each step —
     // this final submit just flips the profile to "pending review".
     const onSubmit = async (values: OnboardingValues) => {
-    setIsSubmitting(true)
     try {
-        await submitOrganizerProfileForReview({ agreedToTerms: values.terms })
+        await submitForReviewMutation.mutateAsync({ agreedToTerms: values.terms })
         localStorage.removeItem(ONBOARDING_STORAGE_KEY)
         navigate("/onboarding/success")
     } catch (err) {
         toast.error(err instanceof Error ? err.message : "Could not submit for review. Please try again.")
-    } finally {
-        setIsSubmitting(false)
     }
 }
 
@@ -76,7 +72,7 @@ const ReviewPage = () => {
                 backOnClick={() => navigate("/onboarding/bank-account")}
                 showSubmit
                 submitOnClick={handleSubmit(onSubmit)}
-                disableSubmit={!isValid || isSubmitting}
+                disableSubmit={!isValid || submitForReviewMutation.isPending}
             />
                 </div>
 

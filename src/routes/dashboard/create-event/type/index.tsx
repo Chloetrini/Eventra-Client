@@ -7,8 +7,9 @@ import { useNavigate } from 'react-router'
 import { useCreateEventStep } from "@/components/dashboard-create-event/create-event-sidebar"
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import { createEvent, getCreatedEventId, setCreatedEventId } from '@/lib/create-event-api'
 import { useOrganizerStatus } from '@/lib/organizer-api'
+import { getCreatedEventId, setCreatedEventId } from '@/lib/create-event-api'
+import { useCreateEvent } from '@/hooks/use-create-event'
 
 const EventType = () => {
   const { currentStep, totalSteps } = useCreateEventStep()
@@ -18,6 +19,7 @@ const EventType = () => {
   const [isCreating, setIsCreating] = useState(false)
   const { status } = useOrganizerStatus()
   const eventType = useWatch({ name: 'eventType' })
+  const createEvent = useCreateEvent()
 
   const handleContinue = async () => {
     const valid = await trigger(TYPE_FIELDS)
@@ -34,18 +36,15 @@ const EventType = () => {
       return
     }
 
-    setIsCreating(true)
     try {
       const { eventType } = getValues()
-      const created = await createEvent({ type: eventType })
+      const created = await createEvent.mutateAsync({ type: eventType })
       // Hold on to the draft's id — every later step PATCHes onto it and
       // Review submits it, so losing this strands the draft server-side.
       setCreatedEventId(created._id)
       navigate("/dashboard/create-event/basics")
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not start your event. Please try again.")
-    } finally {
-      setIsCreating(false)
     }
   }
 

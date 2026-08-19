@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import ImageUploader from '../ui/image-uploader'
 import { FormBox } from '../ui/form-box'
 import type { EventFormValues } from '@/lib/schema'
-import { fetchCategories, type EventCategory } from '@/lib/create-event-api'
+import { useCategories } from '@/hooks/use-event'
 
 type BasicsFormProps = {
   onUploadStatusChange?: (uploading: boolean) => void
@@ -17,35 +17,11 @@ const BasicsForm = ({ onUploadStatusChange }: BasicsFormProps) => {
     formState: { errors },
   } = useFormContext<EventFormValues>()
 
-  const [categories, setCategories] = useState<EventCategory[]>([])
-  const [categoriesLoading, setCategoriesLoading] = useState(true)
-  const [categoriesError, setCategoriesError] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-    fetchCategories()
-      .then((data) => {
-        if (!cancelled) setCategories(data)
-      })
-      .catch(() => {
-        if (!cancelled) setCategoriesError(true)
-      })
-      .finally(() => {
-        if (!cancelled) setCategoriesLoading(false)
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  // The native <select> below is uncontrolled (registered via `register`),
-  // so its DOM value only gets set once, at the moment defaultValue/reset()
-  // runs. If that happens before these <option>s exist (categories still
-  // loading here), the browser can't match the value and silently falls
-  // back to the first option — and it never re-checks itself once the real
-  // options do load. Once loading finishes, explicitly re-push whatever
-  // category name is already in form state so the select re-syncs against
-  // the now-populated options.
+  const {
+    categories: categories = [],
+    isLoading: categoriesLoading,
+    isError: categoriesError,
+  } = useCategories()
   useEffect(() => {
     if (categoriesLoading || categoriesError) return
     const currentCategory = getValues('category')
@@ -75,6 +51,10 @@ const BasicsForm = ({ onUploadStatusChange }: BasicsFormProps) => {
           classname="w-full"
           borderStyle="createEvent"
           register={register}
+          // Display-only — what's saved is exactly what's typed, this just
+          // renders it in caps (placeholder stays normal-case so it doesn't
+          // look like it's shouting before anyone's typed anything).
+          inputClassName="uppercase placeholder:normal-case"
         />
         <div className='flex gap-5'>
           <div className='w-full'>

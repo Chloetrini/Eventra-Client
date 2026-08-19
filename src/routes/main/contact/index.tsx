@@ -5,24 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, Star, ArrowUpRight } from "lucide-react";
 import { SiInstagram, SiFacebook, SiX } from "react-icons/si";
 import { SlSocialLinkedin } from "react-icons/sl";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import crowdImage from "@/assets/crowd.png";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormBox } from "@/components/ui/form-box";
 import { contactSchema } from "@/lib/schema";
 import { z } from "zod";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
 import PageWrapper from "@/components/page-wrapper";
-
-// Ensure leaflet marker images resolve correctly
-delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
+import LocationMap from "@/components/dashboard-create-event/location-map";
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
@@ -33,7 +23,6 @@ const DEFAULT_FORM_VALUES: ContactFormValues = {
   message: "",
 };
 
-const EVENTRA_HQ: [number, number] = [6.5158, 3.3707]; // Yaba, Lagos
 const MAP_LINK = "https://www.google.com/maps/search/?api=1&query=Yaba,Lagos,Nigeria";
 
 const SOCIALS = [
@@ -198,29 +187,23 @@ export default function ContactPage() {
             </a>
           </div>
 
-          <div className="relative h-[320px] w-full overflow-hidden rounded-3xl border border-border shadow-sm sm:h-[400px] lg:h-[480px]">
-            <MapContainer center={EVENTRA_HQ} zoom={15} scrollWheelZoom={false} style={{ height: "100%", width: "100%" }}>
-              <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-              <Marker position={EVENTRA_HQ}>
-                <Popup>
-                  <strong>Eventra HQ</strong>
-                  <br />Yaba, Lagos, Nigeria
-                </Popup>
-              </Marker>
-            </MapContainer>
-
-            <div className="pointer-events-none absolute bottom-4 left-4 z-[1000] max-w-[13rem] rounded-2xl bg-card/95 p-3.5 shadow-lg backdrop-blur sm:bottom-6 sm:left-6 sm:max-w-xs sm:p-4">
-              <div className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"><MapPin className="h-4 w-4" /></span>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">Eventra HQ</p>
-                  <p className="text-xs text-muted-foreground">Yaba, Lagos &middot; Nigeria</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Weekdays &middot; 9AM &ndash; 6PM</p>
-                  <p className="mt-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">&middot; Open now</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Was react-leaflet + OpenStreetMap tiles — its own separate map
+              tech from the rest of the app. Now the same LocationMap
+              component Create Event and Event Details use, so there's one
+              map implementation everywhere instead of three. LocationMap's
+              built-in overlay card keeps the "here's what this place is"
+              popup info (name, address, hours, open link) that the old
+              Leaflet marker popup used to show. */}
+          <LocationMap
+            name="Eventra HQ"
+            address="Yaba, Lagos, Nigeria"
+            hours="Weekdays · 9AM – 6PM"
+            mapQuery="Yaba, Lagos, Nigeria"
+            aspectClassName="h-[320px] sm:h-[400px] lg:h-[480px]"
+            cardClassName="bottom-4 left-4 sm:bottom-6 sm:left-6"
+            openLabel="Open now"
+            className="rounded-3xl shadow-sm"
+          />
         </div>
         
      </PageWrapper>

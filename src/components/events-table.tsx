@@ -90,7 +90,11 @@ export function EventsTable({ events, onEventDeleted }: EventsTableProps) {
                         {event.eventTitle}
                       </p>
                       <p className="text-[12px] text-muted-foreground font-space">
-                        № {event.eventNumber}· {event.category}
+                        {/* event.eventNumber already comes back as "№ 0001"
+                            from fetchMyEvents — this was prepending another
+                            "№ " in front of it, so every row showed the
+                            symbol twice ("№ № 0001"). */}
+                        {event.eventNumber} · {event.category}
                       </p>
                     </div>
                   </div>
@@ -130,6 +134,7 @@ export function EventsTable({ events, onEventDeleted }: EventsTableProps) {
                   <EventActionsMenu
                     eventId={event._id}
                     eventTitle={event.eventTitle}
+                    status={event.status}
                     onDeleted={() => onEventDeleted?.(event._id)}
                   />
                 </TableCell>

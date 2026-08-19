@@ -1,13 +1,12 @@
 
-import { useState } from 'react';
 import ProfileHeader from '@/components/profile-settings/ProfileHeader';
 import SettingsForm from "@/components/profile-settings/SettingsForm";
 import NToggles from '@/components/profile-settings/NToggles';
-import ProfileSettingsSkeleton from '@/components/profile-settings/ProfileSettingsSkeleton';
+import { ProfileSkeleton } from '@/components/skeletons/profile-skeleton';
 import { useAuth, type User } from '@/context/auth.context';
 import { toast } from 'react-toastify';
 import PageWrapper from '@/components/page-wrapper';
-import { updateProfile, uploadAvatar } from '@/lib/user-api';
+import { useUpdateProfile, useUploadAvatar } from '@/hooks/use-profile';
 import { z } from 'zod';
 import { profileSchema } from '@/lib/schema';
 
@@ -15,13 +14,14 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function SettingsPage() {
   const { user, isLoading, setUser } = useAuth();
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const updateProfileMutation = useUpdateProfile();
+  const uploadAvatarMutation = useUploadAvatar();
 
   const handleSave = async (data: ProfileFormValues) => {
     try {
       // Email isn't updatable here (the backend doesn't accept it on this
       // endpoint) — only send the fields it actually supports.
-      const updatedUser = await updateProfile({
+      const updatedUser = await updateProfileMutation.mutateAsync({
         fullname: data.fullName,
         phone: data.phone,
         city: data.city,
@@ -37,20 +37,17 @@ export default function SettingsPage() {
   };
 
   const handleAvatarSelect = async (file: File) => {
-    setIsUploadingAvatar(true);
     try {
-      const updatedUser = await uploadAvatar(file);
+      const updatedUser = await uploadAvatarMutation.mutateAsync(file);
       setUser(updatedUser as User);
       toast.success("Profile picture updated");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not upload picture");
-    } finally {
-      setIsUploadingAvatar(false);
     }
   };
 
   if (isLoading) {
-    return <ProfileSettingsSkeleton />;
+    return <ProfileSkeleton />;
   }
 
   if (!user) {
@@ -77,7 +74,7 @@ const memberSince = typeof user.createdAt === "string"
               avatarUrl: user.avatarUrl,
             }}
             onAvatarSelect={handleAvatarSelect}
-            isUploadingAvatar={isUploadingAvatar}
+            isUploadingAvatar={uploadAvatarMutation.isPending}
             />
           <SettingsForm
             user={{

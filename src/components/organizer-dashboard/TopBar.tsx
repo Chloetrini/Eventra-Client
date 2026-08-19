@@ -1,7 +1,9 @@
 import React from 'react';
-import { Bell, Plus, Menu } from 'lucide-react';
+import { Bell, Plus, Menu, Sun, Moon } from 'lucide-react';
 import { useAuth } from '@/context/auth.context';
+import { useTheme } from '@/context/theme.context';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 interface TopBarProps {
   organization: {
@@ -15,6 +17,7 @@ interface TopBarProps {
 
 const TopBar: React.FC<TopBarProps> = ({ organization, onCreateEvent, onMenuClick, title }) => {
   const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="bg-card border-b border-border px-4 sm:px-6 py-3 flex items-center justify-between gap-2 sm:gap-4">
@@ -27,14 +30,24 @@ const TopBar: React.FC<TopBarProps> = ({ organization, onCreateEvent, onMenuClic
           <Menu className="h-5 w-5" />
         </button>
         {title && (
-          <h1 className="text-lg sm:text-xl font-grotesk font-semibold text-foreground truncate">
-            {title}
-          </h1>
+          <Tooltip>
+            <TooltipTrigger
+              render={<h1 className="text-left text-lg sm:text-xl font-grotesk font-semibold text-foreground truncate" />}
+            >
+              {title}
+            </TooltipTrigger>
+            <TooltipContent>{title}</TooltipContent>
+          </Tooltip>
         )}
         {organization?.name && (
-          <span className="hidden sm:inline text-sm text-muted-foreground truncate">
-            · {organization.name}
-          </span>
+          <Tooltip>
+            <TooltipTrigger
+              render={<span className="hidden sm:inline text-sm text-muted-foreground truncate" />}
+            >
+              · {organization.name}
+            </TooltipTrigger>
+            <TooltipContent>{organization.name}</TooltipContent>
+          </Tooltip>
         )}
       </div>
 
@@ -48,6 +61,15 @@ const TopBar: React.FC<TopBarProps> = ({ organization, onCreateEvent, onMenuClic
         </button>
 
         <div className="hidden sm:block h-8 w-px bg-border mx-2" />
+
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          className="relative text-muted-foreground hover:text-foreground transition-colors bg-muted border border-border p-2 rounded-lg shrink-0"
+        >
+          {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        </button>
 
         {/* No notifications backend exists yet — showing a permanently-on
             dot here was pure decoration, not a real signal. Re-add it once

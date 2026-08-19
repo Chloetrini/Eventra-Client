@@ -40,7 +40,14 @@ export function EventsFilterBar() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
+    // Was `flex-row justify-between` with the pills sharing a row with the
+    // search box — the pills then had to compete for whatever leftover width
+    // was left after the 520px search input, so the row wrapped mid-list at
+    // an inconsistent point (e.g. just "Postponed" alone on its own line).
+    // Giving the pills their own full-width row means they always wrap
+    // against the *full* container width, so the wrap point is consistent
+    // and never strands a single pill by itself.
+    <div className="flex flex-col gap-3">
       <div className="relative w-full lg:w-[520px]">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground " />
         <input
@@ -52,13 +59,13 @@ export function EventsFilterBar() {
         />
       </div>
 
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2 flex-wrap w-full">
         {STATUS_FILTERS.map((filter) => (
           <button
             key={filter.value}
             onClick={() => handleStatusChange(filter.value)}
             className={cn(
-              "px-[15px] py-[10px] rounded-[20px] text-[13px] border border-border transition-colors",
+              "px-[15px] py-[10px] rounded-[20px] text-[13px] border border-border transition-colors whitespace-nowrap",
               activeStatus === filter.value
                 ? "bg-[#3A3A3A] text-[#FFFFFF] border-[#3A3A3A] dark:bg-white dark:text-[#1A1523]"
                 : "text-muted-foreground hover:border-foreground/30",

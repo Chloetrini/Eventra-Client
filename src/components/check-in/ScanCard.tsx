@@ -1,5 +1,6 @@
 import React from 'react';
 import { Check } from 'lucide-react';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import type { Attendee } from '@/types/check-in';
 
 interface ScanCardProps {
@@ -19,13 +20,19 @@ export default function ScanCard({ attendee }: ScanCardProps) {
              <h4 className="font-bold text-foreground text-sm truncate">Valid · Admit 1</h4>
           </div>
           <div className='flex items-center gap-1'>
-            <p className="text-foreground text-sm truncate">
-             {attendee.name}
-             {attendee.tableNumber && <span className="text-muted-foreground ml-1">· Table ({attendee.tableNumber})</span>}
-          </p>
-          <p className="text-muted-foreground text-sm truncate">
-             {attendee.ticketReference}
-          </p>
+            <Tooltip>
+              <TooltipTrigger render={<p className="text-left text-foreground text-sm truncate" />}>
+                {attendee.name}
+                {attendee.tableNumber && <span className="text-muted-foreground ml-1">· Table ({attendee.tableNumber})</span>}
+              </TooltipTrigger>
+              <TooltipContent>{attendee.name}</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger render={<p className="text-left text-muted-foreground text-sm truncate" />}>
+                {attendee.ticketReference}
+              </TooltipTrigger>
+              <TooltipContent>{attendee.ticketReference}</TooltipContent>
+            </Tooltip>
           </div>
        </div>
     </div>

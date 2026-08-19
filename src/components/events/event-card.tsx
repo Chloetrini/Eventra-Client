@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event-types";
 import { formatNaira } from "@/lib/utils"
 import { useAuthGate } from "@/context/auth.gate";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 type EventCardProps = {
   event: Event;
@@ -99,13 +100,29 @@ export function EventCard({
           {event.subcategory && ` · ${event.subcategory}`}
         </p>
 
-        <h3 className="font-[700] leading-snug font-grotesk md:text-[20px] text-[19px] line-clamp-2 min-h-[2lh] text-foreground">
-          {event.title}
-        </h3>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <h3 className="text-left font-[700] leading-snug font-grotesk md:text-[20px] text-[19px] line-clamp-2 min-h-[2lh] text-foreground" />
+            }
+          >
+            {event.title}
+          </TooltipTrigger>
+          <TooltipContent>{event.title}</TooltipContent>
+        </Tooltip>
 
-        <p className="text-[14px] text-muted-foreground font-[500] font-sans line-clamp-1">
-          {dateLabel} · {event.venue.name}, {event.venue.city}
-        </p>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <p className="text-left text-[14px] text-muted-foreground font-[500] font-sans line-clamp-1" />
+            }
+          >
+            {dateLabel} · {event.venue.name}, {event.venue.city}
+          </TooltipTrigger>
+          <TooltipContent>
+            {dateLabel} · {event.venue.name}, {event.venue.city}
+          </TooltipContent>
+        </Tooltip>
 
         <div className="mt-auto flex items-center justify-between pt-8 pb-2">
           <span className="font-[16px] font-mono text-foreground font-[700]">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice)} </span>

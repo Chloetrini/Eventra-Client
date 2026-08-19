@@ -77,10 +77,14 @@ export default function DashboardPage() {
   };
 
   return (
-    <>
+    // Was a bare fragment with no gap between the banner and the heading
+    // below it — every other dashboard page (Settings, Events, Payouts)
+    // wraps its content in `space-y-6`, this page just didn't. Matching
+    // that here so Overview lines up with the rest.
+    <div className="space-y-6">
       <AccountReviewBanner status={status} />
 
-      <div className="mb-6">
+      <div>
         <p className="text-[10px] font-bold font-space text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-widest mb-1">
           DASHBOARD
         </p>
@@ -94,12 +98,12 @@ export default function DashboardPage() {
 
       <StatsCards stats={data.stats} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <RevenueChart data={data.revenueSeries} period={period} onPeriodChange={setPeriod} />
         <TicketsByTypeChart data={data.ticketsByType} />
       </div>
 
       <RecentEventsTable events={data.recentEvents} onViewAll={() => navigate("/dashboard/events")} />
-    </>
+    </div>
   );
 }

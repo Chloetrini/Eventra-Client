@@ -197,6 +197,7 @@ export async function fetchMyEvents() {
 type RealTicket = {
   _id: string;
   code: string;
+  ticketId: string;
   type: "free" | "paid";
   price: number;
   attendeeName: string;
@@ -207,6 +208,17 @@ type RealTicket = {
   ticketType?: { name: string } | null;
 };
 
+// Display-only — the real ticketId from the backend looks like
+// "TKT-A1B2C3D4" (8 hex chars). Organizers just need something short and
+// scannable in the Attendees table, not the full generated ID, so this
+// re-prefixes it as "EVT-XXXX" and truncates to 4 chars. Purely cosmetic:
+// no backend field changes, the full ticketId still exists underneath.
+function shortenTicketRef(ticketId: string): string {
+  const [, rest] = ticketId.split("-");
+  if (!rest) return ticketId;
+  return `EVT-${rest.slice(0, 4)}`;
+}
+
 export async function fetchEventAttendees(eventId: string): Promise<Attendee[]> {
   const res = await api.get(`/events/${eventId}/attendees`);
   const body = res.body as { tickets: RealTicket[]; meta: unknown };
@@ -215,7 +227,7 @@ export async function fetchEventAttendees(eventId: string): Promise<Attendee[]> 
     eventId,
     name: t.attendeeName,
     email: t.attendeeEmail,
-    referenceCode: t.code,
+    referenceCode: shortenTicketRef(t.ticketId),
     checkedIn: t.status === "checked_in",
     ticketType: (t.ticketType?.name as "VIP" | "Regular" | "Table") ?? "Regular",
     tableSize: null,
@@ -264,6 +276,7 @@ type RealDashboard = {
     _id: string;
     attendeeName: string;
     code: string;
+    ticketId: string;
     status: "valid" | "checked_in" | "cancelled" | "refunded";
     ticketTypeName: string;
   }>;
@@ -363,7 +376,7 @@ export async function fetchEventDashboard(eventId: string): Promise<OrganizerEve
       name: a.attendeeName,
       avatarInitials: getInitials(a.attendeeName),
       tier: a.ticketTypeName,
-      referenceCode: a.code,
+      referenceCode: shortenTicketRef(a.ticketId),
       status: a.status === "checked_in" ? "IN" : "GOING",
     })),
     isPromoted: d.event.isPromoted,
@@ -373,6 +386,7 @@ export async function fetchEventDashboard(eventId: string): Promise<OrganizerEve
         : "This event is not promoted yet. Boost it for a featured spot on homepage and explore",
     canCancel: d.event.status === "approved" || d.event.status === "postponed",
     canPostpone: d.event.status === "approved",
+    canEdit: d.event.status === "draft" || d.event.status === "rejected",
   };
 }
 

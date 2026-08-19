@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/context/auth.context";
 import { useAuthGate } from "@/context/auth.gate";
 import { useMyTickets } from "@/hooks/use-event";
+import { TicketsSkeleton } from "@/components/skeletons/tickets-skeleton";
 
 const TABS = [
     { value: "upcoming", label: "Upcoming" },
@@ -28,7 +29,12 @@ function toDisplayTicket(t: any) {
         // the raw Mongo _id, which isn't meant to be shown to attendees.
         orderID: t.ticketId ?? t._id,
         holderName: t.attendeeName,
-        ticketDetails: [{ type: t.type === "free" ? "Free" : "General", unitPrice: t.price ?? 0, quantity: 1 }],
+        // Was "General" for every paid ticket, discarding the real tier
+        // name — the backend already sends it (`ticketType: { name }`,
+        // same field the organizer's attendees list reads), it just wasn't
+        // being picked up here. Falls back to "Paid" only if a paid ticket
+        // somehow has no tier name.
+        ticketDetails: [{ type: t.type === "free" ? "Free" : (t.ticketType?.name ?? "Paid"), unitPrice: t.price ?? 0, quantity: 1 }],
         qrImageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t.code)}`,
         refundPolicy: {
     type: (t.type === "free" ? "free-cancel" : "refundable") as "free-cancel" | "refundable" | "non-refundable",
@@ -112,7 +118,7 @@ export default function Tickets() {
 
             <div className="space-y-6">
                 {ticketsLoading ? (
-                    <p className="text-sm text-center py-12 text-muted-foreground">Loading your tickets…</p>
+                    <TicketsSkeleton />
                 ) : filteredTickets.length > 0 ? (
                     filteredTickets.map((ticket) => (
                         <TicketCard key={ticket._id} ticket={ticket} showActions />

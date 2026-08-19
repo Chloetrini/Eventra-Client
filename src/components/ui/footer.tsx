@@ -2,7 +2,7 @@ import { NavLink } from "react-router"
 import PageWrapper from "@/components/page-wrapper";
 import { useState } from "react";
 import { toast } from "react-toastify";
-
+import eventraLogo from "@/assets/Eventra-logo.png"
 const DISCOVER_LINKS = [
     { to: "/explore", label: "Explore events" },
     { to: "/explore?when=weekend", label: "This weekend" },
@@ -132,7 +132,7 @@ export default function Footer() {
                 <div className="grid grid-cols-2 gap-x-8 gap-y-10 border-t border-border py-12 sm:grid-cols-4">
                     <div className="col-span-2 flex flex-col gap-4 sm:col-span-1">
                         <NavLink to="/" className="flex items-center gap-2">
-                            <img className="h-8 w-6" src="/src/assets/Eventra-logo.png" alt="Eventra" />
+                            <img className="h-8 w-6" src={eventraLogo}alt="Eventra" />
                             <span className="text-xl font-bold tracking-tight text-foreground">
                                 Eventra
                             </span>

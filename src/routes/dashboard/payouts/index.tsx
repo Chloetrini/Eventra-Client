@@ -49,11 +49,11 @@ export default function Payouts() {
         </p>
       </div>
 
-      {/* Bank-specific nudge, independent of admin approval — an already
-          verified organizer can still be missing bank details. The
-          AccountReviewBanner above already covers unverified/pending/
-          rejected, so this only shows for the one gap it doesn't. */}
-      {showSetupBanner && organizerStatus === "verified" && !isPayoutReady && (
+      {/* Bank-specific nudge, independent of admin approval. Shows as soon
+          as the bank account isn't set up yet, including while still
+          pending review, so the organizer can get payouts ready ahead of
+          approval instead of waiting until after. */}
+      {showSetupBanner && !isPayoutReady && (
         <PayoutSetupBanner onDismiss={() => setShowSetupBanner(false)} />
       )}
 

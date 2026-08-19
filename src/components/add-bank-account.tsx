@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Lock, Loader2 } from "lucide-react";
 import { useOrganizerBanks, useResolveOrganizerBankAccount } from "@/hooks/use-organizer-banks";
+import { humanizeBankResolveError } from "@/lib/utils";
 import type { BankAccount } from "@/types/settings";
 
 interface AddBankAccountDialogProps {
@@ -73,7 +74,9 @@ export function AddBankAccountDialog({
         if (cancelled) return;
         setResolvedName(null);
         setResolveError(
-          error instanceof Error ? error.message : "Could not verify this account number"
+          humanizeBankResolveError(
+            error instanceof Error ? error.message : "Could not verify this account number"
+          )
         );
       });
 
@@ -120,8 +123,20 @@ export function AddBankAccountDialog({
                 value={bankCode}
                 onValueChange={(value) => value && setBankCode(value)}
               >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select bank" />
+                <SelectTrigger className="w-full mt-1">
+                  {/* SelectValue's built-in value->label lookup only knows
+                      about banks whose <SelectItem> has actually mounted
+                      (the popup content unmounts on close), so after picking
+                      a bank and closing the dropdown it was falling back to
+                      showing the raw bank code ("044") instead of the name.
+                      Looking the name up directly from the already-fetched
+                      `banks` list — which we have regardless of whether the
+                      popup is open — fixes that for good. */}
+                  <SelectValue placeholder="Select bank">
+                    {(value: string | null) =>
+                      value ? banks.find((b) => b.code === value)?.name ?? value : "Select bank"
+                    }
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {banks.map((bank) => (
@@ -144,6 +159,7 @@ export function AddBankAccountDialog({
                   const digitsOnly = e.target.value.replace(/\D/g, "");
                   setAccountNumber(digitsOnly);
                 }}
+                className="mt-1"
               />
             </div>
           </div>

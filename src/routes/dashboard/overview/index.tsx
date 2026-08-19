@@ -4,7 +4,7 @@ import StatsCards from "@/components/organizer-dashboard/StatsCards";
 import RecentEventsTable from "@/components/organizer-dashboard/RecentEventsTable";
 import RevenueChart from "@/components/organizer-dashboard/RevenueChart";
 import TicketsByTypeChart from "@/components/organizer-dashboard/TicketsByTypeChart";
-import { useOrganizerStatus } from "@/lib/organizer-api";
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 import type { RevenuePeriod } from "@/types/dashboard";
 
@@ -57,6 +57,8 @@ export default function DashboardPage() {
   const { data, isLoading, isError } = useDashboard(period);
   const navigate = useNavigate();
   const { status } = useOrganizerStatus();
+  const { bankStatus } = useOrganizerBankStatus();
+  const { isProfileComplete } = useOrganizerProfileComplete();
 
   if (isLoading) return <DashboardPageSkeleton />;
   if (isError || !data) {
@@ -77,12 +79,14 @@ export default function DashboardPage() {
   };
 
   return (
-    // Was a bare fragment with no gap between the banner and the heading
-    // below it — every other dashboard page (Settings, Events, Payouts)
-    // wraps its content in `space-y-6`, this page just didn't. Matching
-    // that here so Overview lines up with the rest.
+    <>
+    
     <div className="space-y-6">
-      <AccountReviewBanner status={status} />
+      <AccountReviewBanner 
+        status={status} 
+        bankStatus={bankStatus}
+        isProfileComplete={isProfileComplete}
+        />
 
       <div>
         <p className="text-[10px] font-bold font-space text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-widest mb-1">

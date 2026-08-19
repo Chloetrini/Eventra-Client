@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 import { AttendeeList } from "@/components/attendee-list";
 import { AttendeesSkeleton } from "@/components/skeletons/attendees-skeleton";
-import { useOrganizerStatus } from "@/lib/organizer-api";
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
 
 const FILTERS = [
   { value: "all", label: "All" },
@@ -43,6 +43,9 @@ export default function Attendees() {
     enabled: Boolean(selectEventId),
   });
   const { status } = useOrganizerStatus();
+  const { bankStatus } = useOrganizerBankStatus();
+  const { isProfileComplete } = useOrganizerProfileComplete();
+
   const handleEventChange = (eventId: string | null) => {
     if (!eventId) return;
     const params = new URLSearchParams(searchParams);
@@ -100,7 +103,10 @@ export default function Attendees() {
 
   return (
     <div className="space-y-6">
-      <AccountReviewBanner status={status} />
+      <AccountReviewBanner
+        status={status}
+        bankStatus={bankStatus}
+        isProfileComplete={isProfileComplete} />
       <div>
         <p className="text-[16px] min-[400px]:text-sm lg:text-[16px] font-medium tracking-wide uppercase text-[#0A4F41] dark:text-[#4ADE80]">
           Manage

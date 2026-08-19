@@ -7,7 +7,7 @@ import {
   updateNotificationPreferences,
   updateOrganizationProfile,
 } from "@/lib/settings";
-import { useOrganizerStatus } from "@/lib/organizer-api";
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
 import { useAuth, type User } from "@/context/auth.context";
 import { useUploadAvatar } from "@/hooks/use-profile";
 import { UserAvatar } from "@/components/ui/user-avatar";
@@ -24,13 +24,9 @@ import { Switch } from "@/components/ui/switch";
 export default function Settings() {
   const queryClient = useQueryClient();
   const { status: organizerStatus } = useOrganizerStatus();
-  // Reuses the exact same avatar upload as the /profile page — organizers
-  // are just users, so the avatarUrl this saves on the account is the same
-  // one that already shows in the navbar/topbar. Wiring it up here too
-  // means organizers don't have to leave Settings to set a photo. Once the
-  // backend includes avatarUrl on the public event's organizer field (see
-  // EventOrganizer.tsx), the same photo also shows on event details pages
-  // instead of initials.
+  const { bankStatus } = useOrganizerBankStatus();
+  const { isProfileComplete } = useOrganizerProfileComplete();
+
   const { user, setUser } = useAuth();
   const uploadAvatarMutation = useUploadAvatar();
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -157,10 +153,10 @@ export default function Settings() {
   const isVerified = organizerStatus === "verified";
 
   return (
-    // max-w + padding now come from the shared dashboard layout (so every
-    // dashboard page matches this width) — just the internal spacing stays here.
     <div className="space-y-6">
-      <AccountReviewBanner status={organizerStatus} />
+      <AccountReviewBanner status={organizerStatus}
+        bankStatus={bankStatus}
+        isProfileComplete={isProfileComplete} />
 
       <div>
         <p className="text-[16px] font-medium font-space tracking-wide text-[#0F6E56] dark:text-[#4ADE80]">

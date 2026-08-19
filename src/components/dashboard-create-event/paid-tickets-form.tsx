@@ -109,6 +109,7 @@ const PaidTicketsForm = () => {
                             placeholder="e.g 4"
                             id={`tickets.${index}.purchaseLimitPerPerson`}
                             minValue={1}
+                            
                             name={`tickets.${index}.purchaseLimitPerPerson`}
                             errors={errors.tickets?.[index]?.purchaseLimitPerPerson}
                             register={register}

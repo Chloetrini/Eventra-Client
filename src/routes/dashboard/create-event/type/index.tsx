@@ -2,11 +2,12 @@ import EventTypeSelector from '@/components/dashboard-create-event/event-type-se
 import PageSwitcher from '@/components/onboarding/page-switcher'
 import PageWrapper from '@/components/page-wrapper'
 import { TYPE_FIELDS, type EventFormValues } from '@/lib/schema'
-import { useFormContext } from 'react-hook-form'
+import { useFormContext, useWatch } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import { useCreateEventStep } from "@/components/dashboard-create-event/create-event-sidebar"
 import { useState } from 'react'
 import { toast } from 'react-toastify'
+import { useOrganizerStatus } from '@/lib/organizer-api'
 import { getCreatedEventId, setCreatedEventId } from '@/lib/create-event-api'
 import { useCreateEvent } from '@/hooks/use-create-event'
 
@@ -15,6 +16,9 @@ const EventType = () => {
   const navigate = useNavigate()
   const { control, trigger, getValues } = useFormContext<EventFormValues>()
   const [error, setError] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
+  const { status } = useOrganizerStatus()
+  const eventType = useWatch({ name: 'eventType' })
   const createEvent = useCreateEvent()
 
   const handleContinue = async () => {
@@ -44,6 +48,8 @@ const EventType = () => {
     }
   }
 
+  const disableContinue = (eventType === 'paid') && (status !== 'verified')
+
   return (
     <PageWrapper className='pl-[16px] pr-[34px]'>
       <div>
@@ -56,6 +62,7 @@ const EventType = () => {
         <PageSwitcher
           disableBack={true}
           continueOnClick={handleContinue}
+          disablecontinue={disableContinue}
         />
       </div>
     </PageWrapper>

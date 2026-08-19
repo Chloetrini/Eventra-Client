@@ -56,37 +56,143 @@ function buildEventPayload(values: EventFormValues, categoryId?: string) {
     endDate: combineDateAndTime(values.date, values.endTime),
     ...(isOnline
       ? {
-          onlinePlatform: values.onlinePlatform,
-          onlineJoinLink: values.onlineJoinLink,
-        }
+        onlinePlatform: values.onlinePlatform,
+        onlineJoinLink: values.onlineJoinLink,
+      }
       : {
-          venue: {
-            name: values.venueName,
-            address: values.address,
-            city: values.city,
-            state: values.state,
-          },
-        }),
+        venue: {
+          name: values.venueName,
+          address: values.address,
+          city: values.city,
+          state: values.state,
+        },
+      }),
     ...(values.hasRsvpLimit ? { capacity: Number(values.rsvpLimit) } : {}),
     lineup: values.hasLineup
       ? values.acts.map((act) => ({
-          name: act.name,
-          role: act.role,
-          imageUrl: act.imageUrl,
-        }))
+        name: act.name,
+        role: act.role,
+        imageUrl: act.imageUrl,
+      }))
       : [],
     ...(values.hasAgePolicy ? { agePolicy: values.policyText } : {}),
     ...(values.hasRefundPolicy && values.refundPolicyType
       ? {
-          refundPolicy: {
-            type: values.refundPolicyType,
-            ...(values.refundPolicyType === "refund-until-days-before"
-              ? { daysBefore: Number(values.refundDaysBefore) }
-              : {}),
-          },
-        }
+        refundPolicy: {
+          type: values.refundPolicyType,
+          ...(values.refundPolicyType === "refund-until-days-before"
+            ? { daysBefore: Number(values.refundDaysBefore) }
+            : {}),
+        },
+      }
       : {}),
   }
+}
+
+// Shared by full submit and draft save: creates/reuses the event, patches it
+// with the current form values, and syncs ticket types against whatever
+// already exists on the backend. Does NOT submit for approval — callers
+// decide whether this is a draft save or the final step of onSubmit.
+type PersistResult = { ok: true; eventId: string } | { ok: false }
+
+async function persistEventAndTicketTypes(
+  values: EventFormValues,
+  categories: EventCategory[]
+): Promise<PersistResult> {
+  const categoryId = categories.find((c) => c.name === values.category)?._id
+  if (!categoryId) {
+    toast.error("Couldn't match your selected category. Please reselect it and try again.")
+    return { ok: false }
+  }
+
+  // Reuse an existing draft id if one's already around (e.g. editing
+  // an in-progress event) rather than creating a duplicate event.
+  const existingEventId = getCreatedEventId()
+  let event: { _id: string }
+
+  if (existingEventId) {
+    event = { _id: existingEventId }
+  } else {
+    try {
+      event = await createEvent({ type: values.eventType })
+    } catch (err: any) {
+      toast.error(err.message)
+      return { ok: false }
+    }
+  }
+
+  try {
+    await updateEvent(event._id, buildEventPayload(values, categoryId))
+  } catch (err: any) {
+    console.error("updateEvent failed:", err.message)
+    toast.error(err.message)
+    return { ok: false }
+  }
+
+  if (values.eventType === "paid") {
+    // Diff against what's actually on the backend for this event —
+    // needed to tell "new ticket" (no id) apart from "existing ticket,
+    // possibly edited" (has id), and to catch tickets the organizer
+    // removed from the form entirely.
+    let existingTicketTypes: { _id: string }[] = []
+    try {
+      existingTicketTypes = await fetchTicketTypesForEvent(event._id)
+    } catch {
+      existingTicketTypes = []
+    }
+
+    const currentIds = new Set(values.tickets.map((t) => t.id).filter(Boolean) as string[])
+    const idsToDelete = existingTicketTypes
+      .filter((tt) => !currentIds.has(tt._id))
+      .map((tt) => tt._id)
+
+    const creates = values.tickets.filter((t) => !t.id)
+    const updates = values.tickets.filter((t) => t.id)
+
+    const toPayload = (ticket: (typeof values.tickets)[number]) => ({
+      name: ticket.name!,
+      price: Number(ticket.price),
+      quantity: Number(ticket.quantity),
+      purchaseLimitPerPerson:
+        ticket.purchaseLimitPerPerson !== undefined
+          ? Number(ticket.purchaseLimitPerPerson)
+          : undefined,
+    })
+
+    const createResults = await Promise.allSettled(
+      creates.map((ticket) => createTicketType(event._id, toPayload(ticket)))
+    )
+    const updateResults = await Promise.allSettled(
+      updates.map((ticket) => updateTicketType(event._id, ticket.id!, toPayload(ticket)))
+    )
+    const deleteResults = await Promise.allSettled(
+      idsToDelete.map((id) => deleteTicketType(event._id, id))
+    )
+
+    const anyCreateFailed = createResults.some((r) => r.status === "rejected")
+    const anyUpdateFailed = updateResults.some((r) => r.status === "rejected")
+    const anyDeleteFailed = deleteResults.some((r) => r.status === "rejected")
+
+    if (anyCreateFailed || anyUpdateFailed || anyDeleteFailed) {
+      // Only the brand-new creations can be cleanly undone — an update
+      // or delete can't be safely reverted without re-sending its prior
+      // state, so those are left as-is and surfaced for manual review
+      // rather than pretending we rolled them back too.
+      const createdOk = createResults.filter(
+        (r): r is PromiseFulfilledResult<{ _id: string }> => r.status === "fulfilled"
+      )
+      await Promise.allSettled(createdOk.map((r) => deleteTicketType(event._id, r.value._id)))
+
+      toast.error(
+        anyUpdateFailed || anyDeleteFailed
+          ? "Some ticket changes couldn't be saved. Please check your event dashboard before trying again."
+          : "Couldn't create your new ticket types. Nothing new was saved — please try again."
+      )
+      return { ok: false }
+    }
+  }
+
+  return { ok: true, eventId: event._id }
 }
 
 const Review = () => {
@@ -98,7 +204,7 @@ const Review = () => {
     handleSubmit,
     trigger,
     getValues,
-    formState: { isValid },
+    formState: { isValid, errors },
   } = useFormContext<EventFormValues>()
 
   // Non-fatal if this errors — if it does, the categoryId lookup in
@@ -235,6 +341,7 @@ try {
       // flow is done — don't leave stale draft data behind
       localStorage.removeItem(CREATE_EVENT_STORAGE_KEY)
       clearCreatedEventId()
+      queryClient.invalidateQueries({ queryKey: [] })
       navigate("/dashboard/overview")
     } finally {
       setIsSubmitting(false)
@@ -246,6 +353,10 @@ try {
   // the final submitEventForApproval call, and without requiring the whole
   // form to be valid first (that's the entire point of a draft: it's fine
   // to leave it unfinished and come back later via Events > Edit).
+
+  // Draft save reuses getValues() instead of the RHF-validated submit
+  // handler on purpose — a draft is allowed to be incomplete, so it
+  // shouldn't be blocked by the same validation gate as a real submit.
   const handleSaveDraft = async () => {
     setIsSavingDraft(true)
     try {

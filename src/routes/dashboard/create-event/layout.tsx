@@ -4,9 +4,11 @@ import { FormProvider, useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { eventFormSchema, type EventFormValues } from '@/lib/schema'
 import { useSearchParams } from "react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
-import { getEvent, getCreatedEventId, setCreatedEventId, clearCreatedEventId, fetchTicketTypesForEvent, fetchCategories, type EventCategory } from "@/lib/create-event-api";
+import { getEvent, getCreatedEventId, setCreatedEventId, clearCreatedEventId } from "@/lib/create-event-api";
+import { useDraftEvent, useDraftEventTicketTypes, } from "@/hooks/use-create-event";
+import { useCategories } from '@/hooks/use-event'
 export const CREATE_EVENT_STORAGE_KEY = 'eventra-create-event'
 
 const emptyValues: EventFormValues = {
@@ -61,87 +63,105 @@ const CreateEventLayout = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const editEventId = searchParams.get("eventId");
-  const [isLoadingEdit, setIsLoadingEdit] = useState(Boolean(editEventId));
   const hasCheckedStaleDraft = useRef(false);
+  // Guards the form-reset effect below so it only runs once, the moment all
+  // three queries have actually resolved — react-query re-runs effects on
+  // every refetch/cache update, and we don't want to stomp on edits the
+  // organizer has since made just because something in the background
+  // invalidated one of these queries.
+  const hasHydratedEditForm = useRef(false);
+
+  const editEventQuery = useDraftEvent(editEventId);
+  // Free events / events with no ticket types yet -> empty list rather than
+  // failing the whole edit load (backend 404s ticket-types for free events,
+  // since getOwnedPaidEvent only allows paid ones) — handled inside the hook.
+  const editTicketTypesQuery = useDraftEventTicketTypes(editEventId);
+  // Needed to resolve event.category (which may come back as a raw ObjectId
+  // string rather than a populated { name } object) back to the category
+  // NAME the form/select actually matches on.
+  const editCategoriesQuery = useCategories();
+
+  const isLoadingEdit =
+    Boolean(editEventId) &&
+    (editEventQuery.isLoading || editTicketTypesQuery.isLoading || editCategoriesQuery.isLoading);
 
   useEffect(() => {
-    if (!editEventId) return;
+    if (!editEventId || hasHydratedEditForm.current) return;
+    if (editEventQuery.isLoading || editTicketTypesQuery.isLoading || editCategoriesQuery.isLoading) return;
+    if (!editEventQuery.data) return;
 
-    Promise.all([
-      getEvent(editEventId),
-      // Free events / events with no ticket types yet -> empty list rather
-      // than failing the whole edit load (backend 404s ticket-types for
-      // free events, since getOwnedPaidEvent only allows paid ones).
-      fetchTicketTypesForEvent(editEventId).catch(() => []),
-      // Needed to resolve event.category (which may come back as a raw
-      // ObjectId string rather than a populated { name } object) back to
-      // the category NAME the form/select actually matches on.
-      fetchCategories().catch(() => [] as EventCategory[]),
-    ]).then(([event, ticketTypes, categories]: [any, any[], EventCategory[]]) => {
-      // Only claim this event as "the" draft once we know it's real —
-      // committing it beforehand meant a broken/edit link could poison
-      // localStorage with an id that 404s on every future step.
-      setCreatedEventId(editEventId);
+    hasHydratedEditForm.current = true;
 
-      const hasLineup = Array.isArray(event.lineup) && event.lineup.length > 0
-      const hasRefundPolicy = Boolean(event.refundPolicy && event.refundPolicy.type === "refund-until-days-before")
+    const event = editEventQuery.data as any;
+    const ticketTypes = editTicketTypesQuery.data ?? [];
+    const categories = editCategoriesQuery.categories ?? [];
 
-      // event.category comes back as either a populated { name, ... }
-      // object or a raw ObjectId string depending on the endpoint — handle
-      // both. For the id case, resolve it against the fetched category
-      // list so the select (which stores/matches on category NAME, not id)
-      // actually lands on the right selected option instead of silently
-      // falling back to the first one.
-      const resolvedCategoryName =
-        typeof event.category === "object" && event.category?.name
-          ? event.category.name
-          : categories.find((c) => c._id === event.category)?.name ?? ""
+    // Only claim this event as "the" draft once we know it's real —
+    // committing it beforehand meant a broken/edit link could poison
+    // localStorage with an id that 404s on every future step.
+    setCreatedEventId(editEventId);
 
-      methods.reset({
-        eventType: event.type,
-        title: event.title ?? "",
-        category: resolvedCategoryName,
-        date: event.startDate ?? "",
-        startTime: event.startDate ?? "",
-        endTime: event.endDate ?? "",
-        description: event.description ?? "",
-        coverImage: event.coverImage ?? "",
-        locationType: event.isOnline ? "online" : "physical",
-        venueName: event.venue?.name ?? "",
-        address: event.venue?.address ?? "",
-        city: event.venue?.city ?? "",
-        state: event.venue?.state ?? "",
-        onlinePlatform: event.onlinePlatform ?? "",
-        onlineJoinLink: event.onlineJoinLink ?? "",
-        hasRsvpLimit: event.capacity !== undefined && event.capacity !== null,
-        rsvpLimit: event.capacity ?? undefined,
-        hasLineup,
-        acts: hasLineup
-          ? event.lineup.map((member: any) => ({
-              name: member.name ?? "",
-              role: member.role ?? "",
-              imageUrl: member.imageUrl ?? "",
-            }))
-          : [{ name: "", role: "", imageUrl: "" }],
-        hasAgePolicy: Boolean(event.agePolicy),
-        policyText: event.agePolicy ?? "",
-        hasRefundPolicy,
-        refundPolicyType: event.refundPolicy?.type,
-        refundDaysBefore: event.refundPolicy?.daysBefore,
-        tickets: ticketTypes.map((tt) => ({
-          id: tt._id,
-          name: tt.name,
-          price: tt.price,
-          quantity: tt.quantity,
-          purchaseLimitPerPerson: tt.purchaseLimitPerPerson,
-        })),
-      });
-      setIsLoadingEdit(false);
-    }).catch(() => {
+    const hasLineup = Array.isArray(event.lineup) && event.lineup.length > 0
+    const hasRefundPolicy = Boolean(event.refundPolicy && event.refundPolicy.type === "refund-until-days-before")
+
+    // event.category comes back as either a populated { name, ... } object
+    // or a raw ObjectId string depending on the endpoint — handle both. For
+    // the id case, resolve it against the fetched category list so the
+    // select (which stores/matches on category NAME, not id) actually lands
+    // on the right selected option instead of silently falling back to the
+    // first one.
+    const resolvedCategoryName =
+      typeof event.category === "object" && event.category?.name
+        ? event.category.name
+        : categories.find((c) => c._id === event.category)?.name ?? ""
+
+    methods.reset({
+      eventType: event.type,
+      title: event.title ?? "",
+      category: resolvedCategoryName,
+      date: event.startDate ?? "",
+      startTime: event.startDate ?? "",
+      endTime: event.endDate ?? "",
+      description: event.description ?? "",
+      coverImage: event.coverImage ?? "",
+      locationType: event.isOnline ? "online" : "physical",
+      venueName: event.venue?.name ?? "",
+      address: event.venue?.address ?? "",
+      city: event.venue?.city ?? "",
+      state: event.venue?.state ?? "",
+      onlinePlatform: event.onlinePlatform ?? "",
+      onlineJoinLink: event.onlineJoinLink ?? "",
+      hasRsvpLimit: event.capacity !== undefined && event.capacity !== null,
+      rsvpLimit: event.capacity ?? undefined,
+      hasLineup,
+      acts: hasLineup
+        ? event.lineup.map((member: any) => ({
+            name: member.name ?? "",
+            role: member.role ?? "",
+            imageUrl: member.imageUrl ?? "",
+          }))
+        : [{ name: "", role: "", imageUrl: "" }],
+      hasAgePolicy: Boolean(event.agePolicy),
+      policyText: event.agePolicy ?? "",
+      hasRefundPolicy,
+      refundPolicyType: event.refundPolicy?.type,
+      refundDaysBefore: event.refundPolicy?.daysBefore,
+      tickets: ticketTypes.map((tt) => ({
+        id: tt._id,
+        name: tt.name,
+        price: tt.price,
+        quantity: tt.quantity,
+        purchaseLimitPerPerson: tt.purchaseLimitPerPerson,
+      })),
+    });
+  }, [editEventId, editEventQuery.data, editEventQuery.isLoading, editTicketTypesQuery.data, editTicketTypesQuery.isLoading, editCategoriesQuery.categories, editCategoriesQuery.isLoading, methods]);
+
+  useEffect(() => {
+    if (editEventQuery.isError) {
       toast.error("Couldn't load that event — it may have been deleted.");
       navigate("/dashboard/events");
-    });
-  }, [editEventId]);
+    }
+  }, [editEventQuery.isError, navigate]);
 
   // Not editing an existing event — but a previous, abandoned draft may
   // still be cached in localStorage (its id + half-filled fields), left

@@ -67,7 +67,13 @@ const PaidTicketsForm = () => {
                             type="number"
                             label="PRICE (₦)"
                             placeholder="e.g 15000"
-                            minValue={1}
+                            // Was minValue={1} — with a 10000 step, the browser's
+                            // spinner snaps its FIRST click to minValue exactly
+                            // (that's just how number inputs work), so it went
+                            // 1, 10001, 20001 instead of clean 10000, 20000. Min
+                            // now matches the step so it starts right on it.
+                            minValue={10000}
+                            stepValue={10000}
                             id={`tickets.${index}.price`}
                             name={`tickets.${index}.price`}
                             errors={errors.tickets?.[index]?.price}
@@ -84,7 +90,11 @@ const PaidTicketsForm = () => {
                             label="QUANTITY"
                             placeholder="e.g 200"
                             id={`tickets.${index}.quantity`}
-                            minValue={1}
+                            // Same fix as price — min now matches the step so
+                            // the spinner starts at 100 instead of snapping to 1
+                            // on the first click.
+                            minValue={100}
+                            stepValue={100}
                             name={`tickets.${index}.quantity`}
                             errors={errors.tickets?.[index]?.quantity}
                             register={register}

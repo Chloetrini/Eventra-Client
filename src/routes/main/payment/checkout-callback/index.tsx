@@ -68,6 +68,12 @@ const CheckoutCallback = () => {
                 type: t.type,
                 price: t.price,
                 event: order.event?._id,
+                // The backend already populates this (same field the
+                // organizer's attendees list and My Tickets read) — was
+                // just never picked up here, so the confirmation page had
+                // no way to show the real tier name and fell back to a
+                // generic "Paid" label.
+                ticketType: t.ticketType ?? null,
               })),
               event: {
                 eventId: order.event?._id,

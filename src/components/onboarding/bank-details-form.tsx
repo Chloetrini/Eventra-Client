@@ -7,6 +7,7 @@ import bankImg from "@/assets/onboarding-bank.png"
 import lock from "@/assets/onboarding-lock.png"
 import { useListBanks, useResolveBankAccount } from "@/hooks/use-onboarding"
 import { CheckCircle2, Loader2 } from "lucide-react"
+import { humanizeBankResolveError } from "@/lib/utils"
 
 const BankDetailsForm = () => {
     const {
@@ -49,7 +50,9 @@ const BankDetailsForm = () => {
                     },
                     onError: (err) => {
                         setVerifyError(
-                            err instanceof Error ? err.message : "Couldn't verify this account. Check the details and try again."
+                            humanizeBankResolveError(
+                                err instanceof Error ? err.message : "Couldn't verify this account. Check the details and try again."
+                            )
                         )
                     },
                 }

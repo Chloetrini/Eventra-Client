@@ -75,6 +75,21 @@ export function thisWeekend(hour: number): string {
   return daysFromNow(daysUntilSat, hour);
 }
 
+// The bank-account "resolve" endpoint proxies Paystack's own error message
+// straight through (see resolveBankAccount in organizer.controller.ts) —
+// fine for a real validation error ("Invalid account number"), but
+// Paystack's test-mode rate-limit message ("Test mode daily limit of 3 live
+// bank resolves exceeded...") is internal Paystack/API jargon that shouldn't
+// be shown to an organizer as-is. Swap that one specific case for plain
+// language; every other message (the ones organizers can actually act on)
+// passes through unchanged.
+export function humanizeBankResolveError(message: string): string {
+  if (/test mode/i.test(message) && /daily limit/i.test(message)) {
+    return "We've hit today's test-mode verification limit for live bank codes. Try again tomorrow, use a Paystack test bank code (e.g. 001) for now, or switch Paystack to live mode.";
+  }
+  return message;
+}
+
 export const Format = {
   /**
    * Formats numbers into Nigerian Naira (₦) currency format or specified currency

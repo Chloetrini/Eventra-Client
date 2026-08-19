@@ -25,6 +25,7 @@ type FormFieldProps<T extends FieldValues> = {
   defaultValue?: string | Date | number | boolean
   minValue?: number
   maxValue?: number
+  step?: number | string
   inputType?: 'input' | 'textarea' | 'select' | 'switch' | 'datePicker' | 'time' | "imageUpload"
   registerOptions?: RegisterOptions<T>
   control?: Control<T>
@@ -60,6 +61,7 @@ export function FormBox<T extends FieldValues>({
   defaultValue,
   minValue,
   maxValue,
+  step,
   inputType,
   registerOptions,
   borderStyle,
@@ -219,6 +221,7 @@ export function FormBox<T extends FieldValues>({
               id={id}
               max={maxValue}
               min={minValue}
+              step={step}
               {...register(name, registerOptions)}
               disabled={disabled}
               defaultValue={

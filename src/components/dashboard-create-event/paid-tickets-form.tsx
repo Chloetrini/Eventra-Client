@@ -67,7 +67,8 @@ const PaidTicketsForm = () => {
                             type="number"
                             label="PRICE (₦)"
                             placeholder="e.g 15000"
-                            minValue={1}
+                            minValue={1000}
+                            step={1000}
                             id={`tickets.${index}.price`}
                             name={`tickets.${index}.price`}
                             errors={errors.tickets?.[index]?.price}
@@ -85,6 +86,7 @@ const PaidTicketsForm = () => {
                             placeholder="e.g 200"
                             id={`tickets.${index}.quantity`}
                             minValue={1}
+                            step={10}
                             name={`tickets.${index}.quantity`}
                             errors={errors.tickets?.[index]?.quantity}
                             register={register}
@@ -99,6 +101,7 @@ const PaidTicketsForm = () => {
                             placeholder="e.g 4"
                             id={`tickets.${index}.purchaseLimitPerPerson`}
                             minValue={1}
+                            
                             name={`tickets.${index}.purchaseLimitPerPerson`}
                             errors={errors.tickets?.[index]?.purchaseLimitPerPerson}
                             register={register}

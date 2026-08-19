@@ -16,7 +16,7 @@ import { DeleteEventDialog } from "@/components/dialogs/delete-event-dialog";
 import { CancelEventDialog } from "@/components/dialogs/cancel-event-dialog";
 import { PostponeEventDialog } from "@/components/dialogs/postpone-event-dialog";
 import { useOrganizerEventDetails } from "@/hooks/use-organizer-event-details";
-import { useOrganizerStatus } from "@/lib/organizer-api";
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
 import { deleteEvent, cancelEvent, postponeEvent } from "@/lib/events-api";
 import { DASHBOARD_QUERY_KEY } from "@/hooks/useDashboard";
 
@@ -24,6 +24,8 @@ export default function OrganizerEventDetailsRoute() {
   const { eventId } = useParams<{ eventId?: string }>();
   const navigate = useNavigate();
   const { status } = useOrganizerStatus();
+    const { bankStatus } = useOrganizerBankStatus();
+  const { isProfileComplete } = useOrganizerProfileComplete();
   const queryClient = useQueryClient();
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [confirmingCancel, setConfirmingCancel] = useState(false);
@@ -140,7 +142,9 @@ export default function OrganizerEventDetailsRoute() {
   return (
     <PageWrapper className="py-6 px-4 md:px-8 space-y-6 max-w-6xl mx-auto">
       {/* 1. Account Review Banner (driven by the organizer's real approval status) */}
-      <AccountReviewBanner status={status} />
+      <AccountReviewBanner status={status}
+        bankStatus={bankStatus}
+        isProfileComplete={isProfileComplete} />
 
       {/* 2. Top Navigation & Action Header */}
       <OrganizerEventHeader

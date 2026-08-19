@@ -33,6 +33,15 @@ function isValidDate(date: Date | undefined) {
   return !isNaN(date.getTime())
 }
 
+// returns true for any date before today (today itself stays enabled)
+function isPastDate(date: Date) {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const compare = new Date(date)
+  compare.setHours(0, 0, 0, 0)
+  return compare < today
+}
+
 type DatePickerInputProps<T extends FieldValues> = {
   name: Path<T>
   control: Control<T>
@@ -110,7 +119,7 @@ export function DatePickerInput<T extends FieldValues>({
                 )}
                 onChange={(e) => {
                   const typed = new Date(e.target.value)
-                  if (isValidDate(typed)) {
+                  if (isValidDate(typed) && !isPastDate(typed)) {
                     field.onChange(typed.toISOString())
                     setMonth(typed)
                   } else {
@@ -148,6 +157,7 @@ export function DatePickerInput<T extends FieldValues>({
                       selected={date}
                       month={month ?? date}
                       onMonthChange={setMonth}
+                      disabled={isPastDate}
                       onSelect={(selected) => {
                         field.onChange(selected ? selected.toISOString() : "")
                         setMonth(selected)

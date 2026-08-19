@@ -2,12 +2,17 @@ import { X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import clock from "@/assets/Vector.png"
+import bank from "@/assets/bank-dashboard.png"
+import completeAccount from "@/assets/complete-account.png"
 import { useNavigate } from "react-router";
 
 type OrganizerAccountStatus = "unverified" | "pending" | "verified" | "rejected";
+type BankAccountStatus = "unverified" | "verified";
 
 interface AccountReviewBannerProps {
   status: OrganizerAccountStatus;
+  bankStatus: BankAccountStatus;
+  isProfileComplete: boolean;
   onDismiss?: () => void;
 }
 
@@ -19,14 +24,24 @@ type BannerConfig = {
   actionTo: string;
 };
 
-const STATUS_CONFIG: Record<Exclude<OrganizerAccountStatus, "verified">, BannerConfig> = {
-  unverified: {
+type BannerKind = "completeAccount" | "bankDetails" | "pending" | "rejected";
+
+const STATUS_CONFIG: Record<BannerKind, BannerConfig> = {
+  completeAccount: {
     title: "Finish setting up your account",
     badge: "UNVERIFIED",
     description:
-      "Add your bank details to publish paid events and receive payouts. Free events can go live without it.",
-    actionLabel: "Finish onboarding",
+      "Complete your organizer profile to publish paid events and receive payouts. Free events can go live without it.",
+    actionLabel: "Complete account",
     actionTo: "/onboarding/organisation",
+  },
+  bankDetails: {
+    title: "Add your bank details",
+    badge: "ACTION NEEDED",
+    description:
+      "You're almost done — add your bank details to publish paid events and receive payouts.",
+    actionLabel: "Add bank details",
+    actionTo: "/dashboard/settings",
   },
   pending: {
     title: "Your account is under review",
@@ -46,24 +61,42 @@ const STATUS_CONFIG: Record<Exclude<OrganizerAccountStatus, "verified">, BannerC
   },
 };
 
-export function AccountReviewBanner({ status, onDismiss }: AccountReviewBannerProps) {
+function getBannerKind(
+  status: OrganizerAccountStatus,
+  bankStatus: BankAccountStatus,
+  isProfileComplete: boolean
+): BannerKind | null {
   if (status === "verified") return null;
+  if (status === "rejected") return "rejected";
+  if (status === "pending") return bankStatus === "unverified" ? "bankDetails" : "pending";
+  // status === "unverified" (or "draft") from here
+  if (isProfileComplete && bankStatus === "unverified") return "bankDetails";
+  return "completeAccount";
+}
 
-  const config = STATUS_CONFIG[status];
+export function AccountReviewBanner({ status, bankStatus, isProfileComplete, onDismiss }: AccountReviewBannerProps) {
+  const bannerKind = getBannerKind(status, bankStatus, isProfileComplete);
   const navigate = useNavigate();
 
+  if (!bannerKind) return null;
+
+  const config = STATUS_CONFIG[bannerKind];
+  const isWarning = bannerKind === "completeAccount" || bannerKind === "bankDetails";
+  const icon =
+    bannerKind === "completeAccount" ? completeAccount : bannerKind === "bankDetails" ? bank : clock;
+
   return (
-    <div className="flex flex-col min-[480px]:flex-row items-start min-[480px]:items-center justify-between gap-4 bg-[#E4F1EB] dark:bg-[#0F6E56]/15 border border-emerald-200 dark:border-emerald-800/40 rounded-lg p-4">
+    <div className={`flex flex-col min-[480px]:flex-row items-start min-[480px]:items-center justify-between gap-4  dark:bg-[#0F6E56]/15 border  dark:border-emerald-800/40 rounded-lg p-4 ${isWarning ? 'bg-[#FCEBC9] border-[#FCEBC9]' : "bg-[#E4F1EB] border-emerald-200"}`}>
       <div className="flex items-start sm:items-center gap-3">
         <div className="bg-card p-4 rounded-md shrink-0">
-          <img src={clock} alt="Clock icon" className="size-5 text-[#04241c]" />
+          <img src={icon} alt="Clock icon" className="size-6 text-[#04241c]" />
         </div>
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <p className="text-[18px] font-grotesk font-medium text-[#7A4E02] dark:text-[#F5C875]">
               {config.title}
             </p>
-            <Badge className="bg-white dark:bg-[#0F6E56]/25 text-[#0F6E56] dark:text-[#4ADE80] hover:bg-amber-100 dark:hover:bg-[#0F6E56]/35 text-[13px] font-space">
+            <Badge className={`bg-white dark:bg-[#0F6E56]/25 hover:bg-amber-100 dark:hover:bg-[#0F6E56]/35 text-[13px] font-space p-3 rounded-[8px] ${isWarning ? "text-[#7A4E02]" : "text-[#0F6E56] dark:text-[#4ADE80]"}`}>
               {config.badge}
             </Badge>
           </div>

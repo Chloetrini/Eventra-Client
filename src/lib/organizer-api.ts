@@ -174,6 +174,67 @@ export function useOrganizerStatus() {
   return { status: data ?? "unverified", isLoading };
 }
 
+export function useOrganizerBankStatus() {
+  const { data, isLoading } = useQuery({
+    queryKey: ["organizer-bank-status"],
+    queryFn: async () => {
+      const res = await api.get("/organizers/profile");
+
+      const bankStatus = res.body as {
+        accountName?: string;
+        accountNumber?: string;
+        bankName?: string;
+        bankCode?: string;
+      } | null;
+
+      if (
+        !bankStatus?.accountNumber ||
+        !bankStatus?.bankName ||
+        !bankStatus?.bankCode ||
+        !bankStatus?.accountName
+      ) {
+        return "unverified" as const;
+      } else {
+        return "verified" as const;
+      }
+    },
+  });
+
+  return {
+    bankStatus: data ?? "unverified",
+    isLoading,
+  };
+}
+
+export function useOrganizerProfileComplete() {
+  const { data, isLoading } = useQuery({
+    queryKey: ["organizer-profile-complete"],
+    queryFn: async () => {
+      const res = await api.get("/organizers/profile");
+      const profile = res.body as {
+        businessName?: string;
+        category?: string;
+        city?: string;
+        contactPhone?: string;
+        publicEmail?: string;
+        bio?: string;
+        agreedToTerms?: boolean;
+      } | null;
+
+      return Boolean(
+        profile?.businessName &&
+        profile?.category &&
+        profile?.city &&
+        profile?.contactPhone &&
+        profile?.publicEmail &&
+        profile?.bio &&
+        profile?.agreedToTerms
+      );
+    },
+  });
+  return { isProfileComplete: data ?? false, isLoading };
+}
+
 // Slightly richer than useOrganizerStatus — also exposes isPayoutReady
 // (bank details on file), which is tracked independently of approval:
 // a free-events-only organizer can be fully "verified" and still never

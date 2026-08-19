@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { fetchMyEvents } from '@/lib/events-api';
-import { useOrganizerStatus } from '@/lib/organizer-api';
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from '@/lib/organizer-api';
 import { useCheckIn } from '@/hooks/useCheckIn';
 import { AccountReviewBanner } from '@/components/account-review-banner';
 import CheckInGateSection from './CheckInGateSection';
@@ -17,6 +17,8 @@ import { QrCode, Loader2 } from 'lucide-react';
 export default function CheckInContent() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { status } = useOrganizerStatus();
+  const { bankStatus } = useOrganizerBankStatus();
+  const { isProfileComplete } = useOrganizerProfileComplete();
 
   // Every event that links here (QuickActionsCard, EventActionsMenu, the
   // single-event details page) passes ?event=<id> — this was previously
@@ -75,7 +77,10 @@ export default function CheckInContent() {
   if (!eventsLoading && events.length === 0) {
     return (
       <div className="space-y-6">
-        <AccountReviewBanner status={status} />
+        <AccountReviewBanner
+          status={status}
+          bankStatus={bankStatus}
+          isProfileComplete={isProfileComplete} />
         <p className="text-sm text-muted-foreground text-center py-12">
           You don't have any events to check guests in for yet.
         </p>
@@ -105,7 +110,10 @@ export default function CheckInContent() {
   return (
     <div className="space-y-6 pb-8 relative">
       {/* Status Banner */}
-      <AccountReviewBanner status={status} />
+      <AccountReviewBanner
+        status={status}
+        bankStatus={bankStatus}
+        isProfileComplete={isProfileComplete} />
 
       {/* TOP HEADER */}
       <div className="relative mt-8 mb-2 flex flex-col sm:flex-row items-start sm:items-center justify-between">

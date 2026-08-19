@@ -8,7 +8,7 @@ import { EventsFilterBar } from "@/components/events-filter-bar";
 import { EventsTable } from "@/components/events-table";
 import { EventsSkeleton } from "@/components/skeletons/events-skeleton";
 import { useEffect, useState } from "react";
-import { useOrganizerStatus } from "@/lib/organizer-api";
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
 
 const STATUS_MAP: Record<string, Event["status"]> = {
   live: "Live",
@@ -31,10 +31,12 @@ export default function Events() {
     queryFn: fetchMyEvents,
   });
   const { status } = useOrganizerStatus();
-  const [events, setEvents] = useState<Event[]> ([])
+  const { bankStatus } = useOrganizerBankStatus();
+  const { isProfileComplete } = useOrganizerProfileComplete();
+  const [events, setEvents] = useState<Event[]>([])
 
   useEffect(() => {
-    if (data) setEvents (data)
+    if (data) setEvents(data)
   }, [data])
 
 
@@ -74,7 +76,10 @@ export default function Events() {
 
   return (
     <div className="space-y-6">
-      <AccountReviewBanner status={status} />
+      <AccountReviewBanner
+        status={status}
+        bankStatus={bankStatus}
+        isProfileComplete={isProfileComplete} />
       <EventsHeader />
       <EventsFilterBar />
       <EventsTable events={filteredEvents} onEventDeleted={handleEventDeleted} />

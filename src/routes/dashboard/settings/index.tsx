@@ -7,7 +7,7 @@ import {
   updateNotificationPreferences,
   updateOrganizationProfile,
 } from "@/lib/settings";
-import { useOrganizerStatus } from "@/lib/organizer-api";
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,8 @@ import { Switch } from "@/components/ui/switch";
 export default function Settings() {
   const queryClient = useQueryClient();
   const { status: organizerStatus } = useOrganizerStatus();
+  const { bankStatus } = useOrganizerBankStatus();
+  const { isProfileComplete } = useOrganizerProfileComplete();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["settings"],
@@ -132,7 +134,9 @@ export default function Settings() {
 
   return (
     <div className="max-w-[1147px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      <AccountReviewBanner status={organizerStatus} />
+      <AccountReviewBanner status={organizerStatus}
+        bankStatus={bankStatus}
+        isProfileComplete={isProfileComplete} />
 
       <div>
         <p className="text-[16px] font-medium font-space tracking-wide text-[#0F6E56] dark:text-[#4ADE80]">

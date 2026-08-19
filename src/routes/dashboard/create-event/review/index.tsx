@@ -14,7 +14,6 @@ import {
   fetchTicketTypesForEvent,
 } from '@/lib/create-event-api'
 import {
-  useEventCategories,
   useCreateEvent,
   useUpdateEvent,
   useSubmitEvent,
@@ -22,7 +21,7 @@ import {
   useUpdateTicketType,
   useDeleteTicketType,
 } from '@/hooks/use-create-event'
-
+import { useCategories } from '@/hooks/use-event'
 // date/startTime/endTime are each their own field, but only carry one
 // meaningful piece each: `date`'s time-of-day is arbitrary (whatever the
 // calendar/typed value happened to produce), and startTime/endTime's date
@@ -105,7 +104,7 @@ const Review = () => {
   // Non-fatal if this errors — if it does, the categoryId lookup in
   // onSubmit just won't find a match and submission is blocked with a
   // clear toast, rather than silently sending a bad category value.
-  const { data: categories = [] } = useEventCategories()
+  const { categories: categories = [] } = useCategories()
 
   const createEventMutation = useCreateEvent()
   const updateEventMutation = useUpdateEvent()

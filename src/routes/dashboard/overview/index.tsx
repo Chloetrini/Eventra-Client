@@ -79,7 +79,6 @@ export default function DashboardPage() {
   };
 
   return (
-    <>
     
     <div className="space-y-6">
       <AccountReviewBanner 
@@ -109,5 +108,5 @@ export default function DashboardPage() {
 
       <RecentEventsTable events={data.recentEvents} onViewAll={() => navigate("/dashboard/events")} />
     </div>
-  );
+  ) 
 }

@@ -16,7 +16,6 @@ import { CancelEventDialog } from "@/components/dialogs/cancel-event-dialog";
 import { PostponeEventDialog } from "@/components/dialogs/postpone-event-dialog";
 import { useOrganizerEventDetails } from "@/hooks/use-organizer-event-details";
 import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
-import { DASHBOARD_QUERY_KEY } from "@/hooks/useDashboard";
 import { useDeleteEvent, useCancelEvent, usePostponeEvent } from "@/hooks/use-event-actions";
 
 export default function OrganizerEventDetailsRoute() {
@@ -25,7 +24,6 @@ export default function OrganizerEventDetailsRoute() {
   const { status } = useOrganizerStatus();
     const { bankStatus } = useOrganizerBankStatus();
   const { isProfileComplete } = useOrganizerProfileComplete();
-  const queryClient = useQueryClient();
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [confirmingCancel, setConfirmingCancel] = useState(false);
   const [confirmingPostpone, setConfirmingPostpone] = useState(false);

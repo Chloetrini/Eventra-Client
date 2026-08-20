@@ -83,7 +83,7 @@ export function AttendeeList({ attendees }: AttendeeListProps) {
                   ? `Table(${attendee.tableSize})`
                   : attendee.ticketType}
               </td>
-              <td className="px-4 font-bold font-space text-foreground text-[20px]">
+              <td className="px-4 font-bold font-space text-foreground text-[16px]">
                 {attendee.referenceCode}
               </td>
               <td className="px-4 text-foreground text-[16px]">

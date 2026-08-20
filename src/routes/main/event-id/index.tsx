@@ -4,8 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Separator } from "@/components/ui/separator";
-import { fetchEventBySlug, fetchEvents } from "@/lib/events-api";
-import { fetchEventTickets } from "@/lib/tickets-api";
+import { fetchEvents } from "@/lib/events-api";
 import { DEFAULT_FILTERS } from "@/types/event-types";
 import { EventHero } from "@/components/event-details/EventHero";
 import { EventInfo } from "@/components/event-details/EventInfo";

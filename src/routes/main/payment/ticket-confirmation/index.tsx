@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router"
 import PaymentBtn from "@/components/ui/pay-method-btn"
 import calendar from "@/assets/calendar.png";
 import { downloadEventIcs } from "@/lib/calendar";
+import PageWrapper from "@/components/page-wrapper";
 
 // Real tier name when we have one (e.g. "VIP"), else "Free" for a free
 // RSVP, else a plain "Paid" fallback for the rare case a paid ticket's
@@ -69,7 +70,7 @@ const TicketConfirmation = () => {
     const admitsCount = tickets.length
 
     return (
-        <div className='flex flex-col justify-center items-center mx-auto container px-20 pt-10 pb-2 gap-10'>
+        <PageWrapper className="p-[20px]">
             <div className='flex justify-center items-center w-full'>
                 <ConfirmatoryMessage
                     _id="1"
@@ -144,7 +145,7 @@ const TicketConfirmation = () => {
                     />
                 </div>
             </div>
-        </div>
+        </PageWrapper>
     )
 }
 

@@ -23,10 +23,16 @@ export default function ExplorePage() {
   const events = data?.events ?? [];
   // Was `events.find(...)` — grabbed only the FIRST promoted event and
   // silently dropped every other one (from both the featured spot AND the
-  // grid below, since `rest` already excludes all promoted events). Now
+  // grid below, since `rest` already excluded all promoted events). Now
   // every promoted event shows, cycling through the featured carousel.
   const featured = events.filter((e) => e.isPromoted);
-  const rest = events.filter((e) => !e.isPromoted);
+  // Featured/promoted events used to be excluded from the grid below (only
+  // shown in the carousel), so a promoted event that matched a search or
+  // filter would vanish — the carousel isn't filtered by search, so it
+  // wasn't a substitute. The grid now always shows every event that
+  // matches the current filters, promoted or not; the carousel is just an
+  // extra highlight on top, not the only place a promoted event appears.
+  const rest = events;
   const { savedIds, toggleSave } = useSavedEvents();
 
   const stateLabel = filters.state || "All Nigeria";

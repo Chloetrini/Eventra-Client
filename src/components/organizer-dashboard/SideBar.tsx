@@ -72,12 +72,18 @@ const SideBar: React.FC<SideBarProps> = ({ organization, isOpen = false, onClose
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-      {/* Logo Section */}
-      <div className="flex items-center justify-between gap-3 px-6 pt-6 pb-4">
-        <div className="flex items-center gap-3 min-w-0">
-          <div className='flex flex-row items-center'>
-            <img src={EventraLogo} onClick={() => navigate('/')} alt="Eventra Logo" className="h-8 w-8" />
-            <span className="text-2xl font-grotesk font-bold text-foreground">Eventra</span>
+      {/* Logo Section — the drawer is a fixed w-64 (256px), and on the
+          mobile off-canvas drawer that same width also has to fit the
+          Close button that desktop doesn't render. "Eventra" + the
+          ORGANIZER badge + the close button no longer fit on one line at
+          that width, so they were overlapping. flex-wrap lets the badge
+          drop to its own line instead of overlapping the close button,
+          and the tightened gaps/padding buy back a bit more room besides. */}
+      <div className="flex items-start justify-between gap-2 px-4 sm:px-6 pt-6 pb-4">
+        <div className="flex items-center gap-2 min-w-0 flex-wrap">
+          <div className='flex flex-row items-center gap-1 shrink-0'>
+            <img src={EventraLogo} onClick={() => navigate('/')} alt="Eventra Logo" className="h-8 w-8 shrink-0" />
+            <span className="text-2xl font-grotesk font-bold text-foreground truncate">Eventra</span>
           </div>
           <div className="bg-[#BBE0CF] dark:bg-[#0F6E56]/15 px-2 py-0.5 rounded-[6px] shrink-0">
             <p className="font-space text-[10px] font-bold text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-wider">

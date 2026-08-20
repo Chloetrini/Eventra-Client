@@ -22,7 +22,7 @@ import {
 } from "@/lib/home-constants";
 import { fetchEvents } from "@/lib/events-api";
 import { DEFAULT_FILTERS } from "@/types/event-types";
-import { Format } from "@/lib/utils";
+import { Format, shortEventNo } from "@/lib/utils";
 import HowItWorks from "@/components/events/HowItWorks";
 import { OrganizersCta } from "@/components/events/OrganizersCta";
 import {
@@ -220,7 +220,7 @@ const Home: React.FC = () => {
                           Featured
                         </span>
                         <span className="absolute top-3 right-3 text-white font-bold text-[12px] font-space tracking-widest">
-                          № {heroEvent.no ?? heroEvent._id.padStart(4, "0")}
+                          № {shortEventNo(heroEvent)}
                         </span>
                       </div>
                       <div className="p-4">

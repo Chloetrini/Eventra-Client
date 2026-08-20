@@ -19,7 +19,7 @@ export const EventHero = ({ event,
   return (
     <div className={cn("relative rounded-2xl", className)}>
       <img className="rounded-2xl h-74 md:h-131.75 w-full object-cover object-center" src={event.coverImage ?? undefined} alt={event.title} />
-      <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/40 to-transparent"></div>
+      <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/40 to-transparent rounded-2xl"></div>
       <div className="absolute md:left-10 left-3 md:right-10 right-3 md:top-5 top-3 flex justify-between">
         {event.isPromoted && (
           <Badge className="md:p-4 p-2 bg-[#F5A524] text-[#3A3A3A] hover:bg-[#F5A524] h-7.5 md:w-30 w-28 px-4">★ Featured concert</Badge>

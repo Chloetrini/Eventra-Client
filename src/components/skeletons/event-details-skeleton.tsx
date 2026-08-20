@@ -1,11 +1,12 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import PageWrapper from "../page-wrapper";
 
 /** Matches the event details page's real layout — breadcrumb, hero image,
  * two-column info/ticket sidebar — instead of one generic gray block, so
  * the page doesn't visibly jump around once the real content lands. */
 export function EventDetailsSkeleton() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-5 md:px-8">
+    <PageWrapper className="p-[20px]">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 pb-4 mt-3">
         <Skeleton className="h-3 w-14" />
@@ -59,6 +60,6 @@ export function EventDetailsSkeleton() {
           <Skeleton className="h-12 w-full rounded-xl" />
         </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

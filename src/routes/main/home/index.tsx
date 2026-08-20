@@ -267,7 +267,7 @@ const Home: React.FC = () => {
               </div>
 
               <div className="hidden lg:flex lg:col-span-5 justify-end items-center">
-                <div className="w-full translate-x-8">
+                <div className="w-full ">
                   {eventsLoading ? (
                     <HomeHeroCardSkeleton />
                   ) : (
@@ -283,7 +283,7 @@ const Home: React.FC = () => {
       <PageWrapper className="p-[20px]">
         {/* 2. STATS BAR */}
         <section className="py-6 border-y border-border">
-          <div className="grid grid-cols-4 md:gap-8 items-center justify-center max-w-6xl text-center relative">
+          <div className="grid grid-cols-4 md:gap-8 items-center justify-center text-center relative">
             {STATS.map((stat, idx) => (
               <div
                 key={idx}

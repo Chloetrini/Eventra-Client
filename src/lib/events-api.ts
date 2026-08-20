@@ -4,19 +4,11 @@ import { eventSchema } from "@/lib/schema";
 import {
   DATE_WINDOWS,
   PRICE_TIERS,
-  type Event,
-  type EventFilters,
 } from "@/types/event-types";
-import type { EventTickets } from "@/types/ticket-tiers";
 
-const PAGE_SIZE = 9;
+// import type { EventTickets } from "@/types/ticket-tiers";
 
-// ---------------------------------------------------------------------
-// The shape the "server" returns. This is the contract every layer above
-// depends on — mock and real backend both produce exactly this.
-// ---------------------------------------------------------------------
-  eventSchema,
-} from "@/lib/schema";
+
 import { type Event, type EventFilters } from "@/types/event-types";
 import type { Attendee } from "@/types/attendees";
 export type EventsResponse = {
@@ -26,6 +18,7 @@ export type EventsResponse = {
 };
 
 // Matches the backend's actual shape: { events: [...], meta: { total, hasMore, ... } }
+const PAGE_SIZE = 9;
 const eventsResponseSchema = z.object({
   events: z.array(eventSchema),
   meta: z.object({
@@ -88,54 +81,9 @@ function matchesAccess(e: Event, access: EventFilters["access"]) {
 // Maps our EventFilters to the EXACT query params the backend expects.
 // See listPublicEvents in the backend's event.controller.ts.
 // ---------------------------------------------------------------------
-const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-async function fetchEventsMock(filters: EventFilters): Promise<EventsResponse> {
-  await delay(400); // lets your loading skeletons actually show up in dev
 
-  const results = MOCK_EVENTS.filter(
-    (e) =>
-      matchesSearch(e, filters.search) &&
-      matchesState(e, filters.state) &&
-      matchesCategories(e, filters.categories) &&
-      matchesWhen(e, filters.when) &&
-      matchesPrice(e, filters.price) &&
-      matchesAccess(e, filters.access),
-  );
-
-  // Sidebar counts ignore the category filter itself, so ticking one
-  // category doesn't zero out every other row.
-  const forCounts = MOCK_EVENTS.filter(
-    (e) =>
-      matchesSearch(e, filters.search) &&
-      matchesState(e, filters.state) &&
-      matchesWhen(e, filters.when) &&
-      matchesPrice(e, filters.price) &&
-      matchesAccess(e, filters.access),
-  );
-  const categoryCounts = forCounts.reduce<Record<string, number>>((acc, e) => {
-    acc[e.category] = (acc[e.category] ?? 0) + 1;
-    return acc;
-  }, {});
-
-  // Copy before sorting — sort() mutates, and MOCK_EVENTS is shared.
-  const sorted = [...results].sort((a, b) => {
-    if (filters.sort === "date")
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    if (filters.sort === "price") return a.minPrice - b.minPrice;
-    return b.trendingScore - a.trendingScore; // "trending" default
-  });
-
-  const end = filters.page * PAGE_SIZE; // "load more": page 2 = items 1–18
-  return {
-    events: sorted.slice(0, end),
-    total: sorted.length,
-    hasMore: end < sorted.length,
-    categoryCounts,
-  };
-}
-
-refunction buildParams(filters: EventFilters): string {
+function buildParams(filters: EventFilters): string {
   const p = new URLSearchParams();
 
   if (filters.search) p.set("q", filters.search);
@@ -236,10 +184,10 @@ export async function fetchMyEvents() {
   }));
 }
 
-// ---------------------------------------------------------------------
+
 // Attendees for a specific event (organizer only)
 // GET /events/:eventId/attendees
-// ---------------------------------------------------------------------
+
 type RealTicket = {
   _id: string;
   code: string;

@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loginSchema } from "@/lib/schema";
+import { UI_ASSETS } from "@/lib/assets";
 import EventraLogo from "@/assets/Eventra-logo.png";
 import { authPath } from "@/lib/auth-path";
 
@@ -41,12 +42,16 @@ export default function Login() {
       login(values.email, values.password),
     onSuccess: (user) => {
       if (isOrganizer && user.role !== "organizer") {
-        toast.error("This is an attendee account. Please use the attendee login page.");
+        toast.error(
+          "This is an attendee account. Please use the attendee login page.",
+        );
         logout();
         return;
       }
       if (!isOrganizer && user.role === "organizer") {
-        toast.error("This is an organizer account. Please use the organizer login page.");
+        toast.error(
+          "This is an organizer account. Please use the organizer login page.",
+        );
         logout();
         return;
       }
@@ -65,21 +70,30 @@ export default function Login() {
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
-        const user = await googleAuth(tokenResponse.access_token, isOrganizer ? "organizer" : "attendee");
+        const user = await googleAuth(
+          tokenResponse.access_token,
+          isOrganizer ? "organizer" : "attendee",
+        );
         if (isOrganizer && user.role !== "organizer") {
-          toast.error("This is an attendee account. Please use the attendee login page.");
+          toast.error(
+            "This is an attendee account. Please use the attendee login page.",
+          );
           await logout();
           return;
         }
         if (!isOrganizer && user.role === "organizer") {
-          toast.error("This is an organizer account. Please use the organizer login page.");
+          toast.error(
+            "This is an organizer account. Please use the organizer login page.",
+          );
           await logout();
           return;
         }
         toast.success("Logged in successfully.");
         navigate(user.role === "organizer" ? "/dashboard/overview" : "/");
       } catch (err) {
-        toast.error(err instanceof Error ? err.message : "Google sign-in failed");
+        toast.error(
+          err instanceof Error ? err.message : "Google sign-in failed",
+        );
       }
     },
     onError: () => {
@@ -88,25 +102,25 @@ export default function Login() {
   });
 
   return (
-    <div className="h-[494px] flex flex-col justify-center ">
-      <div className="mb-[12px] mt-[120px]">
-        <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
-          <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
-          <span className="text-[22.8px] font-extrabold text-[#1A1523] tracking-[-0.02em]">
+    <div className="h-123.5 flex flex-col justify-center ">
+      <div className="mb-3 mt-30">
+        <Link to="/" className="flex items-center gap-2 mb-13.25 w-fit">
+          <img src={UI_ASSETS.Eventraa} className="h-6 w-auto" alt="Eventra" />
+          <p className="font-extrabold text-[27px] dark:text-white font-grotesk tracking-tight">
             Eventra
-          </span>
+          </p>
           {isOrganizer && (
-            <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
+            <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-1.25 text-[11px] font-normal font-mono uppercase tracking-wide text-[#0F6E56] dark:text-[#7cda92] w-29.5 text-center md:text-[15px]">
               Organizer
             </span>
           )}
         </Link>
       </div>
-      <h1 className="text-[34px] font-extrabold mb-[12px] tracking-[-0.02em] leading-[40px] text-[#000000]">
+      <h1 className="text-[34px] font-extrabold mb-3 tracking-[-0.02em] leading-10 text-[#000000] dark:text-white">
         Welcome back
       </h1>
 
-      <p className="text-[#4A4451] text-[17px] leading-6 mb-[30px]">
+      <p className="text-[#4A4451] text-[17px] leading-6 mb-6 dark:text-white/80">
         Sign in to keep your tickets and saved event in one place
       </p>
 
@@ -115,7 +129,7 @@ export default function Login() {
         <div className="space-y-1.5">
           <Label
             htmlFor="email"
-            className="font-medium text-[16px] text-[#232323] tracking-[-0.03em]"
+            className="font-medium text-[16px] text-[#232323] tracking-[-0.03em] dark:text-white"
           >
             Email
           </Label>
@@ -137,7 +151,7 @@ export default function Login() {
         <div className="space-y-1.5">
           <Label
             htmlFor="password"
-            className="font-medium text-[16px] text-[#232323] tracking-[-0.03em]"
+            className="font-medium text-[16px] text-[#232323] tracking-[-0.03em] dark:text-white"
           >
             Password
           </Label>
@@ -188,12 +202,12 @@ export default function Login() {
               defaultChecked
               className="h-4 w-4 rounded border-[#C3C9D3] accent-[#0F6E56]"
             />
-            <span className="text-[14px] text-[#4A4451]">Remember me</span>
+            <span className="text-[14px] font-bold text-[#4A4451] dark:text-white/50">Remember me</span>
           </label>
 
           <Link
             to={authPath("forgot-password", isOrganizer)}
-            className="text-[#0A4F41] font-medium text-[14px] hover:underline"
+            className="text-[#0A4F41] font-bold text-[14px] hover:underline dark:text-[#7cda92]"
           >
             Forgot Password ?
           </Link>
@@ -202,7 +216,7 @@ export default function Login() {
 
       {/* or divider row */}
 
-      <div className="flex items-center gap-4 my-5 mb-[20px]">
+      <div className="flex items-center gap-4 my-5 mb-5">
         <div className="h-px flex-1 bg-border" />
         <span className="text-sm text-[#4A4451]">or</span>
         <div className="h-px flex-1 bg-border" />
@@ -214,21 +228,19 @@ export default function Login() {
         type="button"
         variant="outline"
         onClick={() => handleGoogleLogin()}
-        className="w-full h-12 border-[#E8E6E0] hover:border-[#E8E6E0] text-[#1A1523] font-bold text-[18px] leading-[29px] mb-[15px]"
+        className="w-full h-12 border-[#E8E6E0] hover:border-[#E8E6E0] text-[#1A1523] font-bold text-[18px] dark:text-white leading-7.25 mb-3.75"
       >
-        <GoogleIcon className="h-4 w-4 mr-2" />
+        <GoogleIcon className="h-6 w-6 mr-2" />
         Sign In with Google
       </Button>
 
-      {/* Bottom text*/}
-
-      <p className="text-center text-sm text-[#4A4451] mt-6">
-        Don't have an account?
+      <p className="text-center text-sm text-[#4A4451] mt-4">
+        Don&apos;t have an account?
         <Link
           to={authPath("register", isOrganizer)}
-          className="text-[#0F6E56] font-medium hover:underline"
+          className="text-[#0F6E56] font-medium hover:underline dark:text-[#7cda92]"
         >
-          Sign up
+          <span className="ml-1.5">Sign up</span>
         </Link>
       </p>
     </div>

@@ -35,7 +35,7 @@ export default function AuthLayout() {
         {isOrganizer && (
           <>
             {/* dark gradient so text stays readable over the image */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
 
             <div className="absolute bottom-0 left-0 p-8 text-white">
               <p className="text-[#F5A524] text-sm font-semibold tracking-wide mb-3 uppercase">
@@ -69,7 +69,7 @@ export default function AuthLayout() {
           isOrganizer ? "lg:order-1" : "lg:order-2"
         }`}
       >
-        <div className="w-full max-w-[494px] mx-auto">
+        <div className="w-full max-w-123.5 mx-auto">
           <Outlet />
         </div>
       </div>

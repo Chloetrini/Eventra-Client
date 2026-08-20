@@ -74,7 +74,7 @@ export default function ResetPassword() {
   return (
     <div className="flex flex-col">
       <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
-        <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
+        <img src={UI_ASSETS.Eventraa} className="h-6 w-auto" alt="Eventra" />
         <span className="text-[22.8px] font-extrabold text-[#1A1523] tracking-[-0.02em]">
           Eventra
         </span>

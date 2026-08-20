@@ -138,7 +138,7 @@ export default function VerifyOtp() {
   return (
     <div className="flex flex-col">
       <Link to="/" className="flex items-center gap-2 mb-8 w-fit">
-        <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
+        <img src={UI_ASSETS.Eventraa} className="h-6 w-auto" alt="Eventra" />
         <span className="text-[22.8px] font-extrabold tracking-[-0.02em] text-[#1A1523]">
           Eventra
         </span>

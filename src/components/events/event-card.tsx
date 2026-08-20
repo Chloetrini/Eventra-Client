@@ -103,16 +103,16 @@ export function EventCard({
           {event.title}
         </h3>
 
-        <p className="text-[14px] text-muted-foreground text-[#6E6577] font-[500] font-sans line-clamp-1">
+        <p className="text-[14px] text-muted-foreground text-[#6E6577] dark:text-white/50 font-[500] font-sans line-clamp-1">
           {dateLabel} · {event.venue.name}, {event.venue.city}
         </p>
 
         <div className="mt-auto flex items-center justify-between pt-8 pb-2">
-          <span className="font-[16px] font-mono text-[#4A4451] font-[700]">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice)} </span>
+          <span className="font-[16px] font-mono text-[#4A4451] dark:text-white/80 font-[700]">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice)} </span>
           <Link
             to={`/events/${event.slug}`}
             aria-label={`View ${event.title}`}
-            className="grid h-[35px] w-[35px] place-items-center rounded-full bg-[#E4F1EB] text-[#0A4F41] transition hover:bg-emerald-100"
+            className="grid h-[35px] w-[35px] place-items-center rounded-full bg-[#E4F1EB] dark:bg-[#0F6E56]/20 text-[#0A4F41] transition hover:bg-emerald-100"
           >
             <ArrowUpRight className="h-4 w-4" />
           </Link>

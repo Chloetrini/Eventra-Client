@@ -48,6 +48,20 @@ const routes = [
             },
           },
           {
+            path: "events",
+            handle: {
+              seo: {
+                title: "Concerts",
+                description: "View all concerts and events happening in your area.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/main/explore");
+              return { Component };
+            },
+          },
+          {
             path: "saved-events",
             handle: {
               seo: {
@@ -143,6 +157,34 @@ const routes = [
             lazy: async () => {
               const { default: Component } =
                 await import("@/routes/main/about");
+              return { Component };
+            },
+          },
+          {
+            path: "terms",
+            handle: {
+              seo: {
+                title: "Terms of Service",
+                description: "Read our terms of service and conditions of use.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/main/terms");
+              return { Component };
+            },
+          },
+          {
+            path: "privacy",
+            handle: {
+              seo: {
+                title: "Privacy Policy",
+                description: "Read our privacy policy to understand how we collect and use your data.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/main/privacy");
               return { Component };
             },
           },

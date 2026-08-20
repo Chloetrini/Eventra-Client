@@ -7,10 +7,10 @@ export const AboutEvent = ({ event }: { event: Event }) => {
 
   return (
     <section>
-      <h2 className="text-xl font-bold">About this event</h2>
+      <h2 className="text-xl font-extrabold font-grotesk tracking-tight">About this event</h2>
       
       {event.description && (
-        <p className="mt-3 whitespace-pre-line text-sm leading-relaxed font-medium">
+        <p className="mt-3 whitespace-pre-line text-sm leading-relaxed font-medium font-[#4A4451]">
           {event.description}
         </p>
       )}

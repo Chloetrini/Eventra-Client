@@ -3,10 +3,9 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { Check } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
-import EventraLogo from "@/assets/Eventra-logo.png";
+import { UI_ASSETS } from "@/lib/assets";
 import { authPath } from "@/lib/auth-path";
 
 export default function CheckEmail() {
@@ -47,13 +46,12 @@ export default function CheckEmail() {
 
   return (
     <div className="flex flex-col">
-      <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
-        <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
-        <span className="text-[30.13px] font-extrabold tracking-[-0.02em] text-[#1A1523] leading-[35.45px]">
-          Eventra
-        </span>
+      <Link to="/" className="flex items-center gap-2 mb-13.25 w-fit">
+        <img src={UI_ASSETS.Eventraa} className="h-6 w-auto" alt="Eventra" />
+        <p className="font-extrabold text-[27px] dark:text-white font-grotesk tracking-tight">Eventra</p>
+
         {isOrganizer && (
-          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
+          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-1.25 font-normal font-mono uppercase tracking-wide text-[#0F6E56] dark:text-[#7cda92] w-29.5 text-center text-[15px]">
             Organizer
           </span>
         )}
@@ -71,7 +69,7 @@ export default function CheckEmail() {
         </div>
       </div>
 
-      <h1 className="text-[34px] font-extrabold leading-[40px] tracking-[-0.02em] text-[#000000] mb-3">
+      <h1 className="text-[34px] font-extrabold leading-10 tracking-[-0.02em] text-[#000000] mb-3">
         Check your email
       </h1>
 

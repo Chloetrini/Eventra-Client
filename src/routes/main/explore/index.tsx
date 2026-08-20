@@ -56,9 +56,9 @@ const { categories } = useCategories();
           <span className="inline-block h-px  w-[12px] bg-[#F5A524] " />
           {stateLabel} · {monthLabel}
         </p>
-        <h1 className="text-[32px] md:text-[54px] font-[800] tracking-tight font-grotesk text-[#1A1523]">Explore events</h1>
-        <p className="text-[13px] md:text-[15px] font-[400] font-mono uppercase tracking-wide text-[#6E6577] mt-1">
-          Showing <span className="text-[#4A4451]">{data?.total ?? 0}</span> events·Updated just now
+        <h1 className="text-[32px] md:text-[54px] font-[800] tracking-tight font-grotesk text-[#1A1523] dark:text-white">Explore events</h1>
+        <p className="text-[13px] md:text-[15px] font-[400] font-mono uppercase tracking-wide text-[#6E6577] dark:text-white/50 mt-1">
+          Showing <span className="text-[#4A4451] dark:text-white/70">{data?.total ?? 0}</span> events·Updated just now
         </p>
       </header>
 

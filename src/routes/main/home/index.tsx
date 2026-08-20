@@ -51,15 +51,19 @@ const Home: React.FC = () => {
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
   };
+// // i been wan try something here 🥲
+//   if (handleHeroSearch == true) ()=> {
+
+//   }
 
   return (
     <>
       {/* 1. HERO SECTION */}
       <section className="relative flex items-center bg-[#4A4451] text-white overflow-hidden">
-        <PageWrapper className="p-[20px]">
+        <PageWrapper className="p-5 lg:p-10">
 
           <div
-            className="absolute inset-0 bg-cover bg-center z-0 scale-110 blur-[18px] md:blur-[4px]"
+            className="absolute inset-0 bg-cover bg-center z-0 scale-110 blur-[18px] md:blur-xs"
             style={{ backgroundImage: `url(${UI_ASSETS.bgDesktop})` }}
           />
           <div className="absolute inset-0 bg-linear-to-b from-black/70 to-black/30 z-1" />
@@ -95,7 +99,7 @@ const Home: React.FC = () => {
                         value={heroSearch}
                         onChange={(e) => setHeroSearch(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleHeroSearch()}
-                        placeholder="Search, events, artists and venues"
+                        placeholder="Search events, artists and venues"
                         className="bg-transparent border-none text-[#1A1523] placeholder-[#4A4451]/60 text-sm focus:outline-none w-full font-geist"
                       />
                     </div>
@@ -147,7 +151,7 @@ const Home: React.FC = () => {
 
                     {/* Location dropdown */}
                     <Select value={heroState} onValueChange={(v) => setHeroState(v ?? "all")}>
-                      <SelectTrigger className="border-none shadow-none w-[140px] h-auto font-geist text-sm text-[#1A1523] focus:ring-0 shrink-0 gap-2 max-w-[125px]">
+                      <SelectTrigger className="border-none shadow-none w-35 h-auto font-geist text-sm text-[#1A1523] focus:ring-0 shrink-0 gap-2 max-w-31.25">
                         <img src={gpsUrl} alt="gps" />
                         <SelectValue placeholder="All states">
                           {(value) => (value === "all" ? "All states" : value)}
@@ -171,7 +175,6 @@ const Home: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Popular Categories */}
                 <div className="font-geist flex flex-row items-start sm:items-center gap-3">
                   <span className="font-medium text-[13px] text-white/70 shrink-0">
                     POPULAR
@@ -190,8 +193,8 @@ const Home: React.FC = () => {
                 {/* Mobile card — below popular tags, inside hero */}
                 {heroEvent && (
                   <div className="lg:hidden mt-4">
-                    <div className="bg-white rounded-2xl overflow-hidden shadow-xl">
-                      <div className="relative h-[180px] overflow-hidden">
+                    <div className="bg-white dark:bg-[#1E1A24] rounded-2xl overflow-hidden shadow-xl">
+                      <div className="relative h-45 overflow-hidden">
                         <img
                           src={heroEvent.coverImage}
                           alt={heroEvent.title}
@@ -215,10 +218,10 @@ const Home: React.FC = () => {
                           {heroEvent.category}
                           {heroEvent.subcategory && ` • ${heroEvent.subcategory}`}
                         </span>
-                        <h3 className="text-xl font-bold text-[#1A1523] font-grotesk mt-0.5">
+                        <h3 className="text-xl font-bold text-[#1A1523] dark:text-white font-grotesk mt-0.5">
                           {heroEvent.title}
                         </h3>
-                        <p className="text-sm text-[#4A4451] font-geist mt-1">
+                        <p className="text-sm text-[#4A4451] dark:text-white/60 font-geist mt-1">
                           {new Date(heroEvent.startDate).toLocaleString("en-NG", {
                             weekday: "short",
                             day: "numeric",
@@ -229,14 +232,14 @@ const Home: React.FC = () => {
                           })}{" "}
                           · {heroEvent.venue.name}
                         </p>
-                        <div className="mt-4 pt-3 border-t border-[#E8E6E0] flex items-center justify-between">
+                        <div className="mt-4 pt-3 border-t border-[#E8E6E0] dark:border-white/10 flex items-center justify-between">
                           <div>
-                            <span className="text-lg font-bold font-space text-[#1A1523]">
+                            <span className="text-lg font-bold font-space text-[#1A1523] dark:text-white">
                               {heroEvent.minPrice === 0
                                 ? "Free"
                                 : Format.amount(heroEvent.minPrice)}
                             </span>
-                            <span className="text-xs text-[#4A4451] block font-geist">
+                            <span className="text-xs text-[#4A4451] dark:text-white/60 block font-geist">
                               from Regular
                             </span>
                           </div>
@@ -263,16 +266,16 @@ const Home: React.FC = () => {
         </PageWrapper>
       </section>
 
-      <PageWrapper className="p-[20px]">
+      <PageWrapper className="p-5">
         {/* 2. STATS BAR */}
-        <section className="py-6 border-y border-[#E8E6E0]">
-          <div className="grid grid-cols-4 md:gap-8 items-center justify-center max-w-6xl text-center relative">
+        <section className="py-6 border-y border-[#E8E6E0] dark:border-white/10 lg:ml-25">
+          <div className="flex flex-row justify-between md:gap-8 items-center max-w-6xl text-center relative">
             {STATS.map((stat, idx) => (
               <div
                 key={idx}
                 className="flex flex-col items-center justify-center relative px-0.5"
               >
-                <h4 className="text-base sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#1A1523] tracking-tight flex items-center">
+                <h4 className="text-base sm:text-2xl md:text-3xl lg:text-4xl md:font-extrabold text-[#1A1523] dark:text-white tracking-tight flex items-center">
                   {stat.icon && (
                     <img
                       src={stat.icon}
@@ -282,11 +285,11 @@ const Home: React.FC = () => {
                   )}
                   {stat.value}
                 </h4>
-                <p className="text-[7px] sm:text-xs font-medium text-[#4A4451] tracking-[0.08em] font-space uppercase mt-1 leading-tight">
+                <p className="text-[7px] sm:text-xs font-medium text-[#4A4451] dark:text-white/60 tracking-[0.08em] font-space uppercase mt-1 leading-tight">
                   {stat.label}
                 </p>
                 {idx !== STATS.length - 1 && (
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 h-6 sm:h-10 w-px bg-[#E8E6E0]" />
+                  <div className="absolute -right-4 md:-right-8 lg:-right-12 top-1/2 -translate-y-1/2 h-6 sm:h-10 w-px bg-[#E8E6E0] dark:bg-white/10" />
                 )}
               </div>
             ))}
@@ -294,14 +297,14 @@ const Home: React.FC = () => {
         </section>
 
         {/* Powering events ticker */}
-        <section className="w-full border-b border-[#E8E6E0] pb-4 md:py-6">
+        <section className="w-full border-b border-[#E8E6E0] dark:border-white/10 pb-4 md:py-6">
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex flex-col md:flex-row items-center justify-center text-center md:text-left">
-              <p className="mb-3 md:mb-0 md:mr-6 text-[11px] sm:text-xs md:text-sm uppercase md:normal-case tracking-wide text-[#4A4451] md:font-space">
+              <p className="mb-3 md:mb-0 md:mr-6 text-[11px] sm:text-xs md:text-sm uppercase md:normal-case tracking-wide text-[#4A4451] dark:text-white/60 md:font-space">
                 Powering events for
               </p>
 
-              <div className="flex flex-wrap md:flex-nowrap justify-center gap-x-3 gap-y-2 text-sm sm:text-lg md:text-xl font-medium text-[#4A4451] font-geist">
+              <div className="flex flex-wrap md:flex-nowrap justify-center gap-x-3 gap-y-2 text-sm sm:text-lg md:text-xl font-medium text-[#4A4451] dark:text-white/60 font-geist">
                 <span>Afro Nation</span>
                 <span>Tech Week</span>
                 <span>Comedy Central</span>
@@ -322,21 +325,21 @@ const Home: React.FC = () => {
       {/* 5. FEATURE HIGHLIGHTS & APP SHOWCASE */}
       <section className="space-y-16 md:space-y-24 py-16 md:py-24">
         {/* Feature 1: Discover events — full bleed bg */}
-        <div className="bg-[#F6F5F1] py-12 md:py-16">
+        <div className="bg-[#F6F5F1] dark:bg-[#1E1A24] py-12 md:py-16">
           <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-25 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
               <span className="text-xs font-normal uppercase text-[#0F6E56] tracking-[1%] flex items-center gap-1 mb-4">
                 <span className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
                 FOR FANS
               </span>
-              <h2 className="text-2xl md:text-3xl font-bold text-[#1A1523] leading-tight font-geist md:font-grotesk mb-4">
+              <h2 className="text-2xl md:text-3xl font-bold text-[#1A1523] dark:text-white leading-tight font-geist md:font-grotesk mb-4">
                 Discover events you'll actually love.
               </h2>
-              <p className="text-[#1A1523] text-sm sm:text-base font-geist leading-6.5 md:font-medium mb-6">
+              <p className="text-[#1A1523] dark:text-white/80 text-sm sm:text-base font-geist leading-6.5 md:font-medium mb-6">
                 A feed tuned to your city and your taste. Filter by vibe, price,
                 or date, and save the ones you're eyeing for later.
               </p>
-              <ul className="space-y-4 text-sm text-[#1A1523] font-geist">
+              <ul className="space-y-4 text-sm text-[#1A1523] dark:text-white/80 font-geist">
                 <li className="flex items-center gap-2">
                   <img src={UI_ASSETS.confirm} alt="confirm" />
                   <span>Smart search across events, artists and venues</span>
@@ -373,14 +376,14 @@ const Home: React.FC = () => {
               <span className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
               CHECKOUT IN SECONDS
             </span>
-            <h2 className="text-2xl md:text-4xl text-[#1A1523] leading-tight font-geist md:font-grotesk font-bold mb-4">
+            <h2 className="text-2xl md:text-4xl text-[#1A1523] dark:text-white leading-tight font-geist md:font-grotesk font-bold mb-4">
               Pay your way — card, transfer, or USSD.
             </h2>
-            <p className="text-[#1A1523] text-sm sm:text-base font-geist leading-6.5 md:font-medium mb-6">
+            <p className="text-[#1A1523] dark:text-white/80 text-sm sm:text-base font-geist leading-6.5 md:font-medium mb-6">
               Buy in a few taps with the method you already use. Your money is
               held safely until the event actually happens.
             </p>
-            <ul className="space-y-4 text-sm text-[#1A1523] font-geist">
+            <ul className="space-y-4 text-sm text-[#1A1523] dark:text-white/80 font-geist">
               <li className="flex items-center gap-2">
                 <img src={UI_ASSETS.confirm} alt="confirm" />
                 <span>Card, bank transfer and USSD, powered by Paystack</span>
@@ -398,21 +401,21 @@ const Home: React.FC = () => {
         </div>
 
         {/* Feature 3: Ticket security — full bleed bg */}
-        <div className="bg-[#F6F5F1] py-12 md:py-16">
+        <div className="bg-[#F6F5F1] dark:bg-[#1E1A24] py-12 md:py-16">
           <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-25 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
               <span className="text-xs md:text-sm font-normal uppercase text-[#0F6E56] tracking-wider font-geist flex items-center gap-1 mb-4">
                 <span className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
                 TRUST BUILT IN
               </span>
-              <h2 className="text-2xl md:text-4xl text-[#1A1523] leading-tight font-geist md:font-grotesk font-bold mb-4">
+              <h2 className="text-2xl md:text-4xl text-[#1A1523] dark:text-white leading-tight font-geist md:font-grotesk font-bold mb-4">
                 A ticket that can't be faked.
               </h2>
-              <p className="text-[#1A1523] text-sm sm:text-base font-geist leading-6.5 md:font-medium mb-6">
+              <p className="text-[#1A1523] dark:text-white/80 text-sm sm:text-base font-geist leading-6.5 md:font-medium mb-6">
                 Buy in a few taps with the method you already use. Your money is
                 held safely until the event actually happens.
               </p>
-              <ul className="space-y-4 text-sm text-[#1A1523] font-geist">
+              <ul className="space-y-4 text-sm text-[#1A1523] dark:text-white/80 font-geist">
                 <li className="flex items-center gap-2">
                   <img src={UI_ASSETS.confirm} alt="confirm" />
                   <span>Unique, one-time-use QR per ticket</span>
@@ -442,13 +445,13 @@ const Home: React.FC = () => {
       <PageWrapper className="pt-0">
         {" "}
         {/* 6. TESTIMONIALS */}
-        <section className="py-12 border-t border-[#E8E6E0]">
+        <section className="py-12 border-t border-[#E8E6E0] dark:border-white/10">
           <div className="text-start max-w-2xl mb-3 md:mb-6">
             <span className="text-xs font-normal uppercase text-[#0F6E56] tracking-wider font-geist flex items-center gap-1">
               <span className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
               REAL PEOPLE, REAL EVENTS
             </span>
-            <h2 className="text-xl md:text-3xl font-extrabold text-[#1A1523] mt-1 font-grotesk">
+            <h2 className="text-xl md:text-3xl font-extrabold text-[#1A1523] dark:text-white mt-1 font-grotesk">
               Loved by fans and organizers
             </h2>
           </div>
@@ -456,14 +459,14 @@ const Home: React.FC = () => {
             {TESTIMONIALS.map((t) => (
               <div
                 key={t.id}
-                className="bg-[#F6F5F1] p-6 rounded-2xl flex flex-col justify-between"
+                className="bg-[#F6F5F1] dark:bg-[#1E1A24] p-6 rounded-2xl flex flex-col justify-between"
               >
                 <div className="flex items-center gap-px mb-1 ">
                   {[...Array(5)].map((_, i) => (
                     <img key={i} src={UI_ASSETS.yellowStar} alt="star" />
                   ))}
                 </div>
-                <p className="text-sm text-[#1A1523] mb-6 font-geist font-medium">
+                <p className="text-sm text-[#1A1523] dark:text-white/90 mb-6 font-geist font-medium">
                   "{t.quote}"
                 </p>
                 <div className="flex items-center gap-3">
@@ -473,10 +476,10 @@ const Home: React.FC = () => {
                     className="w-10 h-10 rounded-full object-cover"
                   />
                   <div>
-                    <h4 className="text-sm font-bold text-[#1A1523] font-geist">
+                    <h4 className="text-sm font-bold text-[#1A1523] dark:text-white font-geist">
                       {t.author}
                     </h4>
-                    <p className="text-xs text-[#4A4451] font-geist">
+                    <p className="text-xs text-[#4A4451] dark:text-white/60 font-geist">
                       {t.role} • {t.state}
                     </p>
                   </div>
@@ -486,13 +489,13 @@ const Home: React.FC = () => {
           </div>
         </section>
         {/* 7. FREQUENTLY ASKED QUESTIONS */}
-        <section className="py-12 border-t border-[#E8E6E0]">
+        <section className="py-12 border-t border-[#E8E6E0] dark:border-white/10">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <span className="text-xs font-normal uppercase text-[#0F6E56] tracking-[1%] flex items-center gap-1 justify-center">
               <span className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
               <h5>GOOD TO KNOW</h5>
             </span>
-            <h2 className="text-xl font-bold text-[#1A1523] font-geist">
+            <h2 className="text-xl font-bold text-[#1A1523] dark:text-white font-geist">
               Frequently asked questions
             </h2>
           </div>
@@ -500,22 +503,22 @@ const Home: React.FC = () => {
             {FAQ_ITEMS.map((faq, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-xl border border-[#E8E6E0] overflow-hidden"
+                className="bg-white dark:bg-[#1E1A24] rounded-xl border border-[#E8E6E0] dark:border-white/10 overflow-hidden"
               >
                 <button
                   onClick={() => toggleFaq(idx)}
-                  className="w-full p-5 text-left flex items-center justify-between font-bold text-[#1A1523] text-base hover:text-[#0F6E56] transition-colors"
+                  className="w-full p-5 text-left flex items-center justify-between font-bold text-[#1A1523] dark:text-white text-base hover:text-[#0F6E56] transition-colors"
                 >
                   <span>{faq.question}</span>
                   <ChevronDown
                     className={`w-5 h-5 transition-transform duration-200 ${openFaq === idx
                         ? "rotate-180 text-[#0F6E56]"
-                        : "text-[#4A4451]"
+                        : "text-[#4A4451] dark:text-white/50"
                       }`}
                   />
                 </button>
                 {openFaq === idx && (
-                  <div className="px-5 pb-5 text-sm text-[#4A4451] border-t border-[#E8E6E0] pt-3 font-geist">
+                  <div className="px-5 pb-5 text-sm text-[#4A4451] dark:text-white/60 border-t border-[#E8E6E0] dark:border-white/10 pt-3 font-geist">
                     {faq.answer}
                   </div>
                 )}

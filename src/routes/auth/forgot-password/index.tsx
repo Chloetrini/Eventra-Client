@@ -4,12 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { z } from "zod";
-
+import { UI_ASSETS } from "@/lib/assets";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { forgotPasswordSchema } from "@/lib/schema";
-import EventraLogo from "@/assets/Eventra-logo.png";
 import { authPath } from "@/lib/auth-path";
 import { useAuth } from "@/context/auth.context";
 
@@ -55,10 +54,10 @@ export default function ForgotPassword() {
   return (
     <div className="flex flex-col">
       <Link to="/" className="flex items-center gap-2 mb-12 w-fit">
-        <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
-        <span className="text-[22.8px] font-extrabold tracking-[-0.02em] text-[#1A1523]">
+        <img src={UI_ASSETS.Eventraa} alt="Eventra" />
+        <p className="font-extrabold text-[27px] dark:text-white font-grotesk tracking-tight">
           Eventra
-        </span>
+        </p>
         {isOrganizer && (
           <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
             Organizer
@@ -70,7 +69,7 @@ export default function ForgotPassword() {
       </h1>
 
       <p className="text-[17px] leading-6 text-[#4A4451] mb-10">
-        Enter the email on your account and we’ll send you a link to reset it
+        Enter the email on your account and we&apos;ll send you a link to reset it
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">

@@ -41,7 +41,7 @@ export const VibeGrid: React.FC = () => {
               SOMETHING FOR EVERYONE
             </h6>
           </div>
-          <h2 className="font-geist font-bold text-2xl tracking-[-2%] text-[#1A1523] md:text-[34px]">
+          <h2 className="font-geist font-bold text-2xl tracking-[-2%] text-[#1A1523] dark:text-white md:text-[34px]">
             Browse by vibe
           </h2>
         </div>

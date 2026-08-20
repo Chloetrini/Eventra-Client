@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +17,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Lock, Loader2 } from "lucide-react";
-import { fetchBanks, resolveBankAccount } from "@/lib/settings";
+import { useOrganizerBanks, useResolveOrganizerBankAccount } from "@/hooks/use-organizer-banks";
+import { humanizeBankResolveError } from "@/lib/utils";
 import type { BankAccount } from "@/types/settings";
 
 interface AddBankAccountDialogProps {
@@ -32,17 +32,12 @@ export function AddBankAccountDialog({
   onOpenChange,
   onSave,
 }: AddBankAccountDialogProps) {
-  const { data: banks = [] } = useQuery({
-    queryKey: ["organizer-banks"],
-    queryFn: fetchBanks,
-    enabled: open,
-    staleTime: Infinity,
-  });
+  const { data: banks = [] } = useOrganizerBanks(open);
+  const resolveAccountMutation = useResolveOrganizerBankAccount();
 
   const [bankCode, setBankCode] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [resolvedName, setResolvedName] = useState<string | null>(null);
-  const [resolving, setResolving] = useState(false);
   const [resolveError, setResolveError] = useState<string | null>(null);
 
   // Reset the form each time the dialog is reopened, rather than carrying
@@ -67,10 +62,10 @@ export function AddBankAccountDialog({
     }
 
     let cancelled = false;
-    setResolving(true);
     setResolveError(null);
 
-    resolveBankAccount(accountNumber, bankCode)
+    resolveAccountMutation
+      .mutateAsync({ accountNumber, bankCode })
       .then(({ accountName }) => {
         if (cancelled) return;
         setResolvedName(accountName);
@@ -79,18 +74,19 @@ export function AddBankAccountDialog({
         if (cancelled) return;
         setResolvedName(null);
         setResolveError(
-          error instanceof Error ? error.message : "Could not verify this account number"
+          humanizeBankResolveError(
+            error instanceof Error ? error.message : "Could not verify this account number"
+          )
         );
-      })
-      .finally(() => {
-        if (!cancelled) setResolving(false);
       });
 
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountNumber, bankCode]);
 
+  const resolving = resolveAccountMutation.isPending;
   const selectedBank = banks.find((b) => b.code === bankCode);
 
   const handleContinue = () => {
@@ -127,8 +123,20 @@ export function AddBankAccountDialog({
                 value={bankCode}
                 onValueChange={(value) => value && setBankCode(value)}
               >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select bank" />
+                <SelectTrigger className="w-full mt-1">
+                  {/* SelectValue's built-in value->label lookup only knows
+                      about banks whose <SelectItem> has actually mounted
+                      (the popup content unmounts on close), so after picking
+                      a bank and closing the dropdown it was falling back to
+                      showing the raw bank code ("044") instead of the name.
+                      Looking the name up directly from the already-fetched
+                      `banks` list — which we have regardless of whether the
+                      popup is open — fixes that for good. */}
+                  <SelectValue placeholder="Select bank">
+                    {(value: string | null) =>
+                      value ? banks.find((b) => b.code === value)?.name ?? value : "Select bank"
+                    }
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {banks.map((bank) => (
@@ -151,6 +159,7 @@ export function AddBankAccountDialog({
                   const digitsOnly = e.target.value.replace(/\D/g, "");
                   setAccountNumber(digitsOnly);
                 }}
+                className="mt-1"
               />
             </div>
           </div>

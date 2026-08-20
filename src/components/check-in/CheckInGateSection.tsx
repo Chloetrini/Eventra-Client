@@ -7,6 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import type { Event } from '@/types/event';
 
 interface CheckInGateSectionProps {
@@ -59,9 +60,14 @@ export default function CheckInGateSection({
                                 <div className="w-11.25 h-11.25 bg-gray-300 dark:bg-zinc-700 shrink-0 shadow-[0_0.11px_1.41px_rgba(0,0,0,0.25)]" />
                             )}
                             <SelectValue placeholder={eventsLoading ? "Loading…" : "Select event"}>
-                                <span className="truncate text-sm font-medium text-[#1A1523] dark:text-zinc-100">
-                                    {eventName}
-                                </span>
+                                <Tooltip>
+                                    <TooltipTrigger
+                                        render={<span className="truncate text-sm font-medium text-[#1A1523] dark:text-zinc-100" />}
+                                    >
+                                        {eventName}
+                                    </TooltipTrigger>
+                                    <TooltipContent>{eventName}</TooltipContent>
+                                </Tooltip>
                             </SelectValue>
                         </div>
                     </SelectTrigger>

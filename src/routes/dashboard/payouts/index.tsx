@@ -8,12 +8,13 @@ import { PayoutHistory } from "../../../components/payout/PayoutHistory";
 import { StatCards } from "./StatCards";
 import { PayoutsSkeleton } from "@/components/skeletons/payouts-skeleton";
 import { fetchPayouts } from "@/lib/payouts-api";
-import { useOrganizerProfile } from "@/lib/organizer-api";
+import { useOrganizerBankStatus, useOrganizerProfile, useOrganizerProfileComplete } from "@/lib/organizer-api";
 
 export default function Payouts() {
   const [showSetupBanner, setShowSetupBanner] = useState(true);
   const { status: organizerStatus, isPayoutReady, isLoading: profileLoading } = useOrganizerProfile();
-
+  const { bankStatus } = useOrganizerBankStatus();
+  const { isProfileComplete } = useOrganizerProfileComplete();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["payouts"],
     queryFn: fetchPayouts,
@@ -35,7 +36,9 @@ export default function Payouts() {
 
   return (
     <div className="space-y-6">
-      <AccountReviewBanner status={organizerStatus} />
+      <AccountReviewBanner status={organizerStatus}
+        bankStatus={bankStatus}
+        isProfileComplete={isProfileComplete} />
 
       <div>
         <p className="text-[13px] font-medium tracking-wide uppercase text-[#0F6E56] dark:text-[#4ADE80] font-space">
@@ -49,11 +52,11 @@ export default function Payouts() {
         </p>
       </div>
 
-      {/* Bank-specific nudge, independent of admin approval — an already
-          verified organizer can still be missing bank details. The
-          AccountReviewBanner above already covers unverified/pending/
-          rejected, so this only shows for the one gap it doesn't. */}
-      {showSetupBanner && organizerStatus === "verified" && !isPayoutReady && (
+      {/* Bank-specific nudge, independent of admin approval. Shows as soon
+          as the bank account isn't set up yet, including while still
+          pending review, so the organizer can get payouts ready ahead of
+          approval instead of waiting until after. */}
+      {showSetupBanner && !isPayoutReady && (
         <PayoutSetupBanner onDismiss={() => setShowSetupBanner(false)} />
       )}
 

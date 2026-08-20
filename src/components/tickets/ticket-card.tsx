@@ -8,10 +8,8 @@ import rightArrow from "@/assets/rightArrow.png";
 import backward from "@/assets/backward.png";
 import PaymentBtn from "@/components/ui/pay-method-btn";
 import { formatDateTime } from "@/lib/utils";
-import { useState } from "react";
 import { toast } from "react-toastify";
-import { requestTicketRefund, cancelReservation } from "@/lib/tickets-api";
-import { useQueryClient } from "@tanstack/react-query";
+import { useRequestTicketRefund, useCancelReservation } from "@/hooks/use-ticket-actions";
 import { downloadEventIcs } from "@/lib/calendar";
 interface TicketProps {
   ticket: Ticket;
@@ -49,41 +47,46 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
       bg: "bg-[#0A4F41]",
       text: "text-[#E8D8FF]",
     },
+    // Fallback label for a paid ticket whose real tier name isn't available
+    // in this context (e.g. right after checkout, before My Tickets has the
+    // full order). Was previously unmapped, so it silently fell through to
+    // the plain muted style below instead of a real badge.
+    Paid: {
+      bg: "bg-[#0A4F41]",
+      text: "text-[#96E2B5]",
+    },
   };
   const ticketType = ticketDetails[0].type;
-  const { bg: ticketBg, text: ticketText } = ticketTypeConfig[ticketType] ?? {
-    bg: "bg-muted",
-    text: "text-muted-foreground",
-  };
+  // Real tier names now come straight from the backend (e.g. "VIP",
+  // "Table", or whatever an organizer named it), so this won't always be
+  // one of the fixed keys above. Anything that isn't literally "Free"
+  // still means it was paid for, so fall back to the "Paid" style rather
+  // than a flat gray badge for an unrecognized tier name.
+  const { bg: ticketBg, text: ticketText } =
+    ticketTypeConfig[ticketType] ??
+    (ticketType === "Free" ? { bg: "bg-muted", text: "text-muted-foreground" } : ticketTypeConfig.Paid);
 
-  const queryClient = useQueryClient();
-  const [isProcessing, setIsProcessing] = useState(false);
+  const refundMutation = useRequestTicketRefund();
+  const cancelMutation = useCancelReservation();
+  const isProcessing = refundMutation.isPending || cancelMutation.isPending;
 
   const handleRequestRefund = async () => {
     if (!ticket._id) return;
-    setIsProcessing(true);
     try {
-      await requestTicketRefund(ticket._id);
+      await refundMutation.mutateAsync({ ticketId: ticket._id });
       toast.success("Refund requested. We'll email you once it's processed.");
-      queryClient.invalidateQueries({ queryKey: ["my-tickets"] });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not request refund. Please try again.");
-    } finally {
-      setIsProcessing(false);
     }
   };
 
   const handleCancelRsvp = async () => {
     if (!ticket._id) return;
-    setIsProcessing(true);
     try {
-      await cancelReservation(ticket._id);
+      await cancelMutation.mutateAsync(ticket._id);
       toast.success("Reservation cancelled.");
-      queryClient.invalidateQueries({ queryKey: ["my-tickets"] });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not cancel reservation. Please try again.");
-    } finally {
-      setIsProcessing(false);
     }
   };
   return (

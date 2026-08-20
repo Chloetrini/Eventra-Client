@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { fetchMyEvents } from '@/lib/events-api';
-import { useOrganizerStatus } from '@/lib/organizer-api';
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from '@/lib/organizer-api';
 import { useCheckIn } from '@/hooks/useCheckIn';
 import { AccountReviewBanner } from '@/components/account-review-banner';
 import CheckInGateSection from './CheckInGateSection';
@@ -17,8 +17,15 @@ import { QrCode, Loader2 } from 'lucide-react';
 export default function CheckInContent() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { status } = useOrganizerStatus();
+  const { bankStatus } = useOrganizerBankStatus();
+  const { isProfileComplete } = useOrganizerProfileComplete();
 
-  // Fetch organizer's events
+  // Every event that links here (QuickActionsCard, EventActionsMenu, the
+  // single-event details page) passes ?event=<id> — this was previously
+  // read from a route param that the route never actually declared, so
+  // it silently always fell back to a hardcoded '1'. Falls back to the
+  // organizer's first event when opened from the sidebar with no event
+  // pre-selected.
   const { data: events = [], isLoading: eventsLoading } = useQuery({
     queryKey: ['my-events'],
     queryFn: fetchMyEvents,
@@ -69,10 +76,14 @@ export default function CheckInContent() {
 
   if (!eventsLoading && events.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-center">
-          <p className="text-muted-foreground">No events found. Create an event to start checking in attendees.</p>
-        </div>
+      <div className="space-y-6">
+        <AccountReviewBanner
+          status={status}
+          bankStatus={bankStatus}
+          isProfileComplete={isProfileComplete} />
+        <p className="text-sm text-muted-foreground text-center py-12">
+          You don't have any events to check guests in for yet.
+        </p>
       </div>
     );
   }
@@ -99,30 +110,34 @@ export default function CheckInContent() {
   return (
     <div className="space-y-6 pb-8 relative">
       {/* Status Banner */}
-      <AccountReviewBanner status={status} />
+      <AccountReviewBanner
+        status={status}
+        bankStatus={bankStatus}
+        isProfileComplete={isProfileComplete} />
 
       {/* TOP HEADER */}
       <div className="relative mt-8 mb-2 flex flex-col sm:flex-row items-start sm:items-center justify-between">
         <div className="space-y-1">
-          <span className="font-sans text-[#0F6E56] font-medium text-sm md:text-[17px] leading-6 tracking-normal">At the Gate</span>
-          <h1 className="text-3xl font-bold text-foreground">Check-in</h1>
+          <span className="font-sans text-[#0F6E56] dark:text-[#4ADE80] font-medium text-sm md:text-[17px] leading-6 tracking-normal">At the Gate</span>
+          <h1 className="text-3xl font-grotesk font-bold text-foreground">Check-in</h1>
+          <p className="text-muted-foreground text-sm">scan tickets at the door, fast, even offline</p>
         </div>
-        
-        <div className="mt-4 sm:mt-0 flex flex-col items-end gap-1">
+
+        {/* ACTIVE MODE TOGGLE */}
+        <div className=" flex flex-col items-start sm:items-end gap-1.5 mt-4 sm:mt-0 shrink-0">
           <span className="font-sans font-normal text-xs md:text-[16px] text-foreground leading-6.5 tracking-normal">Active mode</span>
           <div className="flex items-center gap-2">
             <span
-              className={`w-1.5 h-1.5 rounded-full ${
-                isOnline ? 'bg-[#0F6E56] dark:bg-[#4ADE80]' : 'bg-gray-300 dark:bg-zinc-600'
-              }`}
+              className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-[#0F6E56] dark:bg-[#4ADE80]' : 'bg-gray-300 dark:bg-zinc-600'
+                }`}
             />
-            <span className="font-sans font-light text-sm md:text-[14px] text-[#0F6E56] dark:text-[#4ADE80] leading-5.25 tracking-normal">
+            <span className="font-sans font-light text-sm md:text-[14px] text-[#0F6E56] dark:text-[#4ADE80] leading-5.25 tracking-normal ">
               {isOnline ? 'online' : 'offline'}
             </span>
             <Switch
               checked={isOnline}
               onCheckedChange={setIsOnline}
-              className="data-[state=checked]:bg-[#0F6E56]"
+              className="data-checked:bg-[#0F6E56]"
             />
           </div>
         </div>
@@ -145,22 +160,22 @@ export default function CheckInContent() {
       {/* 2-COLUMN GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
 
-        {/* LEFT COLUMN */}
+        {/* LEFT COLUMN — wrapped per Frame 1171277892 (border, padding, gap) */}
         <div className="flex flex-col gap-3 pt-5 pr-2.5 pb-5 pl-2.5 rounded-lg border border-border">
-          
-          {/* Scanner placeholder — "Scanner" component */}
+
+          {/* Scanner placeholder — "Scanner" component: 470x260, radius 10, bg #0E0A14 */}
           <div className="relative aspect-470/260 bg-[#0E0A14] rounded-lg overflow-hidden flex items-center justify-center">
-            
-            {/* Faint inner frame */}
+
+            {/* Faint inner frame — inset 30px, 410x200, 1px border #E8E6E0 @15% opacity */}
             <div className="absolute inset-7.5 rounded-lg border border-[#E8E6E0]/15 pointer-events-none" />
 
-            {/* Top-left corner bracket */}
+            {/* Top-left corner bracket — "Rectangle 8": 36x36, 30px offset, 2px #F5A524 */}
             <div className="absolute top-7.5 left-7.5 w-9 h-9 border-t-2 border-l-2 border-[#F5A524] rounded-tl-lg pointer-events-none" />
 
-            {/* Bottom-right corner bracket */}
+            {/* Bottom-right corner bracket (opposite corner, mirrors Rectangle 8) */}
             <div className="absolute bottom-7.5 right-7.5 w-9 h-9 border-b-2 border-r-2 border-[#F5A524] rounded-br-lg pointer-events-none" />
 
-            {/* Decorative scan-line glow */}
+            {/* Decorative scan-line glow — "Line 14": 365px wide, gradient */}
             <div
               className="absolute h-0.5 w-80 top-14 left-12 pointer-events-none"
               style={{

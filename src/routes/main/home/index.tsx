@@ -7,7 +7,6 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import gpsUrl from "@/assets/gps.svg";
-import downUrl from "@/assets/down.svg";
 import { UI_ASSETS } from "@/lib/assets";
 import PageWrapper from "@/components/page-wrapper";
 import { VibeGrid } from "@/components/events/vibe-grid";
@@ -23,9 +22,14 @@ import {
 } from "@/lib/home-constants";
 import { fetchEvents } from "@/lib/events-api";
 import { DEFAULT_FILTERS } from "@/types/event-types";
-import { Format } from "@/lib/utils";
+import { Format, shortEventNo } from "@/lib/utils";
 import HowItWorks from "@/components/events/HowItWorks";
 import { OrganizersCta } from "@/components/events/OrganizersCta";
+import {
+  HomeEventCountSkeleton,
+  HomeHeroCardSkeleton,
+  FeaturedEventsSkeleton,
+} from "@/components/skeletons/home-skeleton";
 
 const Home: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -41,7 +45,7 @@ const Home: React.FC = () => {
   };
 
   // Events come through the same fetch as Explore — one switch to the backend later
-  const { data: eventsData } = useQuery({
+  const { data: eventsData, isLoading: eventsLoading } = useQuery({
     queryKey: ["home-events"],
     queryFn: () => fetchEvents(DEFAULT_FILTERS),
   });
@@ -69,9 +73,13 @@ const Home: React.FC = () => {
               <div className="lg:col-span-7 space-y-6">
                 <div className="flex flex-row items-center gap-1">
                   <div className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
-                  <span className="inline-block text-[#FCD98A] text-[12px] uppercase tracking-[0.08em] font-regular font-space">
-                    214 EVENTS THIS WEEK . LAGOS
-                  </span>
+                  {eventsLoading ? (
+                    <HomeEventCountSkeleton />
+                  ) : (
+                    <span className="inline-block text-[#FCD98A] text-[12px] uppercase tracking-[0.08em] font-regular font-space">
+                      {eventsData?.total ?? 0} EVENTS THIS WEEK . LAGOS
+                    </span>
+                  )}
                 </div>
 
                 <h1 className="text-[40px] sm:text-[54px] lg:text-[64px] font-bold md:font-extrabold tracking-[-0.03em] leading-none font-geist md:font-grotesk">
@@ -188,7 +196,12 @@ const Home: React.FC = () => {
                 </div>
 
                 {/* Mobile card — below popular tags, inside hero */}
-                {heroEvent && (
+                {eventsLoading && (
+                  <div className="lg:hidden mt-4">
+                    <HomeHeroCardSkeleton />
+                  </div>
+                )}
+                {!eventsLoading && heroEvent && (
                   <div className="lg:hidden mt-4">
                     <div className="bg-card rounded-2xl overflow-hidden shadow-xl">
                       <div className="relative h-[180px] overflow-hidden">
@@ -207,7 +220,7 @@ const Home: React.FC = () => {
                           Featured
                         </span>
                         <span className="absolute top-3 right-3 text-white font-bold text-[12px] font-space tracking-widest">
-                          № {heroEvent.no ?? heroEvent._id.padStart(4, "0")}
+                          № {shortEventNo(heroEvent)}
                         </span>
                       </div>
                       <div className="p-4">
@@ -254,8 +267,12 @@ const Home: React.FC = () => {
               </div>
 
               <div className="hidden lg:flex lg:col-span-5 justify-end items-center">
-                <div className="w-full translate-x-8">
-                  <StackedCardCarousel events={featuredEvents} />
+                <div className="w-full ">
+                  {eventsLoading ? (
+                    <HomeHeroCardSkeleton />
+                  ) : (
+                    <StackedCardCarousel events={featuredEvents} />
+                  )}
                 </div>
               </div>
             </div>
@@ -266,7 +283,7 @@ const Home: React.FC = () => {
       <PageWrapper className="p-[20px]">
         {/* 2. STATS BAR */}
         <section className="py-6 border-y border-border">
-          <div className="grid grid-cols-4 md:gap-8 items-center justify-center max-w-6xl text-center relative">
+          <div className="grid grid-cols-4 md:gap-8 items-center justify-center text-center relative">
             {STATS.map((stat, idx) => (
               <div
                 key={idx}
@@ -316,7 +333,11 @@ const Home: React.FC = () => {
         <VibeGrid />
 
         {/* 4. FEATURED THIS WEEK */}
-        <FeaturedEvents events={featuredEvents} />
+        {eventsLoading ? (
+          <FeaturedEventsSkeleton />
+        ) : (
+          <FeaturedEvents events={featuredEvents} />
+        )}
       </PageWrapper>
 
       {/* 5. FEATURE HIGHLIGHTS & APP SHOWCASE */}
@@ -529,7 +550,7 @@ const Home: React.FC = () => {
           heading="Your next night out starts here."
           body="Discover an event to attend, or start selling tickets to your own. It only takes a minute."
           primaryBtn={{ text: "Find an event", to: "/explore" }}
-          secondaryBtn={{ text: "Start selling tickets", to: "/auth/register" }}
+          secondaryBtn={{ text: "Start selling tickets", to: "/auth/organizer/register" }}
           bgImage={UI_ASSETS.manWithHandUp}
           align="left"
         />

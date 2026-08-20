@@ -1,8 +1,9 @@
 import { type Event } from "@/types/event-types"
-import { Heart, MoveUpRight, MapPin, Calendar } from 'lucide-react'
+import { Heart, MapPin, Calendar } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import { cn, formatDate, formatTime } from "@/lib/utils"
 import { useAuthGate } from "@/context/auth.gate";
+import { ShareButton } from "@/components/ui/share-button";
 type EventHeroProps = {
   event: Event;
   isSaved?: boolean;
@@ -12,15 +13,16 @@ type EventHeroProps = {
 export const EventHero = ({ event,
   isSaved = false,
   onToggleSave,
-  className,}: EventHeroProps) => {
+  className, }: EventHeroProps) => {
 
-    const { requireAuth } = useAuthGate();
+  const { requireAuth } = useAuthGate();
   return (
     <div className={cn("relative rounded-2xl", className)}>
-        <img className="rounded-2xl h-74 md:h-131.75 w-full object-cover object-center" src={event.coverImage ?? undefined} alt={event.title}/>
+      <img className="rounded-2xl h-74 md:h-131.75 w-full object-cover object-center" src={event.coverImage ?? undefined} alt={event.title} />
+      <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/40 to-transparent rounded-2xl"></div>
       <div className="absolute md:left-10 left-3 md:right-10 right-3 md:top-5 top-3 flex justify-between">
         {event.isPromoted && (
-          <Badge className="md:p-4 p-2 bg-[#F5A524] text-[#3A3A3A] hover:bg-[#F5A524] h-7.5 md:w-30 w-28">★ Featured concert</Badge>
+          <Badge className="md:p-4 p-2 bg-[#F5A524] text-[#3A3A3A] hover:bg-[#F5A524] h-7.5 md:w-30 w-28 px-4">★ Featured concert</Badge>
         )}
         <div className="flex gap-2 ml-auto">
           {onToggleSave && (
@@ -47,9 +49,13 @@ export const EventHero = ({ event,
               />
             </button>
           )}
-          <button className="flex h-8 w-8 md:h-12 md:w-12 items-center justify-center border rounded-md bg-[#5A4C6AA3] transition hover:bg-white/30">
-            <MoveUpRight className="md:h-8 md:w-8 w-5 h-5 text-white"/>
-          </button>
+          {/* Was a MoveUpRight arrow button with no onClick at all — looked
+              like a share button but did nothing. This is that button,
+              actually wired up. */}
+          <ShareButton
+            title={event.title}
+            url={typeof window !== "undefined" ? `${window.location.origin}/events/${event.slug}` : `/events/${event.slug}`}
+          />
         </div>
       </div>
 

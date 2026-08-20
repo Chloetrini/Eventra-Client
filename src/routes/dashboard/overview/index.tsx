@@ -4,7 +4,7 @@ import StatsCards from "@/components/organizer-dashboard/StatsCards";
 import RecentEventsTable from "@/components/organizer-dashboard/RecentEventsTable";
 import RevenueChart from "@/components/organizer-dashboard/RevenueChart";
 import TicketsByTypeChart from "@/components/organizer-dashboard/TicketsByTypeChart";
-import { useOrganizerStatus } from "@/lib/organizer-api";
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 import type { RevenuePeriod } from "@/types/dashboard";
 
@@ -57,6 +57,8 @@ export default function DashboardPage() {
   const { data, isLoading, isError } = useDashboard(period);
   const navigate = useNavigate();
   const { status } = useOrganizerStatus();
+  const { bankStatus } = useOrganizerBankStatus();
+  const { isProfileComplete } = useOrganizerProfileComplete();
 
   if (isLoading) return <DashboardPageSkeleton />;
   if (isError || !data) {
@@ -77,10 +79,15 @@ export default function DashboardPage() {
   };
 
   return (
-    <>
-      <AccountReviewBanner status={status} />
+    
+    <div className="space-y-6">
+      <AccountReviewBanner 
+        status={status} 
+        bankStatus={bankStatus}
+        isProfileComplete={isProfileComplete}
+        />
 
-      <div className="mb-6">
+      <div>
         <p className="text-[10px] font-bold font-space text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-widest mb-1">
           DASHBOARD
         </p>
@@ -94,12 +101,12 @@ export default function DashboardPage() {
 
       <StatsCards stats={data.stats} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <RevenueChart data={data.revenueSeries} period={period} onPeriodChange={setPeriod} />
         <TicketsByTypeChart data={data.ticketsByType} />
       </div>
 
       <RecentEventsTable events={data.recentEvents} onViewAll={() => navigate("/dashboard/events")} />
-    </>
-  );
+    </div>
+  ) 
 }

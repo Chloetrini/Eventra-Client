@@ -237,7 +237,7 @@ export default function About() {
                              heading="Ready to join the party?"
                              body="Discover your next event, or start selling tickets to your own."
                              primaryBtn={{ text: "Find an event", to: "/explore" }}
-                             secondaryBtn={{ text: "Talk to us", to: "/auth/register" }}
+                             secondaryBtn={{ text: "Talk to us", to: "/contact" }}
                              bgImage={UI_ASSETS.manWithHandUp}
                              align="left"
                            />

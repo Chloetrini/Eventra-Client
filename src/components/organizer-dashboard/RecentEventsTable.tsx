@@ -91,7 +91,7 @@ const RecentEventsTable: React.FC<RecentEventsTableProps> = ({ events, onViewAll
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <EventActionsMenu eventId={event.id} eventTitle={event.title} />
+                  <EventActionsMenu eventId={event.id} eventTitle={event.title} status={event.status} />
                 </td>
               </tr>
             ))}

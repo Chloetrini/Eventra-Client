@@ -1,9 +1,10 @@
 import { Link } from "react-router";
 import { Heart, ArrowUpRight, Star } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, shortEventNo } from "@/lib/utils";
 import type { Event } from "@/types/event-types";
 import { formatNaira } from "@/lib/utils"
 import { useAuthGate } from "@/context/auth.gate";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 type EventCardProps = {
   event: Event;
@@ -30,7 +31,7 @@ export function EventCard({
     hour12: true,
   });
 
-  const eventNo = event.no ?? event._id.slice(-4).toUpperCase();
+  const eventNo = shortEventNo(event);
   const isHome = variant === "home";
   const { requireAuth } = useAuthGate();
   return (
@@ -61,10 +62,22 @@ export function EventCard({
           </>
         ) : (
           <>
-            {/* EXPLORE variant: number top-left, heart top-right */}
-            <p className="absolute left-3 top-6 text-[12px] font-[700] text-white font-mono drop-shadow tracking-wider">
-              No {eventNo}
-            </p>
+            {/* EXPLORE variant: Featured badge (promoted only) top-left,
+                number top-left below it — except promoted cards don't show
+                the number at all, since "No 0421" next to a Featured badge
+                read as clutter/noise on a card that's already flagged as
+                featured. Heart stays top-right either way. */}
+            {event.isPromoted && (
+              <span className="absolute left-3 top-3 flex items-center gap-1 rounded-[15px] bg-[#F5A524] px-3 py-1 text-[13px] font-[500] text-[#7A4E02] font-sans">
+                <Star className="h-3 w-3 fill-[#7A4E02] text-[#7A4E02]" />
+                Featured
+              </span>
+            )}
+            {!event.isPromoted && (
+              <p className="absolute left-3 top-6 text-[12px] font-[700] text-white font-mono drop-shadow tracking-wider">
+                No {eventNo}
+              </p>
+            )}
             {onToggleSave && (
               <button
                 type="button"
@@ -99,13 +112,29 @@ export function EventCard({
           {event.subcategory && ` · ${event.subcategory}`}
         </p>
 
-        <h3 className="font-[700] leading-snug font-grotesk md:text-[20px] text-[19px] line-clamp-2 min-h-[2lh] text-foreground">
-          {event.title}
-        </h3>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <h3 className="text-left font-[700] leading-snug font-grotesk md:text-[20px] text-[19px] line-clamp-2 min-h-[2lh] text-foreground" />
+            }
+          >
+            {event.title}
+          </TooltipTrigger>
+          <TooltipContent>{event.title}</TooltipContent>
+        </Tooltip>
 
-        <p className="text-[14px] text-muted-foreground font-[500] font-sans line-clamp-1">
-          {dateLabel} · {event.venue.name}, {event.venue.city}
-        </p>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <p className="text-left text-[14px] text-muted-foreground font-[500] font-sans line-clamp-1" />
+            }
+          >
+            {dateLabel} · {event.venue.name}, {event.venue.city}
+          </TooltipTrigger>
+          <TooltipContent>
+            {dateLabel} · {event.venue.name}, {event.venue.city}
+          </TooltipContent>
+        </Tooltip>
 
         <div className="mt-auto flex items-center justify-between pt-8 pb-2">
           <span className="font-[16px] font-mono text-foreground font-[700]">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice)} </span>

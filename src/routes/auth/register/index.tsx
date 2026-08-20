@@ -74,7 +74,7 @@ export default function Register() {
         }
 
         toast.success("Account ready!");
-        navigate(user.role === "organizer" ? "/organizer/dashboard" : "/");
+        navigate(user.role === "organizer" ? "/onboarding/organisation" : "/");
       } catch (err) {
         toast.error(err instanceof Error ? err.message : "Google sign-up failed");
       }

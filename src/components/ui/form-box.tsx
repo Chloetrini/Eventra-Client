@@ -25,6 +25,7 @@ type FormFieldProps<T extends FieldValues> = {
   defaultValue?: string | Date | number | boolean
   minValue?: number
   maxValue?: number
+  stepValue?: number
   inputType?: 'input' | 'textarea' | 'select' | 'switch' | 'datePicker' | 'time' | "imageUpload"
   registerOptions?: RegisterOptions<T>
   control?: Control<T>
@@ -37,6 +38,7 @@ type FormFieldProps<T extends FieldValues> = {
   timeFontWeight?: number | string
   switchInputClassName?: string
   switchDescription?: string
+  inputClassName?: string
   imageAccept?: string
   imagePreviewStyle?: string
   imageDefaultStyle?: string
@@ -60,6 +62,7 @@ export function FormBox<T extends FieldValues>({
   defaultValue,
   minValue,
   maxValue,
+  stepValue,
   inputType,
   registerOptions,
   borderStyle,
@@ -71,6 +74,7 @@ export function FormBox<T extends FieldValues>({
   timeFontWeight,
   switchInputClassName,
   switchDescription,
+  inputClassName,
   control,
   imageAccept,
   imagePreviewStyle,
@@ -152,7 +156,7 @@ export function FormBox<T extends FieldValues>({
             {...register(name, registerOptions)}
             disabled={disabled}
             placeholder={placeholder}
-            className={cn(' md:py-5.5 resize-none', errors ? 'border-red-600' : '', borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-15" : borderStyle === "createEvent" ? "border-border bg-background text-foreground h-11 p-2.5 rounded-[10px]" : 'px-3')}
+            className={cn(' md:py-5.5 resize-none', errors ? 'border-red-600' : '', borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black dark:text-white' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-15" : borderStyle === "createEvent" ? "border-border bg-background text-foreground h-11 p-2.5 rounded-[10px]" : 'px-3')}
             defaultValue={
               defaultValue instanceof Date
                 ? defaultValue.toISOString().split('T')[0]
@@ -179,7 +183,7 @@ export function FormBox<T extends FieldValues>({
             className={cn(
               'w-full rounded-md border bg-transparent outline-none focus:outline-[#E4F1EB] focus:ring-3 focus:ring-[#E4F1EB] text-sm ',
               errors ? 'border-red-600' : '',
-              borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-12 " : borderStyle === "createEvent" ? "border-border bg-background text-foreground h-11 p-2.5 rounded-[10px]" : 'px-3'
+              borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black dark:text-white' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-12 " : borderStyle === "createEvent" ? "border-border bg-background text-foreground h-11 p-2.5 rounded-[10px]" : 'px-3'
             )}
           >
             {placeholder && (
@@ -215,10 +219,11 @@ export function FormBox<T extends FieldValues>({
             <Input
               type={isVisible ? 'text' : type}
               placeholder={placeholder}
-              className={cn('focus:outline-[#E4F1EB] focus:ring-[#E4F1EB] py-5.5', errors ? 'border-red-600' : '', borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-15" : borderStyle === "createEvent" ? "border-border bg-background text-foreground h-11 p-2.5 rounded-[10px]" : 'px-3')}
+              className={cn('focus:outline-[#E4F1EB] focus:ring-[#E4F1EB] py-5.5', errors ? 'border-red-600' : '', borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black dark:text-white' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-15" : borderStyle === "createEvent" ? "border-border bg-background text-foreground h-11 p-2.5 rounded-[10px]" : 'px-3', inputClassName)}
               id={id}
               max={maxValue}
               min={minValue}
+              step={stepValue}
               {...register(name, registerOptions)}
               disabled={disabled}
               defaultValue={

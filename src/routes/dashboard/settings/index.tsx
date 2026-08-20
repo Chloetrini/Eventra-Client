@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import {
@@ -7,12 +7,15 @@ import {
   updateNotificationPreferences,
   updateOrganizationProfile,
 } from "@/lib/settings";
-import { useOrganizerStatus } from "@/lib/organizer-api";
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
+import { useAuth, type User } from "@/context/auth.context";
+import { useUploadAvatar } from "@/hooks/use-profile";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import { AccountReviewBanner } from "@/components/account-review-banner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Clock, Landmark, CheckCircle2, Loader2 } from "lucide-react";
+import { Camera, Clock, Landmark, CheckCircle2, Loader2 } from "lucide-react";
 import type { BankAccount, OrganizationSettings } from "@/types/settings";
 import { Badge } from "@/components/ui/badge";
 import { AddBankAccountDialog } from "@/components/add-bank-account";
@@ -21,6 +24,25 @@ import { Switch } from "@/components/ui/switch";
 export default function Settings() {
   const queryClient = useQueryClient();
   const { status: organizerStatus } = useOrganizerStatus();
+  const { bankStatus } = useOrganizerBankStatus();
+  const { isProfileComplete } = useOrganizerProfileComplete();
+
+  const { user, setUser } = useAuth();
+  const uploadAvatarMutation = useUploadAvatar();
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    try {
+      const updatedUser = await uploadAvatarMutation.mutateAsync(file);
+      setUser(updatedUser as User);
+      toast.success("Organizer photo updated");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not upload photo");
+    }
+  };
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["settings"],
@@ -131,8 +153,10 @@ export default function Settings() {
   const isVerified = organizerStatus === "verified";
 
   return (
-    <div className="max-w-[1147px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      <AccountReviewBanner status={organizerStatus} />
+    <div className="space-y-6">
+      <AccountReviewBanner status={organizerStatus}
+        bankStatus={bankStatus}
+        isProfileComplete={isProfileComplete} />
 
       <div>
         <p className="text-[16px] font-medium font-space tracking-wide text-[#0F6E56] dark:text-[#4ADE80]">
@@ -173,7 +197,43 @@ export default function Settings() {
           Organization profile
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-border pt-3">
+        <div className="flex items-center gap-4 border-t border-border pt-4 pb-1">
+          <div className="relative h-16 w-16 shrink-0">
+            <UserAvatar
+              avatarUrl={user?.avatarUrl}
+              name={user?.fullname}
+              className="h-16 w-16 text-[20px] font-bold font-grotesk"
+            />
+            <button
+              type="button"
+              onClick={() => avatarInputRef.current?.click()}
+              disabled={uploadAvatarMutation.isPending}
+              title="Change organizer photo"
+              className="absolute bottom-0 right-0 h-6 w-6 rounded-full bg-card border border-border flex items-center justify-center text-foreground hover:bg-accent transition-colors disabled:opacity-60"
+            >
+              {uploadAvatarMutation.isPending ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Camera className="h-3 w-3" />
+              )}
+            </button>
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarFileChange}
+            />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-foreground">Organizer photo</p>
+            <p className="text-xs text-muted-foreground">
+              Shown next to your organization on event pages instead of your initials.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-border pt-3 mt-3">
           <div>
             <Label htmlFor="organizationName" className="text-[16px] text-foreground font-sans">Organization name</Label>
             <Input

@@ -2,12 +2,12 @@ import PageWrapper from "@/components/page-wrapper";
 import { useEventFilters } from "@/hooks/use-event-filters";
 import { useEvents, useCategories } from "@/hooks/use-event";
 import { EventGrid } from "@/components/events/event-grid";
-import { FeaturedEventCard } from "@/components/events/featured-event-class";
+import { FeaturedEventsCarousel } from "@/components/events/featured-event-carousel";
 import { FilterSidebar } from "@/components/events/filters/filter-sidebar";
 import { type EventFilters } from "@/types/event-types";
 import { Button } from "@/components/ui/button";
 import { TopBarFilter } from "@/components/events/filters/filter-topbar";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import { useSavedEvents } from "@/hooks/use-saved-events";
 import { useNavigate, useLocation } from "react-router";
@@ -19,13 +19,21 @@ export default function ExplorePage() {
     useEventFilters();
 
   const { data, isLoading, isFetching, isError, refetch ,loadMore} = useEvents(filters);
-const { categories } = useCategories();
+  const { categories } = useCategories();
   const events = data?.events ?? [];
-  const featured = events.find((e) => e.isPromoted);
-  const rest = events.filter((e) => !e.isPromoted);
+  // Was `events.find(...)` — grabbed only the FIRST promoted event and
+  // silently dropped every other one (from both the featured spot AND the
+  // grid below, since `rest` already excluded all promoted events). Now
+  // every promoted event shows, cycling through the featured carousel.
+  const featured = events.filter((e) => e.isPromoted);
+  // Featured/promoted events used to be excluded from the grid below (only
+  // shown in the carousel), so a promoted event that matched a search or
+  // filter would vanish — the carousel isn't filtered by search, so it
+  // wasn't a substitute. The grid now always shows every event that
+  // matches the current filters, promoted or not; the carousel is just an
+  // extra highlight on top, not the only place a promoted event appears.
+  const rest = events;
   const { savedIds, toggleSave } = useSavedEvents();
-
-
 
   const stateLabel = filters.state || "All Nigeria";
   const monthLabel = new Date().toLocaleString("en-NG", {
@@ -90,9 +98,9 @@ const { categories } = useCategories();
         </div>
 
         <main className="min-w-0 space-y-6">
-          {featured && (
-            <FeaturedEventCard
-              event={featured}
+          {featured.length > 0 && (
+            <FeaturedEventsCarousel
+              events={featured}
               onGetTickets={(slug) => navigate(`/events/${slug}`)}
             />
           )}

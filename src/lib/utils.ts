@@ -75,6 +75,33 @@ export function thisWeekend(hour: number): string {
   return daysFromNow(daysUntilSat, hour);
 }
 
+// The bank-account "resolve" endpoint proxies Paystack's own error message
+// straight through (see resolveBankAccount in organizer.controller.ts) —
+// fine for a real validation error ("Invalid account number"), but
+// Paystack's test-mode rate-limit message ("Test mode daily limit of 3 live
+// bank resolves exceeded...") is internal Paystack/API jargon that shouldn't
+// be shown to an organizer as-is. Swap that one specific case for plain
+// language; every other message (the ones organizers can actually act on)
+// passes through unchanged.
+export function humanizeBankResolveError(message: string): string {
+  if (/test mode/i.test(message) && /daily limit/i.test(message)) {
+    return "We've hit today's test-mode verification limit for live bank codes. Try again tomorrow, use a Paystack test bank code (e.g. 001) for now, or switch Paystack to live mode.";
+  }
+  return message;
+}
+
+// The home page's "featured event" number badge (mobile hero card + desktop
+// stacked carousel) used to show the full `event.no` value straight through
+// — fine while `no` was a short code, but it can be a long backend-assigned
+// number, and showing it in full looked cluttered on a small badge. This
+// always trims to the last 4 characters (like the fallback-to-_id path
+// already did), so the badge is always a short, fixed-width "No 0421" style
+// tag no matter how long the underlying value is.
+export function shortEventNo(event: { no?: string; _id: string }): string {
+  const raw = event.no ?? event._id;
+  return raw.slice(-4).padStart(4, "0").toUpperCase();
+}
+
 export const Format = {
   /**
    * Formats numbers into Nigerian Naira (₦) currency format or specified currency

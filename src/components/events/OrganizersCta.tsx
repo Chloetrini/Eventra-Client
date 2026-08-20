@@ -26,13 +26,13 @@ export const OrganizersCta: React.FC = () => {
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 pt-1 mx-auto">
             <Link
-              to="/organizer"
+              to="/auth/organizer/register"
               className="w-full sm:w-auto px-6 py-3 bg-[#0F6E56] hover:bg-[#0A4F41] text-white font-bold text-sm rounded-xl transition-colors font-geist flex items-center justify-center"
             >
               Start creating events
             </Link>
             <Link
-              to="/login"
+              to="/auth/organizer/login"
               className="w-full sm:w-auto px-6 py-3 bg-transparent border border-[#E8E6E0] dark:border-white/15 md:border-black dark:md:border-white/30 text-#3A3A3A font-semibold text-sm rounded-xl hover:bg-[#1A1523]/5 dark:hover:bg-white/10 transition-colors font-geist flex items-center justify-center gap-2"
             >
               See how it works

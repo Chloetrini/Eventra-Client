@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import bag from '@/assets/bag.png'
 import paystackLogo from '@/assets/paystackLogo.png'
 import { FormBox } from '@/components/ui/form-box'
@@ -15,13 +15,15 @@ import TicketPreview from '@/components/tickets/ticket-preview'
 import { useLocation, useNavigate, Link } from 'react-router'
 import PageWrapper from '@/components/page-wrapper'
 import { toast } from 'react-toastify'
-import { rsvpFreeEvent, initializeCheckout } from '@/lib/tickets-api'
+import { useRsvpFreeEvent, useInitializeCheckout } from '@/hooks/use-ticket-actions'
 import { getExploreUrl } from '@/lib/explore-history'
 
 const Checkout = () => {
     const location = useLocation()
     const navigate = useNavigate()
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    const rsvpMutation = useRsvpFreeEvent()
+    const checkoutMutation = useInitializeCheckout()
+    const isSubmitting = rsvpMutation.isPending || checkoutMutation.isPending
 
     const ticket = location.state as {
         type?: 'free' | 'paid'
@@ -67,13 +69,15 @@ const Checkout = () => {
 
     // FREE FLOW: call rsvpFreeEvent directly, no payment step.
     const handleConfirmRsvp = handleSubmit(async (data) => {
-        setIsSubmitting(true)
         try {
-            const tickets = await rsvpFreeEvent(ticket.eventId, {
-                guests: ticket.guests ?? 1,
-                guestName: `${data.firstName} ${data.lastName}`,
-                guestEmail: data.email,
-                guestPhone: data.phoneNumber,
+            const tickets = await rsvpMutation.mutateAsync({
+                eventId: ticket.eventId,
+                payload: {
+                    guests: ticket.guests ?? 1,
+                    guestName: `${data.firstName} ${data.lastName}`,
+                    guestEmail: data.email,
+                    guestPhone: data.phoneNumber,
+                },
             })
             toast.success('Reservation confirmed')
             navigate('/payment/ticket-confirmation', {
@@ -81,30 +85,29 @@ const Checkout = () => {
             })
         } catch (err) {
             toast.error(err instanceof Error ? err.message : 'Could not complete reservation')
-        } finally {
-            setIsSubmitting(false)
         }
     })
 
     // PAID FLOW: initialize with backend, redirect to Paystack's hosted page.
     const handlePayNow = handleSubmit(async (data) => {
-        setIsSubmitting(true)
         try {
             const items = ticket.ticketDetails.map((t) => ({
                 ticketTypeId: String(t.id),
                 quantity: t.quantity,
             }))
-            const result = await initializeCheckout(ticket.eventId, {
-                items,
-                guestName: `${data.firstName} ${data.lastName}`,
-                guestEmail: data.email,
-                guestPhone: data.phoneNumber,
+            const result = await checkoutMutation.mutateAsync({
+                eventId: ticket.eventId,
+                payload: {
+                    items,
+                    guestName: `${data.firstName} ${data.lastName}`,
+                    guestEmail: data.email,
+                    guestPhone: data.phoneNumber,
+                },
             })
             // Full redirect to Paystack's hosted checkout page.
             window.location.href = result.authorizationUrl
         } catch (err) {
             toast.error(err instanceof Error ? err.message : 'Could not start payment')
-            setIsSubmitting(false)
         }
     })
 

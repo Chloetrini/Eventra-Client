@@ -22,7 +22,8 @@ export const EventMap = ({ location }: { location: EventVenue }) => {
       <LocationMap
         name={location.name}
         address={`${location.address}, ${location.city}${location.state ? `, ${location.state}` : ""}`}
-        className="mt-4"
+        className="mt-4 h-[133px] md:h-[250px] lg:h-[300px] w-full"
+        aspectClassName="aspect-30/11"
         cardClassName="hidden"
       />
       <div className='md:flex items-center mt-2'>

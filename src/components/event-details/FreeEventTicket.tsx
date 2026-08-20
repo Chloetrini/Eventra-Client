@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Check, Mail } from "lucide-react"
 import { useNavigate } from "react-router"
-import { useAuth } from "@/context/auth.context"
-import { useAuthGate } from "@/context/auth.gate"
 
 const MAX_GUESTS_PER_RESERVATION = 4
 
@@ -17,8 +15,6 @@ export const FreeEventTicket = ({
   slug?: string
 }) => {
   const [guests, setGuests] = useState(1)
-  const { user } = useAuth()
-  const { requireAuth } = useAuthGate()
   const navigate = useNavigate()
 
   const capacity = event.capacity ?? null
@@ -34,11 +30,10 @@ export const FreeEventTicket = ({
   const decrement = () => setGuests((g) => Math.max(1, g - 1))
 
   const handleReserve = () => {
-    if (!user) {
-      const allowed = requireAuth("buy-ticket");
-      if (!allowed) return; // modal is open
-    }
-
+    // Reserving a spot (like buying a paid ticket) is never gated behind
+    // sign-in — checkout collects the guest's name/email/phone itself, so
+    // there's nothing an account adds here. Only saving an event or
+    // viewing "my tickets" prompts for one.
     navigate("/payment/checkout", {
       state: {
         type: "free",

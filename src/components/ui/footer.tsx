@@ -86,7 +86,7 @@ export default function Footer() {
 
     return (
         <footer className="relative overflow-hidden bg-[#E4F1EB] dark:bg-[#0F1F1A]">
-            <PageWrapper className="p-[20px]">
+            <PageWrapper className="px-[20px] pt-[20px]">
             <div className=" w-full ">
                 {/* Newsletter CTA */}
                 <div className="flex flex-col gap-6 py-14 md:flex-row md:items-center md:justify-between md:gap-10">

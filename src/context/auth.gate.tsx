@@ -4,12 +4,15 @@ import { useAuth } from "@/context/auth.context";
 import { authPath } from "@/lib/auth-path";
 import { AuthGateModal } from "@/components/dialogs/auth-gate-modal";
 
-type GateAction = "save-event" | "my-tickets" | "saved-events" | "buy-ticket";
+// "buy-ticket" used to be a gated action too — reserving a free spot (or
+// buying a paid ticket) would stop and show the sign-in / continue-as-guest
+// modal. That's not wanted: buying a ticket should never be gated — only
+// saving an event or viewing "my tickets" / "saved events" should ever
+// prompt for an account.
+type GateAction = "save-event" | "my-tickets" | "saved-events";
 
 type AuthGateContextType = {
   requireAuth: (action: GateAction) => boolean;
-  isGuest: boolean;
-  clearGuest: () => void;
 };
 
 const AuthGateContext = createContext<AuthGateContextType | undefined>(undefined);
@@ -20,13 +23,14 @@ export function AuthGateProvider({ children }: { children: ReactNode }) {
   const location = useLocation();
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [currentAction, setCurrentAction] = useState<GateAction | null>(null);
-  const [isGuest, setIsGuest] = useState(false);
 
-  function requireAuth(action: GateAction): boolean {
+  // `action` isn't branched on anymore now that "buy-ticket" is gone (every
+  // remaining action does the same thing), but it stays in the signature
+  // so call sites keep saying *why* they're gating — useful context at each
+  // call site, and room to differentiate again later without another
+  // call-site-wide refactor.
+  function requireAuth(_action: GateAction): boolean {
     if (user) return true;
-    if (action === "buy-ticket" && isGuest) return true;
-    setCurrentAction(action);
     setModalOpen(true);
     return false;
   }
@@ -41,21 +45,13 @@ export function AuthGateProvider({ children }: { children: ReactNode }) {
 
   function handleContinueAsGuest() {
     setModalOpen(false);
-    if (currentAction === "buy-ticket") {
-      setIsGuest(true);
-    } else {
-      navigate(-1);
-    }
-  }
-
-  function clearGuest() {
-    setIsGuest(false);
+    navigate(-1);
   }
 
   const allowGuest = true;
 
   return (
-    <AuthGateContext.Provider value={{ requireAuth, isGuest, clearGuest }}>
+    <AuthGateContext.Provider value={{ requireAuth }}>
       {children}
       <AuthGateModal
         open={modalOpen}

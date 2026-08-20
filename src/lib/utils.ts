@@ -90,6 +90,18 @@ export function humanizeBankResolveError(message: string): string {
   return message;
 }
 
+// The home page's "featured event" number badge (mobile hero card + desktop
+// stacked carousel) used to show the full `event.no` value straight through
+// — fine while `no` was a short code, but it can be a long backend-assigned
+// number, and showing it in full looked cluttered on a small badge. This
+// always trims to the last 4 characters (like the fallback-to-_id path
+// already did), so the badge is always a short, fixed-width "No 0421" style
+// tag no matter how long the underlying value is.
+export function shortEventNo(event: { no?: string; _id: string }): string {
+  const raw = event.no ?? event._id;
+  return raw.slice(-4).padStart(4, "0").toUpperCase();
+}
+
 export const Format = {
   /**
    * Formats numbers into Nigerian Naira (₦) currency format or specified currency

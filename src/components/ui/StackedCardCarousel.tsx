@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { UI_ASSETS } from "@/lib/assets";
-import { Format } from "@/lib/utils";
+import { Format, shortEventNo } from "@/lib/utils";
 import { Link } from "react-router";
 import type { Event } from "@/types/event-types";
 
@@ -49,7 +49,7 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
               transition: "all 600ms cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           >
-            <CardContent event={event} index={idx} />
+            <CardContent event={event} />
           </div>
         );
       })}
@@ -65,7 +65,7 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
           exit={{ x: "-100%", opacity: 0 }}
           transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
         >
-          <CardContent event={DISPLAY_EVENTS[activeIndex]} index={activeIndex} />
+          <CardContent event={DISPLAY_EVENTS[activeIndex]} />
         </motion.div>
       </AnimatePresence>
     </div>
@@ -73,10 +73,15 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
 };
 
 // Extracted to avoid repeating JSX
-const CardContent: React.FC<{ event: Event; index: number }> = ({
-  event,
-  index,
-}) => (
+//
+// The number here used to be `index + 1` — just this card's position in the
+// 3-card stack (always "0001", "0002", "0003" no matter which events were
+// showing). It's now `shortEventNo(event)` — the same helper the mobile
+// hero card uses — which trims the event's real number (or its Mongo _id
+// as a fallback) down to the last 4 characters. So mobile and desktop show
+// the exact same short "No 0421" style tag for the same event, instead of
+// desktop's old fake position count OR a long untrimmed id.
+const CardContent: React.FC<{ event: Event }> = ({ event }) => (
   <>
     <div className="relative h-45 overflow-hidden">
       <img
@@ -89,7 +94,7 @@ const CardContent: React.FC<{ event: Event; index: number }> = ({
         Featured
       </span>
       <span className="absolute top-3 right-3 text-white font-bold text-[12px] font-space tracking-widest">
-        № {String(index + 1).padStart(4, "0")}
+        № {shortEventNo(event)}
       </span>
     </div>
 

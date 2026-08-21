@@ -1,6 +1,6 @@
 import { useAuth } from "@/context/auth.context";
 import { EventCard } from "./event-card";
-import { EventCardSkeleton } from "../skeletons/event-card-skeleton";
+import { EventCardSkeleton } from "./event-card-skeleton";
 import { cn } from "@/lib/utils";
 import type { Event } from "@/types/event-types";
 

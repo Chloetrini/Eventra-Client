@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { EventCardSkeleton } from "@/components/skeletons/event-card-skeleton";
+import { EventCardSkeleton } from "@/components/events/event-card-skeleton";
 
 /** Replaces the "N EVENTS THIS WEEK" eyebrow line while the home page's
  * event query is loading. */

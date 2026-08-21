@@ -1,5 +1,5 @@
-import type { Attendee, CheckInResponse, EventCheckInData, CheckInStats } from '@/types/check-in';
-import { api } from '@/lib/api';
+import type { CheckInResponse, EventCheckInData, } from '@/types/check-in';
+
 
 // ─── API Endpoints ──────────────────────────────────────────────
 
@@ -198,8 +198,8 @@ export const checkInAttendee = async (
  * POST /api/events/:eventId/check-in/manual
  */
 export const manualCheckIn = async (
-  eventId: string,
-  attendeeId: string
+  // eventId: string,
+  // attendeeId: string
 ): Promise<CheckInResponse> => {
   // ─── UNCOMMENT FOR REAL API ──────────────────────────────────
   // const response = await api.post(`/events/${eventId}/check-in/manual`, {

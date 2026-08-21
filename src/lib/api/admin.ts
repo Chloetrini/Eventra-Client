@@ -15,7 +15,7 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
 }
 
 export async function getPlatformRevenue(
-  range: RevenueRange
+  // range: RevenueRange
 ): Promise<PlatformRevenueData> {
   // const { data } = await apiClient.get("/admin/overview/platform-revenue", {
   //   params: { range },

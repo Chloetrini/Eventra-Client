@@ -10,6 +10,7 @@ import Onboardinglayout from "./onboarding/layout";
 import CreateEventLayout from "./dashboard/create-event/layout";
 import DashBoardLayout from "./dashboard/layout";
 import { RequireOrganizer } from "@/components/require-organizer";
+import AdminLayout from "./admin/layout";
 
 const routes = [
     {
@@ -467,29 +468,31 @@ const routes = [
 
             // ─── ADMIN ROUTE ────────────────────────────────────────────
             {
-                path: "admin",
-                lazy: async () => {
-                    const { default: Component } = await import("@/routes/admin/layout");
-                    return { Component };
-                },
+              
                 children: [
                     {
-                        index: true,
-                        element: <Navigate to="overview" replace />,
-                    },
-                    {
-                        path: "overview",
-                        lazy: async () => {
-                            const { default: Component } =
-                                await import("@/routes/admin/overview/index");
-                            return { Component };
-                        },
-                        handle: {
-                            seo: {
-                                title: "Admin Overview",
-                                description: "Admin dashboard overview of platform health.",
+                         path: "admin",
+                        Component: AdminLayout,
+                        children: [
+                            {
+                                index: true,
+                                element: <Navigate to="overview" replace />,
                             },
-                        },
+                            {
+                                path: "overview",
+                                handle: {
+                                    seo: {
+                                        title: "admin Dashboard",
+                                        description: "Manage your organizers and attendees.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/admin/overview/index");
+                                    return { Component };
+                                },
+                            }
+                        ]
                     },
                     // TODO: Add /admin/approvals, /admin/refunds, /admin/reports, etc. here later
                 ],
@@ -497,7 +500,7 @@ const routes = [
             // ─── END ADMIN ROUTE ────────────────────────────────────────
 
             {
-                // Component: RequireOrganizer,
+                Component: RequireOrganizer,
                 children: [
                     {
                         path: "dashboard",

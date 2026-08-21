@@ -464,8 +464,40 @@ const routes = [
                 ],
 
             },
+
+            // ─── ADMIN ROUTE ────────────────────────────────────────────
             {
-                Component: RequireOrganizer,
+                path: "admin",
+                lazy: async () => {
+                    const { default: Component } = await import("@/routes/admin/layout");
+                    return { Component };
+                },
+                children: [
+                    {
+                        index: true,
+                        element: <Navigate to="overview" replace />,
+                    },
+                    {
+                        path: "overview",
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/admin/overview/index");
+                            return { Component };
+                        },
+                        handle: {
+                            seo: {
+                                title: "Admin Overview",
+                                description: "Admin dashboard overview of platform health.",
+                            },
+                        },
+                    },
+                    // TODO: Add /admin/approvals, /admin/refunds, /admin/reports, etc. here later
+                ],
+            },
+            // ─── END ADMIN ROUTE ────────────────────────────────────────
+
+            {
+                // Component: RequireOrganizer,
                 children: [
                     {
                         path: "dashboard",

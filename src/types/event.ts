@@ -9,5 +9,5 @@ export interface Event {
     sold: number | null;
     capacity: number | null;
     revenue: number | null;
-    status: "Live" | "Draft" | "Sold out" | "Past" | "Rejected";
+    status: "Live" | "Draft" | "Pending" | "Sold out" | "Past" | "Rejected" | "Cancelled" | "Postponed";
 }

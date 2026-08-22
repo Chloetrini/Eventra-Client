@@ -75,21 +75,21 @@ export default function ResetPassword() {
     <div className="flex flex-col">
       <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
         <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
-        <span className="text-[22.8px] font-extrabold text-[#1A1523] tracking-[-0.02em]">
+        <span className="text-[22.8px] font-extrabold text-foreground tracking-[-0.02em]">
           Eventra
         </span>
         {isOrganizer && (
-          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
+          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] dark:bg-[#0F6E56]/20 dark:text-[#4ADE80] w-[118px] text-center text-[15px]">
             Organizer
           </span>
         )}
       </Link>
 
-      <h1 className="text-[34px] font-bold leading-[40px] tracking-[-0.02em] text-[#000000] mb-3">
+      <h1 className="text-[34px] font-bold leading-[40px] tracking-[-0.02em] text-foreground mb-3">
         Set a new password
       </h1>
 
-      <p className="text-[17px] leading-6 text-[#4A4451] mb-10">
+      <p className="text-[17px] leading-6 text-muted-foreground mb-10">
         Choose a strong password you haven't used before. Make it at
         least 8 characters.
       </p>
@@ -98,7 +98,7 @@ export default function ResetPassword() {
         <div className="space-y-2">
           <Label
             htmlFor="password"
-            className="text-[16px] font-medium text-[#232323]"
+            className="text-[16px] font-medium text-foreground"
           >
             New password
           </Label>
@@ -108,14 +108,14 @@ export default function ResetPassword() {
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="Enter a new password"
-              className="h-[52px] w-full placeholder:text-[#98A2B3] pr-12"
+              className="h-[52px] w-full placeholder:text-muted-foreground pr-12"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
             />
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-black"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
@@ -130,7 +130,7 @@ export default function ResetPassword() {
         <div className="space-y-2">
           <Label
             htmlFor="confirmPassword"
-            className="text-[16px] font-medium text-[#232323]"
+            className="text-[16px] font-medium text-foreground"
           >
             Confirm new password
           </Label>
@@ -140,14 +140,14 @@ export default function ResetPassword() {
               id="confirmPassword"
               type={showConfirm ? "text" : "password"}
               placeholder="Re-enter new password"
-              className="h-[52px] w-full placeholder:text-[#98A2B3] pr-12"
+              className="h-[52px] w-full placeholder:text-muted-foreground pr-12"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
             <button
               type="button"
               onClick={() => setShowConfirm((prev) => !prev)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-black"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"
               aria-label={showConfirm ? "Hide password" : "Show password"}
             >
               {showConfirm ? (
@@ -172,7 +172,7 @@ export default function ResetPassword() {
 
       <Link
         to={authPath("login", isOrganizer)}
-        className="mt-6 text-center text-[16px] text-[#0F6E56] font-semibold hover:underline leading-[26px]"
+        className="mt-6 text-center text-[16px] text-[#0F6E56] dark:text-[#4ADE80] font-semibold hover:underline leading-[26px]"
       >
         Back to Sign in
       </Link>

@@ -1,11 +1,12 @@
 import { useNavigate, useSearchParams } from "react-router";
 import { TicketCard } from "@/components/tickets/ticket-card";
 import { cn } from "@/lib/utils";
-import PageWrapper from "@/components/pageWrapper";
+import PageWrapper from "@/components/page-wrapper";
 import { useEffect } from "react";
 import { useAuth } from "@/context/auth.context";
 import { useAuthGate } from "@/context/auth.gate";
 import { useMyTickets } from "@/hooks/use-event";
+import { TicketsSkeleton } from "@/components/skeletons/tickets-skeleton";
 
 const TABS = [
     { value: "upcoming", label: "Upcoming" },
@@ -24,9 +25,16 @@ function toDisplayTicket(t: any) {
             ? `${t.event.venue.name}, ${t.event.venue.city}`
             : "",
         referenceCode: t.code,
-        orderID: t._id,
+        // Friendly backend-generated ticket id (e.g. "TKT-A1B2C3D4") — never
+        // the raw Mongo _id, which isn't meant to be shown to attendees.
+        orderID: t.ticketId ?? t._id,
         holderName: t.attendeeName,
-        ticketDetails: [{ type: t.type === "free" ? "Free" : "General", unitPrice: t.price ?? 0, quantity: 1 }],
+        // Was "General" for every paid ticket, discarding the real tier
+        // name — the backend already sends it (`ticketType: { name }`,
+        // same field the organizer's attendees list reads), it just wasn't
+        // being picked up here. Falls back to "Paid" only if a paid ticket
+        // somehow has no tier name.
+        ticketDetails: [{ type: t.type === "free" ? "Free" : (t.ticketType?.name ?? "Paid"), unitPrice: t.price ?? 0, quantity: 1 }],
         qrImageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t.code)}`,
         refundPolicy: {
     type: (t.type === "free" ? "free-cancel" : "refundable") as "free-cancel" | "refundable" | "non-refundable",
@@ -82,11 +90,11 @@ export default function Tickets() {
             <header className="flex items-center   mt-5">
                 <div className="mb-5 flex items-center gap-2">
                     <span className="h-[1px] w-[12px] bg-[#F5A524]" />
-                    <span className="text-[10px] md:text-[12px] font-[400] leading-[16px] text-[#0F6E56] tracking-wide uppercase font-sans ">Your Account</span>
+                    <span className="text-[10px] md:text-[12px] font-[400] leading-[16px] text-[#0F6E56] dark:text-[#4ADE80] tracking-wide uppercase font-sans ">Your Account</span>
                 </div>
             </header>
             <div>
-                <h1 className="text-2xl min-[400px]:text-4xl lg:text-[54px] font-bold text-[#1A1523] lg:font-[700] mb-6 font-grotesk">
+                <h1 className="text-2xl min-[400px]:text-4xl lg:text-[54px] font-bold text-foreground lg:font-[700] mb-6 font-grotesk">
                     my tickets
                 </h1>
             </div>
@@ -97,10 +105,10 @@ export default function Tickets() {
                         key={tab.value}
                         onClick={() => handleTabChange(tab.value)}
                         className={cn(
-                            "text-sm min-[400px]:text-[16px] font-medium border-b-2 text-[#1A1523] -mb-px transition-colors",
+                            "text-sm min-[400px]:text-[16px] font-medium border-b-2 text-foreground -mb-px transition-colors",
                             activeTab === tab.value
-                                ? "border-[#4A4451] text-emerald-950"
-                                : "border-transparent text-[#4A4451] hover:text-black",
+                                ? "border-foreground text-foreground"
+                                : "border-transparent text-muted-foreground hover:text-foreground",
                         )}
                     >
                         {tab.label}
@@ -110,7 +118,7 @@ export default function Tickets() {
 
             <div className="space-y-6">
                 {ticketsLoading ? (
-                    <p className="text-sm text-center py-12 text-muted-foreground">Loading your tickets…</p>
+                    <TicketsSkeleton />
                 ) : filteredTickets.length > 0 ? (
                     filteredTickets.map((ticket) => (
                         <TicketCard key={ticket._id} ticket={ticket} showActions />

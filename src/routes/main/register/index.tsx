@@ -25,17 +25,12 @@ export default function Register() {
     mutationFn: (data: registerSchemaType) => {
       return api.post('/auth/register', data)
     },
-    onSuccess: res => {
-      console.log("suss", res)
-    },
     onError: err => {
-      console.log("err", err)
       toast.error(err.message)
     },
   })
 
   const onFormSubmit = (data: registerSchemaType) => {
-    console.log(data)
     mutation.mutate(data)
   }
 

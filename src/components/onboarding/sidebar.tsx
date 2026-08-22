@@ -37,12 +37,12 @@ const OnboardingSidebar = () => {
   return (
     location.pathname !== "/onboarding/success" && (
     <div className="hidden lg:block">
-      <div className="w-98.75 h-[calc(100vh-72px)] border-r-2 border-[#FBFAF6] pt-15 flex flex-col items-center justify-between">
+      <div className="w-98.75 h-[calc(100vh-72px)] border-r-2 border-border pt-15 flex flex-col items-center justify-between">
         <div className="flex flex-col gap-10">
           {stepsFlow.map((flow, id) => (
             <div key={flow.path}>
               <button
-                className={`flex flex-col items-start justify-center text-start w-[254px] h-[87px] rounded-[10px] p-5 ${flow.path === location.pathname ? 'bg-[#E4F1EB]' : ''
+                className={`flex flex-col items-start justify-center text-start w-[254px] h-[87px] rounded-[10px] p-5 ${flow.path === location.pathname ? 'bg-[#E4F1EB] dark:bg-[#0F6E56]/15' : ''
                   }`}
                 onClick={() => handleClick(flow.path)}
               >
@@ -50,7 +50,7 @@ const OnboardingSidebar = () => {
                   <div
                     className={`w-[40px] h-[40px] rounded-full flex items-center justify-center ${flow.path === location.pathname
                         ? 'text-white bg-[#0F6E56]'
-                        : 'bg-white border-2'
+                        : 'bg-white dark:bg-card border-2'
                       }`}
                   >
                     <p className="font-semibold">{id + 1}</p>
@@ -58,7 +58,7 @@ const OnboardingSidebar = () => {
 
                   <div>
                     <p className="font-medium">{flow.step}</p>
-                    <p className="text-sm text-[#4A4451]">
+                    <p className="text-sm text-muted-foreground">
                       {flow.description}
                     </p>
                   </div>

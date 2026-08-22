@@ -3,6 +3,16 @@ import { TicketCard } from "@/components/tickets/ticket-card"
 import { useLocation, useNavigate } from "react-router"
 import PaymentBtn from "@/components/ui/pay-method-btn"
 import calendar from "@/assets/calendar.png";
+import { downloadEventIcs } from "@/lib/calendar";
+import PageWrapper from "@/components/page-wrapper";
+
+// Real tier name when we have one (e.g. "VIP"), else "Free" for a free
+// RSVP, else a plain "Paid" fallback for the rare case a paid ticket's
+// tier name didn't come through.
+function ticketLabel(t: { type: 'free' | 'paid'; ticketType?: { name: string } | null }) {
+    if (t.type === "free") return "Free";
+    return t.ticketType?.name ?? "Paid";
+}
 
 const TicketConfirmation = () => {
     const location = useLocation()
@@ -13,12 +23,18 @@ const TicketConfirmation = () => {
     const state = location.state as {
         tickets?: Array<{
             _id: string;
+            // Friendly backend-generated ticket id (e.g. "TKT-A1B2C3D4") — the
+            // one meant to be shown to attendees, never the raw Mongo _id.
+            ticketId: string;
             code: string;
             attendeeName: string;
             attendeeEmail: string;
             type: 'free' | 'paid';
             price: number;
             event?: string;
+            // Real tier name the organizer set (e.g. "VIP", "Regular",
+            // "Table") — null/absent for free RSVPs, which have no tier.
+            ticketType?: { name: string } | null;
         }>;
         event?: {
             eventId: string
@@ -39,10 +55,10 @@ const TicketConfirmation = () => {
     if (!state || tickets.length === 0 || !eventInfo) {
         return (
             <div className='px-4 py-20 text-center'>
-                <p className='mb-4 text-[#6E6577]'>No ticket to show.</p>
+                <p className='mb-4 text-muted-foreground'>No ticket to show.</p>
                 <button
                     onClick={() => navigate('/explore')}
-                    className='text-[#6e6e6e] font-semibold underline'
+                    className='text-muted-foreground font-semibold underline'
                 >
                     Browse events
                 </button>
@@ -54,14 +70,22 @@ const TicketConfirmation = () => {
     const admitsCount = tickets.length
 
     return (
-        <div className='flex flex-col justify-center items-center mx-auto container px-20 pt-10 pb-2 gap-10'>
+        <PageWrapper className="p-[20px]">
             <div className='flex justify-center items-center w-full'>
                 <ConfirmatoryMessage
                     _id="1"
                     eventName={eventInfo.eventName}
-                    orderID={tickets[0]._id}
+                    orderID={tickets[0].ticketId ?? tickets[0]._id}
                     eventDateTime={eventInfo.eventDateTime}
-                    ticketDetails={[{ type: "Free", unitPrice: 0, quantity: admitsCount }]}
+                    ticketDetails={[{
+                        // Was hardcoded to "Free"/0 regardless of the actual
+                        // purchase — every confirmation screen showed "Free"
+                        // and ₦0 even for paid tickets. Use the real type/price
+                        // that's already sitting in `tickets`, just unused.
+                        type: ticketLabel(tickets[0]),
+                        unitPrice: tickets.reduce((sum, t) => sum + (t.price ?? 0), 0),
+                        quantity: admitsCount,
+                    }]}
                     slug={eventInfo.slug}
                 />
             </div>
@@ -77,14 +101,21 @@ const TicketConfirmation = () => {
                             eventEntrance: "Main entrance",
                             eventVenue: eventInfo.eventVenue,
                             referenceCode: t.code,
-                            orderID: t._id,
+                            orderID: t.ticketId ?? t._id,
                             holderName: t.attendeeName,
-                            ticketDetails: [{ type: "Free", unitPrice: 0, quantity: 1 }],
+                            // Same bug as above — was always "Free"/0 no matter
+                            // what was actually purchased.
+                            ticketDetails: [{ type: ticketLabel(t), unitPrice: t.price ?? 0, quantity: 1 }],
                             qrImageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t.code)}`,
-                            refundPolicy: {
-                                type: "non-refundable",
-                                note: "Free reservations can be cancelled from My Tickets.",
-                            },
+                            refundPolicy: t.type === "free"
+                                ? {
+                                    type: "free-cancel",
+                                    note: "Free event · cancel anytime to release your spot.",
+                                }
+                                : {
+                                    type: "refundable",
+                                    note: "Refunds allowed until 3 days before the event.",
+                                },
                         }}
                     />
                 ))}
@@ -98,6 +129,13 @@ const TicketConfirmation = () => {
                         text={"Add to calender"}
                         classname="h-[40px] flex-1 sm:w-40 text-xs min-[400px]:text-sm md:w-[343px]"
                         editArrow={"w-[18px] h-[18px]"}
+                        onClick={() =>
+                            downloadEventIcs({
+                                title: eventInfo.eventName,
+                                location: eventInfo.eventVenue,
+                                start: eventInfo.eventDateTime,
+                            })
+                        }
                     />
                     <PaymentBtn
                         text={"View my tickets"}
@@ -107,7 +145,7 @@ const TicketConfirmation = () => {
                     />
                 </div>
             </div>
-        </div>
+        </PageWrapper>
     )
 }
 

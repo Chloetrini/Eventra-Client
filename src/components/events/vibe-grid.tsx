@@ -2,6 +2,7 @@ import React from "react";
 import { useCategories } from "@/hooks/use-event";
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
+import { VibeGridSkeleton } from "@/components/skeletons/vibe-grid-skeleton";
 
 // Fallback images for categories, keyed by category name.
 // Extend this map as more categories get their own art, or fall back to a generic one.
@@ -27,8 +28,12 @@ export const VibeGrid: React.FC = () => {
   // advertise empty categories with 0 events.
   const displayCategories = categories.filter((c) => c.eventCount > 0);
 
-  if (isLoading || displayCategories.length === 0) {
-    return null; // or a skeleton, if you want a loading state here
+  if (isLoading) {
+    return <VibeGridSkeleton />;
+  }
+
+  if (displayCategories.length === 0) {
+    return null;
   }
 
   return (
@@ -37,11 +42,11 @@ export const VibeGrid: React.FC = () => {
         <div className="">
           <div className="flex items-center gap-1.25">
             <div className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
-            <h6 className="font-geist font-regular tracking-[1%] lg:tracking-[16%] uppercase text-[#0F6E56] text-xs">
+            <h6 className="font-geist font-regular tracking-[1%] lg:tracking-[16%] uppercase text-[#0F6E56] dark:text-[#4ADE80] text-xs">
               SOMETHING FOR EVERYONE
             </h6>
           </div>
-          <h2 className="font-geist font-bold text-2xl tracking-[-2%] text-[#1A1523] md:text-[34px]">
+          <h2 className="font-geist font-bold text-2xl tracking-[-2%] text-foreground md:text-[34px]">
             Browse by vibe
           </h2>
         </div>
@@ -49,7 +54,7 @@ export const VibeGrid: React.FC = () => {
           to="/explore"
           className="flex flex-row items-center gap-1 hover:bg-[#0F6E56]/10 rounded-2xl px-2.5 py-1.25 transition-colors duration-300 cursor-pointer"
         >
-          <h5 className="font-geist font-regular text-[#0F6E56]">
+          <h5 className="font-geist font-regular text-[#0F6E56] dark:text-[#4ADE80]">
             All Categories
           </h5>
           <span>

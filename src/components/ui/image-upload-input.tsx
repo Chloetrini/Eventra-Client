@@ -1,8 +1,6 @@
-
 import { Controller, type Control, type FieldError as FieldErrorType, type FieldValues, type Path } from "react-hook-form"
-import { useState } from "react"
 import ImageUploader from "./image-uploader"
-import { uploadEventCoverImage } from "@/lib/upload-api"
+import { useUploadEventCoverImage, useUploadLineupPhoto } from "@/hooks/use-upload"
 import { toast } from "react-toastify"
 
 type ImageUploadInputProps<T extends FieldValues> = {
@@ -19,6 +17,7 @@ type ImageUploadInputProps<T extends FieldValues> = {
   disabled?: boolean
   onFileSelected?: (file: File | null) => void
   onUploadStatusChange?: (uploading: boolean) => void
+  variant?: "default" | "avatar"
 }
 
 export function ImageUploadInput<T extends FieldValues>({
@@ -34,8 +33,11 @@ export function ImageUploadInput<T extends FieldValues>({
   errors,
   onFileSelected,
   onUploadStatusChange,
+  variant,
 }: ImageUploadInputProps<T>) {
-  const [isUploading, setIsUploading] = useState(false)
+  const uploadCoverMutation = useUploadEventCoverImage()
+  const uploadLineupMutation = useUploadLineupPhoto()
+  const isUploading = uploadCoverMutation.isPending || uploadLineupMutation.isPending
 
   return (
     <Controller
@@ -52,6 +54,8 @@ export function ImageUploadInput<T extends FieldValues>({
           placeholder={placeholder}
           errors={errors}
           isUploading={isUploading}
+          variant={variant}
+          value={field.value}
           onFileChange={async (file) => {
             if (!file) {
               field.onChange("")
@@ -60,17 +64,24 @@ export function ImageUploadInput<T extends FieldValues>({
             }
 
             onFileSelected?.(file)
-            setIsUploading(true)
             onUploadStatusChange?.(true)
 
             try {
-              const url = await uploadEventCoverImage(file)
-              field.onChange(url)
+              if (variant === "default") {
+                const url = await uploadCoverMutation.mutateAsync(file)
+                field.onChange(url)
+              } else {
+                const url = await uploadLineupMutation.mutateAsync(file)
+                field.onChange(url)
+              }
             } catch (err) {
               field.onChange("")
-              toast.error("Image upload failed. Please try again.")
+              // Was always the same generic string, even when we had a real
+              // reason (file too large, wrong type, session expired). Both
+              // uploadEventCoverImage/uploadLineupPhoto now throw a real
+              // Error with an actual message, so surface it.
+              toast.error(err instanceof Error ? err.message : "Image upload failed. Please try again.")
             } finally {
-              setIsUploading(false)
               onUploadStatusChange?.(false)
             }
           }}

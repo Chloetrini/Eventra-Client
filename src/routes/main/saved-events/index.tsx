@@ -1,4 +1,4 @@
-import PageWrapper from "@/components/pageWrapper";
+import PageWrapper from "@/components/page-wrapper";
 import { EventGrid } from "@/components/events/event-grid"; // adjust path if different
 import { useEvents } from "@/hooks/use-event";
 import { useSavedEvents } from "@/hooks/use-saved-events";
@@ -33,11 +33,11 @@ export default function SavedEvent() {
             <header className="flex items-center   mt-5">
                 <div className="mb-5 flex items-center gap-2">
                     <span className="h-0.5 w-6 bg-[#F5A524]" />
-                    <span className="text-[10px] min-[400px]:text-[12px] font-[400] leading-[16px] text-[#0F6E56] tracking-wide uppercase font-sans ">Your Events</span>
+                    <span className="text-[10px] min-[400px]:text-[12px] font-[400] leading-[16px] text-[#0F6E56] dark:text-[#4ADE80] tracking-wide uppercase font-sans ">Your Events</span>
                 </div>
             </header>
             <div>
-                <h1 className="text-2xl min-[400px]:text-4xl lg:text-[54px] font-bold text-[#1A1523] lg:font-[700] mb-6">
+                <h1 className="text-2xl min-[400px]:text-4xl lg:text-[54px] font-bold text-foreground lg:font-[700] mb-6">
                     Saved events
                 </h1>
             </div>

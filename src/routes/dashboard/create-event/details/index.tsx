@@ -1,7 +1,7 @@
 import { useCreateEventStep } from '@/components/dashboard-create-event/create-event-sidebar'
 import DetailsForm from '@/components/dashboard-create-event/details-form'
 import PageSwitcher from '@/components/onboarding/page-switcher'
-import PageWrapper from '@/components/pageWrapper'
+import PageWrapper from '@/components/page-wrapper'
 import { DETAILS_FIELDS, type EventFormValues } from '@/lib/schema'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { useNavigate } from 'react-router'
@@ -14,9 +14,9 @@ const Details = () => {
 
   const handleContinue = async () => {
     const isValid = await trigger([...DETAILS_FIELDS])
-    if (isValid) navigate("/dashboard/create-event/review")
-
-      
+    if (isValid) {
+      navigate("/dashboard/create-event/review")
+    }
   }
 
   const handleBack = () => {
@@ -30,9 +30,9 @@ const Details = () => {
   return (
     <PageWrapper className='pl-[16px] pr-[34px]'>
       <div>
-        <p className='font-space text-[13px] text-[#0F6E56]'>STEP {currentStep} OF {totalSteps}</p>
+        <p className='font-space text-[13px] text-[#0F6E56] dark:text-[#4ADE80]'>STEP {currentStep} OF {totalSteps}</p>
         <h1 className='text-[28px] font-bold font-grotesk'>Optional Details</h1>
-        <p className='font-medium text-[14px] text-[#4A4451]'>Add only what you need. These sections appear on the event page only when filled.</p>
+        <p className='font-medium text-[14px] text-muted-foreground'>Add only what you need. These sections appear on the event page only when filled.</p>
       </div>
 
       <div className='mt-6 flex flex-col gap-7'>

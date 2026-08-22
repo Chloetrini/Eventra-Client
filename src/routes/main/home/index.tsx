@@ -7,9 +7,8 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import gpsUrl from "@/assets/gps.svg";
-import downUrl from "@/assets/down.svg";
 import { UI_ASSETS } from "@/lib/assets";
-import PageWrapper from "@/components/pageWrapper";
+import PageWrapper from "@/components/page-wrapper";
 import { VibeGrid } from "@/components/events/vibe-grid";
 import { FeaturedEvents } from "@/components/events/featured-events";
 import { CtaBanner } from "@/components/ui/ctaBanner";
@@ -23,9 +22,14 @@ import {
 } from "@/lib/home-constants";
 import { fetchEvents } from "@/lib/events-api";
 import { DEFAULT_FILTERS } from "@/types/event-types";
-import { Format } from "@/lib/utils";
+import { Format, shortEventNo } from "@/lib/utils";
 import HowItWorks from "@/components/events/HowItWorks";
 import { OrganizersCta } from "@/components/events/OrganizersCta";
+import {
+  HomeEventCountSkeleton,
+  HomeHeroCardSkeleton,
+  FeaturedEventsSkeleton,
+} from "@/components/skeletons/home-skeleton";
 
 const Home: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -41,7 +45,7 @@ const Home: React.FC = () => {
   };
 
   // Events come through the same fetch as Explore — one switch to the backend later
-  const { data: eventsData } = useQuery({
+  const { data: eventsData, isLoading: eventsLoading } = useQuery({
     queryKey: ["home-events"],
     queryFn: () => fetchEvents(DEFAULT_FILTERS),
   });
@@ -69,9 +73,13 @@ const Home: React.FC = () => {
               <div className="lg:col-span-7 space-y-6">
                 <div className="flex flex-row items-center gap-1">
                   <div className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
-                  <span className="inline-block text-[#FCD98A] text-[12px] uppercase tracking-[0.08em] font-regular font-space">
-                    214 EVENTS THIS WEEK . LAGOS
-                  </span>
+                  {eventsLoading ? (
+                    <HomeEventCountSkeleton />
+                  ) : (
+                    <span className="inline-block text-[#FCD98A] text-[12px] uppercase tracking-[0.08em] font-regular font-space">
+                      {eventsData?.total ?? 0} EVENTS THIS WEEK . LAGOS
+                    </span>
+                  )}
                 </div>
 
                 <h1 className="text-[40px] sm:text-[54px] lg:text-[64px] font-bold md:font-extrabold tracking-[-0.03em] leading-none font-geist md:font-grotesk">
@@ -85,28 +93,28 @@ const Home: React.FC = () => {
                 </p>
 
                 {/* Search Bar */}
-                <div className="bg-white shadow-lg rounded-xl overflow-hidden">
+                <div className="bg-card shadow-lg rounded-xl overflow-hidden">
                   {/* Mobile */}
                   <div className="lg:hidden">
                     <div className="flex items-center gap-2 px-4 py-3">
-                      <Search className="w-4 h-4 text-[#3A3A3A] shrink-0 rotate-90" />
+                      <Search className="w-4 h-4 text-muted-foreground shrink-0 rotate-90" />
                       <input
                         type="text"
                         value={heroSearch}
                         onChange={(e) => setHeroSearch(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleHeroSearch()}
                         placeholder="Search, events, artists and venues"
-                        className="bg-transparent border-none text-[#1A1523] placeholder-[#4A4451]/60 text-sm focus:outline-none w-full font-geist"
+                        className="bg-transparent border-none text-foreground placeholder-muted-foreground text-sm focus:outline-none w-full font-geist"
                       />
                     </div>
 
                     {/* Divider */}
-                    <div className="h-px bg-[#E8E6E0] mx-4" />
+                    <div className="h-px bg-border mx-4" />
 
                     <div className="flex items-center gap-2 px-4 py-3">
                       <img src={gpsUrl} alt="gps" className="shrink-0" />
                       <Select value={heroState} onValueChange={(v) => setHeroState(v ?? "all")}>
-                        <SelectTrigger className="border-none shadow-none flex-1 h-auto font-geist text-sm text-[#1A1523] focus:ring-0 px-0">
+                        <SelectTrigger className="border-none shadow-none flex-1 h-auto font-geist text-sm text-foreground focus:ring-0 px-0">
                           <SelectValue placeholder="All states">
                             {(value) => (value === "all" ? "All states" : value)}
                           </SelectValue>
@@ -132,22 +140,22 @@ const Home: React.FC = () => {
 
                   {/* Desktop */}
                   <div className="hidden gap-1 lg:flex items-center  px-4 py-2">
-                    <Search className="w-4 h-4 text-[#3A3A3A] shrink-0 rotate-90 " />
+                    <Search className="w-4 h-4 text-muted-foreground shrink-0 rotate-90 " />
                     <input
                       type="text"
                       value={heroSearch}
                       onChange={(e) => setHeroSearch(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleHeroSearch()}
                       placeholder="Search, events, artists and venues"
-                      className="bg-transparent border-none text-[#1A1523] placeholder-[#4A4451]/60 text-sm focus:outline-none flex-1 font-geist"
+                      className="bg-transparent border-none text-foreground placeholder-muted-foreground text-sm focus:outline-none flex-1 font-geist"
                     />
 
                     {/* Vertical divider */}
-                    <div className="h-6 w-px bg-[#E8E6E0] shrink-0" />
+                    <div className="h-6 w-px bg-border shrink-0" />
 
                     {/* Location dropdown */}
                     <Select value={heroState} onValueChange={(v) => setHeroState(v ?? "all")}>
-                      <SelectTrigger className="border-none shadow-none w-[140px] h-auto font-geist text-sm text-[#1A1523] focus:ring-0 shrink-0 gap-2 max-w-[125px]">
+                      <SelectTrigger className="border-none shadow-none w-[140px] h-auto font-geist text-sm text-foreground focus:ring-0 shrink-0 gap-2 max-w-[125px]">
                         <img src={gpsUrl} alt="gps" />
                         <SelectValue placeholder="All states">
                           {(value) => (value === "all" ? "All states" : value)}
@@ -188,9 +196,14 @@ const Home: React.FC = () => {
                 </div>
 
                 {/* Mobile card — below popular tags, inside hero */}
-                {heroEvent && (
+                {eventsLoading && (
                   <div className="lg:hidden mt-4">
-                    <div className="bg-white rounded-2xl overflow-hidden shadow-xl">
+                    <HomeHeroCardSkeleton />
+                  </div>
+                )}
+                {!eventsLoading && heroEvent && (
+                  <div className="lg:hidden mt-4">
+                    <div className="bg-card rounded-2xl overflow-hidden shadow-xl">
                       <div className="relative h-[180px] overflow-hidden">
                         <img
                           src={heroEvent.coverImage}
@@ -207,18 +220,18 @@ const Home: React.FC = () => {
                           Featured
                         </span>
                         <span className="absolute top-3 right-3 text-white font-bold text-[12px] font-space tracking-widest">
-                          № {heroEvent.no ?? heroEvent._id.padStart(4, "0")}
+                          № {shortEventNo(heroEvent)}
                         </span>
                       </div>
                       <div className="p-4">
-                        <span className="text-xs text-[#0F6E56] font-geist uppercase tracking-widest font-medium">
+                        <span className="text-xs text-[#0F6E56] dark:text-[#4ADE80] font-geist uppercase tracking-widest font-medium">
                           {heroEvent.category}
                           {heroEvent.subcategory && ` • ${heroEvent.subcategory}`}
                         </span>
-                        <h3 className="text-xl font-bold text-[#1A1523] font-grotesk mt-0.5">
+                        <h3 className="text-xl font-bold text-foreground font-grotesk mt-0.5">
                           {heroEvent.title}
                         </h3>
-                        <p className="text-sm text-[#4A4451] font-geist mt-1">
+                        <p className="text-sm text-muted-foreground font-geist mt-1">
                           {new Date(heroEvent.startDate).toLocaleString("en-NG", {
                             weekday: "short",
                             day: "numeric",
@@ -229,14 +242,14 @@ const Home: React.FC = () => {
                           })}{" "}
                           · {heroEvent.venue.name}
                         </p>
-                        <div className="mt-4 pt-3 border-t border-[#E8E6E0] flex items-center justify-between">
+                        <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
                           <div>
-                            <span className="text-lg font-bold font-space text-[#1A1523]">
+                            <span className="text-lg font-bold font-space text-foreground">
                               {heroEvent.minPrice === 0
                                 ? "Free"
                                 : Format.amount(heroEvent.minPrice)}
                             </span>
-                            <span className="text-xs text-[#4A4451] block font-geist">
+                            <span className="text-xs text-muted-foreground block font-geist">
                               from Regular
                             </span>
                           </div>
@@ -254,8 +267,12 @@ const Home: React.FC = () => {
               </div>
 
               <div className="hidden lg:flex lg:col-span-5 justify-end items-center">
-                <div className="w-full translate-x-8">
-                  <StackedCardCarousel events={featuredEvents} />
+                <div className="w-full ">
+                  {eventsLoading ? (
+                    <HomeHeroCardSkeleton />
+                  ) : (
+                    <StackedCardCarousel events={featuredEvents} />
+                  )}
                 </div>
               </div>
             </div>
@@ -265,14 +282,14 @@ const Home: React.FC = () => {
 
       <PageWrapper className="p-[20px]">
         {/* 2. STATS BAR */}
-        <section className="py-6 border-y border-[#E8E6E0]">
-          <div className="grid grid-cols-4 md:gap-8 items-center justify-center max-w-6xl text-center relative">
+        <section className="py-6 border-y border-border">
+          <div className="grid grid-cols-4 md:gap-8 items-center justify-center text-center relative">
             {STATS.map((stat, idx) => (
               <div
                 key={idx}
                 className="flex flex-col items-center justify-center relative px-0.5"
               >
-                <h4 className="text-base sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#1A1523] tracking-tight flex items-center">
+                <h4 className="text-base sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-foreground tracking-tight flex items-center">
                   {stat.icon && (
                     <img
                       src={stat.icon}
@@ -282,11 +299,11 @@ const Home: React.FC = () => {
                   )}
                   {stat.value}
                 </h4>
-                <p className="text-[7px] sm:text-xs font-medium text-[#4A4451] tracking-[0.08em] font-space uppercase mt-1 leading-tight">
+                <p className="text-[7px] sm:text-xs font-medium text-muted-foreground tracking-[0.08em] font-space uppercase mt-1 leading-tight">
                   {stat.label}
                 </p>
                 {idx !== STATS.length - 1 && (
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 h-6 sm:h-10 w-px bg-[#E8E6E0]" />
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 h-6 sm:h-10 w-px bg-border" />
                 )}
               </div>
             ))}
@@ -294,14 +311,14 @@ const Home: React.FC = () => {
         </section>
 
         {/* Powering events ticker */}
-        <section className="w-full border-b border-[#E8E6E0] pb-4 md:py-6">
+        <section className="w-full border-b border-border pb-4 md:py-6">
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex flex-col md:flex-row items-center justify-center text-center md:text-left">
-              <p className="mb-3 md:mb-0 md:mr-6 text-[11px] sm:text-xs md:text-sm uppercase md:normal-case tracking-wide text-[#4A4451] md:font-space">
+              <p className="mb-3 md:mb-0 md:mr-6 text-[11px] sm:text-xs md:text-sm uppercase md:normal-case tracking-wide text-muted-foreground md:font-space">
                 Powering events for
               </p>
 
-              <div className="flex flex-wrap md:flex-nowrap justify-center gap-x-3 gap-y-2 text-sm sm:text-lg md:text-xl font-medium text-[#4A4451] font-geist">
+              <div className="flex flex-wrap md:flex-nowrap justify-center gap-x-3 gap-y-2 text-sm sm:text-lg md:text-xl font-medium text-muted-foreground font-geist">
                 <span>Afro Nation</span>
                 <span>Tech Week</span>
                 <span>Comedy Central</span>
@@ -316,27 +333,31 @@ const Home: React.FC = () => {
         <VibeGrid />
 
         {/* 4. FEATURED THIS WEEK */}
-        <FeaturedEvents events={featuredEvents} />
+        {eventsLoading ? (
+          <FeaturedEventsSkeleton />
+        ) : (
+          <FeaturedEvents events={featuredEvents} />
+        )}
       </PageWrapper>
 
       {/* 5. FEATURE HIGHLIGHTS & APP SHOWCASE */}
       <section className="space-y-16 md:space-y-24 py-16 md:py-24">
         {/* Feature 1: Discover events — full bleed bg */}
-        <div className="bg-[#F6F5F1] py-12 md:py-16">
+        <div className="bg-muted py-12 md:py-16">
           <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-25 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
-              <span className="text-xs font-normal uppercase text-[#0F6E56] tracking-[1%] flex items-center gap-1 mb-4">
+              <span className="text-xs font-normal uppercase text-[#0F6E56] dark:text-[#4ADE80] tracking-[1%] flex items-center gap-1 mb-4">
                 <span className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
                 FOR FANS
               </span>
-              <h2 className="text-2xl md:text-3xl font-bold text-[#1A1523] leading-tight font-geist md:font-grotesk mb-4">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground leading-tight font-geist md:font-grotesk mb-4">
                 Discover events you'll actually love.
               </h2>
-              <p className="text-[#1A1523] text-sm sm:text-base font-geist leading-6.5 md:font-medium mb-6">
+              <p className="text-foreground text-sm sm:text-base font-geist leading-6.5 md:font-medium mb-6">
                 A feed tuned to your city and your taste. Filter by vibe, price,
                 or date, and save the ones you're eyeing for later.
               </p>
-              <ul className="space-y-4 text-sm text-[#1A1523] font-geist">
+              <ul className="space-y-4 text-sm text-foreground font-geist">
                 <li className="flex items-center gap-2">
                   <img src={UI_ASSETS.confirm} alt="confirm" />
                   <span>Smart search across events, artists and venues</span>
@@ -369,18 +390,18 @@ const Home: React.FC = () => {
             alt="image of a phone"
           />
           <div>
-            <span className="text-xs md:text-sm font-normal uppercase text-[#0F6E56] tracking-wider font-geist flex items-center gap-1 mb-4">
+            <span className="text-xs md:text-sm font-normal uppercase text-[#0F6E56] dark:text-[#4ADE80] tracking-wider font-geist flex items-center gap-1 mb-4">
               <span className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
               CHECKOUT IN SECONDS
             </span>
-            <h2 className="text-2xl md:text-4xl text-[#1A1523] leading-tight font-geist md:font-grotesk font-bold mb-4">
+            <h2 className="text-2xl md:text-4xl text-foreground leading-tight font-geist md:font-grotesk font-bold mb-4">
               Pay your way — card, transfer, or USSD.
             </h2>
-            <p className="text-[#1A1523] text-sm sm:text-base font-geist leading-6.5 md:font-medium mb-6">
+            <p className="text-foreground text-sm sm:text-base font-geist leading-6.5 md:font-medium mb-6">
               Buy in a few taps with the method you already use. Your money is
               held safely until the event actually happens.
             </p>
-            <ul className="space-y-4 text-sm text-[#1A1523] font-geist">
+            <ul className="space-y-4 text-sm text-foreground font-geist">
               <li className="flex items-center gap-2">
                 <img src={UI_ASSETS.confirm} alt="confirm" />
                 <span>Card, bank transfer and USSD, powered by Paystack</span>
@@ -398,21 +419,21 @@ const Home: React.FC = () => {
         </div>
 
         {/* Feature 3: Ticket security — full bleed bg */}
-        <div className="bg-[#F6F5F1] py-12 md:py-16">
+        <div className="bg-muted py-12 md:py-16">
           <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-25 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
-              <span className="text-xs md:text-sm font-normal uppercase text-[#0F6E56] tracking-wider font-geist flex items-center gap-1 mb-4">
+              <span className="text-xs md:text-sm font-normal uppercase text-[#0F6E56] dark:text-[#4ADE80] tracking-wider font-geist flex items-center gap-1 mb-4">
                 <span className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
                 TRUST BUILT IN
               </span>
-              <h2 className="text-2xl md:text-4xl text-[#1A1523] leading-tight font-geist md:font-grotesk font-bold mb-4">
+              <h2 className="text-2xl md:text-4xl text-foreground leading-tight font-geist md:font-grotesk font-bold mb-4">
                 A ticket that can't be faked.
               </h2>
-              <p className="text-[#1A1523] text-sm sm:text-base font-geist leading-6.5 md:font-medium mb-6">
+              <p className="text-foreground text-sm sm:text-base font-geist leading-6.5 md:font-medium mb-6">
                 Buy in a few taps with the method you already use. Your money is
                 held safely until the event actually happens.
               </p>
-              <ul className="space-y-4 text-sm text-[#1A1523] font-geist">
+              <ul className="space-y-4 text-sm text-foreground font-geist">
                 <li className="flex items-center gap-2">
                   <img src={UI_ASSETS.confirm} alt="confirm" />
                   <span>Unique, one-time-use QR per ticket</span>
@@ -442,13 +463,13 @@ const Home: React.FC = () => {
       <PageWrapper className="pt-0">
         {" "}
         {/* 6. TESTIMONIALS */}
-        <section className="py-12 border-t border-[#E8E6E0]">
+        <section className="py-12 border-t border-border">
           <div className="text-start max-w-2xl mb-3 md:mb-6">
-            <span className="text-xs font-normal uppercase text-[#0F6E56] tracking-wider font-geist flex items-center gap-1">
+            <span className="text-xs font-normal uppercase text-[#0F6E56] dark:text-[#4ADE80] tracking-wider font-geist flex items-center gap-1">
               <span className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
               REAL PEOPLE, REAL EVENTS
             </span>
-            <h2 className="text-xl md:text-3xl font-extrabold text-[#1A1523] mt-1 font-grotesk">
+            <h2 className="text-xl md:text-3xl font-extrabold text-foreground mt-1 font-grotesk">
               Loved by fans and organizers
             </h2>
           </div>
@@ -456,14 +477,14 @@ const Home: React.FC = () => {
             {TESTIMONIALS.map((t) => (
               <div
                 key={t.id}
-                className="bg-[#F6F5F1] p-6 rounded-2xl flex flex-col justify-between"
+                className="bg-muted p-6 rounded-2xl flex flex-col justify-between"
               >
                 <div className="flex items-center gap-px mb-1 ">
                   {[...Array(5)].map((_, i) => (
                     <img key={i} src={UI_ASSETS.yellowStar} alt="star" />
                   ))}
                 </div>
-                <p className="text-sm text-[#1A1523] mb-6 font-geist font-medium">
+                <p className="text-sm text-foreground mb-6 font-geist font-medium">
                   "{t.quote}"
                 </p>
                 <div className="flex items-center gap-3">
@@ -473,10 +494,10 @@ const Home: React.FC = () => {
                     className="w-10 h-10 rounded-full object-cover"
                   />
                   <div>
-                    <h4 className="text-sm font-bold text-[#1A1523] font-geist">
+                    <h4 className="text-sm font-bold text-foreground font-geist">
                       {t.author}
                     </h4>
-                    <p className="text-xs text-[#4A4451] font-geist">
+                    <p className="text-xs text-muted-foreground font-geist">
                       {t.role} • {t.state}
                     </p>
                   </div>
@@ -486,13 +507,13 @@ const Home: React.FC = () => {
           </div>
         </section>
         {/* 7. FREQUENTLY ASKED QUESTIONS */}
-        <section className="py-12 border-t border-[#E8E6E0]">
+        <section className="py-12 border-t border-border">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <span className="text-xs font-normal uppercase text-[#0F6E56] tracking-[1%] flex items-center gap-1 justify-center">
+            <span className="text-xs font-normal uppercase text-[#0F6E56] dark:text-[#4ADE80] tracking-[1%] flex items-center gap-1 justify-center">
               <span className="w-[11.81px] h-0 border border-[#F5A524] rounded-none inline-block" />
               <h5>GOOD TO KNOW</h5>
             </span>
-            <h2 className="text-xl font-bold text-[#1A1523] font-geist">
+            <h2 className="text-xl font-bold text-foreground font-geist">
               Frequently asked questions
             </h2>
           </div>
@@ -500,22 +521,22 @@ const Home: React.FC = () => {
             {FAQ_ITEMS.map((faq, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-xl border border-[#E8E6E0] overflow-hidden"
+                className="bg-card rounded-xl border border-border overflow-hidden"
               >
                 <button
                   onClick={() => toggleFaq(idx)}
-                  className="w-full p-5 text-left flex items-center justify-between font-bold text-[#1A1523] text-base hover:text-[#0F6E56] transition-colors"
+                  className="w-full p-5 text-left flex items-center justify-between font-bold text-foreground text-base hover:text-[#0F6E56] dark:hover:text-[#4ADE80] transition-colors"
                 >
                   <span>{faq.question}</span>
                   <ChevronDown
                     className={`w-5 h-5 transition-transform duration-200 ${openFaq === idx
-                        ? "rotate-180 text-[#0F6E56]"
-                        : "text-[#4A4451]"
+                        ? "rotate-180 text-[#0F6E56] dark:text-[#4ADE80]"
+                        : "text-muted-foreground"
                       }`}
                   />
                 </button>
                 {openFaq === idx && (
-                  <div className="px-5 pb-5 text-sm text-[#4A4451] border-t border-[#E8E6E0] pt-3 font-geist">
+                  <div className="px-5 pb-5 text-sm text-muted-foreground border-t border-border pt-3 font-geist">
                     {faq.answer}
                   </div>
                 )}
@@ -529,7 +550,7 @@ const Home: React.FC = () => {
           heading="Your next night out starts here."
           body="Discover an event to attend, or start selling tickets to your own. It only takes a minute."
           primaryBtn={{ text: "Find an event", to: "/explore" }}
-          secondaryBtn={{ text: "Start selling tickets", to: "/auth/register" }}
+          secondaryBtn={{ text: "Start selling tickets", to: "/auth/organizer/register" }}
           bgImage={UI_ASSETS.manWithHandUp}
           align="left"
         />

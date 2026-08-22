@@ -91,6 +91,13 @@ export function TimePickerInput<T extends FieldValues>({
         fontSize: resolvedFontSize,
         fontFamily,
         fontWeight,
+        // MUI's own default text color is near-black and never adapts to
+        // the app's dark mode (there's no MUI ThemeProvider here to pick
+        // that up) — that's why the START/END TIME digits were invisible
+        // against a dark background. `--foreground` is the same CSS
+        // variable every other themed element already flips between light
+        // and dark, so this just follows suit.
+        color: "var(--foreground)",
     },
     "& .MuiPickersSectionList-root": {
         display: "flex",
@@ -98,6 +105,10 @@ export function TimePickerInput<T extends FieldValues>({
         height: "100%",
         padding: "0 14px",
         boxSizing: "border-box",
+        color: "var(--foreground)",
+    },
+    "& .MuiSvgIcon-root": {
+        color: "var(--foreground)",
     },
     "& .MuiPickersOutlinedInput-notchedOutline": {
         borderColor,

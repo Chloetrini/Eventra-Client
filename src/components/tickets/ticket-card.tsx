@@ -8,10 +8,9 @@ import rightArrow from "@/assets/rightArrow.png";
 import backward from "@/assets/backward.png";
 import PaymentBtn from "@/components/ui/pay-method-btn";
 import { formatDateTime } from "@/lib/utils";
-import { useState } from "react";
 import { toast } from "react-toastify";
-import { requestTicketRefund, cancelReservation } from "@/lib/tickets-api";
-import { useQueryClient } from "@tanstack/react-query";
+import { useRequestTicketRefund, useCancelReservation } from "@/hooks/use-ticket-actions";
+import { downloadEventIcs } from "@/lib/calendar";
 interface TicketProps {
   ticket: Ticket;
   showActions?: boolean;
@@ -25,7 +24,6 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
     eventEntrance,
     holderName,
     eventName,
-    referenceCode,
     orderID,
     ticketDetails,
     qrImageUrl,
@@ -49,41 +47,46 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
       bg: "bg-[#0A4F41]",
       text: "text-[#E8D8FF]",
     },
+    // Fallback label for a paid ticket whose real tier name isn't available
+    // in this context (e.g. right after checkout, before My Tickets has the
+    // full order). Was previously unmapped, so it silently fell through to
+    // the plain muted style below instead of a real badge.
+    Paid: {
+      bg: "bg-[#0A4F41]",
+      text: "text-[#96E2B5]",
+    },
   };
   const ticketType = ticketDetails[0].type;
-  const { bg: ticketBg, text: ticketText } = ticketTypeConfig[ticketType] ?? {
-    bg: "bg-gray-200",
-    text: "text-gray-700",
-  };
+  // Real tier names now come straight from the backend (e.g. "VIP",
+  // "Table", or whatever an organizer named it), so this won't always be
+  // one of the fixed keys above. Anything that isn't literally "Free"
+  // still means it was paid for, so fall back to the "Paid" style rather
+  // than a flat gray badge for an unrecognized tier name.
+  const { bg: ticketBg, text: ticketText } =
+    ticketTypeConfig[ticketType] ??
+    (ticketType === "Free" ? { bg: "bg-muted", text: "text-muted-foreground" } : ticketTypeConfig.Paid);
 
-  const queryClient = useQueryClient();
-  const [isProcessing, setIsProcessing] = useState(false);
+  const refundMutation = useRequestTicketRefund();
+  const cancelMutation = useCancelReservation();
+  const isProcessing = refundMutation.isPending || cancelMutation.isPending;
 
   const handleRequestRefund = async () => {
     if (!ticket._id) return;
-    setIsProcessing(true);
     try {
-      await requestTicketRefund(ticket._id);
+      await refundMutation.mutateAsync({ ticketId: ticket._id });
       toast.success("Refund requested. We'll email you once it's processed.");
-      queryClient.invalidateQueries({ queryKey: ["my-tickets"] });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not request refund. Please try again.");
-    } finally {
-      setIsProcessing(false);
     }
   };
 
   const handleCancelRsvp = async () => {
     if (!ticket._id) return;
-    setIsProcessing(true);
     try {
-      await cancelReservation(ticket._id);
+      await cancelMutation.mutateAsync(ticket._id);
       toast.success("Reservation cancelled.");
-      queryClient.invalidateQueries({ queryKey: ["my-tickets"] });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not cancel reservation. Please try again.");
-    } finally {
-      setIsProcessing(false);
     }
   };
   return (
@@ -169,7 +172,7 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
           </div>
         </div>
         {/* Qr code section */}
-        <div className="shadow-2xl flex flex-col items-center lg:w-[397px] lg:h-[390px] rounded-lg text-center justify-between p-3 min-[400px]:p-4">
+        <div className="bg-white shadow-2xl flex flex-col items-center lg:w-[397px] lg:h-[390px] rounded-lg text-center justify-between p-3 min-[400px]:p-4">
           <div className="rounded-full border px-4 min-[400px]:px-6 py-1 mb-2 border-[#0F6E56]">
             <p className="text-[#0F6E56] text-xs min-[400px]:text-sm">
               ADMITS {admitsCount}
@@ -190,10 +193,7 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
               <p className="font-space font-bold text-xl min-[400px]:text-2xl text-[#1A1523]">
                 {orderID}
               </p>
-              <p className="font-space w-full h-[18px] text-xs text-[#0F6E56]">
-                {referenceCode}
-              </p>
-              <p className="text-xs text-[#4A4451] italic">Non-transferable</p>
+              <p className="text-xs text-[#4A4451] italic mt-1">Non-transferable</p>
             </div>
             <div className="text-xs min-[400px]:text-[14px] font-[500] leading-[21px] w-full max-w-[316px] mx-auto text-[#0F6E56]">
               <p className="">Eventra</p>
@@ -207,19 +207,19 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 -mt-4 mb-8">
           <div className="flex items-center gap-2">
             {refundPolicy.type === "refundable" && (
-              <p className="flex items-center gap-1.5 text-xs sm:text-sm text-[#4A4451]">
+              <p className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground">
                 <img src={shieldTick} alt="" className="size-3.5 shrink-0" />
                 {refundPolicy.note || "Refunds allowed until 3 days before the event."}
               </p>
             )}
             {refundPolicy.type === "non-refundable" && (
-              <p className="flex items-center gap-1.5 text-xs sm:text-sm text-[#4A4451] uppercase">
+              <p className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground uppercase">
                 <img src={shieldTick} alt="" className="size-3.5 shrink-0" />
                 Non-refundable
               </p>
             )}
             {refundPolicy.type === "free-cancel" && (
-              <p className="flex items-center gap-1.5 text-xs sm:text-sm text-[#4A4451]">
+              <p className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground">
                 <img src={shieldTick} alt="" className="size-3.5 shrink-0" />
                 Free event · cancel anytime to release your spot.
               </p>
@@ -234,6 +234,13 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
               classname="h-9 text-xs sm:text-sm"
               arrow={rightArrow}
               editArrow="w-[18px] h-[18px]"
+              onClick={() =>
+                downloadEventIcs({
+                  title: eventName ?? "Eventra event",
+                  location: eventVenue,
+                  start: eventDateTime,
+                })
+              }
             />
             {refundPolicy.type === "refundable" && (
               <PaymentBtn

@@ -49,33 +49,27 @@ export default function CheckEmail() {
     <div className="flex flex-col">
       <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
         <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
-        <span className="text-[30.13px] font-extrabold tracking-[-0.02em] text-[#1A1523] leading-[35.45px]">
+        <span className="text-[30.13px] font-extrabold tracking-[-0.02em] text-foreground leading-[35.45px]">
           Eventra
         </span>
         {isOrganizer && (
-          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
+          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] dark:bg-[#0F6E56]/20 dark:text-[#4ADE80] w-[118px] text-center text-[15px]">
             Organizer
           </span>
         )}
       </Link>
 
-      <div
-        className="flex h-[79.56px] w-[79.56px] items-center justify-center rounded-full mb-3"
-        style={{ backgroundColor: "#E7F4EC" }}
-      >
-        <div
-          className="flex h-10 w-10 items-center justify-center rounded-full"
-          style={{ backgroundColor: "#2E9E5B" }}
-        >
+      <div className="flex h-[79.56px] w-[79.56px] items-center justify-center rounded-full mb-3 bg-[#E7F4EC] dark:bg-[#0F6E56]/20">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2E9E5B]">
           <Check className="h-5 w-5 text-white" strokeWidth={3} />
         </div>
       </div>
 
-      <h1 className="text-[34px] font-extrabold leading-[40px] tracking-[-0.02em] text-[#000000] mb-3">
+      <h1 className="text-[34px] font-extrabold leading-[40px] tracking-[-0.02em] text-foreground mb-3">
         Check your email
       </h1>
 
-      <p className="text-[17px] leading-6 text-[#4A4451] mb-7.5 font-normal">
+      <p className="text-[17px] leading-6 text-muted-foreground mb-7.5 font-normal">
         We've sent a password reset link to
         <span className="font-bold">{email}</span>. The link expires in 30
         minutes.
@@ -89,13 +83,13 @@ export default function CheckEmail() {
         Open Email
       </Button>
 
-      <p className="mt-[15px] text-center text-[14px] font-medium text-[#4A4451] leading-[21px]">
+      <p className="mt-[15px] text-center text-[14px] font-medium text-muted-foreground leading-[21px]">
         Didn't get it?
         <button
           type="button"
           onClick={handleResend}
           disabled={isPending || cooldown}
-          className="text-[#0F6E56] text-[14px] leading-[21px] font-medium hover:underline disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
+          className="text-[#0F6E56] dark:text-[#4ADE80] text-[14px] leading-[21px] font-medium hover:underline disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
         >
           {isPending ? "Sending..." : cooldown ? "Sent" : "Resend link"}
         </button>

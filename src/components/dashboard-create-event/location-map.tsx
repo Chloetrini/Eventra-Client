@@ -10,7 +10,17 @@ interface LocationMapProps {
   hours?: string
   mapQuery?: string // defaults to `${name}, ${address}` if omitted
   zoom?: number
-  aspectClassName?: string // e.g. 'aspect-21/9' or 'aspect-video'
+  // Sizes the map itself — accepts a plain Tailwind aspect class
+  // ('aspect-video'), several space-separated classes with responsive
+  // prefixes to change the ratio per breakpoint (e.g.
+  // 'aspect-video sm:aspect-40/10 lg:aspect-21/9'), or fixed heights per
+  // breakpoint if you'd rather size by height than ratio (e.g.
+  // 'h-[320px] sm:h-[400px] lg:h-[480px]'). This is applied to the map's
+  // own container (not just the iframe), and the iframe always fills that
+  // container completely — so if you also set an explicit height via
+  // `className` on the wrapper, the map fills it exactly instead of
+  // leaving gaps or getting clipped.
+  aspectClassName?: string
   cardClassName?: string // positioning, e.g. 'bottom-14 left-6'
   openLabel?: string // e.g. 'Open now' or 'Open in Google Maps'
   showOpenIcon?: boolean
@@ -23,7 +33,17 @@ export default function LocationMap({
   hours,
   mapQuery,
   zoom = 15,
-  aspectClassName = 'aspect-40/10',
+  // Was applied to the iframe alone with just `w-full` — the iframe sized
+  // itself off its own aspect-ratio, completely independent of whatever
+  // height the container ended up with. Any caller that also set an
+  // explicit height on the wrapper (via `className`) got a map that
+  // didn't fill the space: either a gap below it or an overflow clipped
+  // by the container. Now aspectClassName sizes the container itself and
+  // the iframe is pinned to fill it exactly, so the two can never
+  // disagree — an explicit height in `className` simply wins (CSS
+  // aspect-ratio only affects a dimension that's still auto), and without
+  // one, the container sizes itself from the aspect ratio as before.
+  aspectClassName = 'aspect-video sm:aspect-40/10',
   cardClassName = 'bottom-14 left-6',
   openLabel = 'Open now',
   showOpenIcon = false,
@@ -36,11 +56,17 @@ export default function LocationMap({
   const embedSrc = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&z=${zoom}&output=embed`
 
   return (
-    <div className={cn('relative overflow-hidden rounded-2xl border border-border', className)}>
+    <div
+      className={cn(
+        'relative overflow-hidden rounded-2xl border border-border',
+        aspectClassName,
+        className,
+      )}
+    >
       <iframe
         title={`Map showing ${name}`}
         src={embedSrc}
-        className={cn('w-full', aspectClassName)}
+        className="absolute inset-0 h-full w-full"
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
         onLoad={() => setIsLoaded(true)}

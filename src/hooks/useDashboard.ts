@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchDashboard } from '@/lib/organizer-api';
+import type { RevenuePeriod } from '@/types/dashboard';
 
 export const DASHBOARD_QUERY_KEY = 'dashboard';
 
-export const useDashboard = () => {
+export const useDashboard = (period: RevenuePeriod = '30d') => {
   return useQuery({
-    queryKey: [DASHBOARD_QUERY_KEY],
-    queryFn: fetchDashboard,
+    queryKey: [DASHBOARD_QUERY_KEY, period],
+    queryFn: () => fetchDashboard(period),
     staleTime: 5 * 60 * 1000,
   });
 };

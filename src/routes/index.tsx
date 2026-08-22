@@ -9,7 +9,7 @@ import Onboardinglayout from "./onboarding/layout";
 
 import CreateEventLayout from "./dashboard/create-event/layout";
 import DashBoardLayout from "./dashboard/layout";
-import { RequireOrganizer } from "@/components/require-organizer";
+// import { RequireOrganizer } from "@/components/require-organizer";
 
 const routes = [
     {

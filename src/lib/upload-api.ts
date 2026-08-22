@@ -1,13 +1,40 @@
-import { axiosClient } from "@/lib/api";
+import { api } from "@/lib/api";
+
+// The backend is deployed on Vercel, whose serverless functions hard-cap
+// request bodies at 4.5MB — anything larger gets rejected by the platform
+// itself, before the request ever reaches our Express app or multer's own
+// (much higher) 20MB limit. A platform-level rejection like that carries no
+// CORS headers and no JSON body, so it shows up in the browser as an opaque
+// network/CORS failure instead of a real error message. Catching oversized
+// files here — before the request goes out — turns that into an actual
+// "image too large" message instead.
+const MAX_UPLOAD_SIZE_BYTES = 4 * 1024 * 1024; // 4MB, safely under Vercel's 4.5MB cap
+
+function assertUploadableSize(file: File) {
+  if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+    const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+    throw new Error(`Image is too large (${sizeMb}MB). Please use an image under 4MB.`);
+  }
+}
 
 export async function uploadEventCoverImage(file: File): Promise<string> {
+  assertUploadableSize(file);
   const formData = new FormData();
   formData.append("image", file);
 
-  const response = await axiosClient.post("/uploads/event-cover", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  // Goes through api.upload (not a raw axiosClient.post) so a real backend
+  // error — wrong file type, expired session, etc — surfaces its actual
+  // message instead of getting swallowed into a generic axios error.
+  const response = await api.upload("/uploads/event-cover", formData);
+  const body = response.body as { url: string; publicId: string };
+  return body.url;
+}
+export async function uploadLineupPhoto(file: File): Promise<string> {
+  assertUploadableSize(file);
+  const formData = new FormData();
+  formData.append("image", file);
 
-  const body = response.data.body as { url: string; publicId: string };
+  const response = await api.upload("/uploads/lineup-photo", formData);
+  const body = response.body as { url: string; publicId: string };
   return body.url;
 }

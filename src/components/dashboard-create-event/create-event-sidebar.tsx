@@ -108,27 +108,31 @@ const CreateEventSidebar = () => {
     }
 
     return (
-        <div>
-            <h1 className='font-grotesk font-bold text-[28px] mb-2'>Create Event</h1>
+        // Below `lg` this becomes a horizontally-scrolling step strip instead
+        // of a permanent 257px-wide column — at phone widths a fixed vertical
+        // sidebar would eat most of the screen and leave almost nothing for
+        // the actual form.
+        <div className="lg:w-[289px] lg:shrink-0">
+            <h1 className='font-grotesk font-bold text-[22px] sm:text-[28px] mb-2'>Create Event</h1>
             <div>
-                <div className="flex flex-col gap-2">
+                <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 lg:mx-0 lg:px-0 lg:pb-0 lg:flex-col [&::-webkit-scrollbar]:hidden">
 
                     {createEventFlow.map((flow, id) => {
                         const isActive = flow.paths.includes(currentPath)
                         const isCompleted = id < effectiveCurrentIndex
 
                         return (
-                            <div key={flow.paths[0]}>
+                            <div key={flow.paths[0]} className="shrink-0">
                                 <button
-                                    className={`group w-[257px] h-[75px] rounded-[7px] flex items-center gap-3 p-[15px]  hover:bg-[#E4F1EB] ${isActive ? "bg-[#E4F1EB]" : ""}`}
+                                    className={`group w-[220px] sm:w-[257px] h-[70px] sm:h-[75px] shrink-0 rounded-[7px] flex items-center gap-3 p-[15px]  hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15 ${isActive ? "bg-[#E4F1EB] dark:bg-[#0F6E56]/15" : ""}`}
                                     onClick={() => handleClick(id, flow.paths)}>
-                                    <div className={`w-[26px] h-[26px] rounded-full flex items-center justify-center  group-hover:bg-[#0F6E56]  group-hover:text-white group-hover:border-0 ${isActive || isCompleted ? "bg-[#0F6E56] text-white" : "border border-[#6E6577] text-[#6E6577]"}`}>
+                                    <div className={`w-[26px] h-[26px] shrink-0 rounded-full flex items-center justify-center  group-hover:bg-[#0F6E56]  group-hover:text-white group-hover:border-0 ${isActive || isCompleted ? "bg-[#0F6E56] text-white" : "border border-[#6E6577] dark:border-muted-foreground text-muted-foreground"}`}>
                                         <p className="font-bold font-space text-[11px]">{id + 1}</p>
                                     </div>
 
-                                    <div className={`text-start  group-hover:text-[#0F6E56]`}>
-                                        <p className={`font-semibold ${isActive ? "text-[#0F6E56]" : "text-[#6E6577]"}`}>{flow.step}</p>
-                                        <p className={`text-[13px] ${isActive ? "text-[#0F6E56]" : "text-[#6E6577]"}`}>{flow.description}</p>
+                                    <div className={`text-start min-w-0 group-hover:text-[#0F6E56] dark:group-hover:text-[#4ADE80]`}>
+                                        <p className={`font-semibold truncate ${isActive ? "text-[#0F6E56] dark:text-[#4ADE80]" : "text-muted-foreground"}`}>{flow.step}</p>
+                                        <p className={`text-[13px] truncate ${isActive ? "text-[#0F6E56] dark:text-[#4ADE80]" : "text-muted-foreground"}`}>{flow.description}</p>
                                     </div>
 
                                 </button>

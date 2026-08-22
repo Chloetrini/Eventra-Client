@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import bag from '@/assets/bag.png'
 import paystackLogo from '@/assets/paystackLogo.png'
 import { FormBox } from '@/components/ui/form-box'
@@ -13,15 +13,17 @@ import hashTag from '@/assets/hash.png'
 import qrcode from '@/assets/qrcode2.png'
 import TicketPreview from '@/components/tickets/ticket-preview'
 import { useLocation, useNavigate, Link } from 'react-router'
-import PageWrapper from '@/components/pageWrapper'
+import PageWrapper from '@/components/page-wrapper'
 import { toast } from 'react-toastify'
-import { rsvpFreeEvent, initializeCheckout } from '@/lib/tickets-api'
-import { getExploreUrl } from '@/lib/explore.history'
+import { useRsvpFreeEvent, useInitializeCheckout } from '@/hooks/use-ticket-actions'
+import { getExploreUrl } from '@/lib/explore-history'
 
 const Checkout = () => {
     const location = useLocation()
     const navigate = useNavigate()
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    const rsvpMutation = useRsvpFreeEvent()
+    const checkoutMutation = useInitializeCheckout()
+    const isSubmitting = rsvpMutation.isPending || checkoutMutation.isPending
 
     const ticket = location.state as {
         type?: 'free' | 'paid'
@@ -54,10 +56,10 @@ const Checkout = () => {
     if (!ticket) {
         return (
             <div className='px-4 py-20 text-center'>
-                <p className='mb-4 text-[#6E6577]'>No tickets selected yet.</p>
+                <p className='mb-4 text-muted-foreground'>No tickets selected yet.</p>
                 <button
                     onClick={() => navigate('/explore')}
-                    className='text-[#6e6e6e] font-semibold underline'
+                    className='text-muted-foreground font-semibold underline'
                 >
                     Browse events
                 </button>
@@ -67,45 +69,45 @@ const Checkout = () => {
 
     // FREE FLOW: call rsvpFreeEvent directly, no payment step.
     const handleConfirmRsvp = handleSubmit(async (data) => {
-        setIsSubmitting(true)
         try {
-            const tickets = await rsvpFreeEvent(ticket.eventId, {
-                guests: ticket.guests ?? 1,
-                guestName: `${data.firstName} ${data.lastName}`,
-                guestEmail: data.email,
-                guestPhone: data.phoneNumber,
+            const tickets = await rsvpMutation.mutateAsync({
+                eventId: ticket.eventId,
+                payload: {
+                    guests: ticket.guests ?? 1,
+                    guestName: `${data.firstName} ${data.lastName}`,
+                    guestEmail: data.email,
+                    guestPhone: data.phoneNumber,
+                },
             })
-            console.log("RSVP RESULT:", tickets)
             toast.success('Reservation confirmed')
             navigate('/payment/ticket-confirmation', {
                 state: { tickets, event: ticket, buyer: data, type: 'free' },
             })
         } catch (err) {
             toast.error(err instanceof Error ? err.message : 'Could not complete reservation')
-        } finally {
-            setIsSubmitting(false)
         }
     })
 
     // PAID FLOW: initialize with backend, redirect to Paystack's hosted page.
     const handlePayNow = handleSubmit(async (data) => {
-        setIsSubmitting(true)
         try {
             const items = ticket.ticketDetails.map((t) => ({
                 ticketTypeId: String(t.id),
                 quantity: t.quantity,
             }))
-            const result = await initializeCheckout(ticket.eventId, {
-                items,
-                guestName: `${data.firstName} ${data.lastName}`,
-                guestEmail: data.email,
-                guestPhone: data.phoneNumber,
+            const result = await checkoutMutation.mutateAsync({
+                eventId: ticket.eventId,
+                payload: {
+                    items,
+                    guestName: `${data.firstName} ${data.lastName}`,
+                    guestEmail: data.email,
+                    guestPhone: data.phoneNumber,
+                },
             })
             // Full redirect to Paystack's hosted checkout page.
             window.location.href = result.authorizationUrl
         } catch (err) {
             toast.error(err instanceof Error ? err.message : 'Could not start payment')
-            setIsSubmitting(false)
         }
     })
 
@@ -125,12 +127,12 @@ const Checkout = () => {
                 <span className="text-foreground">Checkout</span>
             </nav>
             <div className='flex items-center gap-3 mb-4'>
-                <div className='w-14.5 h-14.5 bg-[#E4F1EB] rounded-full flex items-center justify-center' >
+                <div className='w-14.5 h-14.5 bg-[#E4F1EB] dark:bg-[#0F6E56]/15 rounded-full flex items-center justify-center' >
                     <img src={bag} alt="Shopping Bag" className="w-7.5 h-7.5" />
                 </div>
                 <div>
                     <h1 className="text-3xl font-bold font-grotesk ">Checkout</h1>
-                    <p className="text-[#1A1A1A] font-medium text-sm leading-4">Fill in your details and complete your purchase.</p>
+                    <p className="text-muted-foreground font-medium text-sm leading-4">Fill in your details and complete your purchase.</p>
                 </div>
             </div>
             <div className='flex flex-col-reverse lg:flex-row lg:justify-between gap-10 lg:gap-8 mt-10'>
@@ -168,7 +170,7 @@ const Checkout = () => {
 
                             <div className='flex flex-col gap-5'>
 
-                                <div className='w-full min-h-28 bg-[#E4F1EB] rounded-[20px] border hover:border-[#0A4F41] transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 sm:px-7 py-4 sm:py-0'>
+                                <div className='w-full min-h-28 bg-[#E4F1EB] dark:bg-[#0F6E56]/15 rounded-[20px] border hover:border-[#0A4F41] dark:hover:border-[#4ADE80] transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 sm:px-7 py-4 sm:py-0'>
                                     <div className='flex flex-col md:flex-row items-center gap-3 text-center md:text-start'>
                                         <div>
                                             <img src={paystackLogo} alt="" className='w-32' />

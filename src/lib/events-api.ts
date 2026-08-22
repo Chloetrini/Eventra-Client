@@ -1,16 +1,12 @@
 import { z } from "zod";
 import { api } from "@/lib/api";
-import { eventSchema } from "@/lib/schema";
 import {
-  DATE_WINDOWS,
-  PRICE_TIERS,
-} from "@/types/event-types";
-
-// import type { EventTickets } from "@/types/ticket-tiers";
-
-
+  eventSchema,
+} from "@/lib/schema";
 import { type Event, type EventFilters } from "@/types/event-types";
 import type { Attendee } from "@/types/attendees";
+import type { OrganizerEventDetails } from "@/types/organizer-event";
+import { formatDate } from "@/lib/utils";
 export type EventsResponse = {
   events: Event[];
   total: number;
@@ -18,7 +14,6 @@ export type EventsResponse = {
 };
 
 // Matches the backend's actual shape: { events: [...], meta: { total, hasMore, ... } }
-const PAGE_SIZE = 9;
 const eventsResponseSchema = z.object({
   events: z.array(eventSchema),
   meta: z.object({
@@ -39,61 +34,53 @@ const categorySchema = z.object({
 });
 
 export type EventCategory = z.infer<typeof categorySchema>;
-// ---------------------------------------------------------------------
-// One small predicate per filter. Each returns TRUE when its own filter
-// is switched off — that's what lets them compose with && independently.
-// ---------------------------------------------------------------------
-function matchesSearch(e: Event, q: string) {
-  if (!q.trim()) return true;
-  const n = q.toLowerCase();
-  return (
-    e.title.toLowerCase().includes(n) ||
-    e.venue.name.toLowerCase().includes(n) ||
-    e.venue.city.toLowerCase().includes(n) ||
-    e.category.toLowerCase().includes(n)
-  );
-}
-function matchesState(e: Event, state: EventFilters["state"]) {
-  return state === "" ? true : e.venue.state === state;
-}
-function matchesCategories(e: Event, cats: EventFilters["categories"]) {
-  return cats.length === 0 ? true : cats.includes(e.category);
-}
-function matchesWhen(e: Event, when: EventFilters["when"]) {
-  const now = new Date();
-  const startOfToday = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-  );
-  return DATE_WINDOWS[when].test(new Date(e.createdAt), startOfToday);
-}
-function matchesPrice(e: Event, price: EventFilters["price"]) {
-  return PRICE_TIERS[price].test(e.minPrice);
-}
-function matchesAccess(e: Event, access: EventFilters["access"]) {
-  if (access === "all") return true;
-  if (access === "free") return e.minPrice === 0;
-  return e.minPrice > 0; // "paid"
-}
 
 // ---------------------------------------------------------------------
 // Maps our EventFilters to the EXACT query params the backend expects.
 // See listPublicEvents in the backend's event.controller.ts.
 // ---------------------------------------------------------------------
-
-
 function buildParams(filters: EventFilters): string {
   const p = new URLSearchParams();
 
   if (filters.search) p.set("q", filters.search);
-  if (filters.state) p.set("state", filters.state);
-  if (filters.categories.length)
-    p.set("categories", filters.categories.join(","));
-  if (filters.when !== "any") p.set("when", filters.when);
-  if (filters.price !== "any") p.set("price", filters.price);
-  if (filters.access !== "all") p.set("access", filters.access);
-  p.set("sort", filters.sort);
+
+  // frontend "state" → backend "city" (backend filters on venue.city)
+  if (filters.state) p.set("city", filters.state);
+
+  // frontend "categories" (array) → backend "category" (comma-separated IDs)
+  if (filters.categories.length) p.set("category", filters.categories.join(","));
+
+  // frontend "access" (all/free/paid) → backend "type" (free/paid, omit for all)
+  if (filters.access !== "all") p.set("type", filters.access);
+
+  // frontend "price" tier → backend minPrice/maxPrice as real numbers
+  if (filters.price === "free") {
+    p.set("maxPrice", "0");
+  } else if (filters.price === "under15k") {
+    p.set("maxPrice", "14999");
+  } else if (filters.price === "over15k") {
+    p.set("minPrice", "15000");
+  }
+
+  // frontend "when" → backend's exact value strings
+  const whenMap: Record<string, string> = {
+    today: "today",
+    weekend: "this-weekend",
+    week: "this-week",
+    month: "this-month",
+  };
+  if (filters.when !== "any" && whenMap[filters.when]) {
+    p.set("when", whenMap[filters.when]);
+  }
+
+  // frontend "sort" → backend's exact value strings.
+  // "trending" is the backend's default order, so we send nothing for it.
+  if (filters.sort === "date") {
+    p.set("sort", "date");
+  } else if (filters.sort === "price") {
+    p.set("sort", "price-asc");
+  }
+
   p.set("page", String(filters.page));
 
   return p.toString();
@@ -118,6 +105,7 @@ async function fetchEventBySlugReal(slug: string): Promise<Event | null> {
     return null;
   }
 }
+
 export async function fetchEvents(filters: EventFilters) {
   return await fetchEventsReal(filters);
 }
@@ -145,19 +133,37 @@ type RealMyEvent = {
   type: "free" | "paid";
   status: string;
   startDate?: string;
+  endDate?: string;
   capacity?: number | null;
   ticketsSoldCount?: number;
   reservationsCount?: number;
   revenueTotal?: number;
 };
 
-function mapMyEventStatus(status: string): "Live" | "Draft" | "Sold out" | "Past" | "Rejected" {
-  const s = status.toLowerCase();
-  if (s === "live") return "Live";
+// GET /events/mine returns the event's raw moderation status ("draft",
+// "pending_approval", "approved", "rejected", "cancelled", "postponed") —
+// unlike the dashboard-overview endpoint, it does NOT already resolve
+// "approved" down to a display status (live/sold_out/past). That
+// resolution is mirrored here so an approved, on-sale event actually
+// shows as "Live" instead of silently falling through to "Past".
+function mapMyEventStatus(e: RealMyEvent): "Live" | "Draft" | "Pending" | "Sold out" | "Past" | "Rejected" | "Cancelled" | "Postponed" {
+  const s = e.status.toLowerCase();
   if (s === "draft") return "Draft";
-  if (s === "sold_out" || s === "sold out") return "Sold out";
+  if (s === "pending_approval" || s === "pending") return "Pending";
   if (s === "rejected") return "Rejected";
-  return "Past";
+  if (s === "cancelled") return "Cancelled";
+  if (s === "postponed") return "Postponed";
+  if (s !== "approved") return "Past";
+
+  const sold = e.type === "free" ? e.reservationsCount ?? 0 : e.ticketsSoldCount ?? 0;
+  if (e.capacity != null && sold >= e.capacity) return "Sold out";
+  // Use endDate when the event has one (a multi-day event that started
+  // in the past but hasn't finished yet is still "Live", not "Past") —
+  // falls back to startDate for single-day events. Mirrors the backend's
+  // own deriveEventDisplayStatus (eventStatus.ts).
+  const endsAt = e.endDate ?? e.startDate;
+  if (endsAt && new Date(endsAt).getTime() < Date.now()) return "Past";
+  return "Live";
 }
 
 function getMyEventCategoryName(category: RealMyEvent["category"]): string {
@@ -180,17 +186,18 @@ export async function fetchMyEvents() {
     sold: e.type === "free" ? e.reservationsCount ?? 0 : e.ticketsSoldCount ?? 0,
     capacity: e.capacity ?? null,
     revenue: e.revenueTotal ?? null,
-    status: mapMyEventStatus(e.status),
+    status: mapMyEventStatus(e),
   }));
 }
 
-
+// ---------------------------------------------------------------------
 // Attendees for a specific event (organizer only)
 // GET /events/:eventId/attendees
-
+// ---------------------------------------------------------------------
 type RealTicket = {
   _id: string;
   code: string;
+  ticketId: string;
   type: "free" | "paid";
   price: number;
   attendeeName: string;
@@ -201,6 +208,17 @@ type RealTicket = {
   ticketType?: { name: string } | null;
 };
 
+// Display-only — the real ticketId from the backend looks like
+// "TKT-A1B2C3D4" (8 hex chars). Organizers just need something short and
+// scannable in the Attendees table, not the full generated ID, so this
+// re-prefixes it as "EVT-XXXX" and truncates to 4 chars. Purely cosmetic:
+// no backend field changes, the full ticketId still exists underneath.
+function shortenTicketRef(ticketId: string): string {
+  const [, rest] = ticketId.split("-");
+  if (!rest) return ticketId;
+  return `EVT-${rest.slice(0, 4)}`;
+}
+
 export async function fetchEventAttendees(eventId: string): Promise<Attendee[]> {
   const res = await api.get(`/events/${eventId}/attendees`);
   const body = res.body as { tickets: RealTicket[]; meta: unknown };
@@ -209,7 +227,7 @@ export async function fetchEventAttendees(eventId: string): Promise<Attendee[]> 
     eventId,
     name: t.attendeeName,
     email: t.attendeeEmail,
-    referenceCode: t.code,
+    referenceCode: shortenTicketRef(t.ticketId),
     checkedIn: t.status === "checked_in",
     ticketType: (t.ticketType?.name as "VIP" | "Regular" | "Table") ?? "Regular",
     tableSize: null,
@@ -219,4 +237,193 @@ export async function fetchEventAttendees(eventId: string): Promise<Attendee[]> 
 
 export async function deleteEvent(eventId: string) {
   await api.delete(`/events/${eventId}`);
+}
+
+// POST /events/:id/duplicate — server clones the event (and its ticket
+// types) as a brand-new draft. Dates, status, and sales counters are
+// deliberately not carried over.
+export async function duplicateEvent(eventId: string): Promise<{ _id: string }> {
+  const res = await api.post(`/events/${eventId}/duplicate`, {});
+  return res.body as { _id: string };
+}
+
+// ---------------------------------------------------------------------
+// Organizer event dashboard — powers the event-details page
+// GET /events/:id/dashboard
+// ---------------------------------------------------------------------
+type RealDashboard = {
+  event: {
+    _id: string;
+    title: string;
+    slug: string;
+    status: string;
+    type: "free" | "paid";
+    category?: string | null;
+    coverImage?: string;
+    startDate: string;
+    isOnline?: boolean;
+    venue?: { name: string; city: string } | null;
+    isPromoted: boolean;
+    promotionStatus?: string;
+  };
+  reservationsCount: number;
+  capacity: number | null;
+  capacityRemaining: number | null;
+  ticketsSoldCount: number;
+  revenueTotal: number;
+  checkedInCount: number;
+  recentAttendees: Array<{
+    _id: string;
+    attendeeName: string;
+    code: string;
+    ticketId: string;
+    status: "valid" | "checked_in" | "cancelled" | "refunded";
+    ticketTypeName: string;
+  }>;
+  ticketTypes: Array<{
+    _id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    quantitySold: number;
+    quantityRemaining: number;
+    isActive: boolean;
+  }>;
+  payout: { amountDue: number };
+};
+
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2) || "?";
+}
+
+function mapDashboardStatus(
+  status: string,
+  capacityRemaining: number | null
+): OrganizerEventDetails["status"] {
+  if (status === "rejected" || status === "cancelled") return "REJECTED";
+  if (status === "approved") return capacityRemaining === 0 ? "SOLD OUT" : "LIVE";
+  return "UPCOMING"; // draft, pending_approval, postponed
+}
+
+export async function fetchEventDashboard(eventId: string): Promise<OrganizerEventDetails> {
+  const res = await api.get(`/events/${eventId}/dashboard`);
+  const d = res.body as RealDashboard;
+  const isFree = d.event.type === "free";
+
+  const ticketTypes = isFree
+    ? [
+        {
+          id: "rsvp",
+          slug: "rsvp",
+          name: "General admission (RSVP)",
+          price: 0,
+          sold: d.reservationsCount,
+          left: d.capacity !== null ? Math.max(d.capacity - d.reservationsCount, 0) : null,
+        },
+      ]
+    : d.ticketTypes
+        .filter((t) => t.isActive)
+        .map((t) => ({
+          id: t._id,
+          slug: t._id,
+          name: t.name,
+          price: t.price,
+          sold: t.quantitySold,
+          left: t.quantityRemaining,
+        }));
+
+  const totalTickets = isFree
+    ? d.capacity
+    : d.ticketTypes.reduce((sum, t) => sum + t.quantity, 0) || null;
+  const remainingTickets = isFree
+    ? d.capacityRemaining
+    : d.ticketTypes.reduce((sum, t) => sum + t.quantityRemaining, 0);
+
+  return {
+    id: d.event._id,
+    slug: d.event.slug,
+    title: d.event.title,
+    eventNumber: `EVT-${d.event._id.slice(-6).toUpperCase()}`,
+    category: d.event.category ?? "Uncategorized",
+    status: mapDashboardStatus(d.event.status, d.capacityRemaining),
+    paymentType: isFree ? "FREE" : "PAID",
+    coverImage: d.event.coverImage ?? "",
+    dateText: formatDate(d.event.startDate),
+    venueText: d.event.isOnline
+      ? "Online event"
+      : d.event.venue
+        ? `${d.event.venue.name}, ${d.event.venue.city}`
+        : "Venue TBA",
+    // Driven separately on the page by useOrganizerStatus (real approval status).
+    isAccountUnderReview: false,
+    metrics: {
+      ticketsSold: isFree ? d.reservationsCount : d.ticketsSoldCount,
+      totalTickets,
+      revenue: isFree ? 0 : d.revenueTotal,
+      remainingTickets,
+      checkedInCount: d.checkedInCount,
+    },
+    ticketTypes,
+    recentAttendees: d.recentAttendees.map((a) => ({
+      id: a._id,
+      slug: a._id,
+      name: a.attendeeName,
+      avatarInitials: getInitials(a.attendeeName),
+      tier: a.ticketTypeName,
+      referenceCode: shortenTicketRef(a.ticketId),
+      status: a.status === "checked_in" ? "IN" : "GOING",
+    })),
+    isPromoted: d.event.isPromoted,
+    promotionMessage:
+      d.event.promotionStatus === "pending"
+        ? "Your promotion request is pending admin approval."
+        : "This event is not promoted yet. Boost it for a featured spot on homepage and explore",
+    canCancel: d.event.status === "approved" || d.event.status === "postponed",
+    canPostpone: d.event.status === "approved",
+    canEdit: d.event.status === "draft" || d.event.status === "rejected",
+  };
+}
+
+// ---------------------------------------------------------------------
+// Cancel / postpone — organizer-initiated lifecycle changes. The backend
+// emails every attendee holding a live ticket automatically (and refunds
+// paid orders on cancel) — nothing extra to trigger from the frontend.
+// PATCH /events/:id/cancel, PATCH /events/:id/postpone
+// ---------------------------------------------------------------------
+export async function cancelEvent(eventId: string, reason: string) {
+  const res = await api.patch(`/events/${eventId}/cancel`, { reason });
+  return res.body;
+}
+
+export async function postponeEvent(eventId: string, newStartDate: string, reason?: string) {
+  const res = await api.patch(`/events/${eventId}/postpone`, { newStartDate, reason });
+  return res.body;
+}
+
+// ---------------------------------------------------------------------
+// Check-in — scan/enter a ticket code at the door
+// POST /events/:eventId/check-in
+// ---------------------------------------------------------------------
+export type CheckInResult = {
+  result: "valid" | "already_used" | "invalid";
+  checkedInAt?: string | null;
+  ticket?: {
+    _id: string;
+    code: string;
+    attendeeName: string;
+    attendeeEmail: string;
+    type: "free" | "paid";
+    status: string;
+  };
+};
+
+export async function checkInTicket(eventId: string, code: string): Promise<CheckInResult> {
+  const res = await api.post(`/events/${eventId}/check-in`, { code });
+  return res.body as CheckInResult;
 }

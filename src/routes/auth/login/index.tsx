@@ -12,13 +12,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loginSchema } from "@/lib/schema";
-import { UI_ASSETS } from "@/lib/assets";
 import EventraLogo from "@/assets/Eventra-logo.png";
 import { authPath } from "@/lib/auth-path";
+import type { User } from "@/context/auth.context";
 
 const attendeeLoginSchema = loginSchema;
 
 type AttendeeLoginValues = z.infer<typeof attendeeLoginSchema>;
+
+// An organizer who's never submitted the onboarding wizard (no profile yet,
+// or one that's still sitting in "draft") shouldn't land on the dashboard —
+// they'd just see an empty shell with a banner telling them to go finish
+// onboarding anyway. Send them straight there instead. Once they've
+// submitted (pending/approved/rejected), the dashboard is the right place —
+// that's exactly where AccountReviewBanner surfaces the review status.
+function getPostLoginPath(user: User): string {
+  if (user.role !== "organizer") return "/";
+  const approvalStatus = (user.organizerProfile as { approvalStatus?: string } | undefined)?.approvalStatus;
+  if (!approvalStatus || approvalStatus === "draft") return "/onboarding/organisation";
+  return "/dashboard/overview";
+}
 
 export default function Login() {
   const navigate = useNavigate();
@@ -42,21 +55,17 @@ export default function Login() {
       login(values.email, values.password),
     onSuccess: (user) => {
       if (isOrganizer && user.role !== "organizer") {
-        toast.error(
-          "This is an attendee account. Please use the attendee login page.",
-        );
+        toast.error("This is an attendee account. Please use the attendee login page.");
         logout();
         return;
       }
       if (!isOrganizer && user.role === "organizer") {
-        toast.error(
-          "This is an organizer account. Please use the organizer login page.",
-        );
+        toast.error("This is an organizer account. Please use the organizer login page.");
         logout();
         return;
       }
       toast.success("Logged in successfully.");
-      navigate(user.role === "organizer" ? "/dashboard/overview" : "/");
+      navigate(getPostLoginPath(user));
     },
     onError: (error: Error) => {
       toast.error(error.message || "Something went wrong.");
@@ -70,30 +79,21 @@ export default function Login() {
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
-        const user = await googleAuth(
-          tokenResponse.access_token,
-          isOrganizer ? "organizer" : "attendee",
-        );
+        const user = await googleAuth(tokenResponse.access_token, isOrganizer ? "organizer" : "attendee");
         if (isOrganizer && user.role !== "organizer") {
-          toast.error(
-            "This is an attendee account. Please use the attendee login page.",
-          );
+          toast.error("This is an attendee account. Please use the attendee login page.");
           await logout();
           return;
         }
         if (!isOrganizer && user.role === "organizer") {
-          toast.error(
-            "This is an organizer account. Please use the organizer login page.",
-          );
+          toast.error("This is an organizer account. Please use the organizer login page.");
           await logout();
           return;
         }
         toast.success("Logged in successfully.");
-        navigate(user.role === "organizer" ? "/dashboard/overview" : "/");
+        navigate(getPostLoginPath(user));
       } catch (err) {
-        toast.error(
-          err instanceof Error ? err.message : "Google sign-in failed",
-        );
+        toast.error(err instanceof Error ? err.message : "Google sign-in failed");
       }
     },
     onError: () => {
@@ -102,25 +102,25 @@ export default function Login() {
   });
 
   return (
-    <div className="h-123.5 flex flex-col justify-center ">
-      <div className="mb-3 mt-30">
-        <Link to="/" className="flex items-center gap-2 mb-13.25 w-fit">
-          <img src={UI_ASSETS.Eventraa} className="h-6 w-auto" alt="Eventra" />
-          <p className="font-extrabold text-[27px] dark:text-white font-grotesk tracking-tight">
+    <div className="min-h-[494px] flex flex-col justify-center ">
+      <div className="mb-[12px] mt-[120px]">
+        <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
+          <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
+          <span className="text-[22.8px] font-extrabold text-foreground tracking-[-0.02em]">
             Eventra
-          </p>
+          </span>
           {isOrganizer && (
-            <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-1.25 text-[11px] font-normal font-mono uppercase tracking-wide text-[#0F6E56] dark:text-[#7cda92] w-29.5 text-center md:text-[15px]">
+            <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] dark:bg-[#0F6E56]/20 dark:text-[#4ADE80] w-[118px] text-center text-[15px]">
               Organizer
             </span>
           )}
         </Link>
       </div>
-      <h1 className="text-[34px] font-extrabold mb-3 tracking-[-0.02em] leading-10 text-[#000000] dark:text-white">
+      <h1 className="text-[34px] font-extrabold mb-[12px] tracking-[-0.02em] leading-[40px] text-foreground">
         Welcome back
       </h1>
 
-      <p className="text-[#4A4451] text-[17px] leading-6 mb-6 dark:text-white/80">
+      <p className="text-muted-foreground text-[17px] leading-6 mb-[30px]">
         Sign in to keep your tickets and saved event in one place
       </p>
 
@@ -129,7 +129,7 @@ export default function Login() {
         <div className="space-y-1.5">
           <Label
             htmlFor="email"
-            className="font-medium text-[16px] text-[#232323] tracking-[-0.03em] dark:text-white"
+            className="font-medium text-[16px] text-foreground tracking-[-0.03em]"
           >
             Email
           </Label>
@@ -151,7 +151,7 @@ export default function Login() {
         <div className="space-y-1.5">
           <Label
             htmlFor="password"
-            className="font-medium text-[16px] text-[#232323] tracking-[-0.03em] dark:text-white"
+            className="font-medium text-[16px] text-foreground tracking-[-0.03em]"
           >
             Password
           </Label>
@@ -168,7 +168,7 @@ export default function Login() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-black"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             >
               {showPassword ? (
                 <EyeOff className="h-5 w-5" />
@@ -196,18 +196,18 @@ export default function Login() {
         {/* Remember me row */}
 
         <div className="flex items-center justify-between text-sm mt-[6px] mb-[20px]">
-          <label className="flex items-center gap-2 text-[#232323] cursor-pointer">
+          <label className="flex items-center gap-2 text-foreground cursor-pointer">
             <input
               type="checkbox"
               defaultChecked
-              className="h-4 w-4 rounded border-[#C3C9D3] accent-[#0F6E56]"
+              className="h-4 w-4 rounded border-border accent-[#0F6E56]"
             />
-            <span className="text-[14px] font-bold text-[#4A4451] dark:text-white/50">Remember me</span>
+            <span className="text-[14px] text-muted-foreground">Remember me</span>
           </label>
 
           <Link
             to={authPath("forgot-password", isOrganizer)}
-            className="text-[#0A4F41] font-bold text-[14px] hover:underline dark:text-[#7cda92]"
+            className="text-[#0A4F41] dark:text-[#4ADE80] font-medium text-[14px] hover:underline"
           >
             Forgot Password ?
           </Link>
@@ -216,9 +216,9 @@ export default function Login() {
 
       {/* or divider row */}
 
-      <div className="flex items-center gap-4 my-5 mb-5">
+      <div className="flex items-center gap-4 my-5 mb-[20px]">
         <div className="h-px flex-1 bg-border" />
-        <span className="text-sm text-[#4A4451]">or</span>
+        <span className="text-sm text-muted-foreground">or</span>
         <div className="h-px flex-1 bg-border" />
       </div>
 
@@ -228,19 +228,21 @@ export default function Login() {
         type="button"
         variant="outline"
         onClick={() => handleGoogleLogin()}
-        className="w-full h-12 border-[#E8E6E0] hover:border-[#E8E6E0] text-[#1A1523] font-bold text-[18px] dark:text-white leading-7.25 mb-3.75"
+        className="w-full h-12 border-border hover:border-border text-foreground font-bold text-[18px] leading-[29px] mb-[15px]"
       >
-        <GoogleIcon className="h-6 w-6 mr-2" />
+        <GoogleIcon className="h-4 w-4 mr-2" />
         Sign In with Google
       </Button>
 
-      <p className="text-center text-sm text-[#4A4451] mt-4">
-        Don&apos;t have an account?
+      {/* Bottom text*/}
+
+      <p className="text-center text-sm text-muted-foreground mt-6">
+        Don't have an account?
         <Link
           to={authPath("register", isOrganizer)}
-          className="text-[#0F6E56] font-medium hover:underline dark:text-[#7cda92]"
+          className="text-[#0F6E56] dark:text-[#4ADE80] font-medium hover:underline"
         >
-          <span className="ml-1.5">Sign up</span>
+          Sign up
         </Link>
       </p>
     </div>

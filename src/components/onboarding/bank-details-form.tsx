@@ -1,13 +1,13 @@
 import { useFormContext, useWatch } from "react-hook-form"
 import { useState, useEffect } from "react"
-import { useQuery } from "@tanstack/react-query"
 import { FormBox } from "../ui/form-box"
 import type { OnboardingValues } from "@/lib/schema"
 import user from "@/assets/user.png"
 import bankImg from "@/assets/onboarding-bank.png"
 import lock from "@/assets/onboarding-lock.png"
-import { listBanks, resolveBankAccount } from "@/lib/onboarding-api"
+import { useListBanks, useResolveBankAccount } from "@/hooks/use-onboarding"
 import { CheckCircle2, Loader2 } from "lucide-react"
+import { humanizeBankResolveError } from "@/lib/utils"
 
 const BankDetailsForm = () => {
     const {
@@ -17,11 +17,8 @@ const BankDetailsForm = () => {
         formState: { errors },
     } = useFormContext<OnboardingValues>()
 
-    const { data: banks = [] } = useQuery({
-        queryKey: ["banks"],
-        queryFn: listBanks,
-        staleTime: Infinity, // bank list barely changes
-    })
+    const { data: banks = [] } = useListBanks()
+    const resolveAccountMutation = useResolveBankAccount()
 
     const bankNames = banks.map((b) => b.name)
 
@@ -30,7 +27,6 @@ const BankDetailsForm = () => {
         name: ["bank", "accountNumber"],
     })
 
-    const [isVerifying, setIsVerifying] = useState(false)
     const [verifiedName, setVerifiedName] = useState<string | null>(null)
     const [verifyError, setVerifyError] = useState<string | null>(null)
 
@@ -43,27 +39,31 @@ const BankDetailsForm = () => {
 
         if (!selectedBank || !isValidAccountNumber) return
 
-        const timeout = setTimeout(async () => {
-            setIsVerifying(true)
-            try {
-                const result = await resolveBankAccount({
-                    accountNumber,
-                    bankCode: selectedBank.code,
-                })
-                setVerifiedName(result.accountName)
-                // auto-fill the account holder name field with the verified name
-                setValue("accountHolderName", result.accountName, { shouldValidate: true })
-            } catch (err) {
-                setVerifyError(
-                    err instanceof Error ? err.message : "Couldn't verify this account. Check the details and try again."
-                )
-            } finally {
-                setIsVerifying(false)
-            }
+        const timeout = setTimeout(() => {
+            resolveAccountMutation.mutate(
+                { accountNumber, bankCode: selectedBank.code },
+                {
+                    onSuccess: (result) => {
+                        setVerifiedName(result.accountName)
+                        // auto-fill the account holder name field with the verified name
+                        setValue("accountHolderName", result.accountName, { shouldValidate: true })
+                    },
+                    onError: (err) => {
+                        setVerifyError(
+                            humanizeBankResolveError(
+                                err instanceof Error ? err.message : "Couldn't verify this account. Check the details and try again."
+                            )
+                        )
+                    },
+                }
+            )
         }, 600) // small debounce so it doesn't fire on every keystroke
 
         return () => clearTimeout(timeout)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [bankName, accountNumber, banks, setValue])
+
+    const isVerifying = resolveAccountMutation.isPending
 
     return (
         <div className="flex flex-col gap-5">
@@ -130,19 +130,19 @@ const BankDetailsForm = () => {
             </div>
 
             {isVerifying && (
-                <p className="flex items-center gap-2 text-sm text-[#4A4451]">
+                <p className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Verifying account…
                 </p>
             )}
             {verifiedName && !isVerifying && (
-                <p className="flex items-center gap-2 text-sm text-[#0F6E56] font-medium">
+                <p className="flex items-center gap-2 text-sm text-[#0F6E56] dark:text-[#4ADE80] font-medium">
                     <CheckCircle2 className="h-4 w-4" />
                     Verified: {verifiedName}
                 </p>
             )}
             {verifyError && !isVerifying && (
-                <p className="text-sm text-red-600">{verifyError}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">{verifyError}</p>
             )}
         </div>
     )

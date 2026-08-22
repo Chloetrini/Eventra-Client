@@ -1,5 +1,5 @@
 import type { EventFormValues } from "@/lib/schema"
-import { formatDate, formatTime } from "@/lib/utils"
+import { formatDate, formatNaira, formatTime } from "@/lib/utils"
 import { useFormContext, useWatch } from "react-hook-form"
 
 type EventReviewRow = {
@@ -23,7 +23,7 @@ const EventReview = () => {
                     ? `Ticket ${id + 1}: ${ticket?.name || "—"}`
                     : "Ticket type",
                 value: ticket
-                    ? `₦${ticket.price ?? 0} · ${ticket.quantity ?? "—"} available`
+                    ? `${formatNaira(ticket.price ?? 0)} · ${ticket.quantity ?? "—"} available`
                     : "—",
             }))
             : [{ label: "Ticket types", value: "—" }])
@@ -37,7 +37,7 @@ const EventReview = () => {
     const rows: EventReviewRow[] = [
         {
             label: "Name",
-            value: values.eventName || "—"
+            value: values.title || "—"
         },
         // {
         //     label: "Type",
@@ -57,7 +57,9 @@ const EventReview = () => {
         },
         {
             label: "Location",
-            value: values.address || "—"
+            value: values.locationType === "online"
+                ? (values.onlinePlatform || "Online")
+                : (values.address || "—")
         },
         ...ticketRows,
     ]
@@ -65,19 +67,19 @@ const EventReview = () => {
     return (
         <div className="w-full flex flex-col">
             <div className="">
-                {rows.map((row, id) => {
+                {rows.map((row) => {
                     return (
                         <div
                             key={row.label}
-                            className={`w-full bg-white border-[#E8E6E0] border-b  px-3 py-3 flex items-center justify-between gap-6`}
+                            className={`w-full bg-card border-border border-b  px-3 py-3 flex items-center justify-between gap-6`}
                         >
                             <div className="flex items-center gap-2 md:gap-4 shrink-0">
-                                <p className="font-grotesk text-[#3A3A3A]">
+                                <p className="font-grotesk text-muted-foreground">
                                     {row.label}
                                 </p>
                             </div>
 
-                            <p className="font-grotesk text-[#1A1523] text-right min-w-0 break-words font-medium">
+                            <p className="font-grotesk text-foreground text-right min-w-0 break-words font-medium">
                                 {row.value}
                             </p>
                         </div>

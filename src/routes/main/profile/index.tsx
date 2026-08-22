@@ -2,20 +2,52 @@
 import ProfileHeader from '@/components/profile-settings/ProfileHeader';
 import SettingsForm from "@/components/profile-settings/SettingsForm";
 import NToggles from '@/components/profile-settings/NToggles';
-import ProfileSettingsSkeleton from '@/components/profile-settings/ProfileSettingsSkeleton';
-import { useAuth } from '@/context/auth.context';
+import { ProfileSkeleton } from '@/components/skeletons/profile-skeleton';
+import { useAuth, type User } from '@/context/auth.context';
 import { toast } from 'react-toastify';
-import PageWrapper from '@/components/pageWrapper';
+import PageWrapper from '@/components/page-wrapper';
+import { useUpdateProfile, useUploadAvatar } from '@/hooks/use-profile';
+import { z } from 'zod';
+import { profileSchema } from '@/lib/schema';
+
+type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function SettingsPage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, setUser } = useAuth();
+  const updateProfileMutation = useUpdateProfile();
+  const uploadAvatarMutation = useUploadAvatar();
 
-  const handleSave = async (data: any) => {
-    toast.info("Profile update isn't wired to the backend yet.");
+  const handleSave = async (data: ProfileFormValues) => {
+    try {
+      // Email isn't updatable here (the backend doesn't accept it on this
+      // endpoint) — only send the fields it actually supports.
+      const updatedUser = await updateProfileMutation.mutateAsync({
+        fullname: data.fullName,
+        phone: data.phone,
+        city: data.city,
+      });
+      // The endpoint already hands back the fresh user — write it straight
+      // into the shared cache so the navbar/sidebar/this page all update
+      // immediately, instead of relying on a second refetch round-trip.
+      setUser(updatedUser as User);
+      toast.success("Profile updated");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not update profile");
+    }
+  };
+
+  const handleAvatarSelect = async (file: File) => {
+    try {
+      const updatedUser = await uploadAvatarMutation.mutateAsync(file);
+      setUser(updatedUser as User);
+      toast.success("Profile picture updated");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not upload picture");
+    }
   };
 
   if (isLoading) {
-    return <ProfileSettingsSkeleton />;
+    return <ProfileSkeleton />;
   }
 
   if (!user) {
@@ -26,29 +58,23 @@ export default function SettingsPage() {
     );
   }
 
-  const initials = (user.fullname ?? "")
-    .split(' ')
-    .map((n) => n[0])
-    .filter(Boolean)
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-    
 const memberSince = typeof user.createdAt === "string"
     ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : '';
 
   return (
     <>
-    
+
       <PageWrapper className='p-[20px]'>
           <ProfileHeader
             user={{
               fullName: user.fullname,
               email: user.email,
               memberSince,
-              initials,
+              avatarUrl: user.avatarUrl,
             }}
+            onAvatarSelect={handleAvatarSelect}
+            isUploadingAvatar={uploadAvatarMutation.isPending}
             />
           <SettingsForm
             user={{
@@ -60,9 +86,9 @@ const memberSince = typeof user.createdAt === "string"
             onSave={handleSave}
             />
           <NToggles />
-       
+
       </PageWrapper>
-    
+
     </>
   );
 }

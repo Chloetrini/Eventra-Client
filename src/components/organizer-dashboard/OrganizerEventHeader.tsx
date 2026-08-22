@@ -23,19 +23,19 @@ export default function OrganizerEventHeader({
     switch (event.status) {
       case 'LIVE':
         return (
-          <span className="inline-flex items-center rounded-full bg-[#E4F1EB] px-3.75 py-1.25 text-[10px] font-bold tracking-widest text-[#0F6E56] uppercase font-space">
+          <span className="inline-flex items-center rounded-full bg-[#E4F1EB] px-3.75 py-1.25 text-[10px] font-bold tracking-widest text-[#0F6E56] uppercase font-space dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]">
             LIVE
           </span>
         );
       case 'SOLD OUT':
         return (
-          <span className="inline-flex items-center rounded-full bg-[#18181b] px-2.5 py-0.5 text-[10px] font-bold tracking-widest text-white uppercase">
+          <span className="inline-flex items-center rounded-full bg-[#18181b] px-2.5 py-0.5 text-[10px] font-bold tracking-widest text-white uppercase dark:bg-zinc-100 dark:text-zinc-900">
             SOLD OUT
           </span>
         );
       case 'REJECTED':
         return (
-          <span className="inline-flex items-center rounded-full bg-[#fee2e2] px-3.75 py-1.25 text-[10px] font-bold tracking-widest text-[#b91c1c] uppercase">
+          <span className="inline-flex items-center rounded-full bg-[#fee2e2] px-3.75 py-1.25 text-[10px] font-bold tracking-widest text-[#b91c1c] uppercase dark:bg-[#b91c1c]/15 dark:text-[#FCA5A5]">
             REJECTED
           </span>
         );
@@ -52,13 +52,13 @@ export default function OrganizerEventHeader({
   const renderPaymentBadge = () => {
     if (event.paymentType === 'FREE') {
       return (
-        <span className="inline-flex items-center rounded-full bg-[#F4DFB6] px-3.75 py-1.25 text-[10px] font-bold tracking-widest text-[#7A4E02] uppercase">
+        <span className="inline-flex items-center rounded-full bg-[#F4DFB6] px-3.75 py-1.25 text-[10px] font-bold tracking-widest text-[#7A4E02] uppercase dark:bg-[#7A4E02]/20 dark:text-[#FBBF24]">
           FREE
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center rounded-full bg-[#dcfce7] px-2.5 py-0.5 text-[10px] font-bold tracking-widest text-[#15803d] uppercase">
+      <span className="inline-flex items-center rounded-full bg-[#dcfce7] px-2.5 py-0.5 text-[10px] font-bold tracking-widest text-[#15803d] uppercase dark:bg-[#15803d]/20 dark:text-[#4ADE80]">
         PAID
       </span>
     );
@@ -76,15 +76,15 @@ export default function OrganizerEventHeader({
       </button>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h1 className="text-2xl sm:text-3xl font-grotesk font-bold text-[#1A1523] dark:text-zinc-50 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-grotesk font-bold text-foreground tracking-tight">
           {event.title}
         </h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
             type="button"
             variant="outline"
             onClick={onPreview}
-            className="h-8 rounded-lg px-3.5 text-sm font-bold text-[#1A1523] border-[#E4DFD9] hover:bg-[#1A1523] hover:text-white dark:border-zinc-800 dark:text-zinc-300"
+            className="h-8 rounded-lg px-3.5 text-sm font-bold text-foreground border-border hover:bg-[#1A1523] hover:text-white dark:hover:bg-zinc-800"
           >
             Preview
           </Button>
@@ -93,7 +93,7 @@ export default function OrganizerEventHeader({
             type="button"
             variant="outline"
             onClick={onShare}
-            className="h-8 rounded-lg px-3.5 text-sm font-bold text-[#1A1523] border-[#E4DFD9] hover:bg-[#1A1523] hover:text-white dark:border-zinc-800 dark:text-zinc-300"
+            className="h-8 rounded-lg px-3.5 text-sm font-bold text-foreground border-border hover:bg-[#1A1523] hover:text-white dark:hover:bg-zinc-800"
           >
             Share
           </Button>

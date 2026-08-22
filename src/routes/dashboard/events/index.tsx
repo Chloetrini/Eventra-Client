@@ -6,19 +6,19 @@ import { AccountReviewBanner } from "@/components/account-review-banner";
 import { EventsHeader } from "@/components/events-header";
 import { EventsFilterBar } from "@/components/events-filter-bar";
 import { EventsTable } from "@/components/events-table";
+import { EventsSkeleton } from "@/components/skeletons/events-skeleton";
 import { useEffect, useState } from "react";
-import { DeleteEventDialog } from "@/components/delete-event-dialog";
-import { useOrganizerStatus } from "@/lib/organizer-api";
-import { deleteEvent } from "@/lib/events-api";
-import { toast } from "react-toastify";
-import { useQueryClient } from "@tanstack/react-query";
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
 
 const STATUS_MAP: Record<string, Event["status"]> = {
   live: "Live",
   draft: "Draft",
+  pending: "Pending",
   "sold-out": "Sold out",
   past: "Past",
   rejected: "Rejected",
+  cancelled: "Cancelled",
+  postponed: "Postponed",
 };
 
 export default function Events() {
@@ -30,49 +30,26 @@ export default function Events() {
     queryKey: ["events"],
     queryFn: fetchMyEvents,
   });
-  console.log(
-    "events data:",
-    "isLoading:",
-    isLoading,
-    "isError:",
-    isError,
-  );
   const { status } = useOrganizerStatus();
-  const [events, setEvents] = useState<Event[]> ([])
-  const queryClient = useQueryClient();
+  const { bankStatus } = useOrganizerBankStatus();
+  const { isProfileComplete } = useOrganizerProfileComplete();
+  const [events, setEvents] = useState<Event[]>([])
 
   useEffect(() => {
-    if (data) setEvents (data)
+    if (data) setEvents(data)
   }, [data])
 
 
   const [searchParams] = useSearchParams();
   const activeStatus = searchParams.get("status") ?? "all";
   const searchQuery = searchParams.get("q") ?? "";
-  const [deletingEvent, setDeletingEvent] =  useState<Event | null>(null)
 
- const handleDelete = async (eventId: string) => {
-  try {
-    await deleteEvent(eventId);
+  // EventActionsMenu already deletes the event and invalidates the query
+  // cache itself — this just drops the row immediately instead of
+  // waiting on the next refetch.
+  const handleEventDeleted = (eventId: string) => {
     setEvents((prev) => prev.filter((e) => e._id !== eventId));
-    queryClient.invalidateQueries({ queryKey: ["my-events"] }); // ensures fresh data on next load
-    toast.success("Event deleted");
-  } catch (err) {
-    toast.error(err instanceof Error ? err.message : "Could not delete event. Please try again.");
-  }
-};
-
-  const handleDuplicate = (event: Event) => {
-    const duplicated: Event = {
-        ...event,
-        _id: crypto.randomUUID(),   //crypto.randomUUID() is a built-in browser function that generates a random unique string,
-        eventTitle:`${event.eventTitle} (copy)`,
-        status: "Draft"
-    };
-    setEvents((prev) => [duplicated, ...prev])
-  }
-
-
+  };
 
   const filteredEvents = events?.filter((event) => {
     const matchesStatus =
@@ -86,36 +63,26 @@ export default function Events() {
   });
 
   if (isLoading) {
-    return (
-      <p className="text-center py-12 text-sm text-muted-foreground">
-        Loading Events...
-      </p>
-    );
+    return <EventsSkeleton />;
   }
 
   if (isError) {
     return (
-      <p className="text-center py-12 text-sm text-red-500">
+      <p className="text-center py-12 text-sm text-destructive">
         Something went wrong loading events.
       </p>
     );
   }
 
   return (
-    <div className="max-w-[1145px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      <AccountReviewBanner status={status} />
+    <div className="space-y-6">
+      <AccountReviewBanner
+        status={status}
+        bankStatus={bankStatus}
+        isProfileComplete={isProfileComplete} />
       <EventsHeader />
       <EventsFilterBar />
-      <EventsTable events={filteredEvents}
-      onDuplicate={handleDuplicate}
-      onDeleteRequest={setDeletingEvent} />
-
-      <DeleteEventDialog event={deletingEvent} 
-      open={deletingEvent !== null}
-      onOpenChange={(open) => !open && setDeletingEvent(null)}
-      onConfirm={handleDelete}/>
-       
-      
+      <EventsTable events={filteredEvents} onEventDeleted={handleEventDeleted} />
     </div>
   );
 }

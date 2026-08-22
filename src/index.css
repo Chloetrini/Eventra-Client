@@ -64,6 +64,12 @@
 }
 
 :root {
+    /* Without this, the browser renders native UI (select/dropdown popups,
+       date pickers, scrollbars) using its OS light theme regardless of our
+       .dark class — Tailwind's dark class only affects our own CSS, not
+       browser-native chrome. This is what made category/time dropdowns
+       show up white-on-white in dark mode. */
+    color-scheme: light;
     --background: oklch(1 0 0);
     --foreground: oklch(0.148 0.004 228.8);
     --card: oklch(1 0 0);
@@ -96,9 +102,25 @@
     --sidebar-accent-foreground: oklch(0.218 0.008 223.9);
     --sidebar-border: oklch(0.925 0.005 214.3);
     --sidebar-ring: oklch(0.723 0.014 214.4);
+
+    /* Brand green used for single-series charts (e.g. the Revenue line) —
+       paired with a lighter dark-mode step so the line/fill stay visible
+       against the dark card surface instead of reading as near-black. */
+    --chart-line: #0F6E56;
+
+    /* Brand-matched categorical palette for dashboard charts (Tickets by
+       type, etc.) — validated with the dataviz skill's validate_palette.js
+       for CVD separation, lightness band and contrast (light mode set).
+       Fixed slot order, never cycled per-render. */
+    --chart-cat-1: #12946F; /* green */
+    --chart-cat-2: #C97A17; /* amber */
+    --chart-cat-3: #524A9E; /* indigo */
+    --chart-cat-4: #B23A5E; /* rose */
+    --chart-cat-5: #2C6FA8; /* blue */
 }
 
 .dark {
+    color-scheme: dark;
     --background: oklch(0.148 0.004 228.8);
     --foreground: oklch(0.987 0.002 197.1);
     --card: oklch(0.218 0.008 223.9);
@@ -122,6 +144,17 @@
     --chart-3: oklch(0.45 0.017 213.2);
     --chart-4: oklch(0.378 0.015 216);
     --chart-5: oklch(0.275 0.011 216.9);
+
+    --chart-line: #4ADE80;
+
+    /* Same brand-matched categorical set, re-stepped for the dark surface
+       and re-validated (lightness band, chroma floor, CVD separation all
+       pass against --surface #1a1a19). */
+    --chart-cat-1: #1AA87A;
+    --chart-cat-2: #B87D25;
+    --chart-cat-3: #8B84D6;
+    --chart-cat-4: #D66F92;
+    --chart-cat-5: #4E8FC7;
     --sidebar: oklch(0.218 0.008 223.9);
     --sidebar-foreground: oklch(0.987 0.002 197.1);
     --sidebar-primary: oklch(0.488 0.243 264.376);

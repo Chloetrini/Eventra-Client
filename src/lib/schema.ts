@@ -29,6 +29,9 @@ export const registerSchema = z.object({
     .regex(/\d/, {
       message: 'Password must contain at least one number',
     }),
+  confirmPassword: z.string({
+    message: 'Password confirmation is required',
+  }),
   companyName: z.string({
     message: 'Company name is required',
   }),
@@ -44,6 +47,9 @@ export const registerSchema = z.object({
     .regex(/^\+?[0-9\s\-()]+$/, {
       message: 'Invalid phone number',
     }),
+}).refine(data => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
 })
 
 
@@ -126,6 +132,7 @@ export const lineupMemberSchema = z.object({
 export const ticketTypeSchema = z.object({
   _id: z.string(),
   name: z.string(),
+  description: z.string().optional(),
   price: z.number(),
   quantity: z.number(),
   quantitySold: z.number(),
@@ -369,7 +376,7 @@ export const eventTypeSchema = z.object({
 })
 
 export const eventBasicsSchema = z.object({
-  eventName: z.string().min(3, { message: "Event name must be at least 3 characters long" }),
+  title: z.string().min(3, { message: "Event name must be at least 3 characters long" }),
   category: z.string().min(1, "Please select a category"),
   date: z.string().min(1, { message: "Please select a date" }),
   startTime: z.string().min(1, { message: "Please select a start time - click on the clock icon to set time" }),
@@ -382,8 +389,10 @@ export const locationSchema = z.object({
   locationType: z.enum(["physical", "online"], { message: "Please select a location type" }),
   venueName: z.string().optional(),
   address: z.string().optional(),
-  platform: z.string().optional(),
-  link: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  onlinePlatform: z.string().optional(),
+  onlineJoinLink: z.string().optional(),
 })
 
 export const freeEventRSVPSchema = z.object({
@@ -394,16 +403,20 @@ export const freeEventRSVPSchema = z.object({
 export const ticketsSchema = z.object({
   tickets: z.array(
     z.object({
-      name: z.string().min(1, { message: "Ticket type is required" }),
+      id: z.string().optional(), // present for existing ticket types loaded on edit; absent for new ones
+      name: z.string().optional(),
+      description: z.string().optional(),
       price: z.coerce.number().optional(),
       quantity: z.coerce.number().optional(),
-      limitPerPerson: z.coerce.number().optional(),
+      purchaseLimitPerPerson: z.coerce.number().optional(),
     })
   ),
 })
 
 export const refundPolicySchema = z.object({
   hasRefundPolicy: z.boolean(),
+  refundPolicyType: z.enum(["no-refunds", "refund-until-days-before"]).optional(),
+  refundDaysBefore: z.coerce.number().optional(),
 })
 
 export const lineupSchema = z.object({
@@ -411,18 +424,20 @@ export const lineupSchema = z.object({
   acts: z.array(
     z.object({
       name: z.string().min(1, { message: "Act/session name is required" }),
+      role: z.string().min(1, { message: "Role is required" }),
+      imageUrl: z.string().optional(),
     })
   ),
 })
 
-export const gallerySchema = z.object({
-  hasGallery: z.boolean(),
-  photos: z.array(
-    z.object({
-      url: z.string().min(1, { message: "Photo is required" }),
-    })
-  ),
-})
+// export const gallerySchema = z.object({
+//   hasGallery: z.boolean(),
+//   photos: z.array(
+//     z.object({
+//       url: z.string().min(1, { message: "Photo is required" }),
+//     })
+//   ).min(1, { message: "Add at least one photo" }),
+// })
 
 export const agePolicySchema = z.object({
   hasAgePolicy: z.boolean(),
@@ -435,7 +450,7 @@ export const eventFormSchema = eventTypeSchema
   .merge(freeEventRSVPSchema)
   .merge(ticketsSchema)
   .merge(lineupSchema)
-  .merge(gallerySchema)
+  // .merge(gallerySchema)
   .merge(agePolicySchema)
   .merge(refundPolicySchema)
   .superRefine((data, ctx) => {
@@ -455,20 +470,34 @@ export const eventFormSchema = eventTypeSchema
           message: "Address must be at least 5 characters long",
         })
       }
+      if (!data.city || data.city.trim().length < 2) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["city"],
+          message: "City is required",
+        })
+      }
+      if (!data.state || data.state.trim().length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["state"],
+          message: "Please select a state",
+        })
+      }
     }
 
     if (data.locationType === "online") {
-      if (!data.platform || data.platform.trim().length === 0) {
+      if (!data.onlinePlatform || data.onlinePlatform.trim().length === 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["platform"],
+          path: ["onlinePlatform"],
           message: "Please select a platform",
         })
       }
-      if (!data.link || !z.string().url().safeParse(data.link).success) {
+      if (!data.onlineJoinLink || !z.string().url().safeParse(data.onlineJoinLink).success) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["link"],
+          path: ["onlineJoinLink"],
           message: "Please enter a valid URL",
         })
       }
@@ -514,10 +543,10 @@ export const eventFormSchema = eventTypeSchema
             message: "Quantity must be at least 1",
           })
         }
-        if (ticket.limitPerPerson !== undefined && ticket.limitPerPerson < 1) {
+        if (ticket.purchaseLimitPerPerson !== undefined && ticket.purchaseLimitPerPerson < 1) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            path: ["tickets", i, "limitPerPerson"],
+            path: ["tickets", i, "purchaseLimitPerPerson"],
             message: "Limit must be at least 1",
           })
         }
@@ -534,24 +563,31 @@ export const eventFormSchema = eventTypeSchema
         })
       }
       data.acts.forEach((act, i) => {
-        if (!act.name || act.name.trim().length === 0) {
+        if (data.hasLineup && !act.name || act.name.trim().length === 0) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ["acts", i, "name"],
             message: "Act/session name is required",
           })
         }
+        if (data.hasLineup && !act.role || act.role.trim().length === 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["acts", i, "role"],
+            message: "Role is required",
+          })
+        }
       })
     }
 
     // Gallery — at least one photo, only if gallery is on
-    if (data.hasGallery && data.photos.length === 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["photos"],
-        message: "Upload at least one photo",
-      })
-    }
+    // if (data.hasGallery && data.photos.length === 0) {
+    //   ctx.addIssue({
+    //     code: z.ZodIssueCode.custom,
+    //     path: ["photos"],
+    //     message: "Upload at least one photo",
+    //   })
+    // }
 
     // Policy — text required, only if policy switch is on
     if (data.hasAgePolicy && (!data.policyText || data.policyText.trim().length === 0)) {
@@ -561,6 +597,24 @@ export const eventFormSchema = eventTypeSchema
         message: "Policy details are required",
       })
     }
+
+// Refund policy — type required if switch is on, daysBefore required only for that specific type
+    if (data.hasRefundPolicy) {
+      if (!data.refundPolicyType) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["refundPolicyType"],
+          message: "Please select a refund policy type",
+        })
+      }
+      if (data.refundPolicyType === "refund-until-days-before" && (!data.refundDaysBefore || data.refundDaysBefore < 1)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["refundDaysBefore"],
+          message: "Enter how many days before the event refunds close",
+        })
+      }
+    }
   })
 
 export type EventFormValues = z.infer<typeof eventFormSchema>
@@ -568,7 +622,7 @@ export type EventFormValues = z.infer<typeof eventFormSchema>
 export const TYPE_FIELDS: Path<EventFormValues>[] = ["eventType"]
 
 export const BASICS_FIELDS: Path<EventFormValues>[] = [
-  "eventName",
+  "title",
   "category",
   "date",
   "startTime",
@@ -581,8 +635,10 @@ export const LOCATION_FIELDS: Path<EventFormValues>[] = [
   "locationType",
   "venueName",
   "address",
-  "platform",
-  "link",
+  "city",
+  "state",
+  "onlinePlatform",
+  "onlineJoinLink",
 ]
 
 export const RSVP_FIELDS: Path<EventFormValues>[] = [
@@ -595,9 +651,11 @@ export const TICKETS_FIELDS: Path<EventFormValues>[] = ["tickets"]
 export const DETAILS_FIELDS: Path<EventFormValues>[] = [
   "hasLineup",
   "acts",
-  "hasGallery",
-  "photos",
+  // "hasGallery",
+  // "photos",
   "hasAgePolicy",
   "policyText",
   "hasRefundPolicy",
+  "refundPolicyType",
+  "refundDaysBefore",
 ]

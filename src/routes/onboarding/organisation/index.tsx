@@ -3,24 +3,22 @@ import { useNavigate } from "react-router"
 import OrganisationForm from "@/components/onboarding/organisation-form"
 import PageSwitcher from "@/components/onboarding/page-switcher"
 import { ORGANISATION_FIELDS, type OnboardingValues } from "@/lib/schema"
-import PageWrapper from "@/components/pageWrapper"
-import { useState } from "react"
+import PageWrapper from "@/components/page-wrapper"
 import { toast } from "react-toastify"
-import { saveOrganizerProfile } from "@/lib/onboarding-api"
+import { useSaveOrganizerProfile } from "@/hooks/use-onboarding"
 
 const OrganisationPage = () => {
     const navigate = useNavigate()
     const { trigger, getValues } = useFormContext<OnboardingValues>()
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    const saveProfileMutation = useSaveOrganizerProfile()
 
     const handleContinue = async () => {
         const isValid = await trigger([...ORGANISATION_FIELDS])
         if (!isValid) return
 
-        setIsSubmitting(true)
         try {
             const values = getValues()
-            await saveOrganizerProfile({
+            await saveProfileMutation.mutateAsync({
                 businessName: values.organizationName,
                 category: values.category,
                 city: values.city,
@@ -31,8 +29,6 @@ const OrganisationPage = () => {
             navigate("/onboarding/bank-account")
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Could not save this step. Please try again.")
-        } finally {
-            setIsSubmitting(false)
         }
     }
 
@@ -40,9 +36,9 @@ const OrganisationPage = () => {
         <PageWrapper className="w-full">
             <div className="px-5 py-10 lg:pl-10 lg:pr-60 lg:py-20 flex flex-col gap-10">
                 <div>
-                    <p className='text-[#0F6E56] '>STEP 1 OF 3</p>
+                    <p className='text-[#0F6E56] dark:text-[#4ADE80]'>STEP 1 OF 3</p>
                     <h3 className="font-grotesk font-bold text-[34px]">About your organization</h3>
-                    <p className="font-grotesk font-medium text-[18px] text-[#4A4451]">This is what attendees see on your events and profile.</p>
+                    <p className="font-grotesk font-medium text-[18px] text-muted-foreground">This is what attendees see on your events and profile.</p>
                 </div>
                 <div className="w-full">
                     <OrganisationForm />
@@ -51,7 +47,7 @@ const OrganisationPage = () => {
                     <PageSwitcher
                         disableBack={true}
                         continueOnClick={handleContinue}
-                        disablecontinue={isSubmitting}
+                        disablecontinue={saveProfileMutation.isPending}
                     />
                 </div>
             </div>

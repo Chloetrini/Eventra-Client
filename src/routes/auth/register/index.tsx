@@ -6,14 +6,11 @@ import { toast } from "react-toastify";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
-import { UI_ASSETS } from "@/lib/assets";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  attendeeRegisterSchema,
-  type AttendeeRegisterValues,
-} from "@/lib/schema";
+import { attendeeRegisterSchema, type AttendeeRegisterValues } from "@/lib/schema";
 import EventraLogo from "@/assets/Eventra-logo.png";
 import { authPath } from "@/lib/auth-path";
 import { useAuth } from "@/context/auth.context";
@@ -63,32 +60,23 @@ export default function Register() {
   const handleGoogleSignup = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
-        const user = await googleAuth(
-          tokenResponse.access_token,
-          isOrganizer ? "organizer" : "attendee",
-        );
+        const user = await googleAuth(tokenResponse.access_token, isOrganizer ? "organizer" : "attendee");
 
         if (isOrganizer && user.role !== "organizer") {
-          toast.error(
-            "This is an attendee account. Please use the attendee login page.",
-          );
+          toast.error("This is an attendee account. Please use the attendee login page.");
           await logout();
           return;
         }
         if (!isOrganizer && user.role === "organizer") {
-          toast.error(
-            "This is an organizer account. Please use the organizer login page.",
-          );
+          toast.error("This is an organizer account. Please use the organizer login page.");
           await logout();
           return;
         }
 
         toast.success("Account ready!");
-        navigate(user.role === "organizer" ? "/organizer/dashboard" : "/");
+        navigate(user.role === "organizer" ? "/onboarding/organisation" : "/");
       } catch (err) {
-        toast.error(
-          err instanceof Error ? err.message : "Google sign-up failed",
-        );
+        toast.error(err instanceof Error ? err.message : "Google sign-up failed");
       }
     },
     onError: () => {
@@ -98,30 +86,27 @@ export default function Register() {
 
   return (
     <>
-      <Link to="/" className="flex items-center gap-2 mb-12.5 w-fit">
-        <img src={UI_ASSETS.Eventraa} className="h-6 w-auto" alt="Eventra" />
-        <p className="font-extrabold text-[27px] dark:text-white font-grotesk tracking-tight">
+      <Link to="/" className="flex items-center gap-2 mb-[50px] w-fit">
+        <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
+        <span className="text-[22.8px] font-extrabold text-foreground tracking-[-0.02em]">
           Eventra
-        </p>
+        </span>
         {isOrganizer && (
-          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] w-[118px] text-center text-[15px]">
+          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] dark:bg-[#0F6E56]/20 dark:text-[#4ADE80] w-[118px] text-center text-[15px]">
             Organizer
           </span>
         )}
       </Link>
-      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold md:font-extrabold mb-3 tracking-[-0.02em] leading-10 text-[#000000] dark:text-white/90">
+      <h1 className="text-[34px] font-extrabold mb-[12px] tracking-[-0.02em] leading-[40px] text-foreground">
         {isOrganizer ? "Start selling tickets." : "Create your account"}
       </h1>
-      <p className="text-[17px] leading-6 font-normal text-[#4A4451] mb-7.5 font-geist">
-        Join thousands of people discovering and creating unforgettable events
-      </p>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
         {/* Full Name */}
         <div className="space-y-1.5">
           <Label
             htmlFor="fullName"
-            className="font-medium text-[16px] text-[#232323] dark:text-[#d5d1d1] tracking-[-0.03em]"
+            className="font-medium text-[16px] text-foreground tracking-[-0.03em]"
           >
             Full Name
           </Label>
@@ -144,7 +129,7 @@ export default function Register() {
         <div className="space-y-1.5">
           <Label
             htmlFor="email"
-            className="font-medium text-[16px] text-[#232323] dark:text-[#d5d1d1] tracking-[-0.03em]"
+            className="font-medium text-[16px] text-foreground tracking-[-0.03em]"
           >
             Email
           </Label>
@@ -166,7 +151,7 @@ export default function Register() {
         <div className="space-y-1.5">
           <Label
             htmlFor="phoneNumber"
-            className="font-medium text-[16px] text-[#232323] dark:text-[#d5d1d1] tracking-[-0.03em]"
+            className="font-medium text-[16px] text-foreground tracking-[-0.03em]"
           >
             Phone Number
           </Label>
@@ -180,9 +165,7 @@ export default function Register() {
           />
 
           {errors.phoneNumber && (
-            <p className="text-sm text-destructive">
-              {errors.phoneNumber.message}
-            </p>
+            <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>
           )}
         </div>
 
@@ -190,7 +173,7 @@ export default function Register() {
         <div className="space-y-1.5">
           <Label
             htmlFor="password"
-            className="font-medium text-[16px] text-[#232323] dark:text-[#d5d1d1] tracking-[-0.03em]"
+            className="font-medium text-[16px] text-foreground tracking-[-0.03em]"
           >
             Password
           </Label>
@@ -207,7 +190,7 @@ export default function Register() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-black"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             >
               {showPassword ? (
                 <EyeOff className="h-5 w-5" />
@@ -228,7 +211,7 @@ export default function Register() {
         <div className="space-y-1.5">
           <Label
             htmlFor="confirmPassword"
-            className="font-medium text-[16px] text-[#232323] dark:text-[#d5d1d1] tracking-[-0.03em]"
+            className="font-medium text-[16px] text-foreground tracking-[-0.03em]"
           >
             Confirm Password
           </Label>
@@ -245,12 +228,12 @@ export default function Register() {
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-black dark:text-[#d5d1d1]"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             >
               {showConfirmPassword ? (
-                <EyeOff className="h-5 w-5 dark:text-[#d5d1d1]" />
+                <EyeOff className="h-5 w-5" />
               ) : (
-                <Eye className="h-5 w-5 dark:text-[#d5d1d1]" />
+                <Eye className="h-5 w-5" />
               )}
             </button>
           </div>
@@ -265,7 +248,7 @@ export default function Register() {
         <Button
           type="submit"
           disabled={isPending}
-          className="w-full h-12 font-bold text-[18px] tracking-tight text-[#FFFFFF] bg-[#0F6E56] hover:bg-[#FCD98A] hover:text-black"
+          className="w-full h-12 font-bold text-[18px] tracking-[-0.025em] text-[#FFFFFF] bg-[#0F6E56] hover:bg-primary/90"
         >
           {isPending ? "Creating Account..." : "Create Account"}
         </Button>
@@ -273,7 +256,7 @@ export default function Register() {
 
       <div className="flex items-center gap-4 my-6">
         <div className="h-px flex-1 bg-border" />
-        <span className="text-sm text-[#4A4451]">or</span>
+        <span className="text-sm text-muted-foreground">or</span>
         <div className="h-px flex-1 bg-border" />
       </div>
 
@@ -281,17 +264,17 @@ export default function Register() {
         type="button"
         variant="outline"
         onClick={() => handleGoogleSignup()}
-        className="w-full h-12 border-[#E8E6E0] hover:border-[#E8E6E0] text-[#1A1523] dark:hover:text-white font-bold text-[18px] leading-7.25 dark:text-black dark:bg-white"
+        className="w-full h-12 border-border hover:border-border text-foreground font-bold text-[18px] leading-[29px]"
       >
         <GoogleIcon className="h-4 w-4 mr-2" />
         Sign up with Google
       </Button>
 
-      <p className="text-center text-sm text-[#4A4451] mt-6">
+      <p className="text-center text-sm text-muted-foreground mt-6">
         Already have an account?{" "}
         <Link
           to={authPath("login", isOrganizer)}
-          className="text-[#0F6E56] font-medium hover:underline"
+          className="text-[#0F6E56] dark:text-[#4ADE80] font-medium hover:underline"
         >
           Sign in
         </Link>

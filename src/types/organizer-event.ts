@@ -46,4 +46,14 @@ export interface OrganizerEventDetails {
   recentAttendees: RecentAttendee[];
   isPromoted: boolean;
   promotionMessage?: string;
+  /** Only an approved or already-postponed event can be cancelled;
+   * only an approved event can be postponed — mirrors the backend's own
+   * cancelEvent/postponeEvent guards. */
+  canCancel: boolean;
+  canPostpone: boolean;
+  /** Only a draft or rejected event can actually be edited — mirrors the
+   * backend's EDITABLE_STATUSES guard on PATCH /events/:id. A live/pending/
+   * postponed event fails that save with a 400, so the UI should stop the
+   * organizer before they enter the wizard, not after. */
+  canEdit: boolean;
 }

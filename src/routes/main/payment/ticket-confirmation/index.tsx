@@ -71,7 +71,7 @@ const TicketConfirmation = () => {
 
     return (
         <PageWrapper className="p-[20px]">
-            <div className='flex justify-center items-center w-full mb-5'>
+            <div className='flex justify-center items-center w-full mb-6'>
                 <ConfirmatoryMessage
                     _id="1"
                     eventName={eventInfo.eventName}

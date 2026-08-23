@@ -1,6 +1,6 @@
 import PageWrapper from "@/components/page-wrapper";
 import { useEventFilters } from "@/hooks/use-event-filters";
-import { useEvents, useCategories } from "@/hooks/use-event";
+import { useEvents, useCategories, useSpotlightEvents } from "@/hooks/use-event";
 import { EventGrid } from "@/components/events/event-grid";
 import { FeaturedEventsCarousel } from "@/components/events/featured-event-carousel";
 import { FilterSidebar } from "@/components/events/filters/filter-sidebar";
@@ -21,17 +21,18 @@ export default function ExplorePage() {
   const { data, isLoading, isFetching, isError, refetch ,loadMore} = useEvents(filters);
   const { categories } = useCategories();
   const events = data?.events ?? [];
-  // Was `events.find(...)` — grabbed only the FIRST promoted event and
-  // silently dropped every other one (from both the featured spot AND the
-  // grid below, since `rest` already excluded all promoted events). Now
-  // every promoted event shows, cycling through the featured carousel.
-  const featured = events.filter((e) => e.isPromoted);
-  // Featured/promoted events used to be excluded from the grid below (only
-  // shown in the carousel), so a promoted event that matched a search or
-  // filter would vanish — the carousel isn't filtered by search, so it
-  // wasn't a substitute. The grid now always shows every event that
-  // matches the current filters, promoted or not; the carousel is just an
-  // extra highlight on top, not the only place a promoted event appears.
+  // Was `events.filter(e => e.isPromoted)` — that only ever showed whatever
+  // promoted events happened to be on the CURRENT filtered/paginated page,
+  // so the carousel emptied out the moment a search or filter excluded
+  // them, and it had no concept of Explore's own "spotlight" placement
+  // tier vs. the home page's hero/featured tiers. Now it's a real,
+  // independent fetch of the events promoted specifically to Explore
+  // (spotlight package — also includes anything promoted to hero, since
+  // hero implies broader visibility), unaffected by the grid's filters.
+  const { events: featured } = useSpotlightEvents("spotlight", 8);
+  // The grid always shows every event that matches the current filters,
+  // promoted or not; the carousel above is just an extra highlight on top,
+  // not the only place a promoted event appears.
   const rest = events;
   const { savedIds, toggleSave } = useSavedEvents();
 

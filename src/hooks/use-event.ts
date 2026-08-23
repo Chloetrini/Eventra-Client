@@ -1,5 +1,5 @@
 import { useQuery, useInfiniteQuery, keepPreviousData } from "@tanstack/react-query";
-import { fetchEvents, fetchEventBySlug, fetchCategories } from "@/lib/events-api";
+import { fetchEvents, fetchEventBySlug, fetchCategories, fetchSpotlightEvents } from "@/lib/events-api";
 import type { EventFilters } from "@/types/event-types";
 import { fetchEventTickets, fetchMyTickets } from "@/lib/tickets-api";
 
@@ -36,6 +36,19 @@ export function useEvents(filters: EventFilters) {
     refetch: query.refetch,
     loadMore: query.fetchNextPage,
   };
+}
+
+// Promotion placement — one query per placement tier so the home hero,
+// home "Featured this week" section, and Explore's spotlight carousel can
+// each show a different (correctly-scoped) set of promoted events instead
+// of all sharing one client-side `.filter(e => e.isPromoted)` list.
+export function useSpotlightEvents(placement: "hero" | "featured" | "spotlight", limit = 8) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["spotlight-events", placement, limit],
+    queryFn: () => fetchSpotlightEvents(placement, limit),
+    staleTime: 60_000,
+  });
+  return { events: data ?? [], isLoading, isError };
 }
 
 export function useCategories() {

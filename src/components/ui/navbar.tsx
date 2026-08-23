@@ -96,6 +96,17 @@ function Navbar() {
   const { user, logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const isOrganizer = user?.role === "organizer"
+  const isAdmin = user?.role === "admin"
+
+  // An admin has no attendee "Profile" or organizer "Dashboard" — this
+  // dropdown item takes them straight to the admin console's overview
+  // instead. Falls back to the organizer/attendee behavior otherwise.
+  const dashboardPath = isAdmin
+    ? "/admin/overview"
+    : isOrganizer
+      ? "/dashboard/overview"
+      : "/profile"
+  const dashboardLabel = isAdmin || isOrganizer ? "Dashboard" : "Profile"
 
   const ThemeToggleButton = (
     <button
@@ -171,15 +182,15 @@ function Navbar() {
                   <div className="py-[12px] space-y-[8px]">
                     <DropdownMenuItem>
                       <NavLink
-                        to={isOrganizer ? "/dashboard/overview" : "/profile"}
+                        to={dashboardPath}
                         className="flex w-full items-center gap-[14px] px-0 py-[6px] text-[18px] font-bold text-[#1A1523] dark:text-white cursor-pointer hover:text-[#0F6E56]"
                         >
-                        {isOrganizer ? (
+                        {isAdmin || isOrganizer ? (
                           <LayoutDashboard className="h-5 w-5 text-[#1A1523] dark:text-white" />
                         ) : (
                           <UserIcon className="h-5 w-5 text-[#1A1523] dark:text-white" />
                         )}
-                        <span>{isOrganizer ? "Dashboard" : "Profile"}</span>
+                        <span>{dashboardLabel}</span>
                       </NavLink>
                     </DropdownMenuItem>
 
@@ -263,11 +274,11 @@ function Navbar() {
                     </div>
                   </div>
                   <NavLink
-                    to={isOrganizer ? "/dashboard/overview" : "/profile"}
+                    to={dashboardPath}
                     onClick={closeMenu}
                     className="py-1 text-sm font-semibold text-[#1A1523] dark:text-white"
                     >
-                    {isOrganizer ? "Dashboard" : "Profile"}
+                    {dashboardLabel}
                   </NavLink>
                   <NavLink
                     to="/tickets"

@@ -98,8 +98,8 @@ const TicketsByTypeChart: React.FC<TicketsByTypeChartProps> = ({ data }) => {
                   startAngle={90}
                   endAngle={-270}
                 >
-                  {rows.map((row) => (
-                    <Cell key={row.name} fill={row.color} />
+                  {rows.map((row, i) => (
+                    <Cell key={`${row.name}-${i}`} fill={row.color} />
                   ))}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
@@ -114,8 +114,8 @@ const TicketsByTypeChart: React.FC<TicketsByTypeChartProps> = ({ data }) => {
 
           {/* Legend — always present for 2+ series, so identity never relies on color alone. */}
           <div className="flex flex-wrap gap-x-4 gap-y-2 mt-4 pt-4 border-t border-border">
-            {rows.map((row) => (
-              <div key={row.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            {rows.map((row, i) => (
+              <div key={`${row.name}-${i}`} className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <span
                   className="inline-block size-2.5 rounded-full shrink-0"
                   style={{ backgroundColor: row.color }}

@@ -108,14 +108,16 @@ const CreateEventSidebar = () => {
     }
 
     return (
-        // Below `lg` this becomes a horizontally-scrolling step strip instead
-        // of a permanent 257px-wide column — at phone widths a fixed vertical
-        // sidebar would eat most of the screen and leave almost nothing for
-        // the actual form.
-        <div className="lg:w-[289px] lg:shrink-0">
+        // Below `xl` this becomes a horizontally-scrolling step strip instead
+        // of a permanent 289px-wide column — at phone widths (and now
+        // through the 1024-1279px zone too, since the main dashboard
+        // SideBar goes static+320px right at 1024) a fixed vertical sidebar
+        // here would leave almost nothing for the actual form. See the
+        // matching comment in create-event/layout.tsx.
+        <div className="xl:w-[289px] xl:shrink-0">
             <h1 className='font-grotesk font-bold text-[22px] sm:text-[28px] mb-2'>Create Event</h1>
             <div>
-                <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 lg:mx-0 lg:px-0 lg:pb-0 lg:flex-col [&::-webkit-scrollbar]:hidden">
+                <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 xl:mx-0 xl:px-0 xl:pb-0 xl:flex-col [&::-webkit-scrollbar]:hidden">
 
                     {createEventFlow.map((flow, id) => {
                         const isActive = flow.paths.includes(currentPath)

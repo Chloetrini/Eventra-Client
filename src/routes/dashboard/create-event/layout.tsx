@@ -215,7 +215,19 @@ const CreateEventLayout = () => {
   return (
     <FormProvider {...methods}>
       <div className='h-full min-h-0'>
-        <div className='flex flex-col lg:flex-row gap-4 lg:gap-8 pt-4 lg:pt-10 h-full min-h-0'>
+        {/* This used to switch to the side-by-side layout at `lg` (1024px) —
+            the same breakpoint where the main dashboard's own SideBar (now
+            320px wide, see SideBar.tsx) also goes from an off-canvas drawer
+            to a permanent static column. Both switching at once meant that,
+            right at 1024px and for a good stretch above it, the page had to
+            fit the 320px organizer sidebar AND this 289px step sidebar
+            side by side, leaving too little room for the actual form and
+            forcing it to scroll horizontally. Pushing this one switch out
+            to `xl` (1280px) keeps the step list as the horizontal strip
+            (which already looked fine below 1024) all the way through that
+            squeeze zone, only going side-by-side once there's real width
+            to share it with the organizer sidebar. */}
+        <div className='flex flex-col xl:flex-row gap-4 xl:gap-8 pt-4 xl:pt-10 h-full min-h-0'>
           <CreateEventSidebar />
           <div className='flex-1 min-w-0 min-h-0 overflow-y-auto'>
             <Outlet />

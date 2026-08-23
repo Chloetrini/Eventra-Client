@@ -255,7 +255,29 @@ export const bankSchema = z.object({
 })
 
 /**
- * STEP 3 — Review. The terms checkbox gates the final submit.
+ * STEP 3 — Verification documents. All three required — the backend
+ * hard-requires cacCertificateUrl/directorIdUrl/proofOfAddressUrl before an
+ * organizer profile can be submitted for approval
+ * (submitOrganizerProfileForReview's REQUIRED_FOR_SUBMISSION check), so the
+ * form has to require them too or Continue would look enabled right up
+ * until the submit call fails.
+ *
+ * The matching *PublicId fields aren't validated — they're just carried
+ * through form state so this step can send them along on re-upload for
+ * cleanup (see upsertOrganizerProfile's "replace deletes the old
+ * Cloudinary file" behavior).
+ */
+export const verificationSchema = z.object({
+  cacCertificateUrl: z.string().min(1, "Please upload your CAC certificate"),
+  cacCertificatePublicId: z.string().optional(),
+  directorIdUrl: z.string().min(1, "Please upload a director's government ID"),
+  directorIdPublicId: z.string().optional(),
+  proofOfAddressUrl: z.string().min(1, "Please upload a proof of address"),
+  proofOfAddressPublicId: z.string().optional(),
+})
+
+/**
+ * STEP 4 — Review. The terms checkbox gates the final submit.
  */
 export const termsSchema = z.object({
   terms: z.boolean().refine((checked) => checked === true, {
@@ -265,6 +287,7 @@ export const termsSchema = z.object({
 
 export const onboardingSchema = organisationSchema
   .merge(bankSchema)
+  .merge(verificationSchema)
   .merge(termsSchema)
   .superRefine((data, ctx) => {
     const { accountHolderName, bank, accountNumber } = data
@@ -311,6 +334,12 @@ export const ORGANISATION_FIELDS = [
 ] as const satisfies Path<OnboardingValues>[]
 
 export const BANK_FIELDS = ["accountHolderName", "bank", "accountNumber"] as const satisfies Path<OnboardingValues>[]
+
+export const VERIFICATION_FIELDS = [
+  "cacCertificateUrl",
+  "directorIdUrl",
+  "proofOfAddressUrl",
+] as const satisfies Path<OnboardingValues>[]
 
 
 export const attendeeRegisterSchema = z

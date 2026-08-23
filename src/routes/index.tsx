@@ -10,6 +10,7 @@ import Onboardinglayout from "./onboarding/layout";
 import CreateEventLayout from "./dashboard/create-event/layout";
 import DashBoardLayout from "./dashboard/layout";
 import { RequireOrganizer } from "@/components/require-organizer";
+import { RequireAdmin } from "@/components/require-admin";
 import AdminLayout from "./admin/layout";
 
 const routes = [
@@ -395,6 +396,30 @@ const routes = [
                             },
                         ],
                     },
+                    {
+                        // No register/reset-password/etc children on purpose —
+                        // there is no self-service admin signup. Only a
+                        // seeded admin account can ever sign in here, and
+                        // this reuses the exact same login form/styling as
+                        // the attendee/organizer logins (see routes/auth/login/index.tsx).
+                        path: "admin",
+                        children: [
+                            {
+                                path: "login",
+                                handle: {
+                                    seo: {
+                                        title: "admin login",
+                                        description: "sign in to the admin dashboard.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/auth/login/index");
+                                    return { Component };
+                                },
+                            },
+                        ],
+                    },
                 ],
             },
             {
@@ -434,6 +459,20 @@ const routes = [
                         },
                     },
                     {
+                        path: "verification",
+                        handle: {
+                            seo: {
+                                title: "Verification",
+                                description: "Upload your CAC certificate, director ID, and proof of address.",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/onboarding/verification");
+                            return { Component };
+                        },
+                    },
+                    {
                         path: "review",
                         handle: {
                             seo: {
@@ -468,7 +507,7 @@ const routes = [
 
             // ─── ADMIN ROUTE ────────────────────────────────────────────
             {
-              
+                Component: RequireAdmin,
                 children: [
                     {
                          path: "admin",
@@ -489,6 +528,34 @@ const routes = [
                                 lazy: async () => {
                                     const { default: Component } =
                                         await import("@/routes/admin/overview/index");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "users",
+                                handle: {
+                                    seo: {
+                                        title: "Users",
+                                        description: "Attendee accounts across the platform.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/admin/users/index");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "users/:id",
+                                handle: {
+                                    seo: {
+                                        title: "User details",
+                                        description: "View a user's account, orders and status.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/admin/users/details/index");
                                     return { Component };
                                 },
                             }

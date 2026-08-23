@@ -1,9 +1,10 @@
 import React from 'react';
-import { Bell, Plus, Menu, Sun, Moon } from 'lucide-react';
+import { Plus, Menu, Sun, Moon } from 'lucide-react';
 import { useAuth } from '@/context/auth.context';
 import { useTheme } from '@/context/theme.context';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { NotificationBell } from '@/components/notifications/notificationBell';
 
 interface TopBarProps {
   organization: {
@@ -71,12 +72,9 @@ const TopBar: React.FC<TopBarProps> = ({ organization, onCreateEvent, onMenuClic
           {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </button>
 
-        {/* No notifications backend exists yet — showing a permanently-on
-            dot here was pure decoration, not a real signal. Re-add it once
-            there's an actual notifications endpoint to drive it. */}
-        <button className="relative text-muted-foreground hover:text-foreground transition-colors bg-muted border border-border p-2 rounded-lg shrink-0">
-          <Bell className="h-5 w-5" />
-        </button>
+        {/* Notification Bell — real unread count + recent notifications,
+            see components/notifications/NotificationBell.tsx. */}
+        <NotificationBell />
 
         <button
           className="h-9 w-9 rounded-full overflow-hidden bg-[#0F6E56] text-white flex items-center justify-center font-bold text-sm shrink-0"

@@ -547,6 +547,20 @@ const routes = [
                                     return { Component };
                                 },
                             },
+                             {
+                                path: "settings",
+                                handle: {
+                                    seo: {
+                                        title: "admin settings",
+                                        description: "Manage the organisers and attendees.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/admin/settings/index");
+                                    return { Component };
+                                },
+                            },
                             {
                                 path: "refunds",
                                 children: [

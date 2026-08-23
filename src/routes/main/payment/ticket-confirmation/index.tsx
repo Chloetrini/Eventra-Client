@@ -71,7 +71,7 @@ const TicketConfirmation = () => {
 
     return (
         <PageWrapper className="p-[20px]">
-            <div className='flex justify-center items-center w-full'>
+            <div className='flex justify-center items-center w-full mb-5'>
                 <ConfirmatoryMessage
                     _id="1"
                     eventName={eventInfo.eventName}
@@ -88,6 +88,7 @@ const TicketConfirmation = () => {
                     }]}
                     slug={eventInfo.slug}
                 />
+                
             </div>
             <div className="w-full space-y-6">
                 {tickets.map((t) => (

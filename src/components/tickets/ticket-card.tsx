@@ -91,7 +91,7 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
   };
   return (
     <div>
-      <div className="w-full mb-8 flex flex-col lg:flex-row  items-stretch">
+      <div className="w-full mb-8 flex flex-col lg:flex-row md:items-center  items-stretch">
         {/* Green ticket card */}
         <div className="flex flex-col justify-between w-full lg:w-[811px] xl:w-full h-auto lg:h-[404px] bg-linear-to-br from-black from-10% via-[#021713] via-40% to-[#0C5C48] p-4 min-[400px]:p-5 lg:p-8 rounded-[20px] shadow-[8px_0_30px_rgba(0,0,0,1)]">
           <div className="flex flex-col gap-2">
@@ -172,7 +172,7 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
           </div>
         </div>
         {/* Qr code section */}
-        <div className="bg-white shadow-2xl flex flex-col items-center lg:w-[397px] lg:h-[390px] rounded-lg text-center justify-between p-3 min-[400px]:p-4">
+        <div className="bg-white shadow-2xl flex flex-col items-center md:w-full lg:w-[397px] lg:h-[390px] rounded-lg text-center justify-between p-3 min-[400px]:p-4">
           <div className="rounded-full border px-4 min-[400px]:px-6 py-1 mb-2 border-[#0F6E56]">
             <p className="text-[#0F6E56] text-xs min-[400px]:text-sm">
               ADMITS {admitsCount}
@@ -250,7 +250,7 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
                 classname="h-9 border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] text-xs sm:text-sm"
                 arrow={rightArrow}
                 editArrow="w-[18px] h-[18px]"
-                onClick={handleRequestRefund}
+                onClick={() => navigate('/payment/refund-request', { state: { ticketId: ticket._id } })}
                 disabled={isProcessing}
               />
             )}

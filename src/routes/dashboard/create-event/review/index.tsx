@@ -155,35 +155,35 @@ try {
   return
 }
 
-      if (values.eventType === "paid") {
-        // Diff against what's actually on the backend for this event —
-        // needed to tell "new ticket" (no id) apart from "existing ticket,
-        // possibly edited" (has id), and to catch tickets the organizer
-        // removed from the form entirely.
-        let existingTicketTypes: { _id: string }[] = []
-        try {
-          existingTicketTypes = await fetchTicketTypesForEvent(event._id)
-        } catch {
-          existingTicketTypes = []
-        }
+  if (values.eventType === "paid") {
+    // Diff against what's actually on the backend for this event —
+    // needed to tell "new ticket" (no id) apart from "existing ticket,
+    // possibly edited" (has id), and to catch tickets the organizer
+    // removed from the form entirely.
+    let existingTicketTypes: { _id: string }[] = []
+    try {
+      existingTicketTypes = await fetchTicketTypesForEvent(event._id)
+    } catch {
+      existingTicketTypes = []
+    }
 
-        const currentIds = new Set(values.tickets.map((t) => t.id).filter(Boolean) as string[])
-        const idsToDelete = existingTicketTypes
-          .filter((tt) => !currentIds.has(tt._id))
-          .map((tt) => tt._id)
+    const currentIds = new Set(values.tickets.map((t) => t.id).filter(Boolean) as string[])
+    const idsToDelete = existingTicketTypes
+      .filter((tt) => !currentIds.has(tt._id))
+      .map((tt) => tt._id)
 
-        const creates = values.tickets.filter((t) => !t.id)
-        const updates = values.tickets.filter((t) => t.id)
+    const creates = values.tickets.filter((t) => !t.id)
+    const updates = values.tickets.filter((t) => t.id)
 
-        const toPayload = (ticket: (typeof values.tickets)[number]) => ({
-          name: ticket.name!,
-          price: Number(ticket.price),
-          quantity: Number(ticket.quantity),
-          purchaseLimitPerPerson:
-            ticket.purchaseLimitPerPerson !== undefined
-              ? Number(ticket.purchaseLimitPerPerson)
-              : undefined,
-        })
+    const toPayload = (ticket: (typeof values.tickets)[number]) => ({
+      name: ticket.name!,
+      price: Number(ticket.price),
+      quantity: Number(ticket.quantity),
+      purchaseLimitPerPerson:
+        ticket.purchaseLimitPerPerson !== undefined
+          ? Number(ticket.purchaseLimitPerPerson)
+          : undefined,
+    })
 
         const createResults = await Promise.allSettled(
           creates.map((ticket) => createTicketTypeMutation.mutateAsync({ eventId: event._id, payload: toPayload(ticket) }))
@@ -195,9 +195,9 @@ try {
           idsToDelete.map((id) => deleteTicketTypeMutation.mutateAsync({ eventId: event._id, ticketTypeId: id }))
         )
 
-        const anyCreateFailed = createResults.some((r) => r.status === "rejected")
-        const anyUpdateFailed = updateResults.some((r) => r.status === "rejected")
-        const anyDeleteFailed = deleteResults.some((r) => r.status === "rejected")
+    const anyCreateFailed = createResults.some((r) => r.status === "rejected")
+    const anyUpdateFailed = updateResults.some((r) => r.status === "rejected")
+    const anyDeleteFailed = deleteResults.some((r) => r.status === "rejected")
 
         if (anyCreateFailed || anyUpdateFailed || anyDeleteFailed) {
           // Only the brand-new creations can be cleanly undone — an update

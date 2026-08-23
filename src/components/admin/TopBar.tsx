@@ -1,10 +1,10 @@
 import React from 'react';
-import { Bell, Menu, Search, Sun, Moon } from 'lucide-react';
+import { Menu, Search, Sun, Moon } from 'lucide-react';
 import { useAuth } from '@/context/auth.context';
 import { useTheme } from '@/context/theme.context';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { NotificationBell } from '@/components/notifications/notificationBell';
 
 interface AdminTopbarProps {
   onMenuClick?: () => void;
@@ -35,16 +35,6 @@ const AdminTopbar: React.FC<AdminTopbarProps> = ({ onMenuClick, title }) => {
         )}
       </div>
 
-      {/* Center: Search Bar */}
-      <div className="hidden md:flex flex-1 max-w-xl mx-4 relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input 
-          type="text" 
-          placeholder="Search events, organizers, users..." 
-          className="pl-10 bg-background border-border focus-visible:ring-1 focus-visible:ring-[#0F6E56]"
-        />
-      </div>
-
       {/* Right: Actions and User */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         
@@ -59,15 +49,10 @@ const AdminTopbar: React.FC<AdminTopbarProps> = ({ onMenuClick, title }) => {
           {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
 
-        {/* Notification Bell with Red Dot */}
-        <Button
-          variant="outline"
-          size="icon"
-          className="relative text-muted-foreground hover:text-foreground"
-        >
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-1 right-1 flex h-2.5 w-2.5 items-center justify-center rounded-full bg-red-500 ring-2 ring-card" />
-        </Button>
+        {/* Notification Bell — real unread count + recent notifications,
+            see components/notifications/NotificationBell.tsx. Matches the
+            look of the outline/icon buttons on either side of it. */}
+        <NotificationBell triggerClassName="h-8 w-8 p-0 flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground" />
 
         {/* User Avatar */}
         <Button

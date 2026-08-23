@@ -255,7 +255,29 @@ export const bankSchema = z.object({
 })
 
 /**
- * STEP 3 — Review. The terms checkbox gates the final submit.
+ * STEP 3 — Verification documents. All three required — the backend
+ * hard-requires cacCertificateUrl/directorIdUrl/proofOfAddressUrl before an
+ * organizer profile can be submitted for approval
+ * (submitOrganizerProfileForReview's REQUIRED_FOR_SUBMISSION check), so the
+ * form has to require them too or Continue would look enabled right up
+ * until the submit call fails.
+ *
+ * The matching *PublicId fields aren't validated — they're just carried
+ * through form state so this step can send them along on re-upload for
+ * cleanup (see upsertOrganizerProfile's "replace deletes the old
+ * Cloudinary file" behavior).
+ */
+export const verificationSchema = z.object({
+  cacCertificateUrl: z.string().min(1, "Please upload your CAC certificate"),
+  cacCertificatePublicId: z.string().optional(),
+  directorIdUrl: z.string().min(1, "Please upload a director's government ID"),
+  directorIdPublicId: z.string().optional(),
+  proofOfAddressUrl: z.string().min(1, "Please upload a proof of address"),
+  proofOfAddressPublicId: z.string().optional(),
+})
+
+/**
+ * STEP 4 — Review. The terms checkbox gates the final submit.
  */
 export const termsSchema = z.object({
   terms: z.boolean().refine((checked) => checked === true, {
@@ -265,6 +287,7 @@ export const termsSchema = z.object({
 
 export const onboardingSchema = organisationSchema
   .merge(bankSchema)
+  .merge(verificationSchema)
   .merge(termsSchema)
   .superRefine((data, ctx) => {
     const { accountHolderName, bank, accountNumber } = data
@@ -311,6 +334,12 @@ export const ORGANISATION_FIELDS = [
 ] as const satisfies Path<OnboardingValues>[]
 
 export const BANK_FIELDS = ["accountHolderName", "bank", "accountNumber"] as const satisfies Path<OnboardingValues>[]
+
+export const VERIFICATION_FIELDS = [
+  "cacCertificateUrl",
+  "directorIdUrl",
+  "proofOfAddressUrl",
+] as const satisfies Path<OnboardingValues>[]
 
 
 export const attendeeRegisterSchema = z
@@ -598,7 +627,7 @@ export const eventFormSchema = eventTypeSchema
       })
     }
 
-// Refund policy — type required if switch is on, daysBefore required only for that specific type
+    // Refund policy — type required if switch is on, daysBefore required only for that specific type
     if (data.hasRefundPolicy) {
       if (!data.refundPolicyType) {
         ctx.addIssue({
@@ -659,3 +688,46 @@ export const DETAILS_FIELDS: Path<EventFormValues>[] = [
   "refundPolicyType",
   "refundDaysBefore",
 ]
+
+export const refundsSchema = z.object({
+  reason: z
+    .string()
+    .min(1, "Please select a reason"),
+
+  description: z
+    .string()
+    .trim()
+    .min(20, "Please provide more details about what happened")
+    .max(2000, "Description cannot exceed 2000 characters"),
+
+  requestedResolution: z
+    .string()
+    .min(1, "Please select a requested resolution"),
+
+  evidence: z
+    .array(z.object({ url: z.string().nullable() }))
+    .min(1, "Please upload at least one piece of evidence")
+    .max(3, "You can upload a maximum of 3 screenshots")
+    .refine(
+      (evidence) => evidence.some((item) => !!item.url),
+      "Please upload at least one piece of evidence"
+    ),
+
+  additionalInformation: z
+    .string()
+    .trim()
+    .max(
+      2000,
+      "Additional information cannot exceed 2000 characters"
+    ),
+})
+
+export type RefundsValues = z.infer<typeof refundsSchema>
+
+export const REFUNDS_FIELDS = [
+  "reason",
+  "description",
+  "requestedResolution",
+  "evidence",
+  "additionalInformation",
+] as const satisfies Path<RefundsValues>[]

@@ -35,20 +35,20 @@ export function EarningsByEvent({ earnings }: EarningsByEventProps) {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[560px] text-sm">
             <thead>
-              <tr className="border-t border-border">
+              <tr className="border-t border-border ">
                 <th className="px-4 sm:px-6 py-3 text-left text-xs font-normal font-space uppercase tracking-wide text-muted-foreground">
                   Event
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-normal font-space uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-3 text-left text-xs font-normal font-space uppercase tracking-wide text-muted-foreground">
                   Gross sales
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-normal font-space uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-3 text-left text-xs font-normal font-space uppercase tracking-wide text-muted-foreground">
                   Commission
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-normal font-space uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-3 text-left text-xs font-normal font-space uppercase tracking-wide text-muted-foreground">
                   Your earnings
                 </th>
-                <th className="px-4 sm:px-6 py-3 text-right text-xs font-normal font-space uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-normal font-space uppercase tracking-wide text-muted-foreground">
                   Status
                 </th>
               </tr>
@@ -59,16 +59,16 @@ export function EarningsByEvent({ earnings }: EarningsByEventProps) {
                   <td className="px-4 sm:px-6 py-4">
                     <p className="font-semibold text-foreground">{row.eventTitle}</p>
                   </td>
-                  <td className="px-4 py-4 text-right font-bold font-space text-foreground">
+                  <td className="px-4 py-4 text-left font-bold font-space text-foreground">
                     {row.status === "free_no_payout" ? "–" : formatNaira(row.grossSales)}
                   </td>
-                  <td className="px-4 py-4 text-right text-foreground">
+                  <td className="px-4 py-4 text-left text-foreground">
                     {row.status === "free_no_payout" ? "–" : formatNaira(row.commission)}
                   </td>
-                  <td className="px-4 py-4 text-right font-bold font-space text-foreground">
+                  <td className="px-4 py-4 text-left font-bold font-space text-foreground">
                     {row.status === "free_no_payout" ? "–" : formatNaira(row.earnings)}
                   </td>
-                  <td className="px-4 sm:px-6 py-4 text-right">
+                  <td className="px-4 sm:px-6 py-4 text-left">
                     <Badge
                       className={cn(
                         "border-transparent text-[10px] font-space font-bold",

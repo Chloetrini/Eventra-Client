@@ -114,6 +114,25 @@ export function fetchEventBySlug(slug: string): Promise<Event | null> {
   return fetchEventBySlugReal(slug);
 }
 
+// ---------------------------------------------------------------------
+// Spotlight/promotion placement — GET /events/spotlight?placement=X
+// Backend filters on { status: 'approved', isPromoted: true,
+// 'promotion.package': $in PLACEMENT_PACKAGES[placement] } — see
+// getSpotlightEvents in event.controller.ts. Placement is one of:
+//   "hero"     -> homepage hero carousel only
+//   "featured" -> home page "Featured this week" section (also includes
+//                 anything promoted to hero, since hero implies broader visibility)
+//   "spotlight"-> Explore page featured carousel (also includes hero-tier)
+// Unlike fetchEvents this has no pagination — it's a small, capped list.
+export async function fetchSpotlightEvents(
+  placement: "hero" | "featured" | "spotlight",
+  limit = 8
+): Promise<Event[]> {
+  const res = await api.get(`/events/spotlight?placement=${placement}&limit=${limit}`);
+  const body = res.body as { events: unknown[] };
+  return z.array(eventSchema).parse(body.events ?? []);
+}
+
 export async function fetchCategories(): Promise<EventCategory[]> {
   const res = await api.get("/categories");
   const raw = Array.isArray(res.body) ? res.body : (res.body as { categories: unknown[] }).categories;

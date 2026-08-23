@@ -20,6 +20,12 @@ const emptyValues: OnboardingValues = {
     accountHolderName: "",
     bank: "",
     accountNumber: "",
+    cacCertificateUrl: "",
+    cacCertificatePublicId: "",
+    directorIdUrl: "",
+    directorIdPublicId: "",
+    proofOfAddressUrl: "",
+    proofOfAddressPublicId: "",
     terms: false,
 }
 

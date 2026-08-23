@@ -36,7 +36,7 @@ const OrganisationPage = () => {
         <PageWrapper className="w-full">
             <div className="px-5 py-10 lg:pl-10 lg:pr-60 lg:py-20 flex flex-col gap-10">
                 <div>
-                    <p className='text-[#0F6E56] dark:text-[#4ADE80]'>STEP 1 OF 3</p>
+                    <p className='text-[#0F6E56] dark:text-[#4ADE80]'>STEP 1 OF 4</p>
                     <h3 className="font-grotesk font-bold text-[34px]">About your organization</h3>
                     <p className="font-grotesk font-medium text-[18px] text-muted-foreground">This is what attendees see on your events and profile.</p>
                 </div>

@@ -34,7 +34,7 @@ const ReviewPage = () => {
         <PageWrapper className="w-full">
             <div className="px-5 py-10 lg:pl-10 lg:pr-60 lg:py-20 flex flex-col gap-10">
                 <div>
-                    <p className='text-[#0F6E56] dark:text-[#4ADE80]'>STEP 3 OF 3</p>
+                    <p className='text-[#0F6E56] dark:text-[#4ADE80]'>STEP 4 OF 4</p>
                     <h3 className="font-grotesk font-bold text-[34px]">Review & submit</h3>
                     <p className="font-grotesk font-medium text-[18px] text-muted-foreground max-w-full md:max-w-[500px] line-clamp-4">
                         We'll review your details and approve your account, usually within a day. You can start building events right away.
@@ -69,7 +69,7 @@ const ReviewPage = () => {
 
                 <div>
             <PageSwitcher
-                backOnClick={() => navigate("/onboarding/bank-account")}
+                backOnClick={() => navigate("/onboarding/verification")}
                 showSubmit
                 submitOnClick={handleSubmit(onSubmit)}
                 disableSubmit={!isValid || submitForReviewMutation.isPending}

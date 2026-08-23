@@ -26,7 +26,11 @@ type AttendeeLoginValues = z.infer<typeof attendeeLoginSchema>;
 // onboarding anyway. Send them straight there instead. Once they've
 // submitted (pending/approved/rejected), the dashboard is the right place —
 // that's exactly where AccountReviewBanner surfaces the review status.
+//
+// Admins skip all of that and land straight on the admin dashboard — there's
+// no onboarding wizard for a seeded account.
 function getPostLoginPath(user: User): string {
+  if (user.role === "admin") return "/admin/overview";
   if (user.role !== "organizer") return "/";
   const approvalStatus = (user.organizerProfile as { approvalStatus?: string } | undefined)?.approvalStatus;
   if (!approvalStatus || approvalStatus === "draft") return "/onboarding/organisation";
@@ -37,6 +41,10 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const isOrganizer = location.pathname.includes("/organizer");
+  // There's no admin signup — only a seeded account can ever hold this role
+  // — so this page only needs to know "was this form reached via
+  // /auth/admin/login" to lock the form down to that one role.
+  const isAdmin = location.pathname.includes("/admin");
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -54,12 +62,27 @@ export default function Login() {
     mutationFn: (values: AttendeeLoginValues) =>
       login(values.email, values.password),
     onSuccess: (user) => {
+      // The admin login page is the only place an admin session may be
+      // created from, and it's the only form an admin is allowed to sign in
+      // through. Either mismatch here means the wrong login page was used —
+      // reject and drop the session client-side, same pattern as the
+      // existing attendee/organizer mismatch checks below.
+      if (isAdmin && user.role !== "admin") {
+        toast.error("This login is for admin accounts only.");
+        logout();
+        return;
+      }
+      if (!isAdmin && user.role === "admin") {
+        toast.error("Admins must sign in from the admin login page.");
+        logout();
+        return;
+      }
       if (isOrganizer && user.role !== "organizer") {
         toast.error("This is an attendee account. Please use the attendee login page.");
         logout();
         return;
       }
-      if (!isOrganizer && user.role === "organizer") {
+      if (!isOrganizer && !isAdmin && user.role === "organizer") {
         toast.error("This is an organizer account. Please use the organizer login page.");
         logout();
         return;
@@ -114,6 +137,11 @@ export default function Login() {
               Organizer
             </span>
           )}
+          {isAdmin && (
+            <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] dark:bg-[#0F6E56]/20 dark:text-[#4ADE80] w-[118px] text-center text-[15px]">
+              Admin
+            </span>
+          )}
         </Link>
       </div>
       <h1 className="text-[34px] font-extrabold mb-[12px] tracking-[-0.02em] leading-[40px] text-foreground">
@@ -121,7 +149,9 @@ export default function Login() {
       </h1>
 
       <p className="text-muted-foreground text-[17px] leading-6 mb-[30px]">
-        Sign in to keep your tickets and saved event in one place
+        {isAdmin
+          ? "Sign in to manage organizers, users, and events"
+          : "Sign in to keep your tickets and saved event in one place"}
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
@@ -205,46 +235,57 @@ export default function Login() {
             <span className="text-[14px] text-muted-foreground">Remember me</span>
           </label>
 
-          <Link
-            to={authPath("forgot-password", isOrganizer)}
-            className="text-[#0A4F41] dark:text-[#4ADE80] font-medium text-[14px] hover:underline"
-          >
-            Forgot Password ?
-          </Link>
+          {/* No self-service reset flow exists for the seeded admin account
+              yet — this link only applies to attendee/organizer logins. */}
+          {!isAdmin && (
+            <Link
+              to={authPath("forgot-password", isOrganizer)}
+              className="text-[#0A4F41] dark:text-[#4ADE80] font-medium text-[14px] hover:underline"
+            >
+              Forgot Password ?
+            </Link>
+          )}
         </div>
       </form>
 
-      {/* or divider row */}
+      {/* Google sign-in and sign-up don't apply to the admin login — there's
+          no self-service admin signup, and the seeded admin account only
+          ever authenticates with email + password. */}
+      {!isAdmin && (
+        <>
+          {/* or divider row */}
 
-      <div className="flex items-center gap-4 my-5 mb-[20px]">
-        <div className="h-px flex-1 bg-border" />
-        <span className="text-sm text-muted-foreground">or</span>
-        <div className="h-px flex-1 bg-border" />
-      </div>
+          <div className="flex items-center gap-4 my-5 mb-[20px]">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-sm text-muted-foreground">or</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
 
-      {/* Google button */}
+          {/* Google button */}
 
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => handleGoogleLogin()}
-        className="w-full h-12 border-border hover:border-border text-foreground font-bold text-[18px] leading-[29px] mb-[15px]"
-      >
-        <GoogleIcon className="h-4 w-4 mr-2" />
-        Sign In with Google
-      </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handleGoogleLogin()}
+            className="w-full h-12 border-border hover:border-border text-foreground font-bold text-[18px] leading-[29px] mb-[15px]"
+          >
+            <GoogleIcon className="h-4 w-4 mr-2" />
+            Sign In with Google
+          </Button>
 
-      {/* Bottom text*/}
+          {/* Bottom text*/}
 
-      <p className="text-center text-sm text-muted-foreground mt-6">
-        Don't have an account?
-        <Link
-          to={authPath("register", isOrganizer)}
-          className="text-[#0F6E56] dark:text-[#4ADE80] font-medium hover:underline"
-        >
-          Sign up
-        </Link>
-      </p>
+          <p className="text-center text-sm text-muted-foreground mt-6">
+            Don't have an account?
+            <Link
+              to={authPath("register", isOrganizer)}
+              className="text-[#0F6E56] dark:text-[#4ADE80] font-medium hover:underline"
+            >
+              Sign up
+            </Link>
+          </p>
+        </>
+      )}
     </div>
   );
 }

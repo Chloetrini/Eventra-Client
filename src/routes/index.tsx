@@ -12,6 +12,7 @@ import DashBoardLayout from "./dashboard/layout";
 import { RequireOrganizer } from "@/components/require-organizer";
 import { RequireAdmin } from "@/components/require-admin";
 import AdminLayout from "./admin/layout";
+import { Children } from "react";
 
 const routes = [
     {
@@ -520,11 +521,9 @@ const routes = [
                 ],
 
             },
-
-            // ─── ADMIN ROUTE ────────────────────────────────────────────
-            {
-
-                Component: RequireAdmin,
+             // ─── ADMIN ROUTE ────────────────────────────────────────────
+             {
+                Component: RequireAdmin ,
                 children: [
                     {
                         path: "admin",
@@ -550,52 +549,80 @@ const routes = [
                             },
                             {
                                 path: "refunds",
-                                handle: {
-                                    seo: {
-                                        title: "Refunds & Disputes",
-                                        description: "Manage your refunds and disputes.",
-                                path: "users",
-                                handle: {
-                                    seo: {
-                                        title: "Users",
-                                        description: "Attendee accounts across the platform.",
-                                    }
-                                },
-                                lazy: async () => {
-                                    const { default: Component } =
-                                        await import("@/routes/admin/refunds-dispute/index");
-                                        await import("@/routes/admin/users/index");
-                                    return { Component };
-                                },
+                                children: [
+                                    {
+                                        index: true,
+                                        handle: {
+                                            seo: {
+                                                title: "Refunds & Disputes,",
+                                                description: "Manage your refunds and disputes.",
+                                            }
+                                        },
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/admin/refunds-dispute/index");
+                                            return { Component };
+                                        },
+                                    },
+                                    {
+                                        path: ":requestId",
+                                        handle: {
+                                            seo: {
+                                                title: "Refund Request Details",
+                                                description: "View details of a refund request.",
+                                            }
+                                        },
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/admin/refunds-id/index");
+                                            return { Component };
+                                        },
+                                    },
+                                ],
                             },
                             {
-                                path: "refund-request/:requestId",
-                                handle: {
-                                    seo: {
-                                        title: "Refund Request Details",
-                                        description: "View details of a refund request.",
-                                path: "users/:id",
-                                handle: {
-                                    seo: {
-                                        title: "User details",
-                                        description: "View a user's account, orders and status.",
-                                    }
-                                },
-                                lazy: async () => {
-                                    const { default: Component } =
-                                        await import("@/routes/admin/refunds-id/index");
-                                    return { Component };
-                                },
+                                path: "users",
+                                children: [
+                                    {
+                                        index: true,
+                                        handle: {
+                                            seo: {
+                                                title: "Users,",
+                                                description: "Attendee accounts across the platform.",
+                                            }
+                                        },
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/admin/users/index");
+                                            return { Component };
+                                        },
+                                    },
+                                    {
+                                        path: ":id",
+                                        handle: {
+                                            seo: {
+                                                title:"User details",
+                                                description: "View a user's account, orders and status.",
+                                            }
+                                        },
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/admin/users/details/index");
+                                            return { Component };
+                                        },
+                                    },
+                                ],
                             },
-                                        await import("@/routes/admin/users/details/index");
-                                    return { Component };
-                                },
-                            }
+                            
+            
+                           
+                           
                         ]
                     },
-                    // TODO: Add /admin/approvals, /admin/refunds, /admin/reports, etc. here later
                 ],
             },
+
+           
             // ─── END ADMIN ROUTE ────────────────────────────────────────
 
             {

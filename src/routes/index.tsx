@@ -560,7 +560,7 @@ const routes = [
                                         await import("@/routes/admin/settings/index");
                                     return { Component };
                                 },
-                            }
+                            },
                             {
                                 path: "refunds",
                                 children: [

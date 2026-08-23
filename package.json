@@ -29,7 +29,7 @@
     "framer-motion": "^13.0.0",
     "html5-qrcode": "^2.3.8",
     "leaflet": "^1.9.4",
-    "lucide-react": "^1.24.0",
+    "lucide-react": "^1.33.0",
     "ng-banks": "^2.1.1",
     "react": "^19.2.7",
     "react-day-picker": "^10.0.1",

@@ -1,41 +1,77 @@
 import { useState } from "react"
-import RefundDisputeSelector, { type RefundDisputeTab } from "@/components/admin/refunds-dispute/refund-dispute-selector"
 import RequestDisputeTable from "@/components/admin/refunds-dispute/request-dispute-table"
-import PageWrapper from "@/components/page-wrapper"
 import { useAdminRefundRequests, useAdminDisputes } from "@/hooks/use-admin-refunds"
 
-const RefundsDispute = () => {
-    const [activeTab, setActiveTab] = useState<RefundDisputeTab>("requests")
+type Tab = "requests" | "disputes"
 
-    const { data: refundRequests = [], isLoading: requestsLoading } = useAdminRefundRequests()
-    const { data: disputes = [], isLoading: disputesLoading } = useAdminDisputes()
+const RefundsDisputesPage = () => {
+    const [activeTab, setActiveTab] = useState<Tab>("requests")
+
+    const refundRequestsQuery = useAdminRefundRequests()
+    const disputesQuery = useAdminDisputes()
+
+    const isActiveTabLoading =
+        activeTab === "requests" ? refundRequestsQuery.isLoading : disputesQuery.isLoading
 
     return (
-        <PageWrapper className="flex flex-col gap-5">
-            <div>
-                <p className='font-space text-[13px] text-[#0F6E56] dark:text-[#4ADE80]'>NEEDS ACTION</p>
-                <h1 className='text-[28px] font-bold font-grotesk'>Refunds & dispute</h1>
-                <p className='font-medium text-[14px] text-muted-foreground'>Resolve refund requests and payment disputes, tied to each event's policy.</p>
+        <div className="p-6">
+            <div className="flex items-center justify-between mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold font-space">Refunds & Disputes</h1>
+                    <p className="text-muted-foreground">
+                        Handle attendee refund requests and Paystack chargeback disputes.
+                    </p>
+                </div>
             </div>
 
-            <RefundDisputeSelector
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-                requestsCount={refundRequests.length}
-                disputesCount={disputes.length}
-            />
+            <div className="flex gap-2 mb-6 border-b-2 border-[#E8E6E0] dark:border-border">
+                <button
+                    type="button"
+                    onClick={() => setActiveTab("requests")}
+                    className={`px-4 py-3 text-sm font-medium font-space border-b-2 -mb-[2px] transition-colors ${
+                        activeTab === "requests"
+                            ? "border-[#0F6E56] text-[#0F6E56] dark:text-[#4ADE80]"
+                            : "border-transparent text-muted-foreground hover:text-foreground"
+                    }`}
+                >
+                    Refund Requests
+                    {refundRequestsQuery.data && refundRequestsQuery.data.length > 0 && (
+                        <span className="ml-2 inline-flex items-center justify-center rounded-full bg-[#F4DFB6] text-[#7A4E02] text-xs px-2 py-0.5">
+                            {refundRequestsQuery.data.length}
+                        </span>
+                    )}
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setActiveTab("disputes")}
+                    className={`px-4 py-3 text-sm font-medium font-space border-b-2 -mb-[2px] transition-colors ${
+                        activeTab === "disputes"
+                            ? "border-[#0F6E56] text-[#0F6E56] dark:text-[#4ADE80]"
+                            : "border-transparent text-muted-foreground hover:text-foreground"
+                    }`}
+                >
+                    Disputes
+                    {disputesQuery.data && disputesQuery.data.length > 0 && (
+                        <span className="ml-2 inline-flex items-center justify-center rounded-full bg-[#F4DFB6] text-[#7A4E02] text-xs px-2 py-0.5">
+                            {disputesQuery.data.length}
+                        </span>
+                    )}
+                </button>
+            </div>
 
-            {(activeTab === "requests" ? !requestsLoading : !disputesLoading) && (
-                <div className="w-full overflow-x-auto">
+            <div className="overflow-x-auto">
+                {isActiveTabLoading ? (
+                    <p className="py-8 text-center text-sm text-muted-foreground">Loading…</p>
+                ) : (
                     <RequestDisputeTable
                         activeTab={activeTab}
-                        refundRequests={refundRequests}
-                        disputes={disputes}
+                        refundRequests={refundRequestsQuery.data ?? []}
+                        disputes={disputesQuery.data ?? []}
                     />
-                </div>
-            )}
-        </PageWrapper>
+                )}
+            </div>
+        </div>
     )
 }
 
-export default RefundsDispute
+export default RefundsDisputesPage

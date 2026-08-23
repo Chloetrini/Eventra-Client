@@ -1,7 +1,14 @@
 // types/admin-refunds.ts
 
-export type RefundRequestStatus = "pending" | "approved" | "declined"
-export type DisputeStatus = "open" | "won" | "lost"
+// Matches the real backend enum on RefundRequest (src/models/refundRequest.ts)
+export type RefundRequestStatus = "pending" | "approved" | "rejected" | "processed"
+// Matches the real backend enum on PaymentDispute (src/models/paymentDispute.ts)
+export type DisputeStatus = "pending" | "resolved" | "lost"
+// Set once an admin has responded on the Disputes tab — see
+// merchantResponseStatus on the backend PaymentDispute model. `status`
+// above only flips once Paystack's webhook confirms the real outcome, so
+// a dispute can be "challenged" here while still showing "pending" above.
+export type DisputeMerchantResponseStatus = "challenged" | "accepted-loss"
 
 // Mirrors what `RefundRequest.find().populate('ticket').populate('event')...`
 // would actually return — not flattened display fields, so this can swap to
@@ -33,8 +40,6 @@ export interface RefundRequestPopulated {
   }
   requestedBy: string // user _id
   reason: string
-  // From the attendee-facing form (RefundsValues) — not on the backend
-  // model yet, but this is the shape once it's extended
   description: string
   requestedResolution: string
   evidence: { url: string }[]
@@ -45,12 +50,49 @@ export interface RefundRequestPopulated {
   updatedAt: string
 }
 
-export interface DisputeSummary {
-  id: string
-  attendeeName: string
-  attendeeInitials: string
-  eventName: string
+// The admin Refunds table's list endpoint (listRefundRequests) populates a
+// narrower field set than the detail endpoint (getRefundRequestDetail) —
+// this mirrors exactly that, rather than casting the narrower response as
+// the full RefundRequestPopulated shape above.
+export interface RefundRequestSummary {
+  _id: string
+  ticket: {
+    attendeeName: string
+    attendeeEmail: string
+  }
+  event: {
+    _id: string
+    title: string
+    slug: string
+  }
   amount: number
-  processor: "Paystack"
+  reason: string
+  status: RefundRequestStatus
+  createdAt: string
+}
+
+// Mirrors what `PaymentDispute.find().populate('event').populate('order')...`
+// actually returns from listDisputes (admin.controller.ts) — a real
+// Paystack chargeback, not an attendee-submitted refund request.
+export interface DisputeSummary {
+  _id: string
+  event: {
+    _id: string
+    title: string
+    slug: string
+  } | null
+  order: {
+    _id: string
+    buyer?: { fullname: string; email: string } | null
+    guestName?: string
+    guestEmail?: string
+  } | null
+  amount: number
+  reason?: string
   status: DisputeStatus
+  merchantResponseStatus?: DisputeMerchantResponseStatus
+  merchantResponseMessage?: string
+  merchantRespondedAt?: string
+  raisedAt: string
+  resolvedAt?: string
 }

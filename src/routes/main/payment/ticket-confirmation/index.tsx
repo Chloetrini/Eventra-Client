@@ -88,6 +88,7 @@ const TicketConfirmation = () => {
                     }]}
                     slug={eventInfo.slug}
                 />
+                
             </div>
             <div className="w-full space-y-6">
                 {tickets.map((t) => (

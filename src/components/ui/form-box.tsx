@@ -7,6 +7,7 @@ import { Input } from './input'
 import { Textarea } from './textarea'
 import { DatePickerInput } from './date-picker-input'
 import { TimePickerInput } from './time-picker-input'
+import { SelectInput } from './select-input'
 import { SwitchInput } from './switch-input'
 import { ImageUploadInput } from './image-upload-input'
 
@@ -168,35 +169,30 @@ export function FormBox<T extends FieldValues>({
           />
         )
       case 'select':
+        if (!control) {
+          throw new Error(`FormBox: "control" prop is required when inputType="select" (field: ${String(name)})`)
+        }
         return (
-          <select
+          <SelectInput
             id={id}
-            {...register(name, registerOptions)}
+            name={name}
+            control={control}
+            options={options ?? []}
+            placeholder={placeholder}
             disabled={disabled}
+            errors={errors}
+            borderStyle={borderStyle}
+            rules={registerOptions}
             defaultValue={
               defaultValue instanceof Date
                 ? defaultValue.toISOString().split('T')[0]
                 : typeof defaultValue === 'boolean'
                   ? String(defaultValue)
-                  : (defaultValue ?? '')
+                  : defaultValue !== undefined
+                    ? String(defaultValue)
+                    : ''
             }
-            className={cn(
-              'w-full rounded-md border bg-transparent outline-none focus:outline-[#E4F1EB] focus:ring-3 focus:ring-[#E4F1EB] text-sm ',
-              errors ? 'border-red-600' : '',
-              borderStyle === 'checkout' ? 'border-[#AEAEB2] h-17.5 px-5 text-black dark:text-white' : borderStyle === 'auth' ? 'border-[#C3C9D3] h-15 px-3' : borderStyle === 'onboarding' ? "border-[#E8E6E0] h-14 px-12 " : borderStyle === "createEvent" ? "border-border bg-background text-foreground h-11 p-2.5 rounded-[10px]" : 'px-3'
-            )}
-          >
-            {placeholder && (
-              <option value="" disabled>
-                {placeholder}
-              </option>
-            )}
-            {options?.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+          />
         )
       case 'switch':
         if (!control) {

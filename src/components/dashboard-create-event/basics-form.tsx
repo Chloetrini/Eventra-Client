@@ -75,6 +75,7 @@ const BasicsForm = ({ onUploadStatusChange }: BasicsFormProps) => {
               classname="w-full"
               borderStyle="createEvent"
               register={register}
+              control={control}
               options={categoryOptions}
               disabled={categoriesLoading || categoriesError}
             />

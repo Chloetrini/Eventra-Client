@@ -627,7 +627,7 @@ export const eventFormSchema = eventTypeSchema
       })
     }
 
-// Refund policy — type required if switch is on, daysBefore required only for that specific type
+    // Refund policy — type required if switch is on, daysBefore required only for that specific type
     if (data.hasRefundPolicy) {
       if (!data.refundPolicyType) {
         ctx.addIssue({
@@ -688,3 +688,46 @@ export const DETAILS_FIELDS: Path<EventFormValues>[] = [
   "refundPolicyType",
   "refundDaysBefore",
 ]
+
+export const refundsSchema = z.object({
+  reason: z
+    .string()
+    .min(1, "Please select a reason"),
+
+  description: z
+    .string()
+    .trim()
+    .min(20, "Please provide more details about what happened")
+    .max(2000, "Description cannot exceed 2000 characters"),
+
+  requestedResolution: z
+    .string()
+    .min(1, "Please select a requested resolution"),
+
+  evidence: z
+    .array(z.object({ url: z.string().nullable() }))
+    .min(1, "Please upload at least one piece of evidence")
+    .max(3, "You can upload a maximum of 3 screenshots")
+    .refine(
+      (evidence) => evidence.some((item) => !!item.url),
+      "Please upload at least one piece of evidence"
+    ),
+
+  additionalInformation: z
+    .string()
+    .trim()
+    .max(
+      2000,
+      "Additional information cannot exceed 2000 characters"
+    ),
+})
+
+export type RefundsValues = z.infer<typeof refundsSchema>
+
+export const REFUNDS_FIELDS = [
+  "reason",
+  "description",
+  "requestedResolution",
+  "evidence",
+  "additionalInformation",
+] as const satisfies Path<RefundsValues>[]

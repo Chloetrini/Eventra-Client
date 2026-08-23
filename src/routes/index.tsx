@@ -199,6 +199,22 @@ const routes = [
                                     },
                                 ],
                             },
+                            {
+                                path: "refund-request",
+                                handle: {
+                                    seo: {
+                                        title: "Request Refund",
+                                        description: "Request a refund for your purchase.",
+                                    },
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/main/payment-refunds");
+                                    return { Component };
+                                },
+
+
+                            },
                         ],
                     },
                 ]
@@ -507,10 +523,11 @@ const routes = [
 
             // ─── ADMIN ROUTE ────────────────────────────────────────────
             {
+
                 Component: RequireAdmin,
                 children: [
                     {
-                         path: "admin",
+                        path: "admin",
                         Component: AdminLayout,
                         children: [
                             {
@@ -532,6 +549,11 @@ const routes = [
                                 },
                             },
                             {
+                                path: "refunds",
+                                handle: {
+                                    seo: {
+                                        title: "Refunds & Disputes",
+                                        description: "Manage your refunds and disputes.",
                                 path: "users",
                                 handle: {
                                     seo: {
@@ -541,11 +563,17 @@ const routes = [
                                 },
                                 lazy: async () => {
                                     const { default: Component } =
+                                        await import("@/routes/admin/refunds-dispute/index");
                                         await import("@/routes/admin/users/index");
                                     return { Component };
                                 },
                             },
                             {
+                                path: "refund-request/:requestId",
+                                handle: {
+                                    seo: {
+                                        title: "Refund Request Details",
+                                        description: "View details of a refund request.",
                                 path: "users/:id",
                                 handle: {
                                     seo: {
@@ -555,6 +583,10 @@ const routes = [
                                 },
                                 lazy: async () => {
                                     const { default: Component } =
+                                        await import("@/routes/admin/refunds-id/index");
+                                    return { Component };
+                                },
+                            },
                                         await import("@/routes/admin/users/details/index");
                                     return { Component };
                                 },

@@ -90,6 +90,7 @@ const LocationForm = () => {
                             classname="w-full"
                             borderStyle="createEvent"
                             register={register}
+                            control={control}
                             options={nigerianStates}
                         />
                     </div>

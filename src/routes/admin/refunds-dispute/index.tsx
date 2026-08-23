@@ -25,6 +25,10 @@ const RefundsDispute = () => {
                 disputesCount={disputes.length}
             />
 
+            {(activeTab === "requests" ? requestsLoading : disputesLoading) && (
+                <p className="text-sm text-muted-foreground">Loading…</p>
+            )}
+
             {(activeTab === "requests" ? !requestsLoading : !disputesLoading) && (
                 <div className="w-full overflow-x-auto">
                     <RequestDisputeTable

@@ -41,7 +41,7 @@ export const FreeEventTicket = ({
         eventName: event.title,
         eventImage: event.coverImage,
         eventDateTime: event.startDate,
-        eventVenue: `${event.venue.name}, ${event.venue.city}`,
+        eventVenue: event.venue ? `${event.venue.name}, ${event.venue.city}` : "Online event",
         ticketDetails: [{ id: 1, type: "Free", unitPrice: 0, quantity: guests }],
         slug: slug ?? event.slug,
         guests,

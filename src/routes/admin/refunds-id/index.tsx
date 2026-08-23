@@ -1,5 +1,6 @@
+import { useState } from "react"
 import PageWrapper from "@/components/page-wrapper"
-import { useAdminRefundRequest } from "@/hooks/use-admin-refunds"
+import { useAdminRefundRequest, useApproveAdminRefundRequest, useRejectAdminRefundRequest } from "@/hooks/use-admin-refunds"
 import { useParams, useNavigate } from "react-router"
 import ActionBtn from "@/components/ui/action-btn"
 import { ArrowLeft } from "lucide-react"
@@ -7,14 +8,45 @@ import RefundRequestDetails from "@/components/admin/refunds-dispute/refund-requ
 import PaymentBtn from "@/components/ui/pay-method-btn"
 import { Check } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
+import { toast } from "react-toastify"
+import { DeclineRefundDialog } from "@/components/dialogs/decline-refund-dialog"
 
 const RefundRequestDetail = () => {
     const { requestId } = useParams()
     const navigate = useNavigate()
     const { data: request, isLoading, isError } = useAdminRefundRequest(requestId)
+    const approveMutation = useApproveAdminRefundRequest()
+    const rejectMutation = useRejectAdminRefundRequest()
+    const [declineOpen, setDeclineOpen] = useState(false)
 
     if (isLoading) return <p>Loading...</p>
     if (isError || !request) return <p>Refund request not found.</p>
+
+    const isPending = request.status === "pending"
+
+    const handleApprove = () => {
+        approveMutation.mutate(request._id, {
+            onSuccess: () => {
+                toast.success("Refund approved and sent to Paystack")
+                navigate("/admin/refunds")
+            },
+            onError: (err) => toast.error(err instanceof Error ? err.message : "Could not approve this refund"),
+        })
+    }
+
+    const handleDeclineConfirm = (id: string, reason: string) => {
+        rejectMutation.mutate(
+            { id, reason },
+            {
+                onSuccess: () => {
+                    toast.success("Refund request declined")
+                    setDeclineOpen(false)
+                    navigate("/admin/refunds")
+                },
+                onError: (err) => toast.error(err instanceof Error ? err.message : "Could not decline this request"),
+            }
+        )
+    }
 
     return (
         <PageWrapper className="min-h-screen flex flex-col justify-between">
@@ -46,28 +78,43 @@ const RefundRequestDetail = () => {
             </div>
 
 
-            <div className="mt-10 md:mt-0">
-                <Separator />
-                <div className="flex flex-col-reverse gap-3 md:flex-row items-center justify-between mt-7">
-                    <p className="text-sm text-muted-foreground text-center md:text-start">
-                        Refunds are returned via the original payment method.
-                    </p>
-                    <div className="flex w-full md:w-fit justify-between md:gap-2">
-                        <ActionBtn
-                            type="button"
-                            text="Decline"
-                            variant="outline"
-                            classname="border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white px-5 py-3 h-auto"
-                        />
-                        <PaymentBtn
-                            icon={Check}
-                            text="Approve refund"
-                            classname="bg-[#0F6E56] hover:bg-[#095341] text-white px-5 py-3 h-auto font-bold hover:text-white dark:text-[#4ADE80] dark:hover:text-white"
-                        />
+            {isPending && (
+                <div className="mt-10 md:mt-0">
+                    <Separator />
+                    <div className="flex flex-col-reverse gap-3 md:flex-row items-center justify-between mt-7">
+                        <p className="text-sm text-muted-foreground text-center md:text-start">
+                            Refunds are returned via the original payment method.
+                        </p>
+                        <div className="flex w-full md:w-fit justify-between md:gap-2">
+                            <ActionBtn
+                                type="button"
+                                text="Decline"
+                                variant="outline"
+                                disabled={approveMutation.isPending || rejectMutation.isPending}
+                                onClick={() => setDeclineOpen(true)}
+                                classname="border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white px-5 py-3 h-auto"
+                            />
+                            <PaymentBtn
+                                icon={Check}
+                                text="Approve refund"
+                                loading={approveMutation.isPending}
+                                disabled={approveMutation.isPending || rejectMutation.isPending}
+                                onClick={handleApprove}
+                                classname="bg-[#0F6E56] hover:bg-[#095341] text-white px-5 py-3 h-auto font-bold hover:text-white dark:text-[#4ADE80] dark:hover:text-white"
+                            />
+                        </div>
                     </div>
-                </div>
 
-            </div>
+                </div>
+            )}
+
+            <DeclineRefundDialog
+                request={{ id: request._id, attendeeName: request.ticket.attendeeName }}
+                open={declineOpen}
+                onOpenChange={setDeclineOpen}
+                onConfirm={handleDeclineConfirm}
+                isSubmitting={rejectMutation.isPending}
+            />
         </PageWrapper>
     )
 }

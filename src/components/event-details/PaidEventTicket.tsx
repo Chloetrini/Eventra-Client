@@ -144,7 +144,7 @@ export const PaidEventTicket = ({
         eventName: event.title,
         eventImage: event.coverImage,
         eventDateTime: event.startDate,
-        eventVenue: `${event.venue.name}, ${event.venue.city}`,
+        eventVenue: event.venue ? `${event.venue.name}, ${event.venue.city}` : "Online event",
         ticketDetails: selectedTiers,
         subtotal,
         serviceFee,

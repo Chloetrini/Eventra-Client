@@ -66,9 +66,11 @@ export const EventHero = ({ event,
             <Calendar className="h-3.5 w-3.5" />
             {formatDate(event.startDate)} · {formatTime(event.startDate)}
           </span>
+          {/* venue is only ever set for a physical event — an online event
+              has no venue at all, only onlinePlatform/onlineJoinLink. */}
           <span className="flex items-center gap-1">
             <MapPin className="h-3.5 w-3.5" />
-            {event.venue.name}, {event.venue.city}
+            {event.venue ? `${event.venue.name}, ${event.venue.city}` : "Online event"}
           </span>
           {event.musicType && (
             <span className="flex items-center gap-1">🎵 {event.musicType}</span>

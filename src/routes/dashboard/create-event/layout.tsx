@@ -1,5 +1,5 @@
 import CreateEventSidebar from '@/components/dashboard-create-event/create-event-sidebar'
-import { Outlet, useNavigate } from 'react-router'
+import { Outlet, useNavigate, useLocation } from 'react-router'
 import { FormProvider, useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { eventFormSchema, type EventFormValues } from '@/lib/schema'
@@ -62,8 +62,16 @@ const CreateEventLayout = () => {
   })
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const editEventId = searchParams.get("eventId");
   const hasCheckedStaleDraft = useRef(false);
+  // The wizard's step content lives inside this inner overflow-y-auto div,
+  // not the page/window — so React Router's scroll restoration (and any
+  // window.scrollTo-based fix) never reaches it. Whenever the active step
+  // changes, reset this div's own scroll position so stepping out of a
+  // long, scrolled-down step (e.g. Review) into the next one doesn't leave
+  // the new step visually scrolled halfway down too.
+  const stepScrollRef = useRef<HTMLDivElement>(null);
   // Guards the form-reset effect below so it only runs once, the moment all
   // three queries have actually resolved — react-query re-runs effects on
   // every refetch/cache update, and we don't want to stomp on edits the
@@ -197,6 +205,10 @@ const CreateEventLayout = () => {
   }, [editEventId]);
 
   useEffect(() => {
+    stepScrollRef.current?.scrollTo({ top: 0 });
+  }, [location.pathname]);
+
+  useEffect(() => {
     const subscription = methods.watch((values) => {
       try {
         localStorage.setItem(CREATE_EVENT_STORAGE_KEY, JSON.stringify(values))
@@ -229,7 +241,7 @@ const CreateEventLayout = () => {
             to share it with the organizer sidebar. */}
         <div className='flex flex-col xl:flex-row gap-4 xl:gap-8 pt-4 xl:pt-10 h-full min-h-0'>
           <CreateEventSidebar />
-          <div className='flex-1 min-w-0 min-h-0 overflow-y-auto'>
+          <div ref={stepScrollRef} className='flex-1 min-w-0 min-h-0 overflow-y-auto'>
             <Outlet />
           </div>
         </div>

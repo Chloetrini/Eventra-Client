@@ -1,11 +1,14 @@
 // types/admin-refunds.ts
 
-export type RefundRequestStatus = "pending" | "approved" | "declined"
+// Matches the backend's actual RefundRequest.status enum
+// (models/refundRequest.ts) — 'declined' was never a real value, and
+// 'processed' (an approved request that's actually had money moved by
+// Paystack) was missing entirely.
+export type RefundRequestStatus = "pending" | "approved" | "rejected" | "processed"
 export type DisputeStatus = "open" | "won" | "lost"
 
-// Mirrors what `RefundRequest.find().populate('ticket').populate('event')...`
-// would actually return — not flattened display fields, so this can swap to
-// real API data later with no shape changes.
+// Mirrors what GET /admin/refund-requests/:id actually returns
+// (getRefundRequestDetail in admin.controller.ts) field-for-field.
 export interface RefundRequestPopulated {
   _id: string
   ticket: {
@@ -33,8 +36,8 @@ export interface RefundRequestPopulated {
   }
   requestedBy: string // user _id
   reason: string
-  // From the attendee-facing form (RefundsValues) — not on the backend
-  // model yet, but this is the shape once it's extended
+  // From the attendee-facing form (RefundsValues) — real backend fields as
+  // of the refund-form backend work, not flattened/derived here.
   description: string
   requestedResolution: string
   evidence: { url: string }[]
@@ -43,6 +46,28 @@ export interface RefundRequestPopulated {
   status: RefundRequestStatus
   createdAt: string
   updatedAt: string
+}
+
+// The lighter shape GET /admin/refund-requests (listRefundRequests) returns
+// — its `.populate('ticket', 'attendeeName attendeeEmail')` and
+// `.populate('event', 'title slug')` calls select fewer fields than the
+// detail endpoint's, so this is a distinct type rather than a subset cast
+// of RefundRequestPopulated. Only what the requests table actually renders.
+export interface RefundRequestSummary {
+  _id: string
+  ticket: {
+    attendeeName: string
+    attendeeEmail: string
+  }
+  event: {
+    _id: string
+    title: string
+    slug: string
+  }
+  amount: number
+  reason: string
+  status: RefundRequestStatus
+  createdAt: string
 }
 
 export interface DisputeSummary {

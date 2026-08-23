@@ -15,7 +15,11 @@ import LocationMap from "@/components/dashboard-create-event/location-map"
 // text (same as Create Event does) instead of requiring coordinates — so
 // it renders for every event that has a venue name/address, which is all
 // of them, coordinates or not.
-export const EventMap = ({ location }: { location: EventVenue }) => {
+export const EventMap = ({ location }: { location?: EventVenue }) => {
+  // Online events have no venue at all — nothing to put on a map, so
+  // render nothing rather than crashing on location.name/.address.
+  if (!location) return null
+
   return (
     <section>
       <h2 className="text-xl font-bold">Where it's happening</h2>

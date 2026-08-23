@@ -1,7 +1,17 @@
 import { Controller, type Control, type FieldError as FieldErrorType, type FieldValues, type Path } from "react-hook-form"
 import ImageUploader from "./image-uploader"
-import { useUploadEventCoverImage, useUploadLineupPhoto } from "@/hooks/use-upload"
+import { useUploadEventCoverImage, useUploadLineupPhoto, useUploadRefundEvidence } from "@/hooks/use-upload"
 import { toast } from "react-toastify"
+
+// Which backend upload endpoint (and therefore which permission model) an
+// upload goes through — separate from `variant` below, which only controls
+// crop/preview styling. When omitted, this is inferred from `variant` the
+// same way the old hardcoded if/else here always worked, so every existing
+// call site (event cover, lineup photos) keeps behaving exactly as before.
+// Only refunds-form.tsx sets this explicitly, since evidence screenshots
+// need the session-free /uploads/refund-evidence route, not the
+// organizer-only lineup-photo one.
+type UploadTarget = "event-cover" | "lineup-photo" | "refund-evidence"
 
 type ImageUploadInputProps<T extends FieldValues> = {
   name: Path<T>
@@ -18,6 +28,7 @@ type ImageUploadInputProps<T extends FieldValues> = {
   onFileSelected?: (file: File | null) => void
   onUploadStatusChange?: (uploading: boolean) => void
   variant?: "default" | "avatar"
+  uploadTarget?: UploadTarget
 }
 
 export function ImageUploadInput<T extends FieldValues>({
@@ -34,10 +45,13 @@ export function ImageUploadInput<T extends FieldValues>({
   onFileSelected,
   onUploadStatusChange,
   variant,
+  uploadTarget,
 }: ImageUploadInputProps<T>) {
+  const target: UploadTarget = uploadTarget ?? (variant === "default" ? "event-cover" : "lineup-photo")
   const uploadCoverMutation = useUploadEventCoverImage()
   const uploadLineupMutation = useUploadLineupPhoto()
-  const isUploading = uploadCoverMutation.isPending || uploadLineupMutation.isPending
+  const uploadRefundEvidenceMutation = useUploadRefundEvidence()
+  const isUploading = uploadCoverMutation.isPending || uploadLineupMutation.isPending || uploadRefundEvidenceMutation.isPending
 
   return (
     <Controller
@@ -67,19 +81,19 @@ export function ImageUploadInput<T extends FieldValues>({
             onUploadStatusChange?.(true)
 
             try {
-              if (variant === "default") {
-                const url = await uploadCoverMutation.mutateAsync(file)
-                field.onChange(url)
-              } else {
-                const url = await uploadLineupMutation.mutateAsync(file)
-                field.onChange(url)
-              }
+              const url =
+                target === "event-cover"
+                  ? await uploadCoverMutation.mutateAsync(file)
+                  : target === "refund-evidence"
+                    ? await uploadRefundEvidenceMutation.mutateAsync(file)
+                    : await uploadLineupMutation.mutateAsync(file)
+              field.onChange(url)
             } catch (err) {
               field.onChange("")
               // Was always the same generic string, even when we had a real
-              // reason (file too large, wrong type, session expired). Both
-              // uploadEventCoverImage/uploadLineupPhoto now throw a real
-              // Error with an actual message, so surface it.
+              // reason (file too large, wrong type, session expired). All
+              // three upload functions now throw a real Error with an
+              // actual message, so surface it.
               toast.error(err instanceof Error ? err.message : "Image upload failed. Please try again.")
             } finally {
               onUploadStatusChange?.(false)

@@ -44,6 +44,7 @@ type FormFieldProps<T extends FieldValues> = {
   imagePreviewStyle?: string
   imageDefaultStyle?: string
   imageVariant?: 'default' | 'avatar'
+  uploadTarget?: 'event-cover' | 'lineup-photo' | 'refund-evidence'
   onImageFileSelected?: (file: File | null) => void
   onUploadStatusChange?: (uploading: boolean) => void
 }
@@ -81,6 +82,7 @@ export function FormBox<T extends FieldValues>({
   imagePreviewStyle,
   imageDefaultStyle,
   imageVariant,
+  uploadTarget,
   onImageFileSelected,
   onUploadStatusChange
 }: FormFieldProps<T>) {
@@ -145,6 +147,7 @@ export function FormBox<T extends FieldValues>({
             placeholder={placeholder}
             errors={errors}
             variant={imageVariant}
+            uploadTarget={uploadTarget}
             onFileSelected={onImageFileSelected}
             onUploadStatusChange={onUploadStatusChange}
           />

@@ -162,7 +162,16 @@ export const eventSchema = z.object({
     z.null(),
   ]),
   coverImage: z.string().optional(),
-  venue: eventVenueSchema,
+  // Was required — but the backend only ever sets `venue` for a physical
+  // event (see models/event.ts: absent entirely when isOnline is true).
+  // A required field silently missing made zod's .parse() throw for every
+  // online event, and fetchEventBySlugReal's catch-all turned that into a
+  // false "Event not found" — the event was live the whole time, this was
+  // just misdiagnosing it as missing. Same failure mode hit event LISTS
+  // too: one online event mixed into a category/explore page's results
+  // would blow up eventsResponseSchema.parse() for the whole page.
+  venue: eventVenueSchema.optional(),
+  isOnline: z.boolean().optional().default(false),
   startDate: z.string(),
   endDate: z.string().optional(),
   minPrice: z.number().min(0),

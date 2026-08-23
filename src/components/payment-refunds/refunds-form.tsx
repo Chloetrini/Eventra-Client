@@ -98,6 +98,7 @@ const RefundsForm = () => {
                                 control={control}
                                 register={register}
                                 classname="w-[160px]"
+                                uploadTarget="refund-evidence"
                                 imageDefaultStyle="h-[160px] w-[160px] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15 flex items-center justify-center"
                                 imagePreviewStyle="h-[160px] w-[160px] rounded-[12px]"
                                 placeholder="Drag a screenshot or click to upload"

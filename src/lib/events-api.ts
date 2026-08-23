@@ -1,3 +1,4 @@
+import axios from "axios";
 import { z } from "zod";
 import { api } from "@/lib/api";
 import {
@@ -102,7 +103,18 @@ async function fetchEventBySlugReal(slug: string): Promise<Event | null> {
     const res = await api.get(`/events/${slug}`);
     return eventSchema.parse(res.body);
   } catch (error) {
-    return null;
+    // Only a real "the backend has no such event" 404 should read as
+    // Event not found. Everything else — a network hiccup, a 500, or
+    // (as happened with online events) a Zod schema mismatch — was
+    // getting silently swallowed here and shown to the user as the exact
+    // same "Event not found" page as a real 404, which made a genuine bug
+    // indistinguishable from a missing event. Rethrow anything that isn't
+    // actually a 404 so it surfaces instead of hiding behind that message.
+    const cause = error instanceof Error ? error.cause : undefined;
+    const is404 = axios.isAxiosError(cause) && cause.response?.status === 404;
+    if (is404) return null;
+    console.error(`fetchEventBySlug(${slug}) failed with a non-404 error:`, error);
+    throw error;
   }
 }
 
@@ -232,7 +244,18 @@ type RealTicket = {
 // scannable in the Attendees table, not the full generated ID, so this
 // re-prefixes it as "EVT-XXXX" and truncates to 4 chars. Purely cosmetic:
 // no backend field changes, the full ticketId still exists underneath.
-function shortenTicketRef(ticketId: string): string {
+//
+// Was `ticketId: string` (required) — but one real endpoint (the
+// organizer dashboard's recentAttendees) was missing this field entirely,
+// so `ticketId.split("-")` threw a TypeError deep inside
+// fetchEventDashboard. That crash had nothing to do with the event, but
+// react-query has no way to distinguish "the fetch function threw" from
+// "the event doesn't exist," so the whole dashboard page showed "Event
+// Not Found" for a perfectly live event. Backend now sends it, but this
+// stays defensive so a missing/blank id here never takes the whole page
+// down again — it just falls back to something reasonable to display.
+function shortenTicketRef(ticketId: string | undefined | null): string {
+  if (!ticketId) return "EVT-????";
   const [, rest] = ticketId.split("-");
   if (!rest) return ticketId;
   return `EVT-${rest.slice(0, 4)}`;
@@ -295,7 +318,10 @@ type RealDashboard = {
     _id: string;
     attendeeName: string;
     code: string;
-    ticketId: string;
+    // Optional to match reality: this was actually absent from the
+    // backend response until now (see shortenTicketRef above), and
+    // staying optional keeps this type honest even if that regresses.
+    ticketId?: string;
     status: "valid" | "checked_in" | "cancelled" | "refunded";
     ticketTypeName: string;
   }>;

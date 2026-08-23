@@ -1,5 +1,5 @@
 
-import {  ticketTypeSchema } from "@/lib/schema";
+import {  ticketTypeSchema, type RefundsValues } from "@/lib/schema";
 import type { EventTickets } from "@/types/ticket-tiers";
 import type { Ticket } from "@/types/ticket";
 import { api } from "@/lib/api";
@@ -96,8 +96,23 @@ export async function getOrderByReference(reference: string) {
   return res.body;
 }
 
-export async function requestTicketRefund(ticketId: string, reason?: string) {
-  const res = await api.post(`/tickets/${ticketId}/refund-request`, { reason: reason ?? "Requested by attendee" });
+// Sends the full refund form — matches the backend's refundRequestSchema
+// field-for-field now (see requestRefund in ticket.controller.ts), rather
+// than collapsing everything into one `reason` string. `evidence` is
+// filtered down to entries that actually finished uploading — the form's
+// own zod validation already guarantees at least one, but this stays
+// defensive in case a slot is mid-upload or was left empty.
+export async function requestTicketRefund(ticketId: string, data: RefundsValues) {
+  const payload = {
+    reason: data.reason,
+    description: data.description,
+    requestedResolution: data.requestedResolution,
+    evidence: data.evidence
+      .filter((item): item is { url: string } => !!item.url)
+      .map((item) => ({ url: item.url })),
+    additionalInformation: data.additionalInformation,
+  };
+  const res = await api.post(`/tickets/${ticketId}/refund-request`, payload);
   return res.body;
 }
 
@@ -105,4 +120,3 @@ export async function cancelReservation(ticketId: string) {
   const res = await api.delete(`/tickets/${ticketId}/reservation`);
   return res.body;
 }
-

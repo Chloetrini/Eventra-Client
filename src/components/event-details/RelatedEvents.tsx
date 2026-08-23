@@ -21,7 +21,7 @@ export const RelatedEvents = ({ events }: { events: Event[] }) => {
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-wider">{event.tags?.join(' · ') || 'No tags'}</p>
                   <p className="mt-1 text-sm font-bold leading-snug">{event.title}</p>
-                  <p className="mt-1 text-xs font-medium text-muted-foreground">{formatDate(event.startDate)} · {event.venue.name}</p>
+                  <p className="mt-1 text-xs font-medium text-muted-foreground">{formatDate(event.startDate)} · {event.venue ? event.venue.name : "Online"}</p>
                   <p className="pt-4 text-sm font-semibold text-foreground">{formatPrice(event.minPrice ?? 0)}</p>
                 </div>
                 <div className="rounded-full border h-8.75 w-8.75 flex items-center justify-center bg-[#E4F1EB] dark:bg-[#0F6E56]/15">

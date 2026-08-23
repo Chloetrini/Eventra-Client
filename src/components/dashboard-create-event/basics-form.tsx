@@ -56,7 +56,7 @@ const BasicsForm = ({ onUploadStatusChange }: BasicsFormProps) => {
           // look like it's shouting before anyone's typed anything).
           inputClassName="uppercase placeholder:normal-case"
         />
-        <div className='flex gap-5'>
+        <div className='flex flex-col sm:flex-row gap-5'>
           <div className='w-full'>
             <FormBox
               inputType="select"
@@ -99,7 +99,7 @@ const BasicsForm = ({ onUploadStatusChange }: BasicsFormProps) => {
             dateInputClassName='h-11'
           />
         </div>
-        <div className='flex gap-5'>
+        <div className='flex flex-col sm:flex-row gap-5'>
           <FormBox
             inputType="time"
             type="time"

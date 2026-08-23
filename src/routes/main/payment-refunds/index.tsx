@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import PageWrapper from "@/components/page-wrapper"
 import RefundsForm from "@/components/payment-refunds/refunds-form"
 import { FormProvider, useForm, type Resolver } from "react-hook-form"
@@ -7,6 +7,7 @@ import { refundsSchema, type RefundsValues } from "@/lib/schema"
 import ActionBtn from "@/components/ui/action-btn"
 import { useLocation, useNavigate } from "react-router"
 import { toast } from "react-toastify"
+import { requestTicketRefund } from "@/lib/tickets-api"
 
 const REFUNDS_STORAGE_KEY = "eventra-refund-request"
 
@@ -31,6 +32,7 @@ const Refunds = () => {
     const location = useLocation()
     const navigate = useNavigate()
     const ticketId = location.state?.ticketId as string | undefined
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     useEffect(() => {
         if (!ticketId) {
@@ -56,15 +58,23 @@ const Refunds = () => {
         return () => subscription.unsubscribe()
     }, [methods])
 
-    const onSubmit = (data: RefundsValues) => {
+    const onSubmit = async (data: RefundsValues) => {
         if (!ticketId) return
-        const payload = {
-            ...data,
-            ticketId,
+        setIsSubmitting(true)
+        try {
+            // Sends the form as-is (reason, description, requestedResolution,
+            // evidence, additionalInformation) — the backend now stores each
+            // field on the RefundRequest instead of the old single collapsed
+            // `reason` string, so nothing here needs pre-processing anymore.
+            await requestTicketRefund(ticketId, data)
+            localStorage.removeItem(REFUNDS_STORAGE_KEY)
+            toast.success("Refund request submitted — an admin will review it shortly.")
+            navigate("/tickets")
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Could not submit your refund request. Please try again.")
+        } finally {
+            setIsSubmitting(false)
         }
-        console.log(payload)
-        localStorage.removeItem(REFUNDS_STORAGE_KEY)
-        navigate("/tickets")
     }
 
     return (
@@ -82,6 +92,8 @@ const Refunds = () => {
                         <ActionBtn
                             type="submit"
                             text="Submit Request"
+                            loading={isSubmitting}
+                            disabled={isSubmitting}
                             classname="w-fit bg-[#0F6E56] font-bold py-5 px-5 dark:text-white"
                         />
                     </div>

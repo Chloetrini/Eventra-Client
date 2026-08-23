@@ -39,6 +39,23 @@ export async function uploadLineupPhoto(file: File): Promise<string> {
   return body.url;
 }
 
+// Screenshots attached to a refund request (RefundsForm's "evidence"
+// field). Deliberately a separate function/endpoint from
+// uploadLineupPhoto/uploadEventCoverImage — those both require an
+// organizer session on the backend, but a refund request comes from an
+// attendee (or an unauthenticated guest ticket-holder), so evidence needs
+// its own session-free upload route. See uploads/refund-evidence's own
+// comment in the backend's routes/upload.routes.ts.
+export async function uploadRefundEvidence(file: File): Promise<string> {
+  assertUploadableSize(file);
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const response = await api.upload("/uploads/refund-evidence", formData);
+  const body = response.body as { url: string; publicId: string };
+  return body.url;
+}
+
 function assertDocumentUploadableSize(file: File) {
   if (file.size > MAX_UPLOAD_SIZE_BYTES) {
     const sizeMb = (file.size / (1024 * 1024)).toFixed(1);

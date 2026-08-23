@@ -7,6 +7,7 @@ import { UsersTable } from "@/components/admin/users/UsersTable";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import type { AdminUserStatusFilter } from "@/types/admin-users";
+import PageWrapper from "@/components/page-wrapper";
 
 const FILTERS: { value: AdminUserStatusFilter; label: string }[] = [
   { value: "all", label: "All" },
@@ -55,7 +56,7 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <PageWrapper className="flex flex-col gap-6 p-[20px]">
       <div>
         <p className="text-[16px] min-[400px]:text-sm lg:text-[16px] font-medium tracking-wide uppercase text-[#0A4F41] dark:text-[#4ADE80]">
           Manage
@@ -119,6 +120,6 @@ export default function AdminUsersPage() {
           )}
         </>
       )}
-    </div>
+    </PageWrapper>
   );
 }

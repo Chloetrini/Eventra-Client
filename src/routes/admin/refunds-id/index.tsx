@@ -10,6 +10,7 @@ import {
 } from "@/hooks/use-admin-refunds"
 import { DeclineRefundDialog } from "@/components/dialogs/decline-refund-dialog"
 import { toast } from "react-toastify"
+import PageWrapper from "@/components/page-wrapper"
 
 const RefundRequestDetailPage = () => {
     const { requestId } = useParams<{ requestId: string }>()
@@ -58,7 +59,7 @@ const RefundRequestDetailPage = () => {
     }
 
     return (
-        <div className="p-6 max-w-3xl mx-auto">
+        <PageWrapper className="p-[20px]">
             <button
                 type="button"
                 onClick={() => navigate("/admin/refunds-dispute")}
@@ -131,7 +132,7 @@ const RefundRequestDetailPage = () => {
                 onConfirm={handleDeclineConfirm}
                 isSubmitting={rejectMutation.isPending}
             />
-        </div>
+        </PageWrapper>
     )
 }
 

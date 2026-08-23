@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
+import PageWrapper from "@/components/page-wrapper"
 
 interface ToggleSwitchProps {
   checked: boolean
@@ -126,7 +127,7 @@ export default function PlatformSettings() {
   )
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-6">
+    <PageWrapper className="flex flex-col gap-6 p-[20px]">
       {/* Page heading */}
       <div className="flex flex-col gap-2">
         <p className="text-xs text-[#0F6E56]">PLATFORM</p>
@@ -297,6 +298,6 @@ export default function PlatformSettings() {
           </table>
         </CardContent>
       </Card>
-    </div>
+    </PageWrapper>
   )
 }

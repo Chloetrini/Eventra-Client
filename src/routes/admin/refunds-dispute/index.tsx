@@ -1,6 +1,7 @@
 import { useState } from "react"
 import RequestDisputeTable from "@/components/admin/refunds-dispute/request-dispute-table"
 import { useAdminRefundRequests, useAdminDisputes } from "@/hooks/use-admin-refunds"
+import PageWrapper from "@/components/page-wrapper"
 
 type Tab = "requests" | "disputes"
 
@@ -14,7 +15,7 @@ const RefundsDisputesPage = () => {
         activeTab === "requests" ? refundRequestsQuery.isLoading : disputesQuery.isLoading
 
     return (
-        <div className="p-6">
+        <PageWrapper className="p-[20px]">
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold font-space">Refunds & Disputes</h1>
@@ -70,7 +71,7 @@ const RefundsDisputesPage = () => {
                     />
                 )}
             </div>
-        </div>
+        </PageWrapper>
     )
 }
 

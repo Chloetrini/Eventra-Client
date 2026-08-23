@@ -140,7 +140,7 @@ const SideBar: React.FC<AdminSideBarProps> = ({ isOpen = false, onClose }) => {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border flex flex-col h-screen transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border h-screen flex flex-col transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >

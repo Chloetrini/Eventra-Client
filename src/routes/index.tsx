@@ -467,36 +467,64 @@ const routes = [
             },
 
             // ─── ADMIN ROUTE ────────────────────────────────────────────
-            {
-              
-                children: [
-                    {
-                         path: "admin",
-                        Component: AdminLayout,
-                        children: [
-                            {
-                                index: true,
-                                element: <Navigate to="overview" replace />,
-                            },
-                            {
-                                path: "overview",
-                                handle: {
-                                    seo: {
-                                        title: "admin Dashboard",
-                                        description: "Manage your organizers and attendees.",
-                                    }
-                                },
-                                lazy: async () => {
-                                    const { default: Component } =
-                                        await import("@/routes/admin/overview/index");
-                                    return { Component };
-                                },
-                            }
-                        ]
-                    },
-                    // TODO: Add /admin/approvals, /admin/refunds, /admin/reports, etc. here later
-                ],
+           {
+    path: "admin",
+    Component: AdminLayout,
+    children: [
+        {
+            index: true,
+            element: <Navigate to="overview" replace />,
+        },
+        {
+            path: "overview",
+            handle: {
+                seo: {
+                    title: "admin Dashboard",
+                    description: "Manage your organizers and attendees.",
+                }
             },
+            lazy: async () => {
+                const { default: Component } =
+                    await import("@/routes/admin/overview/index");
+                return { Component };
+            },
+        },
+        {
+            path: "reports",
+            children: [
+                {
+                    index: true,
+                    handle: {
+                        seo: {
+                            title: "Reports",
+                            description: "Flagged events and users, plus the full platform audit log.",
+                        }
+                    },
+                    lazy: async () => {
+                        const { default: Component } =
+                            await import("@/routes/admin/reports/index");
+                        return { Component };
+                    },
+                },
+                {
+                    path: ":flagId",
+                    handle: {
+                        seo: {
+                            title: "Report Details",
+                            description: "Review a flagged event or user.",
+                        }
+                    },
+                    lazy: async () => {
+                        const { default: Component } =
+                            await import("@/routes/admin/reports/detail");
+                        return { Component };
+                    },
+                },
+            ],
+        },
+        // TODO: Add /admin/approvals, /admin/refunds, etc. here later
+    ]
+},
             // ─── END ADMIN ROUTE ────────────────────────────────────────
 
             {

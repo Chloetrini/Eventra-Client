@@ -3,6 +3,7 @@ import type {
   PlatformRevenueData,
   RevenueRange,
 } from "@/types/overview";
+import type { Flag, AuditLogEntry } from "@/types/report";
 
 // NOTE: adjust this import to match whatever your shared HTTP client is
 // actually exported as (lib/api/api.ts) — guessing `apiClient` here.
@@ -22,4 +23,18 @@ export async function getPlatformRevenue(
   // });
   // return data;
   throw new Error("getPlatformRevenue: backend not wired up yet — using mock data in the hook");
+}
+
+export async function getFlags():  Promise<Flag[]> {
+  // const { data} = await apiClient.get("/admin/reports/flags")
+  // return data
+
+  throw new Error("getFlags: backend not wired up yet, currently using mock data in the hook")
+}
+
+export async function getAuditLog(): Promise<AuditLogEntry[]> {
+  // const { data } = await apiClient.get("/admin/reports/audit-log");
+  // return data;
+
+  throw new Error ("getAuditLog: backend not wired up yet, currently using mock data in the hook")
 }

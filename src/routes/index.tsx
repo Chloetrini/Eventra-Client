@@ -547,6 +547,39 @@ const routes = [
                                     return { Component };
                                 },
                             },
+                            {
+                                path: "events",
+                                children: [
+                                    {
+                                        index: true,
+                                        handle: {
+                                            seo: {
+                                                title: "Admin Events | Eventra",
+                                                description: "Every event on the platform. Moderate or remove any of them.",
+                                            }
+                                        },
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/admin/events/index");
+                                            return { Component };
+                                        },
+                                    },
+                                    {
+                                        path: ":eventId",
+                                        handle: {
+                                            seo: {
+                                                title: "Admin Event Details | Eventra",
+                                                description: "Review event details before moderation.",
+                                            }
+                                        },
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/admin/events/detail");
+                                            return { Component };
+                                        },
+                                    },
+                                ]
+                            },
                              {
                                 path: "settings",
                                 handle: {

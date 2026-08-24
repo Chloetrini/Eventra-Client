@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { UI_ASSETS } from "@/lib/assets";
 import { Format, shortEventNo } from "@/lib/utils";
 import { Link } from "react-router";
 import type { Event } from "@/types/event-types";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface StackedCardCarouselProps {
   events: Event[];
@@ -15,31 +15,35 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
   const DISPLAY_EVENTS = events.slice(0, 3);
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [animating, setAnimating] = useState(false);
 
   useEffect(() => {
     if (DISPLAY_EVENTS.length === 0) return;
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % DISPLAY_EVENTS.length);
-    }, 5000);
+      setAnimating(true);
+      setTimeout(() => {
+        setActiveIndex((prev) => (prev + 1) % DISPLAY_EVENTS.length);
+        setAnimating(false);
+      }, 400);
+    }, 3000);
     return () => clearInterval(interval);
   }, [DISPLAY_EVENTS.length]);
 
   if (DISPLAY_EVENTS.length === 0) return null;
 
   return (
-    <div className="relative w-full h-95 overflow-hidden">
-      {/* Back cards — static stack behind */}
+    <div className="relative w-full h-95">
       {DISPLAY_EVENTS.map((event, idx) => {
         const position =
           (idx - activeIndex + DISPLAY_EVENTS.length) % DISPLAY_EVENTS.length;
-        if (position === 0) return null; // front card handled by AnimatePresence
-
+        // position 0 = front, 1 = middle, 2 = back
+        const isFront = position === 0;
         const isMiddle = position === 1;
-
+        const isBack = position === 2;
         return (
           <div
             key={event.slug}
-            className="absolute w-full bg-white rounded-2xl overflow-hidden shadow-xl"
+            className="absolute w-full bg-white rounded-2xl overflow-hidden shadow-xl transition-all duration-500 ease-in-out"
             style={{
               top: isMiddle ? "8px" : "16px",
               right: isMiddle ? "-6px" : "-12px",

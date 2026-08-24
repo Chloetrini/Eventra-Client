@@ -594,6 +594,40 @@ const routes = [
                                     },
                                 ],
                             },
+                             {
+                                path: "reports",
+                                children: [
+                                    {
+                                        index: true,
+                                        handle: {
+                                            seo: {
+                                                title: "Reports",
+                                                description: "Flagged events and users, plus the full platform audit log.",
+                                            }
+                                        },
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/admin/reports/index");
+                                            return { Component };
+                                        },
+                                    },
+                                    {
+                                        path: ":flagId",
+                                        handle: {
+                                            seo: {
+                                                title: "Report Details",
+                                                description: "Review a flagged event or user.",
+                                            }
+                                        },
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/admin/reports/detail");
+                                            return { Component };
+                                        },
+                                    },
+                                ],
+                            },    
+       
                             {
                                 path: "users",
                                 children: [
@@ -636,7 +670,7 @@ const routes = [
                 ],
             },
 
-           
+      
             // ─── END ADMIN ROUTE ────────────────────────────────────────
 
             {

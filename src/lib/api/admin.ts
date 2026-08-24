@@ -6,6 +6,7 @@ import type {
   IconKey,
   ActivityTone,
 } from "@/types/overview";
+import type { Flag, AuditLogEntry } from "@/types/report";
 import { formatCompactNaira, formatRequestedAgo } from "@/lib/utils";
 
 // Raw shape of GET /admin/overview, as actually returned by
@@ -217,6 +218,20 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
   return { totalAttentionItems, needsAction, stats, trustSafety, recentActivity, topOrganizers };
 }
 
+
+export async function getFlags():  Promise<Flag[]> {
+  // const { data} = await apiClient.get("/admin/reports/flags")
+  // return data
+
+  throw new Error("getFlags: backend not wired up yet, currently using mock data in the hook")
+}
+
+export async function getAuditLog(): Promise<AuditLogEntry[]> {
+  // const { data } = await apiClient.get("/admin/reports/audit-log");
+  // return data;
+
+  throw new Error ("getAuditLog: backend not wired up yet, currently using mock data in the hook")
+}
 export async function getPlatformRevenue(range: RevenueRange): Promise<PlatformRevenueData> {
   const raw = await fetchRawAdminOverview(range);
 

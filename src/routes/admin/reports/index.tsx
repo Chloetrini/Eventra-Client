@@ -4,6 +4,7 @@ import FlagsTable from "@/components/admin/reports/FlagsTable";
 import AuditLogTable from "@/components/admin/reports/AuditLogTable";
 import { cn } from "@/lib/utils";
 import type { Flag } from "@/types/report";
+import PageWrapper from "@/components/page-wrapper";
 
 export default function AdminReportsPage() {
     const [activeTab, setActiveTab] = useState<"flags" | "audit">("flags")
@@ -26,7 +27,7 @@ export default function AdminReportsPage() {
     }
 
     return (
-        <div className="flex flex-col gap-6 min-w-0">
+        <PageWrapper className="flex flex-col gap-6 min-w-0 p-[20px]">
             <div>
                 <p className="text-[13px] min-[400px]:text-xs font-medium font-space tracking-wide  pt-3 uppercase text-[#0F6E56]">
                    Needs action
@@ -71,6 +72,6 @@ export default function AdminReportsPage() {
       ) : (
         <AuditLogTable entries={auditLog} isLoading={auditLoading} />
             )}
-        </div>
+        </PageWrapper>
     )
 }

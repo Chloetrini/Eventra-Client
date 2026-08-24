@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Flag as FlagIcon, ArrowLeft } from "lucide-react";
 import { formatNaira } from "@/lib/utils";
 import flagIcon from "@/assets/material-symbols_flag-rounded.png"
+import PageWrapper from "@/components/page-wrapper";
 
 export default function AdminReportDetailPage() {
   const { flagId } = useParams();
@@ -43,7 +44,7 @@ export default function AdminReportDetailPage() {
     flag.type === "EVENT" ? `Event · ${flag.reason}` : `User · ${flag.reason}`;
 
   return (
-    <div className="flex flex-col gap-3">
+    <PageWrapper className="flex flex-col gap-3 p-[20px]">
       <button
         onClick={() => naviagte("/admin/reports")}
         className="flex items-center gap-1.5 text-[13px] text-[#0F6E56] font-space hover:underline w-fit"
@@ -170,6 +171,6 @@ export default function AdminReportDetailPage() {
           </Button>
         </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

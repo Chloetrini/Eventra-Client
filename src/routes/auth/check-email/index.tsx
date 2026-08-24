@@ -5,9 +5,9 @@ import { toast } from "react-toastify";
 import { Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { api } from "@/lib/api";
 import EventraLogo from "@/assets/Eventra-logo.png";
 import { authPath } from "@/lib/auth-path";
+import { useAuth } from "@/context/auth.context";
 
 export default function CheckEmail() {
   const navigate = useNavigate();
@@ -15,12 +15,15 @@ export default function CheckEmail() {
   const email = (location.state as { email?: string } | null)?.email;
   const isOrganizer = location.pathname.includes("/organizer");
   const [cooldown, setCooldown] = useState(false);
+  const { forgotPassword } = useAuth();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () => api.post("/forgot-password", { email }),
+    // Was posting to "/forgot-password" (missing the "/auth" prefix every
+    // other call here uses), so Resend link was 404ing.
+    mutationFn: () => forgotPassword(email!),
 
     onSuccess: (data) => {
-      toast.success(data.message || "Password reset link resent.");
+      toast.success(data?.message || "Password reset link resent.");
       setCooldown(true);
       setTimeout(() => setCooldown(false), 30000);
     },
@@ -40,7 +43,10 @@ export default function CheckEmail() {
   };
 
   const handleOpenEmail = () => {
-    navigate(authPath("verify-otp", isOrganizer), {
+    // verify-otp is the registration email-verification screen, not this
+    // flow. Send them to reset-password, which now checks the code for
+    // real (POST /auth/verify-reset-otp) before showing the password step.
+    navigate(authPath("reset-password", isOrganizer), {
       state: { email },
     });
   };

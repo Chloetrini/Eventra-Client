@@ -105,6 +105,7 @@ const BankDetailsForm = () => {
                         classname="w-full"
                         borderStyle="onboarding"
                         register={register}
+                        control={control}
                         options={bankNames}
                     />
                 </span>

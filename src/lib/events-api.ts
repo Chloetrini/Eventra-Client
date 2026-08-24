@@ -7,6 +7,7 @@ import { type Event, type EventFilters } from "@/types/event-types";
 import type { Attendee } from "@/types/attendees";
 import type { OrganizerEventDetails } from "@/types/organizer-event";
 import { formatDate } from "@/lib/utils";
+import { isLiveEditableEvent, LIVE_EDIT_CUTOFF_DAYS } from "@/lib/create-event-api";
 export type EventsResponse = {
   events: Event[];
   total: number;
@@ -112,6 +113,25 @@ export async function fetchEvents(filters: EventFilters) {
 
 export function fetchEventBySlug(slug: string): Promise<Event | null> {
   return fetchEventBySlugReal(slug);
+}
+
+// ---------------------------------------------------------------------
+// Spotlight/promotion placement — GET /events/spotlight?placement=X
+// Backend filters on { status: 'approved', isPromoted: true,
+// 'promotion.package': $in PLACEMENT_PACKAGES[placement] } — see
+// getSpotlightEvents in event.controller.ts. Placement is one of:
+//   "hero"     -> homepage hero carousel only
+//   "featured" -> home page "Featured this week" section (also includes
+//                 anything promoted to hero, since hero implies broader visibility)
+//   "spotlight"-> Explore page featured carousel (also includes hero-tier)
+// Unlike fetchEvents this has no pagination — it's a small, capped list.
+export async function fetchSpotlightEvents(
+  placement: "hero" | "featured" | "spotlight",
+  limit = 8
+): Promise<Event[]> {
+  const res = await api.get(`/events/spotlight?placement=${placement}&limit=${limit}`);
+  const body = res.body as { events: unknown[] };
+  return z.array(eventSchema).parse(body.events ?? []);
 }
 
 export async function fetchCategories(): Promise<EventCategory[]> {
@@ -386,7 +406,30 @@ export async function fetchEventDashboard(eventId: string): Promise<OrganizerEve
         : "This event is not promoted yet. Boost it for a featured spot on homepage and explore",
     canCancel: d.event.status === "approved" || d.event.status === "postponed",
     canPostpone: d.event.status === "approved",
-    canEdit: d.event.status === "draft" || d.event.status === "rejected",
+    ...buildEditability(d.event.status, d.event.startDate),
+  };
+}
+
+// A draft/rejected event is always editable. A live (approved/postponed)
+// event is editable too, but only up to LIVE_EDIT_CUTOFF_DAYS before it
+// starts — past that, canEdit flips false and editBlockedReason explains
+// why, so the Edit button can be disabled with a real reason instead of
+// only failing once the organizer reaches the end of the wizard.
+function buildEditability(
+  status: string,
+  startDate: string
+): Pick<OrganizerEventDetails, "canEdit" | "isLiveEdit" | "editBlockedReason"> {
+  const isDraftEditable = status === "draft" || status === "rejected";
+  const isLiveStatus = status === "approved" || status === "postponed";
+  const isLiveEditable = isLiveStatus && isLiveEditableEvent(status, startDate);
+
+  return {
+    canEdit: isDraftEditable || isLiveEditable,
+    isLiveEdit: isLiveEditable,
+    editBlockedReason:
+      isLiveStatus && !isLiveEditable
+        ? `This event starts in less than ${LIVE_EDIT_CUTOFF_DAYS} days and can no longer be edited`
+        : undefined,
   };
 }
 

@@ -15,6 +15,30 @@ export function clearCreatedEventId() {
   localStorage.removeItem(CREATED_EVENT_ID_KEY);
 }
 
+// Mirrors the backend's LIVE_EDITABLE_STATUSES / LIVE_EDIT_CUTOFF_DAYS /
+// isPastLiveEditCutoff (event.controller.ts) — lets the event-details page
+// and the wizard gate/label a live-event edit the same way the backend will
+// actually enforce it, instead of only finding out from a 400 at save time.
+export const LIVE_EDITABLE_STATUSES = ["approved", "postponed"] as const;
+export const LIVE_EDIT_CUTOFF_DAYS = 3;
+
+export function isPastLiveEditCutoff(startDate?: string | Date | null): boolean {
+  if (!startDate) return false;
+  const start = new Date(startDate).getTime();
+  if (Number.isNaN(start)) return false;
+  const cutoff = start - LIVE_EDIT_CUTOFF_DAYS * 24 * 60 * 60 * 1000;
+  return Date.now() >= cutoff;
+}
+
+// True for an approved/postponed event that hasn't crossed the cutoff yet
+// — i.e. one that can still be edited because it's LIVE, as opposed to
+// one that's editable because it's still a draft/rejected.
+export function isLiveEditableEvent(status?: string | null, startDate?: string | Date | null): boolean {
+  return Boolean(
+    status && (LIVE_EDITABLE_STATUSES as readonly string[]).includes(status) && !isPastLiveEditCutoff(startDate)
+  );
+}
+
 // --- Step 1: creates the draft event, returns its real _id ---
 export async function createEvent(payload: { type: "free" | "paid" }) {
   const res = await api.post("/events", payload);

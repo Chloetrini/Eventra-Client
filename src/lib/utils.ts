@@ -153,3 +153,13 @@ export const Format = {
     return location.split(",")[0].trim(); // "V.I. Rooftop, Lagos" → "V.I. Rooftop"
   },
 };
+
+export function formatRequestedAgo(isoDate: string): string {
+    const diffMs = Date.now() - new Date(isoDate).getTime()
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+
+    if (diffHours < 1) return "Just now"
+    if (diffHours < 24) return `${diffHours}h ago`
+    if (diffHours < 48) return "Yesterday"
+    return new Date(isoDate).toLocaleDateString()
+}

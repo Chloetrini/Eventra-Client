@@ -36,15 +36,31 @@ function toDisplayTicket(t: any) {
         // somehow has no tier name.
         ticketDetails: [{ type: t.type === "free" ? "Free" : (t.ticketType?.name ?? "Paid"), unitPrice: t.price ?? 0, quantity: 1 }],
         qrImageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(t.code)}`,
-        refundPolicy: {
-    type: (t.type === "free" ? "free-cancel" : "refundable") as "free-cancel" | "refundable" | "non-refundable",
-    note: t.type === "free"
-        ? "Free event · cancel anytime to release your spot."
-        : "Refunds allowed until 3 days before the event.",
-},
+        refundPolicy: (() => {
+            const policy = t.event?.refundPolicy;
+            if (t.type === "free") {
+                return {
+                    type: "free-cancel" as const,
+                    note: "Free event · cancel anytime to release your spot.",
+                };
+            }
+            if (!policy || policy.type === "no-refunds") {
+                return {
+                    type: "non-refundable" as const,
+                    note: "This ticket is non-refundable.",
+                };
+            }
+            // type === "refund-until-days-before"
+            return {
+                type: "refundable" as const,
+                note: policy.daysBefore
+                    ? `Refunds allowed until ${policy.daysBefore} day${policy.daysBefore === 1 ? "" : "s"} before the event.`
+                    : "Refunds allowed before the event.",
+            };
+        })(),
         _rawEvent: t.event,
     };
-    
+
 }
 
 export default function Tickets() {
@@ -60,6 +76,8 @@ export default function Tickets() {
     const navigate = useNavigate();
 
     const { data: rawTickets = [], isLoading: ticketsLoading } = useMyTickets();
+    console.log(rawTickets);
+
     const displayTickets = (rawTickets as any[]).map(toDisplayTicket);
 
     const now = new Date();
@@ -124,7 +142,7 @@ export default function Tickets() {
                         <TicketCard key={ticket._id} ticket={ticket} showActions />
                     ))
                 ) : (
-                    <p className="text-sm text-center py-12 text-muted-foreground">
+                    <p className="text-sm text-center py-12 text-muted-foreground min-h-screen">
                         No {activeTab} tickets to show.
                     </p>
                 )}

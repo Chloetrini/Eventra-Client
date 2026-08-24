@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import EventraLogo from '/src/assets/Eventra-logo.png';
+import { useUnreadNotificationCount } from '@/hooks/use-notifications';
 import {
   LayoutDashboard,
   Calendar,
@@ -14,13 +15,18 @@ import {
   X
 } from 'lucide-react';
 
+// countKey groups map a nav item to the unread-notification types that are
+// actually about it — e.g. "Events" badges up when an event of yours was
+// approved/rejected. Not every item has a natural notification type
+// (Overview, Check-in, Payouts aren't things you get notified about), so
+// those are simply left without a countKey and never show a badge.
 const navItems = [
   { icon: LayoutDashboard, label: 'Overview', path: '/dashboard/overview' },
-  { icon: Calendar, label: 'Events', path: '/dashboard/events' },
-  { icon: Users, label: 'Attendees', path: '/dashboard/attendees' },
+  { icon: Calendar, label: 'Events', path: '/dashboard/events', countKey: 'events' as const },
+  { icon: Users, label: 'Attendees', path: '/dashboard/attendees', countKey: 'attendees' as const },
   { icon: CheckSquare, label: 'Check-in', path: '/dashboard/check-in' },
   { icon: Wallet, label: 'Payouts', path: '/dashboard/payouts' },
-  { icon: Megaphone, label: 'Promotions', path: '/dashboard/promotion' },
+  { icon: Megaphone, label: 'Promotions', path: '/dashboard/promotion', countKey: 'promotions' as const },
 ];
 
 const bottomItems = [
@@ -52,10 +58,33 @@ function getInitials(name?: string): string {
     .slice(0, 2);
 }
 
+// Plain unread-count pill — same shape/size as the admin sidebar's
+// NavCountBadge, but always the brand green rather than amber/red, since
+// these aren't a "backlog to clear," just unseen updates.
+function NavCountBadge({ count }: { count: number }) {
+  if (!count) return null;
+  return (
+    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#0F6E56]/15 px-1.5 text-[11px] font-bold text-[#0F6E56] dark:bg-[#4ADE80]/15 dark:text-[#4ADE80]">
+      {count}
+    </span>
+  );
+}
+
 const SideBar: React.FC<SideBarProps> = ({ organization, isOpen = false, onClose }) => {
   const location = useLocation();
   const orgInitials = getInitials(organization?.name);
   const navigate = useNavigate();
+
+  // Same GET /notifications/unread-count the topbar bell uses — grouped
+  // here into per-nav-item counts instead of one total.
+  const { data: unread } = useUnreadNotificationCount();
+  const byType = unread?.byType ?? {};
+  const navCounts: Record<'events' | 'attendees' | 'promotions', number> = {
+    events: (byType.event_approved ?? 0) + (byType.event_rejected ?? 0),
+    attendees: byType.new_sale ?? 0,
+    promotions: (byType.promotion_approved ?? 0) + (byType.promotion_rejected ?? 0),
+  };
+
   return (
     <>
       {/* Mobile backdrop — only rendered (and only intercepts clicks) while the drawer is open */}
@@ -68,7 +97,7 @@ const SideBar: React.FC<SideBarProps> = ({ organization, isOpen = false, onClose
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border flex flex-col h-screen transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-[295px] bg-card border-r border-border flex flex-col h-screen transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -143,6 +172,7 @@ const SideBar: React.FC<SideBarProps> = ({ organization, isOpen = false, onClose
             );
           }
           const isActive = location.pathname === item.path;
+          const count = item.countKey ? navCounts[item.countKey] : undefined;
           return (
             <Link
               key={item.path}
@@ -157,6 +187,7 @@ const SideBar: React.FC<SideBarProps> = ({ organization, isOpen = false, onClose
                 <item.icon className={`h-5 w-5 ${isActive ? 'text-[#0F6E56] dark:text-[#4ADE80]' : 'text-muted-foreground'}`} />
                 {item.label}
               </div>
+              {count !== undefined && <NavCountBadge count={count} />}
             </Link>
           );
         })}

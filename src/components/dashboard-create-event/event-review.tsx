@@ -71,15 +71,19 @@ const EventReview = () => {
                     return (
                         <div
                             key={row.label}
-                            className={`w-full bg-card border-border border-b  px-3 py-3 flex items-center justify-between gap-6`}
+                            className={`w-full bg-card border-border border-b px-3 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-6`}
                         >
-                            <div className="flex items-center gap-2 md:gap-4 shrink-0">
+                            {/* sm:shrink-0 only — on narrow screens the label stacks
+                                above the value instead of squeezing it sideways, since
+                                a long label (e.g. "Ticket 2: <long ticket name>") has
+                                nowhere to shrink to on a small screen otherwise. */}
+                            <div className="flex items-center gap-2 md:gap-4 sm:shrink-0">
                                 <p className="font-grotesk text-muted-foreground">
                                     {row.label}
                                 </p>
                             </div>
 
-                            <p className="font-grotesk text-foreground text-right min-w-0 break-words font-medium">
+                            <p className="font-grotesk text-foreground text-left sm:text-right min-w-0 break-words font-medium">
                                 {row.value}
                             </p>
                         </div>

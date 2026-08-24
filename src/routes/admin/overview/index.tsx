@@ -8,6 +8,7 @@ import RecentActivityCard from "@/components/admin/overview/RecentActivityCard";
 import TopOrganizersCard from "@/components/admin/overview/TopOrganizersCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useOverviewSummary } from "@/hooks/use-overview-summary";
+import PageWrapper from '@/components/page-wrapper';
 
 export default function AdminOverviewPage() {
   const { data, isLoading } = useOverviewSummary();
@@ -57,7 +58,7 @@ export default function AdminOverviewPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <PageWrapper className="flex flex-col gap-6 p-[20px]">
       <Header itemsCount={data?.totalAttentionItems ?? 0} />
 
       <NeedsActionRow items={data?.needsAction} isLoading={isLoading} />
@@ -76,7 +77,7 @@ export default function AdminOverviewPage() {
         <RecentActivityCard entries={data?.recentActivity} isLoading={isLoading} />
         <TopOrganizersCard organizers={data?.topOrganizers} isLoading={isLoading} />
       </div>
-    </div>
+    </PageWrapper>
   );
 }
 

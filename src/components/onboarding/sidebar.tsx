@@ -2,6 +2,7 @@ import React from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import onboardingSidebarImage from '@/assets/onboarding sidebar image.png'
 import sidebarBankImg from '@/assets/sidebarBankImg.png'
+import verifiedImg from '@/assets/Verified.png'
 import onboardingReviewimg from '@/assets/onboardingReviewimg.png'
 import { useStepGuard } from '@/lib/use-step-guard'
 
@@ -15,6 +16,11 @@ export const stepsFlow = [
     step: "Bank account",
     description: "Get paid",
     path: "/onboarding/bank-account"
+  },
+  {
+    step: "Verification",
+    description: "Confirm your business",
+    path: "/onboarding/verification"
   },
   {
     step: "Review",
@@ -75,8 +81,10 @@ const OnboardingSidebar = () => {
         <div>
           <img
             src={
-              location.pathname === "/onboarding/organisation" ?
-              onboardingSidebarImage : location.pathname === "/onboarding/bank-account" ? sidebarBankImg : onboardingReviewimg
+              location.pathname === "/onboarding/organisation" ? onboardingSidebarImage
+                : location.pathname === "/onboarding/bank-account" ? sidebarBankImg
+                : location.pathname === "/onboarding/verification" ? verifiedImg
+                : onboardingReviewimg
             }
             alt=""
             className="max-w-[324px] max-h-[250px]"

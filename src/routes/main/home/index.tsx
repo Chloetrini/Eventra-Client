@@ -21,6 +21,7 @@ import {
   TESTIMONIALS,
 } from "@/lib/home-constants";
 import { fetchEvents } from "@/lib/events-api";
+import { useSpotlightEvents } from "@/hooks/use-event";
 import { DEFAULT_FILTERS } from "@/types/event-types";
 import { Format, shortEventNo } from "@/lib/utils";
 import HowItWorks from "@/components/events/HowItWorks";
@@ -44,13 +45,20 @@ const Home: React.FC = () => {
     navigate(`/explore?${params.toString()}`);
   };
 
-  // Events come through the same fetch as Explore — one switch to the backend later
+  // Still used for the "N events this week" count in the eyebrow above the
+  // headline — that's a general count, not a promoted-events list.
   const { data: eventsData, isLoading: eventsLoading } = useQuery({
     queryKey: ["home-events"],
     queryFn: () => fetchEvents(DEFAULT_FILTERS),
   });
-  const featuredEvents = (eventsData?.events ?? []).filter((e) => e.isPromoted);
-  const heroEvent = featuredEvents[0];
+
+  // Hero and "Featured this week" now each pull from the real placement
+  // endpoint instead of both reading the same client-side
+  // `.filter(e => e.isPromoted)` list — an event promoted to "featured"
+  // no longer also shows in the hero carousel, and vice versa.
+  const { events: heroEvents, isLoading: heroLoading } = useSpotlightEvents("hero", 3);
+  const { events: featuredEvents, isLoading: featuredLoading } = useSpotlightEvents("featured", 8);
+  const heroEvent = heroEvents[0];
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -196,12 +204,12 @@ const Home: React.FC = () => {
                 </div>
 
                 {/* Mobile card — below popular tags, inside hero */}
-                {eventsLoading && (
+                {heroLoading && (
                   <div className="lg:hidden mt-4">
                     <HomeHeroCardSkeleton />
                   </div>
                 )}
-                {!eventsLoading && heroEvent && (
+                {!heroLoading && heroEvent && (
                   <div className="lg:hidden mt-4">
                     <div className="bg-card rounded-2xl overflow-hidden shadow-xl">
                       <div className="relative h-[180px] overflow-hidden">
@@ -268,10 +276,10 @@ const Home: React.FC = () => {
 
               <div className="hidden lg:flex lg:col-span-5 justify-end items-center">
                 <div className="w-full ">
-                  {eventsLoading ? (
+                  {heroLoading ? (
                     <HomeHeroCardSkeleton />
                   ) : (
-                    <StackedCardCarousel events={featuredEvents} />
+                    <StackedCardCarousel events={heroEvents} />
                   )}
                 </div>
               </div>
@@ -333,7 +341,7 @@ const Home: React.FC = () => {
         <VibeGrid />
 
         {/* 4. FEATURED THIS WEEK */}
-        {eventsLoading ? (
+        {featuredLoading ? (
           <FeaturedEventsSkeleton />
         ) : (
           <FeaturedEvents events={featuredEvents} />
@@ -545,7 +553,8 @@ const Home: React.FC = () => {
           </div>
         </section>
         {/* 9. BOTTOM CTA BANNER */}
-        <CtaBanner
+        <div className="mb-7">
+          <CtaBanner
           label="COME BUILD THE CULTURE"
           heading="Your next night out starts here."
           body="Discover an event to attend, or start selling tickets to your own. It only takes a minute."
@@ -554,6 +563,8 @@ const Home: React.FC = () => {
           bgImage={UI_ASSETS.manWithHandUp}
           align="left"
         />
+        </div>
+        
       </PageWrapper>
     </>
   );

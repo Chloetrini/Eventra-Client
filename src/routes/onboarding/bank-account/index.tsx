@@ -37,7 +37,7 @@ const BankAccountPage = () => {
                 bankCode: selectedBank?.code,
                 accountName: values.accountHolderName,
             })
-            navigate("/onboarding/review")
+            navigate("/onboarding/verification")
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Could not save your bank details. Please try again.")
         }
@@ -45,14 +45,14 @@ const BankAccountPage = () => {
 
     const handleSkip = () => {
         BANK_FIELDS.forEach((field) => resetField(field))
-        navigate("/onboarding/review")
+        navigate("/onboarding/verification")
     }
 
     return (
         <PageWrapper className="w-full">
             <div className="px-5 py-10 lg:pl-10 lg:pr-60 lg:py-20 flex flex-col gap-10">
                 <div>
-                    <p className='text-[#0F6E56] dark:text-[#4ADE80]'>STEP 2 OF 3</p>
+                    <p className='text-[#0F6E56] dark:text-[#4ADE80]'>STEP 2 OF 4</p>
                     <h3 className="font-grotesk font-bold text-[34px]">Where should we send your money ?</h3>
                     <p className="font-grotesk font-medium text-[18px] text-muted-foreground max-w-[500px] line-clamp-4">
                         Add the bank account for your payouts; we verify it with paystack. You need this to publish paid events and receive payouts. Free events can go live without it.

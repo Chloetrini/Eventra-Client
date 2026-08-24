@@ -42,4 +42,5 @@ export type Ticket = {
         type: "refundable" | "non-refundable" | "free-cancel"
         note: string
     }
+    // hasPendingRefundRequest: boolean
 }

@@ -17,9 +17,10 @@ type PageSwitcherProps = {
     draftText?: string
     disableDraft?: boolean
     disableSkip?: boolean
+    submitText?: string
 }
 
-const PageSwitcher = ({ backOnClick, continueOnClick, disableBack, disablecontinue, skipOnClick, showSkip, showSubmit, submitOnClick, disableSubmit, showDraft, draftOnClick, draftText, disableDraft, disableSkip }: PageSwitcherProps) => {
+const PageSwitcher = ({ backOnClick, continueOnClick, disableBack, disablecontinue, skipOnClick, showSkip, showSubmit, submitOnClick, disableSubmit, showDraft, draftOnClick, draftText, disableDraft, disableSkip, submitText }: PageSwitcherProps) => {
     return (
         <div className='flex justify-between mb-5'>
             <PaymentBtn
@@ -68,7 +69,7 @@ const PageSwitcher = ({ backOnClick, continueOnClick, disableBack, disablecontin
                     {
                         showSubmit && (
                             <PaymentBtn
-                                text="Submit for review"
+                                text={submitText ?? "Submit for review"}
                                 arrow={ArrowRight}
                                 classname='text-[#0F6E56] dark:text-[#4ADE80] font-bold hover:text-white hover:bg-[#0F6E56]'
                                 onClick={submitOnClick}

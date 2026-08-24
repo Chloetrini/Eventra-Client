@@ -2,6 +2,16 @@ import { TriangleAlert } from "lucide-react"
 import { formatRequestedAgo } from "@/lib/utils"
 import type { RefundRequestPopulated } from "@/types/refunds"
 
+// Same shortening used elsewhere for ticket references (shortenTicketRef
+// in lib/events-api.ts) — ticketId is the organizer-facing reference (e.g.
+// "TKT-A1B2C3D4"), unlike ticket.code, which is the long, unguessable QR
+// secret and was never meant to be shown to an admin as "the reference".
+function shortenTicketRef(ticketId: string): string {
+    const [, rest] = ticketId.split("-")
+    if (!rest) return ticketId
+    return `EVT-${rest.slice(0, 4)}`
+}
+
 function isWithinRefundWindow(event: {
     startDate: string
     refundPolicy: { type: "no-refunds" | "refund-until-days-before"; daysBefore?: number }
@@ -40,7 +50,7 @@ const RefundRequestDetails = ({ request }: RefundRequestDetailsProps) => {
                     </div>
                     <div className="flex justify-between items-center py-3 border-b border-[#E8E6E0] dark:border-border">
                         <p className="text-[#4A4451] dark:text-gray-300">Reference</p>
-                        <p className="font-space font-bold text-end">{request.ticket.code}</p>
+                        <p className="font-space font-bold text-end">{shortenTicketRef(request.ticket.ticketId)}</p>
                     </div>
                     <div className="flex justify-between items-center py-3 border-b border-[#E8E6E0] dark:border-border">
                         <p className="text-[#4A4451] dark:text-gray-300">Amount</p>
@@ -106,7 +116,7 @@ const RefundRequestDetails = ({ request }: RefundRequestDetailsProps) => {
                 </div>
             </div>
 
-            {request.evidence.length > 0 && (
+            {(request.evidence?.length ?? 0) > 0 && (
                 <div className="border-2 border-[#E8E6E0] dark:border-border rounded-[10px] p-6 mt-5 shadow-xl">
                     <h2 className="text-xl font-bold font-grotesk mb-4">Evidence</h2>
                     <div className="flex flex-wrap gap-4">

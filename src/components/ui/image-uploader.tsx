@@ -89,7 +89,7 @@ const ImageUploader = ({
             onDrop={(e) => {
               if (!isUploading) handleDrop(e)
             }}
-            className={`relative w-[55px] h-[55px] hover:scale-105 transform rounded-full border cursor-pointer overflow-hidden transition-colors flex-shrink-0 flex items-center justify-center ${isDragging
+            className={`relative w-[55px] h-[55px] hover:scale-105 transform rounded-full border cursor-pointer overflow-hidden transition-colors flex-shrink-0 flex items-center justify-center dark:bg-input/30 dark:border-[#303035] ${isDragging
               ? "border-[#0F6E56] bg-[#E4F1EB]"
               : "border-[#E8E6E0] bg-white"
               }`}
@@ -115,7 +115,7 @@ const ImageUploader = ({
                     type="button"
                     onClick={handleRemove}
                     aria-label="Remove image"
-                    className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80"
+                    className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 "
                   >
                     <X className="w-2.5 h-2.5" />
                   </button>
@@ -152,7 +152,7 @@ const ImageUploader = ({
 
   return (
     <div className={classname}>
-      <p className={`tracking-widest text-[#4A4451] mb-2 ${labelStyle}`}>
+      <p className={`tracking-widest text-[#4A4451] mb-2 dark:text-white ${labelStyle}`}>
         {label}
       </p>
       <div
@@ -170,7 +170,7 @@ const ImageUploader = ({
         onDrop={(e) => {
           if (!isUploading) handleDrop(e)
         }}
-        className={`relative w-full rounded-[5px] border cursor-pointer overflow-hidden transition-colors text-[14px] ${displaySrc
+        className={`relative w-full rounded-[5px] border cursor-pointer overflow-hidden transition-colors text-[14px] dark:bg-input/30 dark:border-[#303035] ${displaySrc
           ? previewStyle || "h-60"
           : defaultStyle || "h-40"
           } ${isDragging

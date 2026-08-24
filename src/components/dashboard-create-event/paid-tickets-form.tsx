@@ -49,7 +49,7 @@ const PaidTicketsForm = () => {
                         )}
                     </div>
 
-                    <div className="flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-4">
                         <FormBox
                             inputType="input"
                             type="text"
@@ -83,7 +83,7 @@ const PaidTicketsForm = () => {
                             borderStyle="createEvent"
                         />
                     </div>
-                    <div className="flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-4">
                         <FormBox
                             inputType="input"
                             type="number"

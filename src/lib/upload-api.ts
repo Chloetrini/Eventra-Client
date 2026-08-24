@@ -38,3 +38,33 @@ export async function uploadLineupPhoto(file: File): Promise<string> {
   const body = response.body as { url: string; publicId: string };
   return body.url;
 }
+
+function assertDocumentUploadableSize(file: File) {
+  if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+    const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+    throw new Error(`File is too large (${sizeMb}MB). Please use a file under 4MB.`);
+  }
+}
+
+export type VerificationDocumentType = "cacCertificate" | "directorId" | "proofOfAddress";
+
+// Backs the onboarding "verification documents" step — same Vercel
+// body-size ceiling as the image uploads above, but the backend accepts a
+// PDF here too (uploadDocument/'auto' resource type), not just images. One
+// endpoint shared by all three document types; `documentType` tells the
+// backend which Cloudinary subfolder to file it under, and the returned
+// publicId lets the profile PATCH clean up the old file when a document is
+// replaced — see upsertOrganizerProfile.
+export async function uploadVerificationDocument(
+  file: File,
+  documentType: VerificationDocumentType
+): Promise<{ url: string; publicId: string }> {
+  assertDocumentUploadableSize(file);
+  const formData = new FormData();
+  formData.append("document", file);
+  formData.append("documentType", documentType);
+
+  const response = await api.upload("/uploads/verification-document", formData);
+  const body = response.body as { url: string; publicId: string };
+  return body;
+}

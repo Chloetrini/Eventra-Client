@@ -88,16 +88,19 @@ export default function OrganizerEventDetailsRoute() {
     }
   };
 
-  // Only a draft/rejected event can actually be saved from the wizard (see
-  // event.canEdit — mirrors the backend's EDITABLE_STATUSES guard). For a
-  // live/pending/postponed event, stop here with a clear explanation
-  // instead of letting the organizer fill out the whole form and fail at
-  // the very end with a confusing error.
+  // A draft/rejected event is always editable from the wizard. A live
+  // (approved/postponed) event now is too, up to a few days before it
+  // starts — see event.canEdit / event.isLiveEdit / event.editBlockedReason
+  // (buildEditability in lib/events-api.ts, mirrors the backend's
+  // EDITABLE_STATUSES / LIVE_EDITABLE_STATUSES + isPastLiveEditCutoff
+  // guards). Anything else (pending approval, cancelled, or a live event
+  // past its cutoff) stops here with a clear explanation instead of letting
+  // the organizer fill out the whole form and fail at the very end.
   const handleEditClick = () => {
     if (!event) return;
     if (!event.canEdit) {
       toast.error(
-        "Live events can't be edited directly. Use Cancel or Postpone above for date/venue/price changes."
+        event.editBlockedReason ?? "This event can't be edited in its current state."
       );
       return;
     }

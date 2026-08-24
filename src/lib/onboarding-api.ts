@@ -11,6 +11,12 @@ export async function saveOrganizerProfile(payload: {
   bankCode?: string;
   accountNumber?: string;
   accountName?: string;
+  cacCertificateUrl?: string;
+  cacCertificatePublicId?: string;
+  directorIdUrl?: string;
+  directorIdPublicId?: string;
+  proofOfAddressUrl?: string;
+  proofOfAddressPublicId?: string;
 }) {
   const res = await api.patch("/organizers/profile", payload);
   return res.body;

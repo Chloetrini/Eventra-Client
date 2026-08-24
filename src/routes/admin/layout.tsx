@@ -19,12 +19,17 @@ export default function AdminLayout() {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen bg-background">
+    // h-screen (not min-h-screen) + overflow-hidden on the inner column is
+    // what actually pins SideBar/TopBar in place — same pattern as the
+    // organizer dashboard's DashBoardLayout. Without a bounded height here,
+    // this div just grows to fit its content and the whole page (sidebar
+    // and topbar included) scrolls together instead of only `main`.
+    <div className="flex h-screen bg-background">
       <SideBar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)}  />
-      <div className="flex flex-1 flex-col min-w-0">
+      <div className="flex flex-1 flex-col overflow-hidden min-w-0">
         <TopBar onMenuClick={() => setSidebarOpen(true)} />
         <main className="flex-1 overflow-y-auto ">
-          
+
           <Outlet />
         </main>
       </div>

@@ -1,5 +1,5 @@
 import CreateEventSidebar from '@/components/dashboard-create-event/create-event-sidebar'
-import { Outlet, useNavigate } from 'react-router'
+import { Outlet, useNavigate, useLocation } from 'react-router'
 import { FormProvider, useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { eventFormSchema, type EventFormValues } from '@/lib/schema'
@@ -62,8 +62,16 @@ const CreateEventLayout = () => {
   })
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const editEventId = searchParams.get("eventId");
   const hasCheckedStaleDraft = useRef(false);
+  // The wizard's step content lives inside this inner overflow-y-auto div,
+  // not the page/window — so React Router's scroll restoration (and any
+  // window.scrollTo-based fix) never reaches it. Whenever the active step
+  // changes, reset this div's own scroll position so stepping into a step
+  // (e.g. landing back on Basics after scrolling down elsewhere) doesn't
+  // leave it visually scrolled partway down.
+  const stepScrollRef = useRef<HTMLDivElement>(null);
   // Guards the form-reset effect below so it only runs once, the moment all
   // three queries have actually resolved — react-query re-runs effects on
   // every refetch/cache update, and we don't want to stomp on edits the
@@ -207,6 +215,21 @@ const CreateEventLayout = () => {
     return () => subscription.unsubscribe()
   }, [methods])
 
+  useEffect(() => {
+    stepScrollRef.current?.scrollTo({ top: 0 });
+    // stepScrollRef sits inside the dashboard shell's own scrollable
+    // <main> (DashBoardLayout) — if THAT outer region is scrolled down
+    // (e.g. from a long step like Review) when the user navigates to
+    // another step, resetting only stepScrollRef still leaves the new
+    // step's heading/progress bar hidden above the fold. Walk up and
+    // reset every scrolled ancestor too, not just this div.
+    let node = stepScrollRef.current?.parentElement ?? null;
+    while (node) {
+      if (node.scrollTop > 0) node.scrollTo({ top: 0 });
+      node = node.parentElement;
+    }
+  }, [location.pathname]);
+
   // Early return comes AFTER all hooks are declared — this is now safe.
   if (isLoadingEdit) {
     return <div className="p-10 text-center text-muted-foreground">Loading your event…</div>;
@@ -229,7 +252,7 @@ const CreateEventLayout = () => {
             to share it with the organizer sidebar. */}
         <div className='flex flex-col xl:flex-row gap-4 xl:gap-8 pt-4 xl:pt-10 h-full min-h-0'>
           <CreateEventSidebar />
-          <div className='flex-1 min-w-0 min-h-0 overflow-y-auto'>
+          <div ref={stepScrollRef} className='flex-1 min-w-0 min-h-0 overflow-y-auto'>
             <Outlet />
           </div>
         </div>

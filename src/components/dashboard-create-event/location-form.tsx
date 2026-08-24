@@ -66,7 +66,7 @@ const LocationForm = () => {
                         register={register}
                     />
 
-                    <div className='w-full flex gap-5'>
+                    <div className='w-full flex flex-col sm:flex-row gap-5'>
                         <FormBox
                             inputType='input'
                             type='text'

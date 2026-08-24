@@ -14,6 +14,11 @@
   display: none;
 }
 
+::selection {
+  background-color: #16725b; 
+  color: #ffffff;            
+}
+
 
 @theme{
   --font-space: 'Space Mono', monospace;

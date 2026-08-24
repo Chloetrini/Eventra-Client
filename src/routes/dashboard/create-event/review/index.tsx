@@ -3,7 +3,7 @@ import PageWrapper from '@/components/page-wrapper'
 import type { EventFormValues } from '@/lib/schema'
 import React, { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { CREATE_EVENT_STORAGE_KEY } from '../layout'
 import EventReview from '@/components/dashboard-create-event/event-review'
@@ -12,6 +12,7 @@ import {
   getCreatedEventId,
   clearCreatedEventId,
   fetchTicketTypesForEvent,
+  isLiveEditableEvent,
 } from '@/lib/create-event-api'
 import {
   useCreateEvent,
@@ -20,6 +21,7 @@ import {
   useCreateTicketType,
   useUpdateTicketType,
   useDeleteTicketType,
+  useDraftEvent,
 } from '@/hooks/use-create-event'
 import { useCategories } from '@/hooks/use-event'
 // date/startTime/endTime are each their own field, but only carry one
@@ -92,6 +94,7 @@ function buildEventPayload(values: EventFormValues, categoryId?: string) {
 const Review = () => {
   const { currentStep, totalSteps } = useCreateEventStep()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSavingDraft, setIsSavingDraft] = useState(false)
   const {
@@ -105,6 +108,30 @@ const Review = () => {
   // onSubmit just won't find a match and submission is blocked with a
   // clear toast, rather than silently sending a bad category value.
   const { categories: categories = [] } = useCategories()
+
+  // Editing an already-live (approved/postponed) event goes through this
+  // same Review step as a brand-new draft — but a live event has already
+  // been through submitEventForApproval once, and calling it again just
+  // gets rejected by the backend ("Event already submitted").
+  //
+  // IMPORTANT: this can't rely on the `?eventId=` URL param alone. Every
+  // step's Continue/Back button calls navigate("/dashboard/create-event/x")
+  // with a bare path — none of them forward the current query string — so
+  // by the time you click through from Basics/Location/Details to Review,
+  // the URL has already lost `?eventId=`, even though you started the edit
+  // from a link that had it. That's the actual bug behind "still shows
+  // Submit / still says already submitted" even after the earlier Review
+  // fix: this component read searchParams.get("eventId") and got null on
+  // every step past the first one. getCreatedEventId() is the reliable
+  // source instead — layout.tsx commits the event id there via
+  // setCreatedEventId the moment an edit starts loading, and every step's
+  // own save calls already depend on that same value staying put across
+  // the whole wizard.
+  const editEventId = searchParams.get("eventId") ?? getCreatedEventId()
+  const editEventQuery = useDraftEvent(editEventId)
+  const editEvent = editEventQuery.data as { status?: string; startDate?: string } | undefined
+  const isEditingLiveEvent =
+    Boolean(editEventId) && isLiveEditableEvent(editEvent?.status, editEvent?.startDate)
 
   const createEventMutation = useCreateEvent()
   const updateEventMutation = useUpdateEvent()
@@ -218,19 +245,25 @@ try {
         }
       }
 
-try {
-  await submitEventMutation.mutateAsync(event._id)
-} catch (err: any) {
-  console.error("submitEventForApproval failed:", err.message)
-  toast.error(err.message)
-  return
+// A live event has already been submitted and approved once — sending it
+// through submitEventForApproval again is what threw "Event already
+// submitted." For a live edit, saving the updated fields above (and any
+// ticket changes) IS the whole action; there's no re-submission step.
+if (!isEditingLiveEvent) {
+  try {
+    await submitEventMutation.mutateAsync(event._id)
+  } catch (err: any) {
+    console.error("submitEventForApproval failed:", err.message)
+    toast.error(err.message)
+    return
+  }
 }
 
       // TODO: create ticket types here next (paid events only), once that
       // flow is wired up — this is the point in the chain they belong,
       // after the event itself has a real _id.
 
-      toast.success("Event submitted for review!")
+      toast.success(isEditingLiveEvent ? "Changes saved!" : "Event submitted for review!")
 
       // flow is done — don't leave stale draft data behind
       localStorage.removeItem(CREATE_EVENT_STORAGE_KEY)
@@ -325,11 +358,14 @@ try {
       <div>
         <PageSwitcher
           backOnClick={() => navigate("/dashboard/create-event/details")}
-          showDraft
+          // A live event isn't a draft any more — "Save as draft" doesn't
+          // apply once it's already been approved and is out there.
+          showDraft={!isEditingLiveEvent}
           draftOnClick={handleSaveDraft}
           draftText={isSavingDraft ? "Saving…" : "Save as draft"}
           disableDraft={isSavingDraft || isSubmitting}
           showSubmit
+          submitText={isEditingLiveEvent ? (isSubmitting ? "Saving…" : "Save changes") : undefined}
           submitOnClick={handleSubmit(onSubmit)}
           disableSubmit={!isValid || isSubmitting || isSavingDraft} />
       </div>

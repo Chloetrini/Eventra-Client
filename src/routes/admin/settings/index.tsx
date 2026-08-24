@@ -130,9 +130,9 @@ export default function PlatformSettings() {
     <PageWrapper className="flex flex-col gap-6 p-[20px]">
       {/* Page heading */}
       <div className="flex flex-col gap-2">
-        <p className="text-xs text-[#0F6E56]">PLATFORM</p>
-        <h1 className="text-2xl font-bold text-[#212123]">Settings</h1>
-        <p className="text-sm text-[#333234]">
+        <p className="text-xs text-[#0F6E56] dark:text-[#4ADE80]">PLATFORM</p>
+        <h1 className="text-2xl font-bold text-foreground">Settings</h1>
+        <p className="text-sm text-muted-foreground">
           Commission, platform rules, and admin team.
         </p>
       </div>
@@ -144,16 +144,19 @@ export default function PlatformSettings() {
         </CardHeader>
         <div className="border mx-4"/>
         <CardContent className="flex flex-col gap-2">
-          <label className="text-xs font-medium text-[#4A4451]">
+          <label className="text-xs font-medium text-muted-foreground">
             PLATFORM FEE ({platformFee}%)
           </label>
           <div className="flex items-center gap-2">
             <NumberStepper value={platformFee} onChange={setPlatformFee} min={0} max={100} />
-            <Button size="sm" className="bg-[#0F6E56] text-[#FFFF] hover:[#D3D3D3]">
+            {/* Was `hover:[#D3D3D3]` — not a valid Tailwind class (missing the
+                `bg-`/`text-` prefix), so hover did nothing; `#FFFF` is also
+                an invalid 4-digit hex. Both fixed to a real hover state. */}
+            <Button size="sm" className="bg-[#0F6E56] text-white hover:bg-[#0F6E56]/90">
               Save
             </Button>
           </div>
-          <p className="text-xs text-[#4A4451]">
+          <p className="text-xs text-muted-foreground">
             Applied to every paid ticket at checkout. Changing this affects new events only.
           </p>
         </CardContent>
@@ -168,7 +171,7 @@ export default function PlatformSettings() {
         <div className="border mx-4"/>
         <CardContent className="flex flex-col gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-[#6a686d]">CURRENCY</label>
+            <label className="text-xs font-medium text-muted-foreground">CURRENCY</label>
             <Select value={currency} onValueChange={(val) => setCurrency(val ?? '')}>
               <SelectTrigger className="w-49.75">
                 <SelectValue placeholder="Choose your currency"/>
@@ -182,7 +185,7 @@ export default function PlatformSettings() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-[#6a686d]">
+            <label className="text-xs font-medium text-muted-foreground">
               PAYOUT HOLD AFTER EVENTS
             </label>
             <Select value={payoutHold} onValueChange={(val) => setPayoutHold(val ?? '')}>
@@ -200,8 +203,8 @@ export default function PlatformSettings() {
 
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm font-bold text-[#6a686d]">Auto-approve events</p>
-              <p className="text-xs text-[#4A4451]">
+              <p className="text-sm font-bold text-foreground">Auto-approve events</p>
+              <p className="text-xs text-muted-foreground">
                 Skip manual review and publish events instantly
               </p>
             </div>
@@ -210,8 +213,8 @@ export default function PlatformSettings() {
 
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm text-[#6a686d] font-bold">Auto-approve promotions</p>
-              <p className="text-xs text-[#4A4451]">
+              <p className="text-sm text-foreground font-bold">Auto-approve promotions</p>
+              <p className="text-xs text-muted-foreground">
                 Publish paid promotions without review
               </p>
             </div>
@@ -220,8 +223,8 @@ export default function PlatformSettings() {
 
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm text-[#6a686d] font-bold">Maintenance mode</p>
-              <p className="text-[#4A4451]">
+              <p className="text-sm text-foreground font-bold">Maintenance mode</p>
+              <p className="text-muted-foreground">
                 Show a maintenance page to all users
               </p>
             </div>
@@ -233,7 +236,7 @@ export default function PlatformSettings() {
       {/* Admin, Teams & Roles */}
       <Card size="sm">
         <CardHeader className="flex items-center justify-between">
-          <CardTitle className="font-extrabold text-[#5f5c63]">Admin, Teams &amp; Roles</CardTitle>
+          <CardTitle className="font-extrabold text-foreground">Admin, Teams &amp; Roles</CardTitle>
           <Button size="sm" variant="outline">
             <Plus className="size-4" />
             Invite Admin
@@ -247,7 +250,7 @@ export default function PlatformSettings() {
               <col className="w-1/5" />
             </colgroup>
             <thead>
-              <tr className="border-t text-left text-xs text-[#d5d3d9]">
+              <tr className="border-t text-left text-xs text-muted-foreground">
                 <th className="px-(--card-spacing) py-2 font-medium">Name</th>
                 <th className="px-(--card-spacing) py-2 font-medium">Email</th>
                 <th className="px-(--card-spacing) py-2 font-medium">Role</th>
@@ -266,12 +269,12 @@ export default function PlatformSettings() {
                       <span className="font-medium">{admin.name}</span>
                     </div>
                   </td>
-                  <td className="px-(--card-spacing) py-3 text-[#58545f]">
+                  <td className="px-(--card-spacing) py-3 text-muted-foreground">
                     {admin.email}
                   </td>
                   <td className="px-(--card-spacing) py-3">
                     {memberRoles[admin.id] === "owner" ? (
-                      <Badge className="w-22 items-center justify-center gap-1 border-transparent bg-[#E4F1EB] text-[#0F6E56]">
+                      <Badge className="w-22 items-center justify-center gap-1 border-transparent bg-[#E4F1EB] dark:bg-[#0F6E56]/15 text-[#0F6E56] dark:text-[#4ADE80]">
                        <DotIcon className="stroke-9" />
                         OWNER
                       </Badge>

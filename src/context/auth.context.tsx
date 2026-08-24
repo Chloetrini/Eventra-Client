@@ -30,6 +30,7 @@ type AuthContextType = {
   resendOtp: (email: string) => Promise<ApiResult>;
   login: (email: string, password: string) => Promise<User>;
   forgotPassword: (email: string) => Promise<ApiResult>;
+  verifyResetOtp: (email: string, otp: string) => Promise<ApiResult>;
   resetPassword: (email: string, otp: string, newPassword: string) => Promise<ApiResult>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -110,6 +111,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return api.post("/auth/forgot-password", { email });
   }
 
+  // --- Verify a password-reset OTP on its own, before showing the
+  // new-password screen. Doesn't consume the code — the same one still
+  // has to be sent again with resetPassword below.
+  async function verifyResetOtp(email: string, otp: string) {
+    return api.post("/auth/verify-reset-otp", { email, otp });
+  }
+
   // --- Reset password ---
   async function resetPassword(email: string, otp: string, newPassword: string) {
     return api.post("/auth/reset-password", { email, otp, newPassword });
@@ -159,6 +167,7 @@ async function googleAuth(accessToken: string, role?: "attendee" | "organizer") 
         resendOtp,
         login,
         forgotPassword,
+        verifyResetOtp,
         resetPassword,
         logout,
         refreshUser,

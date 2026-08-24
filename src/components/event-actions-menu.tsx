@@ -11,6 +11,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useDuplicateEvent, useDeleteEvent } from "@/hooks/use-event-actions";
 import { DeleteEventDialog } from "@/components/dialogs/delete-event-dialog";
+import { LIVE_EDIT_CUTOFF_DAYS, isPastLiveEditCutoff } from "@/lib/create-event-api";
 import Loading from "@/assets/more.png";
 import EditPen from "@/assets/magicpen.png";
 import Promote from "@/assets/star.png";
@@ -31,12 +32,17 @@ type EditableEventStatus =
 interface EventActionsMenuProps {
   eventId: string;
   eventTitle: string;
-  /** The backend only allows editing an event while it's still "draft" or
-   * "rejected" (see EDITABLE_STATUSES on the backend) — anything else
-   * (Live, Pending, Postponed, etc.) fails the save at the very end of the
-   * wizard with a 400. Passing status here lets the Edit item warn up
-   * front instead of letting the organizer fill out the whole form first. */
+  /** A draft/rejected event is always editable. A live event ("Live" /
+   * "Sold out" / "Postponed" here — approved/postponed on the backend) is
+   * editable too, but only up to LIVE_EDIT_CUTOFF_DAYS before it starts —
+   * mirrors isLiveEditableEvent/buildEditability used on the event-details
+   * page, so this menu's Edit item agrees with that page instead of
+   * blocking live edits the backend would actually accept. */
   status?: EditableEventStatus;
+  /** Required to know whether a live event is still within the edit
+   * cutoff window — omit only for statuses where it doesn't matter
+   * (Draft/Rejected/Pending/Past/Cancelled). */
+  startDate?: string | null;
   /** Called after a successful delete, in addition to the automatic
    * list-refresh below — use this when the caller keeps its own local
    * copy of the event list (e.g. dashboard/events, which filters
@@ -52,24 +58,26 @@ interface EventActionsMenuProps {
  * confirms through the same modal dialog — never a native window.confirm
  * — so every menu behaves identically.
  */
-export function EventActionsMenu({ eventId, eventTitle, status, onDeleted }: EventActionsMenuProps) {
+export function EventActionsMenu({ eventId, eventTitle, status, startDate, onDeleted }: EventActionsMenuProps) {
   const navigate = useNavigate();
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const duplicateMutation = useDuplicateEvent();
   const deleteMutation = useDeleteEvent();
 
-  // Only draft/rejected events can actually be edited on the backend — for
-  // everything else (Live, Pending, Postponed, ...), stop them before they
-  // fill out the whole wizard and hit a confusing failure on save. `status`
-  // is optional so callers that don't pass it (none currently) still work,
-  // just without this guard.
-  const canEdit = status === undefined || status === "Draft" || status === "Rejected";
+  // `status` is optional so callers that don't pass it (none currently)
+  // still work, just without this guard.
+  const isDraftEditable = status === undefined || status === "Draft" || status === "Rejected";
+  const isLiveStatus = status === "Live" || status === "Sold out" || status === "Postponed";
+  const isLiveEditable = isLiveStatus && !isPastLiveEditCutoff(startDate);
+  const canEdit = isDraftEditable || isLiveEditable;
 
   const handleEditClick = () => {
     if (!canEdit) {
       toast.error(
-        "Live events can't be edited directly. Use Cancel or Postpone from the event's details page for date/venue/price changes."
+        isLiveStatus
+          ? `This event starts in less than ${LIVE_EDIT_CUTOFF_DAYS} days and can no longer be edited`
+          : "This event can't be edited in its current state."
       );
       return;
     }

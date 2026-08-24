@@ -9,6 +9,10 @@ export interface DashboardEvent {
   title: string;
   subtitle?: string;
   date: string;
+  // Raw ISO start date, kept alongside the formatted `date` display string
+  // above — needed to work out whether a live event is still inside the
+  // edit cutoff window (see isLiveEditableEvent / EventActionsMenu).
+  startDate: string;
   sold: string;
   status: 'Live' | 'Sold out' | 'Draft' | 'Pending' | 'Past' | 'Rejected' | 'Cancelled' | 'Postponed';
   imageUrl?: string;

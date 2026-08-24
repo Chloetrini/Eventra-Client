@@ -14,10 +14,10 @@ interface AdminEventsHeaderProps {
 export default function AdminEventsHeader({
   events,
   selectedEventId,
-  onSelectEvent,
-  totalEvents = 8,
-  checkedInCount = 3,
-  notInCount = 5,
+  // onSelectEvent,
+  // totalEvents = 8,
+  // checkedInCount = 3,
+  // notInCount = 5,
 }: AdminEventsHeaderProps) {
   const selectedEvent =
     events.find((e) => e.id === selectedEventId) || events[0];

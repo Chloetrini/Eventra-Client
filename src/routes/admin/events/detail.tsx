@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router';
 import AdminEventDetail from '@/components/admin/events/AdminEventDetail';
 import { MOCK_ADMIN_EVENTS } from '@/types/admin-events-mock-data';
+import PageWrapper from '@/components/page-wrapper';
 
 export default function AdminEventDetailPage() {
   const { eventId } = useParams();

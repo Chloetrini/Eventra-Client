@@ -8,6 +8,7 @@ import AdminEventsTable from "@/components/admin/events/AdminEventsTable";
 import AdminEventDetail from "@/components/admin/events/AdminEventDetail";
 import { MOCK_ADMIN_EVENTS } from "@/types/admin-events-mock-data";
 import type { AdminEvent } from "@/types/admin-event";
+import PageWrapper from "@/components/page-wrapper";
 
 export default function AdminEventsPage() {
   const navigate = useNavigate();
@@ -74,7 +75,7 @@ export default function AdminEventsPage() {
 
 
   return (
-    <div className="flex flex-col gap-6">
+    <PageWrapper className="flex flex-col gap-6 p-[20px]">
       <AdminEventsHeader
         events={events}
         selectedEventId={events[0]?.id}
@@ -98,6 +99,6 @@ export default function AdminEventsPage() {
         events={filteredEvents}
         onEventClick={handleEventClick}
       />
-    </div>
+    </PageWrapper>
   );
 }

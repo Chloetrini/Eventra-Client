@@ -11,6 +11,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import PageWrapper from "@/components/page-wrapper";
 
 interface AdminEventDetailProps {
   event: AdminEvent;
@@ -56,7 +57,7 @@ export default function AdminEventDetail({
   const isFlagged = event.status === "FLAGGED";
 
   return (
-    <div className="flex flex-col gap-6">
+    <PageWrapper className="flex flex-col gap-6 p-[20px]">
       {/* Top Back Link */}
       <div>
         <button
@@ -291,6 +292,6 @@ export default function AdminEventDetail({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </PageWrapper>
   );
 }

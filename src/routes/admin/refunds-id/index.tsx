@@ -13,6 +13,66 @@ import { DeclineRefundDialog } from "@/components/dialogs/decline-refund-dialog"
 import RefundRequestDetails from "@/components/admin/refunds-dispute/refund-request-details"
 import { toast } from "react-toastify"
 import PageWrapper from "@/components/page-wrapper"
+import { Skeleton } from "@/components/ui/skeleton"
+
+// Mirrors the two-card layout in refund-request-details.tsx (Order /
+// Reason & policy), so the loading state doesn't jump around once the
+// real data lands.
+function RefundRequestDetailSkeleton() {
+    return (
+        <PageWrapper className="min-h-screen flex flex-col justify-between p-[20px]">
+            <div>
+                <div>
+                    <Skeleton className="h-4 w-32 mb-2" />
+                    <div className="flex items-center gap-3">
+                        <Skeleton className="h-8 w-48" />
+                        <Skeleton className="h-6 w-20 rounded-full" />
+                    </div>
+                    <Skeleton className="h-4 w-64 mt-2" />
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-6">
+                    <div className="border-2 border-[#E8E6E0] dark:border-border rounded-[10px] p-6 shadow-xl">
+                        <Skeleton className="h-5 w-16 mb-4" />
+                        {Array.from({ length: 6 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className={`flex justify-between items-center py-3 ${i < 5 ? "border-b border-[#E8E6E0] dark:border-border" : ""}`}
+                            >
+                                <Skeleton className="h-4 w-20" />
+                                <Skeleton className="h-4 w-28" />
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="border-2 border-[#E8E6E0] dark:border-border rounded-[10px] p-6 shadow-xl">
+                        <Skeleton className="h-5 w-32 mb-4" />
+                        {Array.from({ length: 3 }).map((_, i) => (
+                            <div key={i} className="flex justify-between items-center py-3 border-b border-[#E8E6E0] dark:border-border">
+                                <Skeleton className="h-4 w-32" />
+                                <Skeleton className="h-4 w-24" />
+                            </div>
+                        ))}
+                        <div className="pt-3">
+                            <Skeleton className="h-4 w-full" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="mt-10 md:mt-0">
+                <Skeleton className="h-px w-full" />
+                <div className="flex flex-col-reverse gap-3 md:flex-row items-center justify-between mt-7">
+                    <Skeleton className="h-4 w-72" />
+                    <div className="flex w-full md:w-fit justify-between md:gap-2">
+                        <Skeleton className="h-11 w-24 rounded-md" />
+                        <Skeleton className="h-11 w-40 rounded-md" />
+                    </div>
+                </div>
+            </div>
+        </PageWrapper>
+    )
+}
 
 const RefundRequestDetailPage = () => {
     const { requestId } = useParams<{ requestId: string }>()
@@ -24,7 +84,7 @@ const RefundRequestDetailPage = () => {
     const [declineOpen, setDeclineOpen] = useState(false)
 
     if (isLoading) {
-        return <div className="p-10 text-center text-muted-foreground">Loading…</div>
+        return <RefundRequestDetailSkeleton />
     }
 
     if (isError || !request) {

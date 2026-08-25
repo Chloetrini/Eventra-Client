@@ -8,6 +8,10 @@ export type User = {
   fullname: string;
   email: string;
   role: "attendee" | "organizer" | "admin";
+  // Only meaningful when role === "admin" — see its comment on the backend
+  // User model. Used on the Settings page to gate the whole page to
+  // owner-tier accounts only.
+  adminRole?: "owner" | "admin" | "support";
   avatarUrl?: string;
   [key: string]: unknown;
 };
@@ -32,6 +36,10 @@ type AuthContextType = {
   forgotPassword: (email: string) => Promise<ApiResult>;
   verifyResetOtp: (email: string, otp: string) => Promise<ApiResult>;
   resetPassword: (email: string, otp: string, newPassword: string) => Promise<ApiResult>;
+  /** For an account created via inviteAdmin (mustSetPassword: true on the
+   * user object) — session-gated, no email/otp needed since verifyEmail
+   * already logged them in. */
+  setPassword: (newPassword: string) => Promise<ApiResult>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   /** Write a fresh user object (e.g. an update endpoint's response) straight
@@ -123,6 +131,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return api.post("/auth/reset-password", { email, otp, newPassword });
   }
 
+  // --- Set password (invited-admin first-login flow) ---
+  async function setPassword(newPassword: string) {
+    const res = await api.post("/auth/set-password", { newPassword });
+    // The endpoint hands back the fresh user (mustSetPassword now false) —
+    // write it straight into the cache so nothing re-routes them back to
+    // this screen on the very next render.
+    if (res.body) {
+      queryClient.setQueryData(ME_QUERY_KEY, res.body as User);
+    }
+    return res;
+  }
+
 // --- Google OAuth login/register ---
 async function googleAuth(accessToken: string, role?: "attendee" | "organizer") {
   await api.post("/auth/google", { accessToken, role });
@@ -169,6 +189,7 @@ async function googleAuth(accessToken: string, role?: "attendee" | "organizer") 
         forgotPassword,
         verifyResetOtp,
         resetPassword,
+        setPassword,
         logout,
         refreshUser,
         setUser,

@@ -30,7 +30,17 @@ export default function VerifyOtp() {
     mutationFn: (otp: string) => verifyEmail(email!, otp),
     onSuccess: (data) => {
       toast.success(data?.message || "Email verified successfully.");
-      // Navigate to login after successful registration verification
+      // An account inviteAdmin created (see admin.controller.ts) has a
+      // password nobody was ever shown, and verifyEmail just logged them
+      // in — send them to set a real one instead of a login screen they
+      // have no working password for. Every other verify-otp flow
+      // (attendee/organizer registration) has no such flag and goes to
+      // login as before.
+      const user = (data?.body as { mustSetPassword?: boolean } | undefined);
+      if (user?.mustSetPassword) {
+        navigate("/auth/set-password");
+        return;
+      }
       navigate(authPath("login", isOrganizer));
     },
     onError: (e: Error) => {

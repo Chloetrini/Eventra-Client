@@ -125,32 +125,32 @@ export default function Login() {
   });
 
   return (
-    <div className="min-h-[494px] flex flex-col justify-center ">
-      <div className="mb-[12px] mt-[120px]">
-        <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
-          <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
-          <span className="text-[22.8px] font-extrabold text-foreground tracking-[-0.02em]">
-            Eventra
-          </span>
-          {isOrganizer && (
-            <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] dark:bg-[#0F6E56]/20 dark:text-[#4ADE80] w-[118px] text-center text-[15px]">
-              Organizer
+    <div className={isAdmin ? "flex flex-col" : "min-h-[494px] flex flex-col justify-center "}>
+      {/* Admin login's logo already lives centered above the card in
+          AuthLayout's admin frame — skip the left-aligned link/logo header
+          used by the attendee/organizer split-screen layout. */}
+      {!isAdmin && (
+        <div className="mb-[12px] mt-[120px]">
+          <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
+            <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
+            <span className="text-[22.8px] font-extrabold text-foreground tracking-[-0.02em]">
+              Eventra
             </span>
-          )}
-          {isAdmin && (
-            <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] dark:bg-[#0F6E56]/20 dark:text-[#4ADE80] w-[118px] text-center text-[15px]">
-              Admin
-            </span>
-          )}
-        </Link>
-      </div>
+            {isOrganizer && (
+              <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] dark:bg-[#0F6E56]/20 dark:text-[#4ADE80] w-[118px] text-center text-[15px]">
+                Organizer
+              </span>
+            )}
+          </Link>
+        </div>
+      )}
       <h1 className="text-[34px] font-extrabold mb-[12px] tracking-[-0.02em] leading-[40px] text-foreground">
-        Welcome back
+        {isAdmin ? "Sign in" : "Welcome back"}
       </h1>
 
       <p className="text-muted-foreground text-[17px] leading-6 mb-[30px]">
         {isAdmin
-          ? "Sign in to manage organizers, users, and events"
+          ? "Welcome back! Please sign in to access the administrator dashboard"
           : "Sign in to keep your tickets and saved event in one place"}
       </p>
 

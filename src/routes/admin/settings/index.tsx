@@ -1,12 +1,27 @@
-import { useState } from "react"
-import { Plus, DotIcon } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Plus, DotIcon, Trash2, ShieldAlert } from "lucide-react"
+import { toast } from "react-toastify"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import PageWrapper from "@/components/page-wrapper"
+import { useAuth } from "@/context/auth.context"
+import { useAdminTeam, useDeleteAdmin, useInviteAdmin, useUpdateAdminRole } from "@/hooks/use-admin-team"
+import { usePlatformSettings, useUpdatePlatformSettings } from "@/hooks/use-platform-settings"
+import type { AdminTier } from "@/types/admin-settings"
 
 interface ToggleSwitchProps {
   checked: boolean
@@ -88,24 +103,6 @@ const NumberStepper = ({ value, onChange, min = 0, max = 100 }: NumberStepperPro
   )
 }
 
-// ---- Static data (swap for real API data later) ----
-
-type Role = "owner" | "admin" | "support"
-
-interface AdminMember {
-  id: string
-  name: string
-  email: string
-  role: Role
-}
-
-const admins: AdminMember[] = [
-  { id: "1", name: "Ada Okafor", email: "ada@gmail.com", role: "owner" },
-  { id: "2", name: "Osho Ganiyu", email: "ada@gmail.com", role: "admin" },
-  { id: "3", name: "Wale Okegunle", email: "ada@gmail.com", role: "support" },
-  { id: "4", name: "Olaide Bolajoko", email: "ada@gmail.com", role: "support" },
-]
-
 function initials(name: string) {
   return name
     .split(" ")
@@ -114,17 +111,226 @@ function initials(name: string) {
     .toUpperCase()
 }
 
+function InviteAdminDialog() {
+  const [open, setOpen] = useState(false)
+  const [fullname, setFullname] = useState("")
+  const [email, setEmail] = useState("")
+  const [adminRole, setAdminRole] = useState<AdminTier>("support")
+  const { mutate, isPending } = useInviteAdmin()
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    mutate(
+      { fullname, email, adminRole },
+      {
+        onSuccess: () => {
+          toast.success("Invite sent.")
+          setOpen(false)
+          setFullname("")
+          setEmail("")
+          setAdminRole("support")
+        },
+        onError: (err: Error) => {
+          toast.error(err.message || "Could not send invite.")
+        },
+      }
+    )
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger
+        render={
+          <Button size="sm" variant="outline">
+            <Plus className="size-4" />
+            Invite Admin
+          </Button>
+        }
+      />
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Invite Admin</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="invite-fullname">Full name</Label>
+            <Input
+              id="invite-fullname"
+              value={fullname}
+              onChange={e => setFullname(e.target.value)}
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="invite-email">Email</Label>
+            <Input
+              id="invite-email"
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="invite-role">Role</Label>
+            <Select value={adminRole} onValueChange={val => setAdminRole(val as AdminTier)}>
+              <SelectTrigger id="invite-role" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="support">Support</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button type="submit" disabled={isPending} className="bg-[#0F6E56] text-white hover:bg-[#0F6E56]/90">
+              {isPending ? "Sending..." : "Send invite"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function DeleteAdminDialog({ id, name }: { id: string; name: string }) {
+  const [open, setOpen] = useState(false)
+  const { mutate, isPending } = useDeleteAdmin()
+
+  const onConfirm = () => {
+    mutate(id, {
+      onSuccess: () => {
+        toast.success(`${name} removed.`)
+        setOpen(false)
+      },
+      onError: (err: Error) => {
+        toast.error(err.message || "Could not remove this admin.")
+      },
+    })
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger
+        render={
+          <button
+            type="button"
+            aria-label={`Remove ${name}`}
+            className="p-1.5 text-muted-foreground hover:text-destructive"
+          >
+            <Trash2 className="size-4" />
+          </button>
+        }
+      />
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Remove {name}?</DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-muted-foreground">
+          This permanently removes their admin account and signs them out of any active session. This can't be undone.
+        </p>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)} disabled={isPending}>
+            Cancel
+          </Button>
+          <Button variant="destructive" onClick={onConfirm} disabled={isPending}>
+            {isPending ? "Removing..." : "Remove admin"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 export default function PlatformSettings() {
+  const { user } = useAuth()
+  // Owner-tier only — mirrors requireAdminTier('owner') on every
+  // /admin/settings/* route on the backend (see admin.routes.ts). A
+  // missing adminRole is treated as owner, same default the backend uses
+  // for admin accounts that predate this field.
+  const isOwner = user?.role === "admin" && (user.adminRole ?? "owner") === "owner"
+
+  const { data: settings } = usePlatformSettings()
+  const { mutate: updateSettings } = useUpdatePlatformSettings()
+
   const [platformFee, setPlatformFee] = useState(3)
   const [currency, setCurrency] = useState("")
   const [payoutHold, setPayoutHold] = useState("")
-  const [autoApproveEvents, setAutoApproveEvents] = useState(false)
-  const [autoApprovePromotions, setAutoApprovePromotions] = useState(false)
-  const [maintenanceMode, setMaintenanceMode] = useState(false)
 
-  const [memberRoles, setMemberRoles] = useState<Record<string, Role>>(
-    Object.fromEntries(admins.map(a => [a.id, a.role]))
-  )
+  // The fetched row is the source of truth; local state only tracks
+  // in-progress edits (the fee stepper + its own Save button) so a save
+  // elsewhere on the page can't clobber what the admin is mid-typing.
+  useEffect(() => {
+    if (!settings) return
+    setPlatformFee(settings.platformFeePercent)
+    setCurrency(settings.currency)
+    setPayoutHold(settings.payoutHold)
+  }, [settings])
+
+  const { data: admins = [] } = useAdminTeam()
+  const { mutate: updateRole } = useUpdateAdminRole()
+
+  const saveFee = () => {
+    updateSettings(
+      { platformFeePercent: platformFee },
+      {
+        onSuccess: () => toast.success("Platform fee updated."),
+        onError: (err: Error) => toast.error(err.message || "Could not save platform fee."),
+      }
+    )
+  }
+
+  const onCurrencyChange = (val: string) => {
+    setCurrency(val)
+    updateSettings(
+      { currency: val as "Naira" | "Dollar" | "Cedis" },
+      { onError: (err: Error) => toast.error(err.message || "Could not save currency.") }
+    )
+  }
+
+  const onPayoutHoldChange = (val: string) => {
+    setPayoutHold(val)
+    updateSettings(
+      { payoutHold: val as "3 days" | "5 days" | "7 days" },
+      { onError: (err: Error) => toast.error(err.message || "Could not save payout hold.") }
+    )
+  }
+
+  const onAutoApproveEventsChange = (checked: boolean) => {
+    updateSettings(
+      { autoApproveEvents: checked },
+      { onError: (err: Error) => toast.error(err.message || "Could not save.") }
+    )
+  }
+
+  const onAutoApprovePromotionsChange = (checked: boolean) => {
+    updateSettings(
+      { autoApprovePromotions: checked },
+      { onError: (err: Error) => toast.error(err.message || "Could not save.") }
+    )
+  }
+
+  const onMaintenanceModeChange = (checked: boolean) => {
+    updateSettings(
+      { maintenanceMode: checked },
+      { onError: (err: Error) => toast.error(err.message || "Could not save.") }
+    )
+  }
+
+  if (!isOwner) {
+    return (
+      <PageWrapper className="flex flex-col gap-6 p-[20px]">
+        <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-border py-24 text-center">
+          <ShieldAlert className="size-8 text-muted-foreground" />
+          <p className="text-sm font-medium text-foreground">Owner access only</p>
+          <p className="max-w-sm text-xs text-muted-foreground">
+            Only the account owner can view and manage platform settings.
+          </p>
+        </div>
+      </PageWrapper>
+    )
+  }
 
   return (
     <PageWrapper className="flex flex-col gap-6 p-[20px]">
@@ -149,10 +355,7 @@ export default function PlatformSettings() {
           </label>
           <div className="flex items-center gap-2">
             <NumberStepper value={platformFee} onChange={setPlatformFee} min={0} max={100} />
-            {/* Was `hover:[#D3D3D3]` — not a valid Tailwind class (missing the
-                `bg-`/`text-` prefix), so hover did nothing; `#FFFF` is also
-                an invalid 4-digit hex. Both fixed to a real hover state. */}
-            <Button size="sm" className="bg-[#0F6E56] text-white hover:bg-[#0F6E56]/90">
+            <Button size="sm" onClick={saveFee} className="bg-[#0F6E56] text-white hover:bg-[#0F6E56]/90">
               Save
             </Button>
           </div>
@@ -162,7 +365,7 @@ export default function PlatformSettings() {
         </CardContent>
       </Card>
 
-      
+
 {/* // Platform configuration — currency & payout defaults  */}
       <Card>
         <CardHeader>
@@ -172,7 +375,7 @@ export default function PlatformSettings() {
         <CardContent className="flex flex-col gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">CURRENCY</label>
-            <Select value={currency} onValueChange={(val) => setCurrency(val ?? '')}>
+            <Select value={currency} onValueChange={(val) => onCurrencyChange(val ?? '')}>
               <SelectTrigger className="w-49.75">
                 <SelectValue placeholder="Choose your currency"/>
               </SelectTrigger>
@@ -188,7 +391,7 @@ export default function PlatformSettings() {
             <label className="text-xs font-medium text-muted-foreground">
               PAYOUT HOLD AFTER EVENTS
             </label>
-            <Select value={payoutHold} onValueChange={(val) => setPayoutHold(val ?? '')}>
+            <Select value={payoutHold} onValueChange={(val) => onPayoutHoldChange(val ?? '')}>
               <SelectTrigger className="w-49.75">
                 <SelectValue placeholder="Processing"/>
               </SelectTrigger>
@@ -199,7 +402,7 @@ export default function PlatformSettings() {
               </SelectContent>
             </Select>
           </div>
-       
+
 
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -208,7 +411,7 @@ export default function PlatformSettings() {
                 Skip manual review and publish events instantly
               </p>
             </div>
-            <ToggleSwitch checked={autoApproveEvents} onCheckedChange={setAutoApproveEvents}  />
+            <ToggleSwitch checked={settings?.autoApproveEvents ?? false} onCheckedChange={onAutoApproveEventsChange}  />
           </div>
 
           <div className="flex items-center justify-between gap-4">
@@ -218,7 +421,7 @@ export default function PlatformSettings() {
                 Publish paid promotions without review
               </p>
             </div>
-            <ToggleSwitch checked={autoApprovePromotions} onCheckedChange={setAutoApprovePromotions} />
+            <ToggleSwitch checked={settings?.autoApprovePromotions ?? false} onCheckedChange={onAutoApprovePromotionsChange} />
           </div>
 
           <div className="flex items-center justify-between gap-4">
@@ -228,7 +431,7 @@ export default function PlatformSettings() {
                 Show a maintenance page to all users
               </p>
             </div>
-            <ToggleSwitch checked={maintenanceMode} onCheckedChange={setMaintenanceMode} />
+            <ToggleSwitch checked={settings?.maintenanceMode ?? false} onCheckedChange={onMaintenanceModeChange} />
           </div>
         </CardContent>
       </Card>
@@ -237,23 +440,22 @@ export default function PlatformSettings() {
       <Card size="sm">
         <CardHeader className="flex items-center justify-between">
           <CardTitle className="font-extrabold text-foreground">Admin, Teams &amp; Roles</CardTitle>
-          <Button size="sm" variant="outline">
-            <Plus className="size-4" />
-            Invite Admin
-          </Button>
+          <InviteAdminDialog />
         </CardHeader>
         <CardContent className="overflow-x-auto p-0 mx-4">
           <table className="w-full table-fixed text-sm">
             <colgroup>
               <col className="w-2/5" />
               <col className="w-2/5" />
-              <col className="w-1/5" />
+              <col className="w-1/6" />
+              <col className="w-10" />
             </colgroup>
             <thead>
               <tr className="border-t text-left text-xs text-muted-foreground">
                 <th className="px-(--card-spacing) py-2 font-medium">Name</th>
                 <th className="px-(--card-spacing) py-2 font-medium">Email</th>
                 <th className="px-(--card-spacing) py-2 font-medium">Role</th>
+                <th className="px-(--card-spacing) py-2 font-medium" aria-label="Actions" />
               </tr>
             </thead>
             <tbody>
@@ -273,27 +475,35 @@ export default function PlatformSettings() {
                     {admin.email}
                   </td>
                   <td className="px-(--card-spacing) py-3">
-                    {memberRoles[admin.id] === "owner" ? (
+                    {admin.role === "owner" ? (
                       <Badge className="w-22 items-center justify-center gap-1 border-transparent bg-[#E4F1EB] dark:bg-[#0F6E56]/15 text-[#0F6E56] dark:text-[#4ADE80]">
                        <DotIcon className="stroke-9" />
                         OWNER
                       </Badge>
                     ) : (
                       <Select
-                        value={memberRoles[admin.id]}
+                        value={admin.role}
                         onValueChange={value =>
-                          setMemberRoles(prev => ({ ...prev, [admin.id]: value as Role }))
+                          updateRole(
+                            { id: admin.id, adminRole: value as AdminTier },
+                            {
+                              onError: (err: Error) => toast.error(err.message || "Could not update role."),
+                            }
+                          )
                         }
                       >
                         <SelectTrigger size="sm" className="w-22">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Admin">Admin</SelectItem>
-                          <SelectItem value="Support">Support</SelectItem>
+                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="support">Support</SelectItem>
                         </SelectContent>
                       </Select>
                     )}
+                  </td>
+                  <td className="px-(--card-spacing) py-3 text-right">
+                    {admin.role !== "owner" && <DeleteAdminDialog id={admin.id} name={admin.name} />}
                   </td>
                 </tr>
               ))}

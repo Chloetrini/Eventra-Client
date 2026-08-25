@@ -3,14 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router";
 import type { Flag } from "@/types/report";
-import boxicons from "@/assets/boxicons_crypto-coin-filled.png"
-
 
 interface FlagsTableProps {
   flags?: Flag[];
   isLoading: boolean;
-  onDismiss: (flagId: string) => void
-  onSuspend: (flagId: string) => void
+  onDismiss: (flag: Flag) => void;
+  onSuspend: (flag: Flag) => void;
 }
 
 export default function FlagsTable({ flags, isLoading, onDismiss, onSuspend }: FlagsTableProps) {
@@ -18,11 +16,11 @@ export default function FlagsTable({ flags, isLoading, onDismiss, onSuspend }: F
 
   if (isLoading) {
     return (
-      <div className="border rounded-lg overflow-hidden">
+      <div className="border border-border rounded-lg overflow-hidden">
         {Array.from({ length: 3 }).map((_, i) => (
           <div
             key={i}
-            className="flex items-center gap-3 min-[400px]:gap-4 p-3 min-[400px]:p-4 border-b last:border-b-0"
+            className="flex items-center gap-3 min-[400px]:gap-4 p-3 min-[400px]:p-4 border-b border-border last:border-b-0"
           >
             <Skeleton className="h-4 w-24 min-[400px]:w-40" />
             <Skeleton className="h-4 w-10 min-[400px]:w-16" />
@@ -34,11 +32,19 @@ export default function FlagsTable({ flags, isLoading, onDismiss, onSuspend }: F
     );
   }
 
+  if (!flags || flags.length === 0) {
+    return (
+      <div className="rounded-2xl border border-border bg-card p-12 text-center">
+        <p className="text-sm text-muted-foreground">Nothing flagged right now.</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="border-[2px] rounded-lg overflow-x-auto min-w-0 ">
+    <div className="border-2 border-border rounded-lg overflow-x-auto min-w-0">
       <table className="w-full min-w-[700px] text-sm">
         <thead>
-          <tr className="border-b-2 border-[#E8E6E0]">
+          <tr className="border-b-2 border-border">
             <th className="text-left font-space py-5 px-4 font-medium text-muted-foreground text-[16px]">
               SUBJECT
             </th>
@@ -49,60 +55,57 @@ export default function FlagsTable({ flags, isLoading, onDismiss, onSuspend }: F
               REASON
             </th>
             <th className="text-left py-3 px-5 font-space font-medium text-muted-foreground text-[16px]">
-              REPORT
+              REPORTS
             </th>
             <th className="w-48"></th>
           </tr>
         </thead>
         <tbody>
-          {flags?.map((flag) => {
-            const subject =
-              flag.type === "EVENT" ? flag.eventTitle : flag.username;
+          {flags.map((flag) => {
+            const reason = flag.flagReason ?? flag.latestReason ?? "—";
+            const key = `${flag.targetType}-${flag.targetId}`;
 
             return (
-              <tr key={flag.id} className="border-t-2 last-border-0">
+              <tr key={key} className="border-t-2 border-border last:border-b-0">
                 <td className="py-6 px-4">
                   <button
-                    onClick={() => navigate(`/admin/reports/${flag.id}`)}
-                    className="flex items-center gap-2 font-semibold text-[#1A1523] text-[17px] hover:underline text-left"
+                    onClick={() => navigate(`/admin/reports/${key}`)}
+                    className="flex items-center gap-2 font-semibold text-foreground text-[17px] hover:underline text-left"
                   >
-                    {flag.type === "EVENT" && flag.category === "Conference" && (
-                        <div className="bg-[#E4F1EB] rounded-full p-1.5">
-                            <img src={boxicons} alt="" className="size-5" />
-                        </div>
-                    )}
-                    {subject}
+                    {flag.title}
                   </button>
                 </td>
                 <td className="px-5">
                   <Badge
                     className={
-                      flag.type === "EVENT"
-                        ? "bg-[#BBE0CF] px-[10px] py-[12px] font-light text-[#0F6E56] hover:bg-[#E4F1EB] text-[16px]"
-                        : "bg-[#F4DFB6] px-[13px] py-[12px] font-light text-[#7A4E02] text-[16px] hover:bg-[#F4DFB6]"
+                      flag.targetType === "event"
+                        ? "bg-[#BBE0CF] dark:bg-[#0F6E56]/25 px-[10px] py-[12px] font-light text-[#0F6E56] dark:text-[#4ADE80] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/25 text-[16px]"
+                        : "bg-[#F4DFB6] dark:bg-[#C97A17]/25 px-[13px] py-[12px] font-light text-[#7A4E02] dark:text-[#FBBF24] text-[16px] hover:bg-[#F4DFB6] dark:hover:bg-[#C97A17]/25"
                     }
                   >
-                    {flag.type}
+                    {flag.targetType === "event" ? "EVENT" : "ORGANIZER"}
                   </Badge>
                 </td>
-                <td className="px-4 text-[#1A1523] text-[16px]">{flag.reason}</td>
-                <td className="text-[16px] text-[#1A1523] font-space font-bold px-8">{flag.reportCount}</td>
+                <td className="px-4 text-foreground text-[16px]">{reason}</td>
+                <td className="text-[16px] text-foreground font-space font-bold px-8">
+                  {flag.hasReports ? flag.reportsCount : "—"}
+                </td>
                 <td className="px-4">
                   <div className="flex gap-2 justify-end">
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border px-[15px] py-[18px] font-bold hover:bg-[#0F6E56] hover:text-white border-[#0F6E56] bg-white text-[#0F6E56]"
-                      onClick={() => onDismiss(flag.id)}
+                      className="border px-[15px] py-[18px] font-bold hover:bg-[#0F6E56] hover:text-white border-[#0F6E56] dark:border-[#4ADE80] bg-white dark:bg-transparent text-[#0F6E56] dark:text-[#4ADE80] dark:hover:bg-[#0F6E56]"
+                      onClick={() => onDismiss(flag)}
                     >
                       Dismiss
                     </Button>
                     <Button
                       size="sm"
-                      className="hover:text-white font-bold  px-[15px] py-[18px] bg-white hover:bg-[#BE2525] border-[#FFC4C4] text-[#BE2525] whitespace-nowrap"
-                      onClick={() => onSuspend(flag.id)}
+                      className="hover:text-white font-bold px-[15px] py-[18px] bg-white dark:bg-transparent hover:bg-[#BE2525] dark:hover:bg-[#BE2525] border-[#FFC4C4] dark:border-[#DC2626] text-[#BE2525] dark:text-[#F87171] whitespace-nowrap"
+                      onClick={() => onSuspend(flag)}
                     >
-                      {flag.type === "EVENT" ? "Suspend" : "Suspend"}
+                      {flag.targetType === "event" ? "Remove event" : "Suspend"}
                     </Button>
                   </div>
                 </td>

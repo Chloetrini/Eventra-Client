@@ -391,6 +391,20 @@ export const resetPasswordSchema = z.object({
 });
 
 export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
+
+// setPassword (invited-admin first-login flow) — no email/otp, just the
+// same password strength rule as resetPasswordSchema above.
+export const setPasswordSchema = z.object({
+  newPassword: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
+    .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
+    .regex(/\d/, { message: "Password must contain at least one number" })
+    .regex(/[!@#$%^&*(),.?":{}|<>]/, { message: "Password must contain at least one special character" }),
+});
+
+export type SetPasswordValues = z.infer<typeof setPasswordSchema>;
 export const verifyEmailSchema = z.object({
   email: z.string().email({ message: "Enter a valid email address" }),
   otp: z.string().length(6, { message: "OTP must be 6 digits long" }),

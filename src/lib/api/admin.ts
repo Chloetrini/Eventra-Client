@@ -6,7 +6,12 @@ import type {
   IconKey,
   ActivityTone,
 } from "@/types/overview";
-import type { Flag, AuditLogEntry } from "@/types/report";
+import type {
+  Flag,
+  AuditLogEntry,
+  EventFlagDetail,
+  OrganizerFlagDetail,
+} from "@/types/report";
 import { formatCompactNaira, formatRequestedAgo } from "@/lib/utils";
 
 // Raw shape of GET /admin/overview, as actually returned by
@@ -219,19 +224,59 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
 }
 
 
-export async function getFlags():  Promise<Flag[]> {
-  // const { data} = await apiClient.get("/admin/reports/flags")
-  // return data
-
-  throw new Error("getFlags: backend not wired up yet, currently using mock data in the hook")
+// listFlags defaults to a merged, newest-first list of everything currently
+// flagged (report-backed or hand-flagged) — see its doc comment in
+// admin.controller.ts. limit=100 mirrors the convention used by the other
+// "needs action" queues in this file (refunds, disputes).
+export async function getFlags(): Promise<Flag[]> {
+  const res = await api.get("/admin/reports/flags?limit=100");
+  const body = res.body as { flags: Flag[] };
+  return body.flags;
 }
 
 export async function getAuditLog(): Promise<AuditLogEntry[]> {
-  // const { data } = await apiClient.get("/admin/reports/audit-log");
-  // return data;
-
-  throw new Error ("getAuditLog: backend not wired up yet, currently using mock data in the hook")
+  const res = await api.get("/admin/reports/audit-log?limit=100");
+  const body = res.body as { logs: AuditLogEntry[] };
+  return body.logs;
 }
+
+// Powers the flag-detail page for an event target — the event plus every
+// open report filed against it, so the reason(s) behind the flag are
+// visible before an admin decides what to do with it.
+export async function getEventFlagDetail(eventId: string): Promise<EventFlagDetail> {
+  const res = await api.get(`/admin/reports/flags/events/${eventId}`);
+  return res.body as EventFlagDetail;
+}
+
+export async function getOrganizerFlagDetail(organizerId: string): Promise<OrganizerFlagDetail> {
+  const res = await api.get(`/admin/reports/flags/organizers/${organizerId}`);
+  return res.body as OrganizerFlagDetail;
+}
+
+// Dismissing a flag closes out its open report(s) AND clears the flag in
+// one step (see dismissEventFlag/dismissOrganizerFlag in
+// admin.controller.ts) — there's no separate "clear the flag" action from
+// this page, dismiss does both at once.
+export async function dismissEventFlag(eventId: string): Promise<void> {
+  await api.patch(`/admin/reports/flags/events/${eventId}/dismiss`, {});
+}
+
+export async function dismissOrganizerFlag(organizerId: string): Promise<void> {
+  await api.patch(`/admin/reports/flags/organizers/${organizerId}/dismiss`, {});
+}
+
+// "Take action" on a flagged target — takes the event down site-wide
+// (removeEvent) or suspends the organizer's account (suspendUser), the
+// same admin tools used from the Events/Users pages, just reachable from
+// the flag-detail page too.
+export async function removeFlaggedEvent(eventId: string, reason?: string): Promise<void> {
+  await api.patch(`/admin/events/${eventId}/remove`, { reason });
+}
+
+export async function suspendFlaggedOrganizer(organizerId: string): Promise<void> {
+  await api.patch(`/admin/users/${organizerId}/suspend`, {});
+}
+
 export async function getPlatformRevenue(range: RevenueRange): Promise<PlatformRevenueData> {
   const raw = await fetchRawAdminOverview(range);
 

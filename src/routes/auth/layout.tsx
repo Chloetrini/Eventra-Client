@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from "react-router";
 import authBg from "@/assets/auth-hero.png";
 import organizerBg from "@/assets/auth-organizer.png"
+import EventraLogo from "@/assets/Eventra-logo.png";
 /**
  * Shared shell for every /auth/* route (register, login, forgot-password...).
  * Renders the logo + split-screen frame once; each route's own page
@@ -8,10 +9,34 @@ import organizerBg from "@/assets/auth-organizer.png"
  *
  * Organizer auth routes (/auth/organizer/*) flip the image to the other side,
  * swap the hero image, and show the organizer overlay text.
+ *
+ * Admin auth (login only — there's no self-service admin signup) gets its
+ * own frame entirely per Chloe's design: a centered card on a mint-to-white
+ * gradient, no split-screen hero image. It's kept as an early return rather
+ * than threaded through the grid below so the organizer/attendee frame stays
+ * untouched.
  */
 export default function AuthLayout() {
   const location = useLocation();
   const isOrganizer = location.pathname.includes("/organizer");
+  const isAdmin = location.pathname.includes("/admin");
+
+  if (isAdmin) {
+    return (
+      <div className="min-h-screen w-full flex flex-col items-center justify-center gap-8 px-4 py-12 bg-gradient-to-b from-[#BBE0CF] to-white dark:from-[#0F6E56]/25 dark:via-background dark:to-background">
+        <div className="flex items-center gap-2.5">
+          <img src={EventraLogo} className="h-8 w-auto" alt="Eventra" />
+          <span className="text-[28px] font-extrabold tracking-[-0.02em] text-foreground">
+            Eventra
+          </span>
+        </div>
+
+        <div className="w-full max-w-[494px] rounded-[24px] border border-white/40 dark:border-border bg-white/70 dark:bg-card/70 backdrop-blur-sm p-6 sm:p-10 shadow-sm">
+          <Outlet />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen overflow-hidden grid lg:grid-cols-2 bg-background">

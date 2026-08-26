@@ -27,7 +27,7 @@ export default function AdminEventsPage() {
   const { data: events, isLoading } = useAdminEvents(activeFilter, debouncedQuery);
 
   const handleEventClick = (event: AdminEvent) => {
-    navigate(`/admin/events/${event.id}`);
+    navigate(`/admin/events/${event._id}`);
   };
 
   return (

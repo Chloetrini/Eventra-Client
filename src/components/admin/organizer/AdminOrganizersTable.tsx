@@ -1,21 +1,17 @@
 import React from "react";
-import type {
-  AdminEvent,
-  AdminEventStatus,
-  AdminPaymentType,
-} from "@/types/admin-event";
+import type { AdminOrganizer, AdminOrganizerStatus } from "@/types/admin-organizer";
+import { useNavigate } from "react-router";
 
-interface AdminEventsTableProps {
-  events: AdminEvent[];
-  onEventClick?: (event: AdminEvent) => void;
+interface AdminOrganizersTableProps {
+  organizers: AdminOrganizer[];
 }
 
-export function StatusBadge({ status }: { status: AdminEventStatus }) {
+export function StatusBadge({ status }: { status: AdminOrganizerStatus }) {
   switch (status) {
-    case "LIVE":
+    case "VERIFIED":
       return (
         <span className="inline-flex items-center rounded-full bg-[#EBF8F1] dark:bg-[#0F6E56]/25 px-3 py-1 text-[11px] font-bold text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-wide">
-          LIVE
+          VERIFIED
         </span>
       );
     case "PENDING":
@@ -24,16 +20,10 @@ export function StatusBadge({ status }: { status: AdminEventStatus }) {
           PENDING
         </span>
       );
-    case "FLAGGED":
+    case "SUSPENDED":
       return (
         <span className="inline-flex items-center rounded-full bg-[#FFC4C4] dark:bg-[#DC2626]/25 px-3.5 py-1 text-[11px] font-bold text-[#BE2525] dark:text-[#F87171] uppercase tracking-wide">
-          FLAGGED
-        </span>
-      );
-    case "PAST":
-      return (
-        <span className="inline-flex items-center rounded-full bg-[#E8E6E0] px-3 py-1 text-[11px] font-bold text-[#3A3A3A] uppercase tracking-wide">
-          PAST
+          SUSPENDED
         </span>
       );
     case "REJECTED":
@@ -51,30 +41,40 @@ export function StatusBadge({ status }: { status: AdminEventStatus }) {
   }
 }
 
-export function TypeBadge({ type }: { type: AdminPaymentType }) {
-  if (type === "PAID") {
-    return (
-      <span className="inline-flex items-center rounded-full bg-[#EBF8F1] dark:bg-[#0F6E56]/20 px-2.5 py-0.5 text-[10px] font-bold text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-wider">
-        PAID
-      </span>
-    );
+function formatCompactCurrency(formattedStr: string | undefined | null): string {
+  if (!formattedStr) return "—";
+
+  // Strip out currency symbols (₦), commas, and spaces to extract raw digits
+  const cleanStr = formattedStr.replace(/[^0-9.-]+/g, "");
+  const numericVal = parseFloat(cleanStr);
+
+  if (isNaN(numericVal) || numericVal === 0) {
+    return "—";
   }
-  return (
-    <span className="inline-flex items-center rounded-full bg-[#FDF6E2] dark:bg-[#8C6B16]/20 px-2.5 py-0.5 text-[10px] font-bold text-[#A16207] dark:text-[#FACC15] uppercase tracking-wider">
-      FREE
-    </span>
-  );
+
+  if (numericVal >= 1_000_000_000) {
+    return `₦${(numericVal / 1_000_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  }
+  if (numericVal >= 1_000_000) {
+    return `₦${(numericVal / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  }
+  if (numericVal >= 1_000) {
+    return `₦${(numericVal / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
+  }
+
+  return `₦${numericVal.toLocaleString()}`;
 }
 
-export default function AdminEventsTable({
-  events,
-  onEventClick,
-}: AdminEventsTableProps) {
-  if (events.length === 0) {
+export default function AdminOrganizersTable({
+  organizers,
+}: AdminOrganizersTableProps) {
+  const navigate = useNavigate();
+
+  if (organizers.length === 0) {
     return (
       <div className="rounded-2xl border border-border bg-card p-12 text-center">
         <p className="text-sm text-muted-foreground">
-          No events match your search or filter.
+          No organizer match your search or filter.
         </p>
       </div>
     );
@@ -86,50 +86,52 @@ export default function AdminEventsTable({
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-border bg-card/50 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-              <th className="px-6 py-4">EVENT</th>
               <th className="px-6 py-4">ORGANIZER</th>
-              <th className="px-6 py-4">TYPE</th>
-              <th className="px-6 py-4">SOLD</th>
+              <th className="px-6 py-4">CONTACT</th>
+              <th className="px-6 py-4">EVENTS</th>
+              <th className="px-6 py-4">REVENUE</th>
               <th className="px-6 py-4">STATUS</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {events.map((evt) => (
+            {organizers.map((org) => (
               <tr
-                key={evt._id}
-                onClick={() => onEventClick?.(evt)}
+                key={org._id}
+                onClick={() => navigate(`/admin/organizers/${org._id}`)}
                 className="group cursor-pointer hover:bg-accent/50 transition-colors"
               >
-                {/* EVENT (Avatar + Title) */}
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1F2937] text-xs font-bold text-white shadow-xs">
-                      {evt.organizerInitials}
+                      {org.initials}
                     </div>
-                    <span className="font-bold text-foreground group-hover:text-primary transition-colors">
-                      {evt.title}
-                    </span>
+                    <div className="flex flex-col">
+                      <span className="font-bold text-foreground group-hover:text-primary transition-colors">
+                        {org.name}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {org.category}
+                      </span>
+                    </div>
                   </div>
                 </td>
 
-                {/* ORGANIZER */}
                 <td className="px-6 py-4 font-medium text-muted-foreground">
-                  {evt.organizerName}
+                  {org.email}
                 </td>
 
-                {/* TYPE */}
-                <td className="px-6 py-4">
-                  <TypeBadge type={evt.type} />
+                <td className="px-6 py-4 font-medium text-muted-foreground">
+                  {org.eventCount}
                 </td>
 
-                {/* SOLD */}
-                <td className="px-6 py-4 font-bold text-foreground">
-                  {evt.soldText}
+                {/* REVENUE */}
+                <td className="px-6 py-4 font-space font-bold text-foreground">
+                  {formatCompactCurrency(org.formattedRevenue)}
                 </td>
 
                 {/* STATUS */}
                 <td className="px-6 py-4">
-                  <StatusBadge status={evt.status} />
+                  <StatusBadge status={org.status} />
                 </td>
               </tr>
             ))}

@@ -5,11 +5,16 @@ import {
   flagAdminEvent,
   unflagAdminEvent,
   removeAdminEvent,
+  approveEvent,
+  rejectEvent,
+  fetchPendingAdminEvents,
 } from "@/lib/api/admin-events";
 import type { StatusFilterOption } from "@/components/admin/events/AdminEventsFilterBar";
 
+
 export const adminEventsKeys = {
   all: ["admin", "events"] as const,
+  lists: () => [...adminEventsKeys.all, "list"] as const,
   list: (tab: StatusFilterOption, q: string) => [...adminEventsKeys.all, "list", tab, q] as const,
   detail: (id: string) => [...adminEventsKeys.all, "detail", id] as const,
 };
@@ -20,7 +25,12 @@ export function useAdminEvents(tab: StatusFilterOption, q: string) {
     queryFn: () => fetchAdminEvents({ tab, q: q || undefined }),
   });
 }
-
+export function usePendingAdminEvents() {
+  return useQuery({
+    queryKey: ["admin", "events", "pending"],
+    queryFn: fetchPendingAdminEvents,
+  })
+}
 export function useAdminEventDetail(id: string | undefined) {
   return useQuery({
     queryKey: adminEventsKeys.detail(id as string),
@@ -52,3 +62,28 @@ export function useRemoveAdminEvent() {
     },
   });
 }
+
+export function useApproveEvent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => approveEvent(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: adminEventsKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: adminEventsKeys.lists() });
+    },
+  });
+}
+
+// Hook: Reject organizer application with optional reason
+export function useRejectEvent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
+      rejectEvent(id, reason),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: adminEventsKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: adminEventsKeys.lists() });
+    },
+  });
+}
+

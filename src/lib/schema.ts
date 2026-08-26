@@ -448,6 +448,10 @@ export const ticketsSchema = z.object({
     z.object({
       id: z.string().optional(), // present for existing ticket types loaded on edit; absent for new ones
       name: z.string().optional(),
+      category: z
+        .enum(["VIP", "Regular", "Table"])
+        .optional(),
+      tableSize: z.coerce.number().optional(),
       description: z.string().optional(),
       price: z.coerce.number().optional(),
       quantity: z.coerce.number().optional(),
@@ -572,6 +576,21 @@ export const eventFormSchema = eventTypeSchema
             message: "Ticket type is required",
           })
         }
+        if (
+          ticket.category === "Table" &&
+          (
+          ticket.tableSize === undefined ||
+          !Number.isInteger(ticket.tableSize) ||
+          ticket.tableSize < 1
+          )
+) {
+  ctx.addIssue({
+    code: z.ZodIssueCode.custom,
+    path: ["tickets", i, "tableSize"],
+    message:
+      "Table size must be a positive whole number",
+  })
+}
         if (ticket.price === undefined || ticket.price < 0) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,

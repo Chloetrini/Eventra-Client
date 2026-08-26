@@ -66,6 +66,8 @@ export async function createTicketType(
   eventId: string,
   payload: {
     name: string
+    category?: "VIP" | "Regular" | "Table"
+    tableSize?: number
     description?: string
     price: number
     quantity: number
@@ -81,6 +83,8 @@ export async function updateTicketType(
   ticketTypeId: string,
   payload: {
     name?: string
+    category?: "VIP" | "Regular" | "Table"
+    tableSize?: number
     description?: string
     price?: number
     quantity?: number
@@ -108,6 +112,10 @@ export async function deleteTicketType(eventId: string, ticketTypeId: string) {
 const ticketTypeListItemSchema = z.object({
   _id: z.string(),
   name: z.string(),
+  category: z
+  .enum(["VIP", "Regular", "Table"])
+  .default("Regular"),
+  tableSize: z.number().optional(),
   price: z.number(),
   quantity: z.number(),
   purchaseLimitPerPerson: z.number().optional(),

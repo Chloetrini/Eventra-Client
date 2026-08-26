@@ -218,14 +218,21 @@ type RealTicket = {
   _id: string;
   code: string;
   ticketId: string;
-  type: "free" | "paid";
-  price: number;
   attendeeName: string;
   attendeeEmail: string;
-  status: "valid" | "checked_in" | "cancelled" | "refunded";
+  status:
+    | "active"
+    | "used"
+    | "cancelled"
+    | "refunded";
   checkedInAt?: string;
   issuedAt: string;
-  ticketType?: { name: string } | null;
+  ticketTypeName: string;
+  ticketTypeCategory?:
+    | "VIP"
+    | "Regular"
+    | "Table";
+  tableSize?: number | null;
 };
 
 // Display-only — the real ticketId from the backend looks like
@@ -239,20 +246,43 @@ function shortenTicketRef(ticketId: string): string {
   return `EVT-${rest.slice(0, 4)}`;
 }
 
-export async function fetchEventAttendees(eventId: string): Promise<Attendee[]> {
-  const res = await api.get(`/events/${eventId}/attendees`);
-  const body = res.body as { tickets: RealTicket[]; meta: unknown };
-  return body.tickets.map((t) => ({
-    _id: t._id,
-    eventId,
-    name: t.attendeeName,
-    email: t.attendeeEmail,
-    referenceCode: shortenTicketRef(t.ticketId),
-    checkedIn: t.status === "checked_in",
-    ticketType: (t.ticketType?.name as "VIP" | "Regular" | "Table") ?? "Regular",
-    tableSize: null,
-    purchasedDate: t.issuedAt,
-  }));
+export async function fetchEventAttendees(
+  eventId: string
+): Promise<Attendee[]> {
+  const res = await api.get(
+    `/events/${eventId}/attendees`
+  );
+
+  const body = res.body as {
+    attendees: RealTicket[];
+    summary: unknown;
+    meta: unknown;
+  };
+
+  return body.attendees.map((ticket) => {
+    const ticketType =
+      ticket.ticketTypeCategory === "VIP" ||
+      ticket.ticketTypeCategory === "Table"
+        ? ticket.ticketTypeCategory
+        : "Regular";
+
+    return {
+      _id: ticket._id,
+      eventId,
+      name: ticket.attendeeName,
+      email: ticket.attendeeEmail,
+      referenceCode: shortenTicketRef(
+        ticket.ticketId
+      ),
+      checkedIn: ticket.status === "used",
+      ticketType,
+      tableSize:
+        ticketType === "Table"
+          ? ticket.tableSize ?? null
+          : null,
+      purchasedDate: ticket.issuedAt,
+    };
+  });
 }
 
 export async function deleteEvent(eventId: string) {

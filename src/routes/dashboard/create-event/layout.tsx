@@ -155,12 +155,18 @@ const CreateEventLayout = () => {
       refundPolicyType: event.refundPolicy?.type,
       refundDaysBefore: event.refundPolicy?.daysBefore,
       tickets: ticketTypes.map((tt) => ({
-        id: tt._id,
-        name: tt.name,
-        price: tt.price,
-        quantity: tt.quantity,
-        purchaseLimitPerPerson: tt.purchaseLimitPerPerson,
-      })),
+  id: tt._id,
+  name: tt.name,
+  category: tt.category ?? "Regular",
+  tableSize:
+    tt.category === "Table"
+      ? tt.tableSize
+      : undefined,
+  price: tt.price,
+  quantity: tt.quantity,
+  purchaseLimitPerPerson:
+    tt.purchaseLimitPerPerson,
+})),
     });
   }, [editEventId, editEventQuery.data, editEventQuery.isLoading, editTicketTypesQuery.data, editTicketTypesQuery.isLoading, editCategoriesQuery.categories, editCategoriesQuery.isLoading, methods]);
 

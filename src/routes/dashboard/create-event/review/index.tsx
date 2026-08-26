@@ -71,12 +71,14 @@ function buildEventPayload(values: EventFormValues, categoryId?: string) {
         }),
     ...(values.hasRsvpLimit ? { capacity: Number(values.rsvpLimit) } : {}),
     lineup: values.hasLineup
-      ? values.acts.map((act) => ({
-          name: act.name,
-          role: act.role,
-          imageUrl: act.imageUrl,
-        }))
-      : [],
+  ? values.acts.map((act) => ({
+      name: act.name.trim(),
+      role: act.role.trim(),
+      ...(act.imageUrl?.trim()
+        ? { imageUrl: act.imageUrl.trim() }
+        : {}),
+    }))
+  : [],
     ...(values.hasAgePolicy ? { agePolicy: values.policyText } : {}),
     ...(values.hasRefundPolicy && values.refundPolicyType
       ? {
@@ -202,8 +204,14 @@ try {
     const creates = values.tickets.filter((t) => !t.id)
     const updates = values.tickets.filter((t) => t.id)
 
-    const toPayload = (ticket: (typeof values.tickets)[number]) => ({
+       const toPayload = (ticket: (typeof values.tickets)[number]) => ({
       name: ticket.name!,
+      category: ticket.category ?? 'Regular',
+      tableSize:
+        ticket.category === 'Table' &&
+        ticket.tableSize !== undefined
+          ? Number(ticket.tableSize)
+          : undefined,
       price: Number(ticket.price),
       quantity: Number(ticket.quantity),
       purchaseLimitPerPerson:
@@ -302,18 +310,31 @@ if (!isEditingLiveEvent) {
         return
       }
 
-      // Best-effort ticket sync — only rows that already look complete;
-      // an incomplete row is just left for later rather than blocking the
-      // whole draft save or sending the backend a half-filled ticket type.
+      // Best-effort ticket sync: save only complete ticket rows. Every ticket
+      // needs a name, price and quantity, while Table tickets additionally need
+      // a positive whole-number table size. Incomplete rows remain in the form
+      // for later instead of blocking the entire draft save or sending invalid
+      // ticket data to the backend.
       if (values.eventType === "paid" && values.tickets.length > 0) {
-        const isCompleteTicket = (t: (typeof values.tickets)[number]) =>
-          Boolean(t.name) &&
-          Number.isFinite(Number(t.price)) &&
-          Number.isFinite(Number(t.quantity)) &&
-          Number(t.quantity) > 0
+        const isCompleteTicket = (
+          ticket: (typeof values.tickets)[number],
+        ) =>
+          Boolean(ticket.name) &&
+          Number.isFinite(Number(ticket.price)) &&
+          Number.isFinite(Number(ticket.quantity)) &&
+          Number(ticket.quantity) > 0 &&
+          (ticket.category !== 'Table' ||
+            (Number.isInteger(Number(ticket.tableSize)) &&
+              Number(ticket.tableSize) > 0))
 
         const toPayload = (ticket: (typeof values.tickets)[number]) => ({
           name: ticket.name!,
+          category: ticket.category ?? 'Regular',
+          tableSize:
+            ticket.category === 'Table' &&
+            ticket.tableSize !== undefined
+              ? Number(ticket.tableSize)
+              : undefined,
           price: Number(ticket.price),
           quantity: Number(ticket.quantity),
           purchaseLimitPerPerson:
@@ -321,7 +342,6 @@ if (!isEditingLiveEvent) {
               ? Number(ticket.purchaseLimitPerPerson)
               : undefined,
         })
-
         const completeTickets = values.tickets.filter(isCompleteTicket)
         const creates = completeTickets.filter((t) => !t.id)
         const updates = completeTickets.filter((t) => t.id)

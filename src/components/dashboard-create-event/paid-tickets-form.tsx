@@ -6,6 +6,11 @@ import ActionBtn from "../ui/action-btn"
 import { CircleX } from "lucide-react"
 
 const MAX_TICKETS = 5
+const TICKET_CATEGORY_OPTIONS = [
+  "Regular",
+  "VIP",
+  "Table",
+]
 
 const PaidTicketsForm = () => {
     const {
@@ -15,7 +20,10 @@ const PaidTicketsForm = () => {
     } = useFormContext<EventFormValues>()
 
     const eventType = useWatch({ control, name: "eventType" })
-
+    const tickets = useWatch({
+  control,
+  name: "tickets",
+})
     const { fields, append, remove } = useFieldArray({
         control,
         name: "tickets",
@@ -23,7 +31,15 @@ const PaidTicketsForm = () => {
 
     useEffect(() => {
         if (eventType === "paid" && fields.length === 0) {
-            append({ id: undefined, name: "", price: undefined, quantity: undefined, purchaseLimitPerPerson: undefined })
+            append({
+                id: undefined,
+                name: "",
+                category: "Regular",
+                tableSize: undefined,
+                price: undefined,
+                quantity: undefined,
+                purchaseLimitPerPerson: undefined,
+})
         } else if (eventType !== "paid" && fields.length > 0) {
             remove()
         }
@@ -82,6 +98,42 @@ const PaidTicketsForm = () => {
                             classname="w-full"
                             borderStyle="createEvent"
                         />
+                    </div>
+                                        <div className="flex flex-col sm:flex-row gap-4">
+                        <FormBox
+                            inputType="select"
+                            type="select"
+                            label="TICKET CATEGORY"
+                            placeholder="Select ticket category"
+                            id={`tickets.${index}.category`}
+                            name={`tickets.${index}.category`}
+                            errors={errors.tickets?.[index]?.category}
+                            register={register}
+                            control={control}
+                            options={TICKET_CATEGORY_OPTIONS}
+                            classname="w-full"
+                            borderStyle="createEvent"
+                        />
+
+                        {tickets?.[index]?.category === "Table" && (
+                            <FormBox
+                                inputType="input"
+                                type="number"
+                                label="TABLE SIZE"
+                                placeholder="e.g 5"
+                                id={`tickets.${index}.tableSize`}
+                                name={`tickets.${index}.tableSize`}
+                                errors={errors.tickets?.[index]?.tableSize}
+                                register={register}
+                                registerOptions={{
+                                    valueAsNumber: true,
+                                }}
+                                minValue={1}
+                                stepValue={1}
+                                classname="w-full"
+                                borderStyle="createEvent"
+                            />
+                        )}
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4">
                         <FormBox

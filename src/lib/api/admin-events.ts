@@ -87,7 +87,7 @@ function deriveStatus(raw: RawAdminEventListItem): AdminEventStatus {
 function mapListItem(raw: RawAdminEventListItem): AdminEvent {
   const organizerName = organizerDisplayName(raw.organizer);
   return {
-    id: raw._id,
+   _id: raw._id,
     title: raw.title ?? "Untitled event",
     slug: raw.slug,
     organizerName,
@@ -101,6 +101,7 @@ function mapListItem(raw: RawAdminEventListItem): AdminEvent {
     soldCount: raw.ticketsSoldCount,
     totalCapacity: raw.capacity,
     status: deriveStatus(raw),
+    createdAt: raw.createdAt
   };
 }
 
@@ -150,7 +151,11 @@ export async function fetchAdminEvents(params: { tab?: StatusFilterOption; q?: s
   const body = res.body as { events: RawAdminEventListItem[] };
   return body.events.map(mapListItem);
 }
-
+export async function fetchPendingAdminEvents(): Promise<AdminEvent[]> {
+  const res = await api.get("/admin/events/pending")
+  const body = res.body as { events: RawAdminEventListItem[] };
+  return body.events.map(mapListItem);
+}
 export async function fetchAdminEventDetail(id: string): Promise<AdminEvent> {
   const res = await api.get(`/admin/events/${id}`);
   return mapDetail(res.body as RawAdminEventDetail);
@@ -166,4 +171,13 @@ export async function unflagAdminEvent(id: string): Promise<void> {
 
 export async function removeAdminEvent(id: string, reason?: string): Promise<void> {
   await api.patch(`/admin/events/${id}/remove`, { reason });
+}
+
+export async function approveEvent(id: string): Promise<void> {
+  await api.patch(`/admin/events/${id}/approve`, {});
+}
+
+
+export async function rejectEvent(id: string, reason?: string): Promise<void> {
+  await api.patch(`/admin/events/${id}/reject`, { reason });
 }

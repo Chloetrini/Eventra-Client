@@ -30,9 +30,10 @@ export interface AdminEventDetailsData {
 }
 
 export interface AdminEvent {
-  id: string;
+  _id: string;
   title: string;
   slug: string;
+ createdAt: string
   organizerName: string;
   organizerInitials: string;
   type: AdminPaymentType;

@@ -548,6 +548,20 @@ const routes = [
                                 },
                             },
                             {
+                                path:"approvals",
+                                handle: {
+                                    seo: {
+                                        title: "Admin Approvals | Eventra",
+                                        description: "Every event/organizer on the platform. Moderate or remove any of them.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/admin/approval/index");
+                                    return { Component };
+                                },
+                            },
+                            {
                                 path: "events",
                                 children: [
                                     {
@@ -593,6 +607,53 @@ const routes = [
                                         await import("@/routes/admin/settings/index");
                                     return { Component };
                                 },
+                            },
+                             {
+                                path: "payouts",
+                                handle: {
+                                    seo: {
+                                        title: "admin payouts",
+                                        description: "Manage the organisers payouts.",
+                                    }
+                                },
+                                lazy: async () => {
+                                    const { default: Component } =
+                                        await import("@/routes/admin/payouts/index");
+                                    return { Component };
+                                },
+                            },
+                            {
+                                path: "organizers",
+                                children: [
+                                    {
+                                        index: true,
+                                        handle: {
+                                            seo: {
+                                                title:"admin organizers",
+                                                description:  "Manage the organisers.",
+                                            }
+                                        },
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/admin/organizer/index");
+                                            return { Component };
+                                        },
+                                    },
+                                    {
+                                        path: ":id",
+                                        handle: {
+                                            seo: {
+                                                title: "Organizer Details",
+                                                description: "View details of an organizer",
+                                            }
+                                        },
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/admin/organizer/detail");
+                                            return { Component };
+                                        },
+                                    },
+                                ],
                             },
                             {
                                 path: "refunds",

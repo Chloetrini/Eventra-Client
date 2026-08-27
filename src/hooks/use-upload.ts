@@ -2,6 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import {
   uploadEventCoverImage,
   uploadLineupPhoto,
+  uploadRefundEvidence,
+  uploadReportEvidence,
   uploadVerificationDocument,
   type VerificationDocumentType,
 } from "@/lib/upload-api";
@@ -21,6 +23,18 @@ export function useUploadEventCoverImage() {
 export function useUploadLineupPhoto() {
   return useMutation({
     mutationFn: (file: File) => uploadLineupPhoto(file),
+  });
+}
+
+export function useUploadRefundEvidence() {
+  return useMutation({
+    mutationFn: (file: File) => uploadRefundEvidence(file),
+  });
+}
+
+export function useUploadReportEvidence() {
+  return useMutation({
+    mutationFn: (file: File) => uploadReportEvidence(file),
   });
 }
 

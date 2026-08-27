@@ -66,11 +66,11 @@ export default function FlagsTable({ flags, isLoading, onDismiss, onSuspend }: F
             const key = `${flag.targetType}-${flag.targetId}`;
 
             return (
-              <tr key={key} className="border-t-2 border-border last:border-b-0">
+              <tr key={key} className="border-t-2 border-border last:border-b-0 cursor-pointer hover:bg-muted/40 transition-colors"
+              onClick={() => navigate(`/admin/reports/${flag.targetId}`)}>
                 <td className="py-6 px-4">
                   <button
-                    onClick={() => navigate(`/admin/reports/${key}`)}
-                    className="flex items-center gap-2 font-semibold text-foreground text-[17px] hover:underline text-left"
+                    className="flex items-center gap-2 font-semibold text-foreground text-[17px] text-left"
                   >
                     {flag.title}
                   </button>
@@ -91,7 +91,7 @@ export default function FlagsTable({ flags, isLoading, onDismiss, onSuspend }: F
                   {flag.hasReports ? flag.reportsCount : "—"}
                 </td>
                 <td className="px-4">
-                  <div className="flex gap-2 justify-end">
+                  <div className="flex gap-2 justify-end " onClick={(e) => e.stopPropagation()}>
                     <Button
                       variant="outline"
                       size="sm"

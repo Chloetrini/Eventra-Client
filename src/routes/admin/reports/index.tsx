@@ -29,7 +29,7 @@ export default function AdminReportsPage() {
   };
 
   return (
-    <PageWrapper className="flex flex-col gap-6 min-w-0 p-[20px]">
+    <PageWrapper className="flex flex-col gap-6 min-w-0 p-5">
       <div>
         <p className="text-[13px] min-[400px]:text-xs font-medium font-space tracking-wide pt-3 uppercase text-[#0F6E56] dark:text-[#4ADE80]">
           Needs action
@@ -53,7 +53,7 @@ export default function AdminReportsPage() {
           )}
         >
           Flags
-          <span className="bg-muted-foreground font-space text-background rounded-[12.28px] px-[6px] py-[2px] text-xs">
+          <span className="bg-muted-foreground font-space text-background rounded-[12.28px] px-1.5 py-0.5 text-xs">
             {flags?.length ?? 0}
           </span>
         </button>

@@ -90,6 +90,19 @@ const routes = [
                         },
                     },
                     {
+                        path: "events/:slug/report",
+                        handle: {
+                            seo: {
+                                title: "Report Event",
+                                description: "Report an issue with this event",
+                            }
+                        },
+                        lazy: async () => {
+                            const { default: Component } = await import("@/routes/main/report-event");
+                            return { Component };
+                        },
+                    },
+                    {
                         path: "contact",
                         handle: {
                             seo: {
@@ -324,6 +337,10 @@ const routes = [
                         path: "organizer",
                         children: [
                             {
+                                index: true,
+                                element: <Navigate to="login" replace />,
+                            },
+                            {
                                 path: "login",
                                 handle: {
                                     seo: {
@@ -521,9 +538,9 @@ const routes = [
                 ],
 
             },
-             // ─── ADMIN ROUTE ────────────────────────────────────────────
-             {
-                Component: RequireAdmin ,
+            // ─── ADMIN ROUTE ────────────────────────────────────────────
+            {
+                Component: RequireAdmin,
                 children: [
                     {
                         path: "admin",
@@ -594,7 +611,7 @@ const routes = [
                                     },
                                 ]
                             },
-                             {
+                            {
                                 path: "settings",
                                 handle: {
                                     seo: {
@@ -682,13 +699,13 @@ const routes = [
                                         },
                                         lazy: async () => {
                                             const { default: Component } =
-                                                await import("@/routes/admin/refunds-id/index");
+                                                await import("@/routes/admin/refunds-detail/index");
                                             return { Component };
                                         },
                                     },
                                 ],
                             },
-                             {
+                            {
                                 path: "reports",
                                 children: [
                                     {
@@ -715,13 +732,27 @@ const routes = [
                                         },
                                         lazy: async () => {
                                             const { default: Component } =
-                                                await import("@/routes/admin/reports/detail");
+                                                await import("@/routes/admin/reports-list");
+                                            return { Component };
+                                        },
+                                    },
+                                    {
+                                        path: ":flagId/details",
+                                        handle: {
+                                            seo: {
+                                                title: "Report Details",
+                                                description: "Review a flagged event or user.",
+                                            }
+                                        },
+                                        lazy: async () => {
+                                            const { default: Component } =
+                                                await import("@/routes/admin/reports-detail");
                                             return { Component };
                                         },
                                     },
                                 ],
-                            },    
-       
+                            },
+
                             {
                                 path: "users",
                                 children: [
@@ -743,7 +774,7 @@ const routes = [
                                         path: ":id",
                                         handle: {
                                             seo: {
-                                                title:"User details",
+                                                title: "User details",
                                                 description: "View a user's account, orders and status.",
                                             }
                                         },
@@ -755,16 +786,16 @@ const routes = [
                                     },
                                 ],
                             },
-                            
-            
-                           
-                           
+
+
+
+
                         ]
                     },
                 ],
             },
 
-      
+
             // ─── END ADMIN ROUTE ────────────────────────────────────────
 
             {

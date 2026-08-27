@@ -20,7 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 // real data lands.
 function RefundRequestDetailSkeleton() {
     return (
-        <PageWrapper className="min-h-screen flex flex-col justify-between p-[20px]">
+        <PageWrapper className="min-h-screen flex flex-col justify-between p-5">
             <div>
                 <div>
                     <Skeleton className="h-4 w-32 mb-2" />
@@ -121,7 +121,7 @@ const RefundRequestDetailPage = () => {
     }
 
     return (
-        <PageWrapper className="min-h-screen flex flex-col justify-between p-[20px]">
+        <PageWrapper className="min-h-full flex flex-col justify-between p-5">
             <div className="">
                 <div>
                     <button

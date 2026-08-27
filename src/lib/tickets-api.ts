@@ -1,6 +1,7 @@
 
 import {  ticketTypeSchema } from "@/lib/schema";
 import type { EventTickets } from "@/types/ticket-tiers";
+import type { RefundRequestPopulated } from "@/types/refunds";
 import type { Ticket } from "@/types/ticket";
 import { api } from "@/lib/api";
 import z from "zod";
@@ -96,10 +97,18 @@ export async function getOrderByReference(reference: string) {
   return res.body;
 }
 
-export async function requestTicketRefund(ticketId: string, reason?: string) {
-  const res = await api.post(`/tickets/${ticketId}/refund-request`, { reason: reason ?? "Requested by attendee" });
-  return res.body;
+export async function createRefundRequest(ticketId: string, reason: string, description: string, requestedResolution: string, evidence: { url: string | null }[], additionalInformation: string): Promise<RefundRequestPopulated> {
+  const res = await api.post(`tickets/${ticketId}/refund-request`, {
+    ticketId,
+    reason,
+    description,
+    requestedResolution,
+    evidence,
+    additionalInformation
+  })
+  return res.body as RefundRequestPopulated
 }
+
 
 export async function cancelReservation(ticketId: string) {
   const res = await api.delete(`/tickets/${ticketId}/reservation`);

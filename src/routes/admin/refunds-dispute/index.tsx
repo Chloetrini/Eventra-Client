@@ -19,7 +19,7 @@ function RefundsDisputeTableSkeleton({ activeTab }: { activeTab: RefundDisputeTa
         : ["ATTENDEE", "EVENT", "AMOUNT", "PROCESSOR", "STATUS"]
 
     return (
-        <div className="min-w-[900px] border-2 border-[#E8E6E0] dark:border-border rounded-[10px] overflow-hidden">
+        <div className="min-w-225 border-2 border-[#E8E6E0] dark:border-border rounded-[10px] overflow-hidden">
             <div className={`${gridCols} py-4 border-b-2 border-[#E8E6E0] dark:border-border rounded-b-[10px]`}>
                 {headers.map((label) => (
                     <p key={label} className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">
@@ -63,7 +63,7 @@ const RefundsDispute = () => {
     const isLoading = activeTab === "requests" ? requestsLoading : disputesLoading
 
     return (
-        <PageWrapper className="flex flex-col gap-5 p-[20px]">
+        <PageWrapper className="flex flex-col gap-5 p-5">
             <div>
                 <p className='font-space text-[13px] text-[#0F6E56] dark:text-[#4ADE80]'>NEEDS ACTION</p>
                 <h1 className='text-[28px] font-bold font-grotesk'>Refunds & dispute</h1>

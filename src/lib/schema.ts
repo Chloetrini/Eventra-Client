@@ -745,3 +745,38 @@ export const REFUNDS_FIELDS = [
   "evidence",
   "additionalInformation",
 ] as const satisfies Path<RefundsValues>[]
+
+export const reportSchema = z.object({
+  category: z
+    .string()
+    .min(1, "Please select a category"),
+
+  reason: z
+    .string()
+    .trim()
+    .min(20, "Please provide more details about what happened")
+    .max(2000, "Reason cannot exceed 2000 characters"),
+
+  evidence: z
+    .array(z.object({ url: z.string().nullable() }))
+    .min(1, "Please upload at least one piece of evidence")
+    .max(3, "You can upload a maximum of 3 screenshots")
+    .refine(
+      (evidence) => evidence.some((item) => !!item.url),
+      "Please upload at least one piece of evidence"
+    ),
+
+  additionalInformation: z
+    .string()
+    .trim()
+    .max(2000, "Additional information cannot exceed 2000 characters"),
+})
+
+export type ReportValues = z.infer<typeof reportSchema>
+
+export const REPORT_FIELDS = [
+  "category",
+  "reason",
+  "evidence",
+  "additionalInformation",
+] as const satisfies Path<ReportValues>[]

@@ -9,6 +9,7 @@ import {
   challengeAdminDispute,
   acceptAdminDisputeLoss,
 } from "@/lib/api/admin-refunds"
+import { createRefundRequest } from "@/lib/tickets-api"
 
 export const adminRefundRequestsKeys = {
   all: ["admin", "refund-requests"] as const,
@@ -79,6 +80,30 @@ export function useAcceptAdminDisputeLoss() {
     mutationFn: (id: string) => acceptAdminDisputeLoss(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: adminDisputesKeys.all })
+    },
+  })
+}
+
+export function useCreateRefundRequest() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      ticketId,
+      reason,
+      description,
+      requestedResolution,
+      evidence,
+      additionalInformation
+    }: {
+      ticketId: string
+      reason: string
+      description: string
+      requestedResolution: string
+      evidence: { url: string | null }[]
+      additionalInformation: string
+    }) => createRefundRequest(ticketId, reason, description, requestedResolution, evidence, additionalInformation),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminRefundRequestsKeys.all })
     },
   })
 }

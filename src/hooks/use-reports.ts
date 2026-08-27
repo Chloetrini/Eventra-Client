@@ -10,6 +10,7 @@ import {
   suspendFlaggedOrganizer,
 } from "@/lib/api/admin";
 import type { Flag, AuditLogEntry, FlagTargetType } from "@/types/report";
+import { createReportRequest } from "@/lib/events-api";
 
 export const reportsKeys = {
   all: ["admin", "reports"] as const,
@@ -74,5 +75,12 @@ export function useActionFlag() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: reportsKeys.all });
     },
+  });
+}
+
+export function useCreateReportRequest() {
+  return useMutation({
+    mutationFn: ({ eventId, targetType, reason, category, evidence, additionalInformation }: { eventId: string; targetType: 'event' | 'organizer'; reason: string; category: string; evidence: { url: string | null }[]; additionalInformation: string }) =>
+      createReportRequest(eventId, targetType, reason, category, evidence, additionalInformation),
   });
 }

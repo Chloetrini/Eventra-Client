@@ -35,8 +35,20 @@ export interface EventFlagDetail {
     flagged: boolean;
     flagReason?: string;
     status: string;
+    category?: { _id: string; name: string } | null;
+    startDate?: string;
+    minPrice: number;
+    type: "free" | "paid";
+    venue: {
+      name: string;
+      joinLink?: string | null;
+      address?: string;
+      city?: string;
+    } | null;
     organizer?: {
+      _id: string;
       fullname: string;
+      email: string;
       organizerProfile?: { businessName?: string };
     };
   };
@@ -74,4 +86,33 @@ export interface AuditLogEntry {
   message: string;
   actorName: string;
   createdAt: string;
+}
+
+export type UserReport = {
+    _id: string
+    targetType: "event" | "organizer"
+    event: string
+    organizer?: string
+    reportedBy: string
+    reporterName: string
+    reason: string
+    category: string
+    evidence?: {
+        url: string | null
+    }[]
+    additionalInformation?: string
+    createdAt: string
+    updatedAt: string
+}
+
+export type UserReportPopulated = Omit<UserReport, "event" | "organizer"> & {
+    event?: {
+        _id: string
+        title: string
+    }
+    organizer?: {
+        _id: string
+        fullname: string
+        email: string
+    }
 }

@@ -68,3 +68,21 @@ export async function uploadVerificationDocument(
   const body = response.body as { url: string; publicId: string };
   return body;
 }
+
+export async function uploadRefundEvidence(file: File): Promise<string> {
+  assertUploadableSize(file);
+  const formData = new FormData();
+  formData.append("image", file);
+  const response = await api.upload("/uploads/refund-evidence", formData);
+  const body = response.body as { url: string; publicId: string };
+  return body.url;
+}
+
+export async function uploadReportEvidence(file: File): Promise<string> {
+  assertUploadableSize(file);
+  const formData = new FormData();
+  formData.append("image", file);
+  const response = await api.upload("/uploads/report-evidence", formData);
+  const body = response.body as { url: string; publicId: string };
+  return body.url;
+}

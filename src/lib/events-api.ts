@@ -470,3 +470,14 @@ export async function checkInTicket(eventId: string, code: string): Promise<Chec
   const res = await api.post(`/events/${eventId}/check-in`, { code });
   return res.body as CheckInResult;
 }
+
+export async function createReportRequest(eventId: string, targetType: 'event' | 'organizer', reason: string, category: string, evidence: { url: string | null }[], additionalInformation: string): Promise<void> {
+  await api.post(`/events/${eventId}/report`, {
+    eventId,
+    targetType,
+    reason,
+    category,
+    evidence,
+    additionalInformation,
+  });
+}

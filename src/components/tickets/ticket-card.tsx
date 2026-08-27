@@ -9,7 +9,7 @@ import backward from "@/assets/backward.png";
 import PaymentBtn from "@/components/ui/pay-method-btn";
 import { formatDateTime } from "@/lib/utils";
 import { toast } from "react-toastify";
-import { useRequestTicketRefund, useCancelReservation } from "@/hooks/use-ticket-actions";
+import { useCancelReservation } from "@/hooks/use-ticket-actions";
 import { downloadEventIcs } from "@/lib/calendar";
 interface TicketProps {
   ticket: Ticket;
@@ -66,19 +66,8 @@ export function TicketCard({ ticket, showActions = false }: TicketProps) {
     ticketTypeConfig[ticketType] ??
     (ticketType === "Free" ? { bg: "bg-muted", text: "text-muted-foreground" } : ticketTypeConfig.Paid);
 
-  const refundMutation = useRequestTicketRefund();
   const cancelMutation = useCancelReservation();
-  const isProcessing = refundMutation.isPending || cancelMutation.isPending;
-
-  const handleRequestRefund = async () => {
-    if (!ticket._id) return;
-    try {
-      await refundMutation.mutateAsync({ ticketId: ticket._id });
-      toast.success("Refund requested. We'll email you once it's processed.");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not request refund. Please try again.");
-    }
-  };
+  const isProcessing = cancelMutation.isPending;
 
   const handleCancelRsvp = async () => {
     if (!ticket._id) return;

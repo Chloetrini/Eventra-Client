@@ -162,7 +162,15 @@ export const eventSchema = z.object({
     z.null(),
   ]),
   coverImage: z.string().optional(),
-  venue: eventVenueSchema,
+  // Optional to match the backend model exactly: "Physical venue — absent
+  // when isOnline is true" (see IEventVenue's own comment in the backend's
+  // models/event.ts). Every existing card/detail component reads
+  // event.venue.name/.city unconditionally though, so leaving this
+  // genuinely undefined would just trade "the whole list fails to parse"
+  // for "the app crashes rendering this one card" — the .transform below
+  // fills in a placeholder venue for online events instead, so this stays
+  // a data-shape fix and none of those components need to change.
+  venue: eventVenueSchema.optional(),
   startDate: z.string(),
   endDate: z.string().optional(),
   minPrice: z.number().min(0),
@@ -205,6 +213,10 @@ export const eventSchema = z.object({
 
   return {
     ...event,
+    // See the venue field's comment above — an online event legitimately
+    // has no venue from the backend; this keeps every existing
+    // event.venue.name/.city read site working unchanged.
+    venue: event.venue ?? { name: "Online event", address: "", city: "Online", state: "" },
     category: categoryName,
     categoryId,
   };

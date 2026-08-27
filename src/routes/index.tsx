@@ -319,6 +319,27 @@ const routes = [
                         },
                     },
                     {
+                        // Where verify-otp navigates a mustSetPassword account
+                        // (an inviteAdmin invite, see admin.controller.ts) to
+                        // pick its own password. The page already existed
+                        // (routes/auth/set-password/index.tsx) but was never
+                        // registered here, so that navigate("/auth/set-password")
+                        // 404'd every time.
+                        path: "set-password",
+                        handle: {
+                            seo: {
+                                title: "set password",
+                                description: "set your account password.",
+                            }
+                        },
+
+                        lazy: async () => {
+                            const { default: Component } =
+                                await import("@/routes/auth/set-password/index");
+                            return { Component };
+                        },
+                    },
+                    {
                         path: "forgot-password",
                         handle: {
                             seo: {

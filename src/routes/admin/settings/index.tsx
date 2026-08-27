@@ -252,7 +252,7 @@ export default function PlatformSettings() {
   const isOwner = user?.role === "admin" && (user.adminRole ?? "owner") === "owner"
 
   const { data: settings } = usePlatformSettings()
-  const { mutate: updateSettings } = useUpdatePlatformSettings()
+  const { mutate: updateSettings, isPending: isSavingSettings } = useUpdatePlatformSettings()
 
   const [platformFee, setPlatformFee] = useState(3)
   const [currency, setCurrency] = useState("")
@@ -281,11 +281,30 @@ export default function PlatformSettings() {
     )
   }
 
+  // A currency change re-converts every stored money field platform-wide
+  // (see updatePlatformSettings on the backend) — firing it twice in quick
+  // succession (a double-click, or the Select re-firing onValueChange
+  // while the first request is still in flight) used to be able to apply
+  // a second conversion on top of the first before the settings doc had
+  // even saved the new currency, compounding the rate instead of just
+  // switching it. The backend now rejects an overlapping change outright,
+  // but bailing out here too means it never even gets sent while one is
+  // already in flight — see the `disabled={isSavingSettings}` on the
+  // Select below for the other half of this guard.
   const onCurrencyChange = (val: string) => {
+    if (isSavingSettings) return
     setCurrency(val)
     updateSettings(
       { currency: val as "Naira" | "Dollar" | "Cedis" },
-      { onError: (err: Error) => toast.error(err.message || "Could not save currency.") }
+      {
+        onError: (err: Error) => {
+          toast.error(err.message || "Could not save currency.")
+          // Roll the dropdown back to whatever's actually saved — leaving
+          // it on the failed target would show a currency the backend
+          // never actually switched to.
+          setCurrency(settings?.currency ?? "")
+        },
+      }
     )
   }
 
@@ -375,7 +394,7 @@ export default function PlatformSettings() {
         <CardContent className="flex flex-col gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">CURRENCY</label>
-            <Select value={currency} onValueChange={(val) => onCurrencyChange(val ?? '')}>
+            <Select value={currency} onValueChange={(val) => onCurrencyChange(val ?? '')} disabled={isSavingSettings}>
               <SelectTrigger className="w-49.75">
                 <SelectValue placeholder="Choose your currency"/>
               </SelectTrigger>
@@ -385,6 +404,9 @@ export default function PlatformSettings() {
                 <SelectItem value="Cedis">Cedis (₵)</SelectItem>
               </SelectContent>
             </Select>
+            {isSavingSettings && (
+              <p className="text-xs text-muted-foreground">Saving…</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">

@@ -13,6 +13,7 @@ import type {
   OrganizerFlagDetail,
 } from "@/types/report";
 import { formatCompactNaira, formatRequestedAgo } from "@/lib/utils";
+import type { RevenuePageData } from "@/types/revenue";
 
 // Raw shape of GET /admin/overview, as actually returned by
 // getAdminOverview in admin.controller.ts — counts and unformatted
@@ -287,4 +288,44 @@ export async function getPlatformRevenue(range: RevenueRange): Promise<PlatformR
     deltaCaption: "vs last month",
     series: raw.revenueSeries,
   };
+}
+
+export async function getRevenue(): Promise<RevenuePageData> {
+    const res = await api.get("/admin/revenue");
+     const body = res.body as {
+         platformRevenue: number;
+         platformRevenueChangePct: number | null;
+         commissionRevenue: number;
+         commissionRatePct: number;
+         promotionRevenue: number;
+         grossTicketSales: number;
+         revenueBySource: { label: string; amount: number; percent: number }[];
+         topEarningEvents: { eventId: string; eventTitle: string; organizerName: string; commission: number }[];
+         monthlyBreakdown: { label: string; grossSales: number; commission: number; promotion: number; total: number }[];
+     }
+
+     return {
+        summary: {
+      platformRevenue: body.platformRevenue,
+      platformRevenueChangePct: body.platformRevenueChangePct,
+      commission: body.commissionRevenue,
+      commissionRatePct: body.commissionRatePct,
+      promotions: body.promotionRevenue,
+      grossTicketSales: body.grossTicketSales,
+    },
+     revenueBySource: body.revenueBySource,
+    topEarningEvents: body.topEarningEvents.map((e: any) => ({
+      id: e.eventId,
+      eventTitle: e.eventTitle,
+      organizer: e.organizerName,
+      commission: e.commission,
+    })),
+    monthlyBreakdown: body.monthlyBreakdown.map((m: any) => ({
+      month: m.label,
+      grossSales: m.grossSales,
+      commission: m.commission,
+      promotion: m.promotion,
+      total: m.total,
+    })),
+     }
 }

@@ -28,7 +28,7 @@ export default function AdminPayoutsPage() {
       <PayoutsOverviewCards overview={overview} isLoading={isOverviewLoading} />
 
       {/* Tables */}
-      <AwaitingPayoutsTable list={awaitingList} isLoading={isAwaitingLoading} />
+      <AwaitingPayoutsTable list={awaitingList?.payouts} isLoading={isAwaitingLoading} />
       <PayoutHistoryTable history={historyData?.payouts} isLoading={isHistoryLoading} />
     </PageWrapper>
   )

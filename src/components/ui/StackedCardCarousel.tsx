@@ -121,7 +121,7 @@ const CardContent: React.FC<{ event: Event }> = ({ event }) => (
       <div className="mt-4 pt-3 border-t border-[#E8E6E0] flex items-center justify-between">
         <div>
           <span className="text-lg font-bold font-space text-[#1A1523]">
-            {event.minPrice === 0 ? "Free" : Format.amount(event.minPrice)}
+            {event.minPrice === 0 ? "Free" : Format.amount(event.minPrice, event.currency)}
           </span>
           <span className="text-xs text-[#4A4451] block font-geist">
             from Regular

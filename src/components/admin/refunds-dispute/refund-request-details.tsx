@@ -121,7 +121,7 @@ const RefundRequestDetails = ({ request }: RefundRequestDetailsProps) => {
                     <h2 className="text-xl font-bold font-grotesk mb-4">Evidence</h2>
                     <div className="flex flex-wrap gap-4">
                         {request.evidence.map((item, index) => (
-                            
+                            <a
                                 key={item.url}
                                 href={item.url}
                                 target="_blank"

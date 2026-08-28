@@ -32,7 +32,7 @@ export default function Payouts() {
     );
   }
 
-  const { earningsByEvent, payoutHistory } = data;
+  const { earningsByEvent, payoutHistory, currency } = data;
 
   return (
     <div className="space-y-6">
@@ -60,11 +60,11 @@ export default function Payouts() {
         <PayoutSetupBanner onDismiss={() => setShowSetupBanner(false)} />
       )}
 
-      <StatCards earnings={earningsByEvent} history={payoutHistory} />
+      <StatCards earnings={earningsByEvent} history={payoutHistory} currency={currency} />
 
       <HowPayoutsWork />
-      <EarningsByEvent earnings={earningsByEvent} />
-      <PayoutHistory history={payoutHistory} />
+      <EarningsByEvent earnings={earningsByEvent} currency={currency} />
+      <PayoutHistory history={payoutHistory} currency={currency} />
     </div>
   );
 }

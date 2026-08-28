@@ -34,6 +34,11 @@ export interface AdminUserDetail {
   ordersCount: number;
   totalSpent: number;
   orderHistory: AdminUserOrderHistoryEntry[];
+  // The viewer admin's own currency — totalSpent/orderHistory[].amount are
+  // both already converted into it server-side (same display-only pattern
+  // as every other admin money page). Optional since older cached
+  // responses/tests may not carry it; format helpers default to Naira.
+  currency?: string;
 }
 
 export interface AdminUsersListMeta {

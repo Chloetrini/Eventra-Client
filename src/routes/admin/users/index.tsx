@@ -110,7 +110,7 @@ export default function AdminUsersPage() {
         </p>
       ) : (
         <>
-          <UsersTable users={data?.users ?? []} />
+          <UsersTable users={data?.users ?? []} currency={data?.currency} />
           {data?.meta.hasMore && (
             <div className="flex justify-center">
               <Button variant="outline" onClick={() => setLimit((l) => l + PAGE_SIZE)}>

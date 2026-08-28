@@ -119,7 +119,7 @@ export function EventsTable({ events, onEventDeleted }: EventsTableProps) {
                 </TableCell>
 
                 <TableCell className="text-[16px] text-foreground font-bold font-space ">
-                  {event.revenue !== null ? formatCompactNaira(event.revenue) : "--"}
+                  {event.revenue !== null ? formatCompactNaira(event.revenue, event.currency) : "--"}
                 </TableCell>
 
                 <TableCell>

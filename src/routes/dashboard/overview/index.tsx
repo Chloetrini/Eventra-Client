@@ -102,7 +102,7 @@ export default function DashboardPage() {
       <StatsCards stats={data.stats} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <RevenueChart data={data.revenueSeries} period={period} onPeriodChange={setPeriod} />
+        <RevenueChart data={data.revenueSeries} period={period} onPeriodChange={setPeriod} currency={data.currency} />
         <TicketsByTypeChart data={data.ticketsByType} />
       </div>
 

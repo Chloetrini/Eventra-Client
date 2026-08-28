@@ -4,12 +4,17 @@ import type { RevenueBySource } from "@/types/revenue";
 
 interface RevenueBySourceChartProps {
     data: RevenueBySource[];
-    total: number
+    total: number;
+    // Every amount on this page is already converted server-side into the
+    // viewer's currency (see RevenuePageData.currency) — this just tells
+    // formatCompactNaira which symbol/rounding to use. Optional so an
+    // older cached response without it still falls back to Naira.
+    currency?: string;
 }
 
 const COLORS = ["#F5A524", "#0F6E56"]
 
-export default function RevenueBySourceChart({data, total}: RevenueBySourceChartProps) {
+export default function RevenueBySourceChart({data, total, currency}: RevenueBySourceChartProps) {
     return (
         <div className="border rounded-lg p-3 min-[400px]:p-4 h-full min-w-0">
             <h2 className="text-base min-[400px]:text-[18px] border-[#E8E6E0] font-bold text-[#000000] mb-4">
@@ -35,7 +40,7 @@ export default function RevenueBySourceChart({data, total}: RevenueBySourceChart
 
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                         <p className="text-lg min-[400px]:text-[24px] font-bold text-[#000000] font-space">
-                          <span className="font-light">₦</span>{formatCompactNaira(total)}
+                          {formatCompactNaira(total, currency)}
                         </p>
                         <p className="text-xs min-[400px]:text-[15px] text-[#1A1523] font-space uppercase">
                          Revenue

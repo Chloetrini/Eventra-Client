@@ -50,4 +50,8 @@ export interface DashboardData {
   recentEvents: DashboardEvent[];
   revenueSeries: RevenueSeriesPoint[];
   ticketsByType: TicketsByTypeSlice[];
+  // The organizer's own viewer currency — revenueSeries amounts are
+  // already converted into it server-side (see fetchDashboardReal,
+  // organizer-api.ts).
+  currency?: string;
 }

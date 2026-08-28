@@ -1,5 +1,5 @@
 import { TriangleAlert } from "lucide-react"
-import { formatRequestedAgo } from "@/lib/utils"
+import { formatNaira, formatRequestedAgo } from "@/lib/utils"
 import type { RefundRequestPopulated } from "@/types/refunds"
 
 // Same shortening used elsewhere for ticket references (shortenTicketRef
@@ -54,7 +54,7 @@ const RefundRequestDetails = ({ request }: RefundRequestDetailsProps) => {
                     </div>
                     <div className="flex justify-between items-center py-3 border-b border-[#E8E6E0] dark:border-border">
                         <p className="text-[#4A4451] dark:text-gray-300">Amount</p>
-                        <p className="font-space font-bold text-end">₦{request.amount.toLocaleString()}</p>
+                        <p className="font-space font-bold text-end">{formatNaira(request.amount, request.currency)}</p>
                     </div>
                     <div className="flex justify-between items-center py-3">
                         <p className="text-[#4A4451] dark:text-gray-300">Requested</p>
@@ -121,7 +121,7 @@ const RefundRequestDetails = ({ request }: RefundRequestDetailsProps) => {
                     <h2 className="text-xl font-bold font-grotesk mb-4">Evidence</h2>
                     <div className="flex flex-wrap gap-4">
                         {request.evidence.map((item, index) => (
-                            <a
+                            
                                 key={item.url}
                                 href={item.url}
                                 target="_blank"

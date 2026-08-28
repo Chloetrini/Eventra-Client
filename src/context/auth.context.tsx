@@ -13,6 +13,10 @@ export type User = {
   // owner-tier accounts only.
   adminRole?: "owner" | "admin" | "support";
   avatarUrl?: string;
+  // This account's own display currency — available to every role, see
+  // its comment on updateProfile (lib/user-api.ts). Undefined means "use
+  // the platform's sitewide default".
+  currencyPreference?: "Naira" | "Dollar" | "Cedis" | "Pound";
   [key: string]: unknown;
 };
 

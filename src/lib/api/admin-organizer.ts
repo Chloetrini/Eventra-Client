@@ -12,6 +12,7 @@ export interface RawAdminOrganizerListItem {
   createdAt: string;
   organizerProfile?: {
     businessName?: string;
+    category?: string;
     approvalStatus: "pending" | "approved" | "rejected" | "suspended";
     phone?: string;
     bio?: string;
@@ -98,6 +99,7 @@ function mapOrganizerListItem(raw: RawAdminOrganizerListItem): AdminOrganizer {
     _id: raw._id,
     name,
     email: raw.email,
+    category: profile?.category,
     initials: initialsFrom(name),
     avatarUrl: raw.avatarUrl,
     status: deriveOrganizerStatus(raw),
@@ -186,7 +188,7 @@ export async function fetchAdminOrganizers(
 export async function fetchPendingAdminOrganizers(): Promise<{ organizers: AdminOrganizer[] }> {
   const res = await api.get("/admin/organizers/pending");
   const body = res.body as { organizers: RawAdminOrganizerListItem[] };
-  
+
   return {
     organizers: body.organizers.map(mapOrganizerListItem)
   };

@@ -36,7 +36,7 @@ const OrganizerApprovalDetailPage = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
 
-  const { data: organizer, isLoading, isError } = useAdminOrganizerDetail(id)
+  const { data: organizer, isLoading, isError } = useAdminOrganizerDetail(id)  
   const approveMutation = useApproveOrganizer()
   const rejectMutation = useRejectOrganizer()
 

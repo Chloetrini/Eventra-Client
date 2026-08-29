@@ -10,7 +10,6 @@ export default function NeedsActionCard({ item, className }: { item: NeedsAction
         <div
             className={cn(
                 "flex flex-col rounded-xl border border-border bg-card p-4 md:p-5 overflow-hidden",
-                // Thick top border to match Figma
                 urgent
                     ? "border-t-4 border-t-[#DC2626]"
                     : "border-t-4 border-t-[#F5A524]",

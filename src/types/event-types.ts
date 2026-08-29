@@ -14,7 +14,7 @@ export const STATES = [
   "Delta",
   "Ebonyi",
   "Edo",
-  "Ekiti",
+  "Ekiti",      
   "Enugu",
   "FCT - Abuja",
   "Gombe",

@@ -23,7 +23,7 @@ const HeroSec: React.FC = () => {
 
         {/* "FOR ORGANIZERS" badge */}
         <div className="flex items-center gap-2">
-          <span className="bg-[#F5A524] h-[1px] w-[20px] rounded-full"></span>
+          <span className="bg-[#F5A524] h-px w-5 rounded-full"></span>
           <p className="text-[#F5A524] font-medium text-sm md:text-base tracking-widest uppercase">
             FOR ORGANIZERS
           </p>

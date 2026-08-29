@@ -20,7 +20,7 @@ const SectionTwo: React.FC = () => {
       <div >
         {/* Top badge */}
         <div className="flex items-center gap-3 mb-4">
-          <span className="bg-[#F5A524]  h-[1px] w-[2 0px] rounded-[20px]"></span>
+          <span className="bg-[#F5A524]  h-px w-5 rounded-[20px]"></span>
           <p className="text-[12px] font-bold text-[#0A4F41] dark:text-[#4ADE80] leading-4 tracking-[16%] uppercase">
             EVERYTHING YOU NEED
           </p>

@@ -8,7 +8,15 @@ export type User = {
   fullname: string;
   email: string;
   role: "attendee" | "organizer" | "admin";
+  // Only meaningful when role === "admin" — see its comment on the backend
+  // User model. Used on the Settings page to gate the whole page to
+  // owner-tier accounts only.
+  adminRole?: "owner" | "admin" | "support";
   avatarUrl?: string;
+  // This account's own display currency — available to every role, see
+  // its comment on updateProfile (lib/user-api.ts). Undefined means "use
+  // the platform's sitewide default".
+  currencyPreference?: "Naira" | "Dollar" | "Cedis" | "Pound";
   [key: string]: unknown;
 };
 
@@ -30,7 +38,12 @@ type AuthContextType = {
   resendOtp: (email: string) => Promise<ApiResult>;
   login: (email: string, password: string) => Promise<User>;
   forgotPassword: (email: string) => Promise<ApiResult>;
+  verifyResetOtp: (email: string, otp: string) => Promise<ApiResult>;
   resetPassword: (email: string, otp: string, newPassword: string) => Promise<ApiResult>;
+  /** For an account created via inviteAdmin (mustSetPassword: true on the
+   * user object) — session-gated, no email/otp needed since verifyEmail
+   * already logged them in. */
+  setPassword: (newPassword: string) => Promise<ApiResult>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   /** Write a fresh user object (e.g. an update endpoint's response) straight
@@ -110,9 +123,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return api.post("/auth/forgot-password", { email });
   }
 
+  // --- Verify a password-reset OTP on its own, before showing the
+  // new-password screen. Doesn't consume the code — the same one still
+  // has to be sent again with resetPassword below.
+  async function verifyResetOtp(email: string, otp: string) {
+    return api.post("/auth/verify-reset-otp", { email, otp });
+  }
+
   // --- Reset password ---
   async function resetPassword(email: string, otp: string, newPassword: string) {
     return api.post("/auth/reset-password", { email, otp, newPassword });
+  }
+
+  // --- Set password (invited-admin first-login flow) ---
+  async function setPassword(newPassword: string) {
+    const res = await api.post("/auth/set-password", { newPassword });
+    // The endpoint hands back the fresh user (mustSetPassword now false) —
+    // write it straight into the cache so nothing re-routes them back to
+    // this screen on the very next render.
+    if (res.body) {
+      queryClient.setQueryData(ME_QUERY_KEY, res.body as User);
+    }
+    return res;
   }
 
 // --- Google OAuth login/register ---
@@ -159,7 +191,9 @@ async function googleAuth(accessToken: string, role?: "attendee" | "organizer") 
         resendOtp,
         login,
         forgotPassword,
+        verifyResetOtp,
         resetPassword,
+        setPassword,
         logout,
         refreshUser,
         setUser,

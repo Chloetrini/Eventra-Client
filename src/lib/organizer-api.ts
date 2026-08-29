@@ -118,6 +118,7 @@ function adaptOverview(raw: RealOverviewResponse) {
         day: "numeric",
         month: "short",
       }),
+      startDate: e.startDate,
       sold: e.capacity !== null ? `${e.soldCount} / ${e.capacity}` : `${e.soldCount}`,
       status: mapEventStatus(e.status),
       imageUrl: e.coverImage,

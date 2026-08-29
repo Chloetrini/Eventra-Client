@@ -50,7 +50,7 @@ const HeroSec: React.FC = () => {
               Start selling – it's free →
             </Button>
           </Link>
-          <Link to="/features" className="w-full sm:w-auto">
+          <Link to="/contact" className="w-full sm:w-auto">
             <Button variant="outline" size="lg" className="w-full sm:w-auto px-16 py-6 text-base font-semibold rounded-xl border-2 hover:bg-accent/50 transition-colors">
               Talk to us
             </Button>

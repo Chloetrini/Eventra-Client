@@ -3,10 +3,20 @@ import { api } from "@/lib/api";
 // ---------------------------------------------------------------------
 // Update the signed-in user's profile — PATCH /users/profile
 // ---------------------------------------------------------------------
+export type CurrencyPreference = "Naira" | "Dollar" | "Cedis" | "Pound";
+
 export async function updateProfile(payload: {
   fullname?: string;
   phone?: string;
   city?: string;
+  // The signed-in user's own display currency — available to every role
+  // (attendee, organizer, admin), not attendee-only. The backend already
+  // accepts this on the same endpoint (see updateProfile,
+  // user.controller.ts) and every price-showing page already reads it
+  // back via resolveViewerCurrency (lib/viewerCurrency.ts) — this was
+  // just never exposed as a control on this side. Display-only: never
+  // converts or rewrites any stored price.
+  currencyPreference?: CurrencyPreference;
   currentPassword?: string;
   newPassword?: string;
 }) {

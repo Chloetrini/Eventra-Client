@@ -15,6 +15,7 @@ const OrganisationForm = () => {
     // same form instance as the layout — no local useForm here
     const {
         register,
+        control,
         formState: { errors },
     } = useFormContext<OnboardingValues>()
 
@@ -88,6 +89,7 @@ const OrganisationForm = () => {
                             classname="w-full"
                             borderStyle="onboarding"
                             register={register}
+                            control={control}
                             options={categoryOptions}
                             disabled={categoriesLoading || categoriesError}
                         />
@@ -115,6 +117,7 @@ const OrganisationForm = () => {
                             classname="w-full z-0"
                             borderStyle="onboarding"
                             register={register}
+                            control={control}
                             options={nigerianStates}
                         />
                     </span>

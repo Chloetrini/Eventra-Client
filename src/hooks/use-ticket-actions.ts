@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   rsvpFreeEvent,
   initializeCheckout,
-  requestTicketRefund,
+  createRefundRequest,
   cancelReservation,
 } from "@/lib/tickets-api";
 
@@ -29,8 +29,22 @@ export function useInitializeCheckout() {
 export function useRequestTicketRefund() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ ticketId, reason }: { ticketId: string; reason?: string }) =>
-      requestTicketRefund(ticketId, reason),
+    mutationFn: ({
+      ticketId,
+      reason,
+      description,
+      requestedResolution,
+      evidence,
+      additionalInformation,
+    }: {
+      ticketId: string;
+      reason: string;
+      description: string;
+      requestedResolution: string;
+      evidence: { url: string | null }[];
+      additionalInformation: string;
+    }) =>
+      createRefundRequest(ticketId, reason, description, requestedResolution, evidence, additionalInformation),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["my-tickets"] }),
   });
 }

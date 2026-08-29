@@ -45,7 +45,7 @@ export function FeaturedEventCard({ event, onGetTickets }: FeaturedEventCardProp
         </p>
 
         <div className="mt-2 flex flex-wrap items-center gap-[24px]">
-          <span className="md:text-[20px] text-[18px] font-[700] font-mono text-foreground">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice)}</span>
+          <span className="md:text-[20px] text-[18px] font-[700] font-mono text-foreground">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice, event.currency)}</span>
           <Button
             onClick={() => onGetTickets?.(event.slug)}
             className="bg-[#0F6E56] hover:bg-emerald-800 w-[122px] h-[42px] font-[700] text-[15px]"

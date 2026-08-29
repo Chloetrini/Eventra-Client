@@ -1,7 +1,7 @@
 import { useFormContext, useWatch } from "react-hook-form"
 import { useLocation } from "react-router"
 import { stepsFlow } from "@/components/onboarding/sidebar"
-import { ORGANISATION_FIELDS, BANK_FIELDS, type OnboardingValues } from "@/lib/schema"
+import { ORGANISATION_FIELDS, BANK_FIELDS, VERIFICATION_FIELDS, type OnboardingValues } from "@/lib/schema"
 
 /**
  * Shared by the sidebar and the mobile drawer so clicking a step directly
@@ -37,6 +37,12 @@ export const useStepGuard = () => {
             if (i === 1) {
                 if (bankUntouched) continue // untouched bank step = legitimately skipped
                 const ok = await trigger([...BANK_FIELDS])
+                if (!ok) return false
+            }
+            if (i === 2) {
+                // Verification documents are required (unlike bank details),
+                // so there's no "untouched = skipped" escape hatch here.
+                const ok = await trigger([...VERIFICATION_FIELDS])
                 if (!ok) return false
             }
         }

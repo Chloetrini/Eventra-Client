@@ -135,6 +135,7 @@ export function EventsTable({ events, onEventDeleted }: EventsTableProps) {
                     eventId={event._id}
                     eventTitle={event.eventTitle}
                     status={event.status}
+                    startDate={event.date}
                     onDeleted={() => onEventDeleted?.(event._id)}
                   />
                 </TableCell>

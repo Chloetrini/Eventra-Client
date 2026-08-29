@@ -162,7 +162,15 @@ export const eventSchema = z.object({
     z.null(),
   ]),
   coverImage: z.string().optional(),
-  venue: eventVenueSchema,
+  // Optional to match the backend model exactly: "Physical venue — absent
+  // when isOnline is true" (see IEventVenue's own comment in the backend's
+  // models/event.ts). Every existing card/detail component reads
+  // event.venue.name/.city unconditionally though, so leaving this
+  // genuinely undefined would just trade "the whole list fails to parse"
+  // for "the app crashes rendering this one card" — the .transform below
+  // fills in a placeholder venue for online events instead, so this stays
+  // a data-shape fix and none of those components need to change.
+  venue: eventVenueSchema.optional(),
   startDate: z.string(),
   endDate: z.string().optional(),
   minPrice: z.number().min(0),
@@ -191,6 +199,16 @@ export const eventSchema = z.object({
   relatedEventSlugs: z.array(z.string()).optional(),
   location: z.any().optional(),
   organizer: z.any().optional(),
+  // Not a real per-event backend field — every list/detail endpoint that
+  // returns events (listPublicEvents, getSpotlightEvents, getEventBySlug)
+  // now also returns a top-level `currency` alongside the event(s): the
+  // viewer's own currencyPreference (or the platform default) that every
+  // price on this response has already been converted into. The fetch
+  // layer (events-api.ts) denormalizes that onto each event object so
+  // every card/detail component can format its price in the right
+  // currency without needing the raw API response threaded through as a
+  // separate prop. See lib/viewerCurrency.ts on the backend.
+  currency: z.enum(["Naira", "Dollar", "Cedis", "Pound"]).optional(),
 }).transform((event) => {
   // Derive BOTH a display name and a real ID from the single raw `category` value.
   let categoryName = "Uncategorized";
@@ -205,6 +223,10 @@ export const eventSchema = z.object({
 
   return {
     ...event,
+    // See the venue field's comment above — an online event legitimately
+    // has no venue from the backend; this keeps every existing
+    // event.venue.name/.city read site working unchanged.
+    venue: event.venue ?? { name: "Online event", address: "", city: "Online", state: "" },
     category: categoryName,
     categoryId,
   };
@@ -255,7 +277,29 @@ export const bankSchema = z.object({
 })
 
 /**
- * STEP 3 — Review. The terms checkbox gates the final submit.
+ * STEP 3 — Verification documents. All three required — the backend
+ * hard-requires cacCertificateUrl/directorIdUrl/proofOfAddressUrl before an
+ * organizer profile can be submitted for approval
+ * (submitOrganizerProfileForReview's REQUIRED_FOR_SUBMISSION check), so the
+ * form has to require them too or Continue would look enabled right up
+ * until the submit call fails.
+ *
+ * The matching *PublicId fields aren't validated — they're just carried
+ * through form state so this step can send them along on re-upload for
+ * cleanup (see upsertOrganizerProfile's "replace deletes the old
+ * Cloudinary file" behavior).
+ */
+export const verificationSchema = z.object({
+  cacCertificateUrl: z.string().min(1, "Please upload your CAC certificate"),
+  cacCertificatePublicId: z.string().optional(),
+  directorIdUrl: z.string().min(1, "Please upload a director's government ID"),
+  directorIdPublicId: z.string().optional(),
+  proofOfAddressUrl: z.string().min(1, "Please upload a proof of address"),
+  proofOfAddressPublicId: z.string().optional(),
+})
+
+/**
+ * STEP 4 — Review. The terms checkbox gates the final submit.
  */
 export const termsSchema = z.object({
   terms: z.boolean().refine((checked) => checked === true, {
@@ -265,6 +309,7 @@ export const termsSchema = z.object({
 
 export const onboardingSchema = organisationSchema
   .merge(bankSchema)
+  .merge(verificationSchema)
   .merge(termsSchema)
   .superRefine((data, ctx) => {
     const { accountHolderName, bank, accountNumber } = data
@@ -311,6 +356,12 @@ export const ORGANISATION_FIELDS = [
 ] as const satisfies Path<OnboardingValues>[]
 
 export const BANK_FIELDS = ["accountHolderName", "bank", "accountNumber"] as const satisfies Path<OnboardingValues>[]
+
+export const VERIFICATION_FIELDS = [
+  "cacCertificateUrl",
+  "directorIdUrl",
+  "proofOfAddressUrl",
+] as const satisfies Path<OnboardingValues>[]
 
 
 export const attendeeRegisterSchema = z
@@ -362,6 +413,20 @@ export const resetPasswordSchema = z.object({
 });
 
 export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
+
+// setPassword (invited-admin first-login flow) — no email/otp, just the
+// same password strength rule as resetPasswordSchema above.
+export const setPasswordSchema = z.object({
+  newPassword: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
+    .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
+    .regex(/\d/, { message: "Password must contain at least one number" })
+    .regex(/[!@#$%^&*(),.?":{}|<>]/, { message: "Password must contain at least one special character" }),
+});
+
+export type SetPasswordValues = z.infer<typeof setPasswordSchema>;
 export const verifyEmailSchema = z.object({
   email: z.string().email({ message: "Enter a valid email address" }),
   otp: z.string().length(6, { message: "OTP must be 6 digits long" }),
@@ -598,7 +663,7 @@ export const eventFormSchema = eventTypeSchema
       })
     }
 
-// Refund policy — type required if switch is on, daysBefore required only for that specific type
+    // Refund policy — type required if switch is on, daysBefore required only for that specific type
     if (data.hasRefundPolicy) {
       if (!data.refundPolicyType) {
         ctx.addIssue({
@@ -659,3 +724,81 @@ export const DETAILS_FIELDS: Path<EventFormValues>[] = [
   "refundPolicyType",
   "refundDaysBefore",
 ]
+
+export const refundsSchema = z.object({
+  reason: z
+    .string()
+    .min(1, "Please select a reason"),
+
+  description: z
+    .string()
+    .trim()
+    .min(20, "Please provide more details about what happened")
+    .max(2000, "Description cannot exceed 2000 characters"),
+
+  requestedResolution: z
+    .string()
+    .min(1, "Please select a requested resolution"),
+
+  evidence: z
+    .array(z.object({ url: z.string().nullable() }))
+    .min(1, "Please upload at least one piece of evidence")
+    .max(3, "You can upload a maximum of 3 screenshots")
+    .refine(
+      (evidence) => evidence.some((item) => !!item.url),
+      "Please upload at least one piece of evidence"
+    ),
+
+  additionalInformation: z
+    .string()
+    .trim()
+    .max(
+      2000,
+      "Additional information cannot exceed 2000 characters"
+    ),
+})
+
+export type RefundsValues = z.infer<typeof refundsSchema>
+
+export const REFUNDS_FIELDS = [
+  "reason",
+  "description",
+  "requestedResolution",
+  "evidence",
+  "additionalInformation",
+] as const satisfies Path<RefundsValues>[]
+
+export const reportSchema = z.object({
+  category: z
+    .string()
+    .min(1, "Please select a category"),
+
+  reason: z
+    .string()
+    .trim()
+    .min(20, "Please provide more details about what happened")
+    .max(2000, "Reason cannot exceed 2000 characters"),
+
+  evidence: z
+    .array(z.object({ url: z.string().nullable() }))
+    .min(1, "Please upload at least one piece of evidence")
+    .max(3, "You can upload a maximum of 3 screenshots")
+    .refine(
+      (evidence) => evidence.some((item) => !!item.url),
+      "Please upload at least one piece of evidence"
+    ),
+
+  additionalInformation: z
+    .string()
+    .trim()
+    .max(2000, "Additional information cannot exceed 2000 characters"),
+})
+
+export type ReportValues = z.infer<typeof reportSchema>
+
+export const REPORT_FIELDS = [
+  "category",
+  "reason",
+  "evidence",
+  "additionalInformation",
+] as const satisfies Path<ReportValues>[]

@@ -137,7 +137,7 @@ export function EventCard({
         </Tooltip>
 
         <div className="mt-auto flex items-center justify-between pt-8 pb-2">
-          <span className="font-[16px] font-mono text-foreground font-[700]">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice)} </span>
+          <span className="font-[16px] font-mono text-foreground font-[700]">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice, event.currency)} </span>
           <Link
             to={`/events/${event.slug}`}
             aria-label={`View ${event.title}`}

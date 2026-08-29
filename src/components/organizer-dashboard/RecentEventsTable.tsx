@@ -7,6 +7,9 @@ interface Event {
   title: string;
   subtitle?: string;
   date: string;
+  // Raw ISO start date — needed by EventActionsMenu to know whether a
+  // live event is still inside the edit cutoff window.
+  startDate: string;
   sold: string;
   status: 'Live' | 'Sold out' | 'Draft' | 'Pending' | 'Past' | 'Rejected' | 'Cancelled' | 'Postponed';
   imageUrl?: string;
@@ -91,7 +94,7 @@ const RecentEventsTable: React.FC<RecentEventsTableProps> = ({ events, onViewAll
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <EventActionsMenu eventId={event.id} eventTitle={event.title} status={event.status} />
+                  <EventActionsMenu eventId={event.id} eventTitle={event.title} status={event.status} startDate={event.startDate} />
                 </td>
               </tr>
             ))}

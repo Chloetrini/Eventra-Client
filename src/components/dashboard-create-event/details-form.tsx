@@ -210,6 +210,7 @@ const DetailsForm = () => {
                             classname="w-full"
                             borderStyle="createEvent"
                             register={register}
+                            control={control}
                             options={["All Ages", "18+", "21+"]} />
 
                     </div>

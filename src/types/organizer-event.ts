@@ -51,9 +51,22 @@ export interface OrganizerEventDetails {
    * cancelEvent/postponeEvent guards. */
   canCancel: boolean;
   canPostpone: boolean;
-  /** Only a draft or rejected event can actually be edited — mirrors the
-   * backend's EDITABLE_STATUSES guard on PATCH /events/:id. A live/pending/
-   * postponed event fails that save with a 400, so the UI should stop the
-   * organizer before they enter the wizard, not after. */
+  /** Whether the Edit button should be enabled at all. True for a draft or
+   * rejected event (always), and also true for a live approved/postponed
+   * event that hasn't yet crossed the 3-day-before-start cutoff — mirrors
+   * the backend's EDITABLE_STATUSES / LIVE_EDITABLE_STATUSES +
+   * isPastLiveEditCutoff guards on PATCH /events/:id. A pending-approval or
+   * cancelled event (or a live one past its cutoff) fails that save with a
+   * 400, so the UI should stop the organizer before they enter the wizard,
+   * not after. */
   canEdit: boolean;
+  /** True when canEdit is true because the event is currently LIVE
+   * (approved/postponed) rather than a draft/rejected one — lets the UI
+   * show "you're editing a live event, attendees will be notified"
+   * messaging and swap "Submit for review" for "Save changes". */
+  isLiveEdit: boolean;
+  /** Set only when the event is live (approved/postponed) but past the
+   * 3-day cutoff — the specific reason the Edit button is disabled, to
+   * show instead of a generic message. */
+  editBlockedReason?: string;
 }

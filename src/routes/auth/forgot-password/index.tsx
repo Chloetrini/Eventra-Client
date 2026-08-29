@@ -36,7 +36,12 @@ export default function ForgotPassword() {
     onSuccess: (data, variables) => {
       toast.success(data?.message || "Password reset OTP sent.");
 
-      navigate(authPath("reset-password", isOrganizer), {
+      // Send them to the "check your email" confirmation screen first —
+      // NOT straight to reset-password. Jumping straight there let anyone
+      // set a new password without ever entering the OTP that was just
+      // emailed to them, since reset-password has no way to collect an
+      // OTP that isn't already sitting in navigation state.
+      navigate(authPath("check-email", isOrganizer), {
         state: {
           email: variables.email,
         },

@@ -21,7 +21,7 @@ const PAGE_TITLES: Record<string, string> = {
 
 const LayoutSkeleton = () => (
   <div className="flex h-screen bg-background animate-pulse">
-    <div className="hidden lg:flex w-64 bg-gray-800 h-full p-4 flex-col gap-4 shrink-0">
+    <div className="hidden lg:flex w-[295px] bg-gray-800 h-full p-4 flex-col gap-4 shrink-0">
       <div className="h-8 bg-gray-700 rounded w-3/4" />
       <div className="flex-1 space-y-2">
         {[1, 2, 3, 4, 5, 6].map((i) => (

@@ -42,9 +42,9 @@ export default function Attendees() {
     queryFn: () => fetchEventAttendees(selectEventId),
     enabled: Boolean(selectEventId),
   });
-  const { status } = useOrganizerStatus();
-  const { bankStatus } = useOrganizerBankStatus();
-  const { isProfileComplete } = useOrganizerProfileComplete();
+  const { status, isLoading: statusLoading } = useOrganizerStatus();
+  const { bankStatus, isLoading: bankStatusLoading } = useOrganizerBankStatus();
+  const { isProfileComplete, isLoading: profileCompleteLoading } = useOrganizerProfileComplete();
 
   const handleEventChange = (eventId: string | null) => {
     if (!eventId) return;
@@ -103,10 +103,15 @@ export default function Attendees() {
 
   return (
     <div className="space-y-6">
-      <AccountReviewBanner
-        status={status}
-        bankStatus={bankStatus}
-        isProfileComplete={isProfileComplete} />
+      {/* These three profile queries default to "not verified yet" while
+          in flight — see the same fix in dashboard/overview/index.tsx —
+          so this waits for all three before rendering the banner. */}
+      {!statusLoading && !bankStatusLoading && !profileCompleteLoading && (
+        <AccountReviewBanner
+          status={status}
+          bankStatus={bankStatus}
+          isProfileComplete={isProfileComplete} />
+      )}
       <div>
         <p className="text-[16px] min-[400px]:text-sm lg:text-[16px] font-medium tracking-wide uppercase text-[#0A4F41] dark:text-[#4ADE80]">
           Manage

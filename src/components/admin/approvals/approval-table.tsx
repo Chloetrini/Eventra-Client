@@ -1,3 +1,4 @@
+
 import { useState } from "react"
 import ActionBtn from "@/components/ui/action-btn"
 import { formatRequestedAgo, formatNaira } from "@/lib/utils"
@@ -342,7 +343,10 @@ const ApprovalTable = ({ activeTab, events, organizer, promotions }: ApprovalTab
               <p>{org.name}</p>
             </div>
             <p>{org.email}</p>
-            <p className="font-bold">
+            <p
+              className="font-bold truncate"
+              title={formatBankDetails(org.details?.bankDetails?.bankName, org.details?.bankDetails?.accountNumber)}
+            >
               {formatBankDetails(org.details?.bankDetails?.bankName, org.details?.bankDetails?.accountNumber)}
             </p>
             <p className="text-muted-foreground">

@@ -24,9 +24,9 @@ import { CurrencyPreference } from "@/components/profile-settings/CurrencyPrefer
 
 export default function Settings() {
   const queryClient = useQueryClient();
-  const { status: organizerStatus } = useOrganizerStatus();
-  const { bankStatus } = useOrganizerBankStatus();
-  const { isProfileComplete } = useOrganizerProfileComplete();
+  const { status: organizerStatus, isLoading: statusLoading } = useOrganizerStatus();
+  const { bankStatus, isLoading: bankStatusLoading } = useOrganizerBankStatus();
+  const { isProfileComplete, isLoading: profileCompleteLoading } = useOrganizerProfileComplete();
 
   const { user, setUser } = useAuth();
   const uploadAvatarMutation = useUploadAvatar();
@@ -155,9 +155,14 @@ export default function Settings() {
 
   return (
     <div className="space-y-6">
-      <AccountReviewBanner status={organizerStatus}
-        bankStatus={bankStatus}
-        isProfileComplete={isProfileComplete} />
+      {/* These three profile queries default to "not verified yet" while
+          in flight — see the same fix in dashboard/overview/index.tsx —
+          so this waits for all three before rendering the banner. */}
+      {!statusLoading && !bankStatusLoading && !profileCompleteLoading && (
+        <AccountReviewBanner status={organizerStatus}
+          bankStatus={bankStatus}
+          isProfileComplete={isProfileComplete} />
+      )}
 
       <div>
         <p className="text-[16px] font-medium font-space tracking-wide text-[#0F6E56] dark:text-[#4ADE80]">

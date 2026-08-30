@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import {
   Table,
   TableBody,
@@ -36,6 +37,8 @@ const TYPE_STYLES: Record<Event["EventType"], string> = {
 
 
 export function EventsTable({ events, onEventDeleted }: EventsTableProps) {
+  const navigate = useNavigate();
+
   return (
     <div className="overflow-x-auto border border-border rounded-xl ">
       <Table className="min-w-[800px]">
@@ -77,7 +80,18 @@ export function EventsTable({ events, onEventDeleted }: EventsTableProps) {
             </TableRow>
           ) : (
             events.map((event) => (
-              <TableRow key={event._id} className="h-[85px]">
+              <TableRow
+                key={event._id}
+                className="h-[85px] cursor-pointer hover:bg-accent/40 transition-colors"
+                // Previously the only way into an event's own details page
+                // was the "..." menu's "View details" item (which navigates
+                // to this same URL — see event-actions-menu.tsx) — the row
+                // itself did nothing. Now the row is clickable too, same as
+                // every admin table; the actions cell below still stops the
+                // click from bubbling here, so the menu's own buttons and
+                // links keep working exactly as before.
+                onClick={() => navigate(`/dashboard/events/${event._id}`)}
+              >
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <img
@@ -130,7 +144,7 @@ export function EventsTable({ events, onEventDeleted }: EventsTableProps) {
                   </Badge>
                 </TableCell>
 
-                <TableCell>
+                <TableCell onClick={(e) => e.stopPropagation()}>
                   <EventActionsMenu
                     eventId={event._id}
                     eventTitle={event.eventTitle}

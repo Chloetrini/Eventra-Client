@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { UI_ASSETS } from "@/lib/assets";
 import { Format, shortEventNo } from "@/lib/utils";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import type { Event } from "@/types/event-types";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -13,6 +13,7 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
   events,
 }) => {
   const DISPLAY_EVENTS = events.slice(0, 3);
+  const navigate = useNavigate();
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
@@ -43,7 +44,16 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
         return (
           <div
             key={event.slug}
-            className="absolute w-full bg-white rounded-2xl overflow-hidden shadow-xl transition-all duration-500 ease-in-out"
+            onClick={() => navigate(`/events/${event.slug}`)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                navigate(`/events/${event.slug}`);
+              }
+            }}
+            className="absolute w-full bg-white rounded-2xl overflow-hidden shadow-xl transition-all duration-500 ease-in-out cursor-pointer"
             style={{
               top: isMiddle ? "8px" : "16px",
               right: isMiddle ? "-6px" : "-12px",
@@ -62,7 +72,16 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
       <AnimatePresence mode="wait">
         <motion.div
           key={activeIndex}
-          className="absolute w-full bg-white rounded-2xl overflow-hidden shadow-2xl"
+          onClick={() => navigate(`/events/${DISPLAY_EVENTS[activeIndex].slug}`)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              navigate(`/events/${DISPLAY_EVENTS[activeIndex].slug}`);
+            }
+          }}
+          className="absolute w-full bg-white rounded-2xl overflow-hidden shadow-2xl cursor-pointer"
           style={{ zIndex: 30, top: 0, right: 0 }}
           initial={{ x: "100%", opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
@@ -129,6 +148,7 @@ const CardContent: React.FC<{ event: Event }> = ({ event }) => (
         </div>
         <Link
           to={`/events/${event.slug}`}
+          onClick={(e) => e.stopPropagation()}
           className="px-4 py-2 bg-[#0F6E56] hover:bg-[#0A4F41] text-white font-bold text-sm rounded-lg transition-colors font-geist"
         >
           Get tickets

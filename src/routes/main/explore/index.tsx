@@ -4,7 +4,7 @@ import { useEvents, useCategories, useSpotlightEvents } from "@/hooks/use-event"
 import { EventGrid } from "@/components/events/event-grid";
 import { FeaturedEventsCarousel } from "@/components/events/featured-event-carousel";
 import { FilterSidebar } from "@/components/events/filters/filter-sidebar";
-import { type EventFilters } from "@/types/event-types";
+import { DEFAULT_FILTERS, type EventFilters } from "@/types/event-types";
 import { Button } from "@/components/ui/button";
 import { TopBarFilter } from "@/components/events/filters/filter-topbar";
 import { useEffect } from "react";
@@ -35,6 +35,24 @@ export default function ExplorePage() {
   // not the only place a promoted event appears.
   const rest = events;
   const { savedIds, toggleSave } = useSavedEvents();
+
+  // Spotlight is a "browse normally" thing, not a search/filter result —
+  // it should only show when the visitor is just browsing with nothing
+  // narrowed down. The moment ANY filter is active — a typed search, a
+  // category checkbox, a price/date/access pick, or a state other than
+  // "All Nigeria" — the carousel above the grid hides so it doesn't show
+  // an unrelated promoted event (e.g. a Tech & Startups spotlight event
+  // while "Arts & Theatre" is checked) sitting above filtered results
+  // that don't match it. Previously this only checked filters.search, so
+  // picking a category left the carousel showing regardless of category
+  // match.
+  const isFiltering =
+    Boolean(filters.search) ||
+    filters.categories.length > 0 ||
+    filters.when !== DEFAULT_FILTERS.when ||
+    filters.price !== DEFAULT_FILTERS.price ||
+    filters.access !== DEFAULT_FILTERS.access ||
+    Boolean(filters.state);
 
   const stateLabel = filters.state || "All Nigeria";
   const monthLabel = new Date().toLocaleString("en-NG", {
@@ -99,7 +117,7 @@ export default function ExplorePage() {
         </div>
 
         <main className="min-w-0 space-y-6">
-          {featured.length > 0 && (
+          {featured.length > 0 && !isFiltering && (
             <FeaturedEventsCarousel
               events={featured}
               onGetTickets={(slug) => navigate(`/events/${slug}`)}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,8 @@ import {
 import { STATES, type State } from "@/types/event-types";
 import { DATE_WINDOWS, type DateWindow } from "@/types/event-types"
 import { SORT_OPTIONS, type SortOption, ACCESS_OPTIONS } from "@/types/event-types";
+import { useEventSearchSuggestions } from "@/hooks/use-event-search-suggestions";
+import { EventSearchSuggestions } from "@/components/search/event-search-suggestions";
 type TopBarProps = {
     searchValue: string;
     stateValue: string;
@@ -38,6 +41,15 @@ export function TopBarFilter({
     debounceMs = 300,
 }: TopBarProps) {
     const [local, setLocal] = useState(searchValue);
+    // Suggestions dropdown — same reusable EventSearchSuggestions/
+    // useEventSearchSuggestions pieces built for the home page hero
+    // search, wired up here per Chloe's ask to reuse it on Explore too.
+    // Runs off `local` (the immediate typed value, its own internal
+    // 300ms debounce) rather than the already-debounced `searchValue`
+    // filter, so suggestions feel responsive while typing.
+    const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+    const navigate = useNavigate();
+    const { suggestions, isLoading: suggestionsLoading } = useEventSearchSuggestions(local);
 
     useEffect(() => {
         setLocal(searchValue);
@@ -50,6 +62,16 @@ export function TopBarFilter({
         return () => clearTimeout(timer);
     }, [local, searchValue, searchOnChange, debounceMs]);
 
+    const goToSuggestedEvent = (slug: string) => {
+        setSuggestionsOpen(false);
+        navigate(`/events/${slug}`);
+    };
+
+    const seeAllResults = () => {
+        setSuggestionsOpen(false);
+        searchOnChange(local);
+    };
+
     return (
         <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-3 w-full justify-between  ">
             <div className="relative w-full md:min-w-[240px] md:max-w-[467px]">
@@ -58,9 +80,20 @@ export function TopBarFilter({
                     type="search"
                     value={local}
                     onChange={(e) => setLocal(e.target.value)}
+                    onFocus={() => setSuggestionsOpen(true)}
+                    onBlur={() => setSuggestionsOpen(false)}
                     placeholder={placeholder}
                     className="pl-9 w-full !h-[42px] text-[13px] md:[15px]"
                 />
+                {suggestionsOpen && (
+                    <EventSearchSuggestions
+                        query={local}
+                        suggestions={suggestions}
+                        isLoading={suggestionsLoading}
+                        onSelectEvent={goToSuggestedEvent}
+                        onSeeAll={seeAllResults}
+                    />
+                )}
             </div>
             <div className="md:flex gap-2 grid grid-cols-2">
                 <Select

@@ -54,7 +54,7 @@ export default function AdminRevenuePage() {
             <Skeleton className="h-8 w-24 mt-2" />
           ) : (
             <p className="text-xl min-[400px]:text-[34px] font-bold leading-tight min-[400px]:leading-[38px] tracking-wide text-[#000000] mt-2 font-space">
-              ₦{formatCompactNaira(data.summary.platformRevenue)}
+              {formatCompactNaira(data.summary.platformRevenue, data.currency)}
             </p>
           )}
           {
@@ -74,7 +74,7 @@ export default function AdminRevenuePage() {
             <Skeleton className="h-8 w-24 mt-2" />
           ) : (
             <p className="text-xl min-[400px]:text-[34px] font-bold text-[#000000] leading-tight min-[400px]:leading-[38px] tracking-wide mt-2 font-space">
-               ₦{formatCompactNaira(data.summary.commission)}
+               {formatCompactNaira(data.summary.commission, data.currency)}
             </p>
           )}
           <p className="text-xs min-[400px]:text-[16px] text-[#6E6577] mt-2">
@@ -90,7 +90,7 @@ export default function AdminRevenuePage() {
             <Skeleton className="h-8 w-24 mt-2" />
           ) : (
             <p className="text-xl min-[400px]:text-[34px] font-bold text-[#000000] leading-tight min-[400px]:leading-[38px] tracking-wide mt-2 font-space">
-               ₦{formatCompactNaira(data.summary.promotions)}
+               {formatCompactNaira(data.summary.promotions, data.currency)}
             </p>
           )}
           <p className="text-xs min-[400px]:text-[16px] text-[#6E6577] mt-2">
@@ -106,7 +106,7 @@ export default function AdminRevenuePage() {
             <Skeleton className="h-8 w-24 mt-2" />
           ) : (
             <p className="text-xl min-[400px]:text-[34px] font-bold text-[#000000] leading-tight min-[400px]:leading-[38px] tracking-wide mt-2 font-space">
-               ₦{formatCompactNaira(data.summary.grossTicketSales)}
+               {formatCompactNaira(data.summary.grossTicketSales, data.currency)}
             </p>
           )}
           <p className="text-xs min-[400px]:text-[16px] text-[#6E6577] mt-2">

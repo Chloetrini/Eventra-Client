@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { type Event } from "@/types/event-types";
 import { type TicketTier } from "@/types/ticket-tiers";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, CURRENCY_SYMBOLS } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -11,11 +11,13 @@ import { Button } from "@/components/ui/button";
 const TierRow = ({
   tier,
   quantity,
+  currency,
   onIncrement,
   onDecrement,
 }: {
   tier: TicketTier;
   quantity: number;
+  currency?: string;
   onIncrement: () => void;
   onDecrement: () => void;
 }) => {
@@ -40,7 +42,7 @@ const TierRow = ({
             {isSoldOut ? (
               <span className="text-[#c14747] dark:text-[#FFC4C4]">Sold out</span>
             ) : (
-              formatPrice(tier.unitPrice)
+              formatPrice(tier.unitPrice, currency)
             )}
           </p>
         </div>
@@ -91,6 +93,14 @@ export const PaidEventTicket = ({
   slug?: string
 }) => {
   const navigate = useNavigate();
+  // event.currency is denormalized onto every event by the fetch layer
+  // (events-api.ts) from the backend's getEventBySlug response — every
+  // price on this event (event.minPrice and each ticket type's price) has
+  // already been converted into it server-side. Was never read here, so
+  // this whole card always rendered with the hardcoded ₦ default instead
+  // of the viewer's actual currency.
+  const currency = event.currency ?? "Naira";
+  const currencySymbol = CURRENCY_SYMBOLS[currency] ?? "₦";
 
   // Helper to ensure a consistent tier key (_id or id)
   const getTierId = (tier: any, index: number): string | number =>
@@ -149,7 +159,8 @@ export const PaidEventTicket = ({
         subtotal,
         serviceFee,
         total,
-        slug
+        slug,
+        currency,
       },
     });
   };
@@ -180,6 +191,7 @@ export const PaidEventTicket = ({
               key={key}
               tier={tier}
               quantity={quantities[key] ?? 0}
+              currency={currency}
               onIncrement={() => increment(key)}
               onDecrement={() => decrement(key)}
             />
@@ -190,18 +202,18 @@ export const PaidEventTicket = ({
       <div className="space-y-2 text-sm">
         <div className="flex items-center justify-between text-muted-foreground">
           <span>Subtotal</span>
-          <span>{subtotal === 0 ? "₦0" : formatPrice(subtotal)}</span>
+          <span>{subtotal === 0 ? `${currencySymbol}0` : formatPrice(subtotal, currency)}</span>
         </div>
         <div className="flex items-center justify-between text-muted-foreground">
           <span>Service fee ({feePercent}%)</span>
-          <span>{serviceFee === 0 ? "₦0" : formatPrice(serviceFee)}</span>
+          <span>{serviceFee === 0 ? `${currencySymbol}0` : formatPrice(serviceFee, currency)}</span>
         </div>
         <div className="flex items-center justify-between font-bold">
           <span>Total</span>
           {/* formatPrice shows "Free" for a genuinely free tier, which is
               correct everywhere else it's used — but here 0 just means
-              "nothing picked yet" on a paid event, so show ₦0 instead. */}
-          <span>{total === 0 ? "₦0" : formatPrice(total)}</span>
+              "nothing picked yet" on a paid event, so show {currencySymbol}0 instead. */}
+          <span>{total === 0 ? `${currencySymbol}0` : formatPrice(total, currency)}</span>
         </div>
       </div>
       <Button

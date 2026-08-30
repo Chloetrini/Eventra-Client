@@ -6,6 +6,7 @@ import type { AdminUserListItem } from "@/types/admin-users";
 
 interface UsersTableProps {
   users: AdminUserListItem[];
+  currency?: string;
 }
 
 // Same table anatomy as AttendeeList (organizer dashboard's Attendees
@@ -13,7 +14,7 @@ interface UsersTableProps {
 // name/email stacked cell, status pill on the right — so the admin
 // console's Users table reads as the same product rather than a
 // differently-styled screen bolted on.
-export function UsersTable({ users }: UsersTableProps) {
+export function UsersTable({ users, currency }: UsersTableProps) {
   const navigate = useNavigate();
 
   if (users.length === 0) {
@@ -72,19 +73,21 @@ export function UsersTable({ users }: UsersTableProps) {
               </td>
               <td className="px-4 text-[16px] font-medium text-muted-foreground">{user.email}</td>
               <td className="px-4 text-foreground text-[16px]">{user.ordersCount}</td>
-              <td className="px-4 text-foreground text-[16px]">{formatNaira(user.totalSpent)}</td>
+              <td className="px-4 text-foreground text-[16px]">{formatNaira(user.totalSpent, currency)}</td>
               <td className="px-4 text-foreground text-[16px]">
                 {formatDateTime(user.createdAt, "MMM d, yyyy")}
               </td>
               <td className="px-4">
                 <Badge
                   className={
-                    user.isSuspended
+                    user.isDeleted
+                      ? "bg-muted text-muted-foreground hover:bg-muted rounded-[15px] w-[110px] h-[36px] font-semibold text-[13px]"
+                      : user.isSuspended
                       ? "bg-destructive/10 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 rounded-[15px] w-[110px] h-[36px] font-semibold text-[13px]"
                       : "bg-[#E4F1EB] dark:bg-[#0F6E56]/15 text-[#0F6E56] dark:text-[#4ADE80] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15 rounded-[15px] w-[110px] h-[36px] font-semibold text-[13px]"
                   }
                 >
-                  {user.isSuspended ? "SUSPENDED" : "ACTIVE"}
+                  {user.isDeleted ? "DELETED" : user.isSuspended ? "SUSPENDED" : "ACTIVE"}
                 </Badge>
               </td>
             </tr>

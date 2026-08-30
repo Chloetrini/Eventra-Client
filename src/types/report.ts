@@ -53,6 +53,12 @@ export interface EventFlagDetail {
     };
   };
   reports: FlagReportEntry[];
+  // The admin's resolved display currency — event.minPrice above is
+  // already converted into it server-side (see getEventFlagDetail,
+  // admin.controller.ts). Was missing entirely, so the "Ticket price" line
+  // on the flag-detail page always showed ₦ no matter what currency was
+  // selected in Settings.
+  currency: string;
 }
 
 export interface OrganizerFlagDetail {

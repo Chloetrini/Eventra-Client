@@ -642,6 +642,24 @@ const routes = [
                 ],
               },
               {
+                // Promotion requests reachable from the Approvals page's
+                // Promotions tab — a detail-only route (the list itself
+                // lives on the Approvals page, same as events/organizers
+                // there), keyed by the event the promotion belongs to.
+                path: "promotions/:eventId",
+                handle: {
+                  seo: {
+                    title: "Admin Promotion Details | Eventra",
+                    description: "Review a promotion request before moderation.",
+                  },
+                },
+                lazy: async () => {
+                  const { default: Component } =
+                    await import("@/routes/admin/promotions/detail");
+                  return { Component };
+                },
+              },
+              {
                 path: "settings",
                 handle: {
                   seo: {

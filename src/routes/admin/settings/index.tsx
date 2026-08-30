@@ -22,6 +22,7 @@ import { useAuth } from "@/context/auth.context"
 import { useAdminTeam, useDeleteAdmin, useInviteAdmin, useUpdateAdminRole } from "@/hooks/use-admin-team"
 import { usePlatformSettings, useUpdatePlatformSettings } from "@/hooks/use-platform-settings"
 import type { AdminTier } from "@/types/admin-settings"
+import { CurrencyPreference } from "@/components/profile-settings/CurrencyPreference"
 
 interface ToggleSwitchProps {
   checked: boolean
@@ -281,21 +282,20 @@ export default function PlatformSettings() {
     )
   }
 
-  // A currency change re-converts every stored money field platform-wide
-  // (see updatePlatformSettings on the backend) — firing it twice in quick
-  // succession (a double-click, or the Select re-firing onValueChange
-  // while the first request is still in flight) used to be able to apply
-  // a second conversion on top of the first before the settings doc had
-  // even saved the new currency, compounding the rate instead of just
-  // switching it. The backend now rejects an overlapping change outright,
-  // but bailing out here too means it never even gets sent while one is
-  // already in flight — see the `disabled={isSavingSettings}` on the
-  // Select below for the other half of this guard.
+  // NOTE: this is display-only, and safe to fire freely. It used to
+  // re-convert every stored money field platform-wide on every change
+  // (see updatePlatformSettings on the backend for how that mechanism
+  // caused a real currency-corruption incident) — that's retired now.
+  // Changing this only changes the sitewide DEFAULT a viewer sees when
+  // they haven't set their own currencyPreference; nothing stored ever
+  // moves. The `disabled={isSavingSettings}` on the Select below just
+  // avoids two in-flight saves stepping on each other's toast/rollback,
+  // not a data-safety guard.
   const onCurrencyChange = (val: string) => {
     if (isSavingSettings) return
     setCurrency(val)
     updateSettings(
-      { currency: val as "Naira" | "Dollar" | "Cedis" },
+      { currency: val as "Naira" | "Dollar" | "Cedis" | "Pound" },
       {
         onError: (err: Error) => {
           toast.error(err.message || "Could not save currency.")
@@ -362,6 +362,23 @@ export default function PlatformSettings() {
         </p>
       </div>
 
+      {/* My display currency — a personal preference (this admin account
+          only), separate from "Platform Configuration" below which sets
+          the sitewide DEFAULT every viewer without their own preference
+          falls back to. Both use the same four currencies. */}
+      <Card>
+        <CardHeader>
+          <CardTitle>My display currency</CardTitle>
+        </CardHeader>
+        <div className="border mx-4"/>
+        <CardContent className="flex flex-col gap-2">
+          <CurrencyPreference
+            title="Currency"
+            description="Changes how prices show on your own dashboard — Overview, Revenue, Payouts, Refunds. Doesn't affect what other admins or organizers see."
+          />
+        </CardContent>
+      </Card>
+
       {/* Commission rate */}
       <Card>
         <CardHeader>
@@ -402,6 +419,7 @@ export default function PlatformSettings() {
                 <SelectItem value="Naira">Naira (₦)</SelectItem>
                 <SelectItem value="Dollar">Dollar ($)</SelectItem>
                 <SelectItem value="Cedis">Cedis (₵)</SelectItem>
+                <SelectItem value="Pound">Pound (£)</SelectItem>
               </SelectContent>
             </Select>
             {isSavingSettings && (

@@ -255,7 +255,7 @@ const Home: React.FC = () => {
                             <span className="text-lg font-bold font-space text-foreground">
                               {heroEvent.minPrice === 0
                                 ? "Free"
-                                : Format.amount(heroEvent.minPrice)}
+                                : Format.amount(heroEvent.minPrice, heroEvent.currency)}
                             </span>
                             <span className="text-xs text-muted-foreground block font-geist">
                               from Regular

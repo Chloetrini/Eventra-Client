@@ -111,7 +111,7 @@ const Promotions = () => {
 
       <div>
         <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-         Grow
+          Grow
         </p>
         <h2 className="mt-1 flex items-center gap-2 text-lg font-bold">
           <Star className="border border-border rounded-lg bg-[#E4F1EB] size-3 text-[#4A4451] w-[35px] h-[29px] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]" />
@@ -125,7 +125,7 @@ const Promotions = () => {
       {/* Only show this for organizers who haven't finished onboarding — verified/pending organizers don't need it */}
       {showVerifyBanner && organizerStatus === "unverified" && (
         <Alert className="border-[#f1ebdd] bg-[#F4DFB6] dark:border-[#7A4E02]/40 dark:bg-[#7A4E02]/20">
-            <LockKeyhole className="mt-3 text-[#7A4E02] dark:text-[#FBBF24]"/>
+          <LockKeyhole className="mt-3 text-[#7A4E02] dark:text-[#FBBF24]" />
           <AlertTitle className="flex items-center gap-2 text-[#1A1523] dark:text-zinc-50">
             Finish setting up your account
             <Badge className="border-transparent bg-[#E4F1EB] text-[#1A1523] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]">
@@ -167,7 +167,13 @@ const Promotions = () => {
                 disabled={eventsLoading || myEvents.length === 0}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder={eventsLoading ? "Loading your events…" : "Select an event"} />
+                  <SelectValue placeholder={eventsLoading ? "Loading your events…" : "Select an event"}>
+                    {selectedEventId
+                      ? myEvents.find(e => e._id === selectedEventId)
+                        ? `${myEvents.find(e => e._id === selectedEventId)!.eventTitle} — ${myEvents.find(e => e._id === selectedEventId)!.status}`
+                        : selectedEventId
+                      : null}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {myEvents.map(event => (
@@ -248,7 +254,7 @@ const Promotions = () => {
             </Button>
 
             <span className="flex gap-2 justify-center items-center text-xs text-muted-foreground">
-              <CircleAlert size={12}/>
+              <CircleAlert size={12} />
               <p>
                 Payment is via Paystack. Promotions go live once an admin approves.
               </p>

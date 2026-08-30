@@ -12,6 +12,7 @@ export interface RawAdminOrganizerListItem {
   createdAt: string;
   organizerProfile?: {
     businessName?: string;
+    category?: string;
     approvalStatus: "pending" | "approved" | "rejected" | "suspended";
     phone?: string;
     bio?: string;
@@ -97,6 +98,7 @@ function mapOrganizerListItem(raw: RawAdminOrganizerListItem, currency?: string)
     _id: raw._id,
     name,
     email: raw.email,
+    category: profile?.category,
     initials: initialsFrom(name),
     avatarUrl: raw.avatarUrl,
     status: deriveOrganizerStatus(raw),

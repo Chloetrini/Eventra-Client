@@ -206,7 +206,14 @@ function getMyEventCategoryName(category: RealMyEvent["category"]): string {
 
 export async function fetchMyEvents() {
   const res = await api.get("/events/mine");
-  const body = res.body as { events: RealMyEvent[]; meta: unknown };
+  const body = res.body as {
+    events: RealMyEvent[];
+    meta: unknown;
+    // The organizer's own viewer currency — revenueTotal on each event
+    // above is already converted into it server-side (see listMyEvents,
+    // event.controller.ts).
+    currency?: "Naira" | "Dollar" | "Cedis" | "Pound";
+  };
   return body.events.map((e, index) => ({
     _id: e._id,
     eventTitle: e.title ?? "Untitled Event",
@@ -219,6 +226,7 @@ export async function fetchMyEvents() {
     capacity: e.capacity ?? null,
     revenue: e.revenueTotal ?? null,
     status: mapMyEventStatus(e),
+    currency: body.currency ?? "Naira",
   }));
 }
 
@@ -322,6 +330,10 @@ type RealDashboard = {
     isActive: boolean;
   }>;
   payout: { amountDue: number };
+  // The organizer's own viewer currency — revenueTotal/ticketTypes[].price
+  // above are already converted into it server-side (see getEventDashboard,
+  // event.controller.ts).
+  currency?: string;
 };
 
 function getInitials(name: string): string {
@@ -418,6 +430,7 @@ export async function fetchEventDashboard(eventId: string): Promise<OrganizerEve
         : "This event is not promoted yet. Boost it for a featured spot on homepage and explore",
     canCancel: d.event.status === "approved" || d.event.status === "postponed",
     canPostpone: d.event.status === "approved",
+    currency: d.currency,
     ...buildEditability(d.event.status, d.event.startDate),
   };
 }

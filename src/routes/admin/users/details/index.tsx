@@ -130,7 +130,7 @@ export default function AdminUserDetailPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 max-w-[900px]">
         <StatCard label="Total orders" value={String(user.ordersCount)} />
-        <StatCard label="Total spent" value={formatNaira(user.totalSpent)} />
+        <StatCard label="Total spent" value={formatNaira(user.totalSpent, user.currency)} />
         <StatCard
           label="Status"
           value={user.isSuspended ? "SUSPENDED" : "ACTIVE"}
@@ -172,7 +172,7 @@ export default function AdminUserDetailPage() {
                     </td>
                    
                     <td className="px-4 text-foreground text-[16px]">
-                      {formatNaira(order.amount)}
+                      {formatNaira(order.amount, user.currency)}
                     </td>
                      <td className="px-4 text-foreground text-[16px]">
                       {formatDateTime(order.date, "MMM d, yyyy")}

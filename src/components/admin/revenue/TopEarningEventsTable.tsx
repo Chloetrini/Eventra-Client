@@ -3,10 +3,14 @@ import type { TopEarningEvent } from "@/types/revenue";
 
 
 interface TopEarningEventsTableProps {
-    events: TopEarningEvent[]
+    events: TopEarningEvent[];
+    // Already converted server-side into the viewer's currency (see
+    // RevenuePageData.currency) — optional so an older cached response
+    // without it still falls back to Naira.
+    currency?: string;
 }
 
-export default function TopEarningEventsTable({events} : TopEarningEventsTableProps) {
+export default function TopEarningEventsTable({events, currency} : TopEarningEventsTableProps) {
     return (
         <div className="border rounded-lg overflow-x-auto min-w-0 h-full">
             <div className="px-4 min-[400px]:px-6 py-3 min-[400px]:py-4 border-b">
@@ -27,7 +31,7 @@ export default function TopEarningEventsTable({events} : TopEarningEventsTablePr
                        <tr key={event.id} className="border-b last:border-b-0">
                          <td className="py-3 px-4 min-[400px]:px-6 text-xs min-[400px]:text-[16px] font-semibold text-[#6E6577]">{event.eventTitle}</td>
                         <td className="px-4 min-[400px]:px-6 text-xs min-[400px]:text-[16px] text-[#6E6577] font-semibold">{event.organizer}</td>
-                        <td className="px-4 min-[400px]:px-6 font-bold text-xs min-[400px]:text-[20px] text-[#000000] font-space">{formatNaira(event.commission)}</td>
+                        <td className="px-4 min-[400px]:px-6 font-bold text-xs min-[400px]:text-[20px] text-[#000000] font-space">{formatNaira(event.commission, currency)}</td>
                        </tr>
                     ))}
                 </tbody>

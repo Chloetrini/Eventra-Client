@@ -159,7 +159,7 @@ export default function OrganizerEventDetailsRoute() {
 
       <OrganizerEventHero event={event} />
 
-      <EventMetricsGrid metrics={event.metrics} />
+      <EventMetricsGrid metrics={event.metrics} currency={event.currency} />
 
       {/* Main 2-Column Dashboard */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
@@ -168,6 +168,7 @@ export default function OrganizerEventDetailsRoute() {
           <TicketTypesTable
             ticketTypes={event.ticketTypes}
             onEdit={handleEditClick}
+            currency={event.currency}
           />
           <PromotionsCard
             isPromoted={event.isPromoted}

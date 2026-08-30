@@ -6,6 +6,7 @@ import type { AdminUserListItem } from "@/types/admin-users";
 
 interface UsersTableProps {
   users: AdminUserListItem[];
+  currency?: string;
 }
 
 // Same table anatomy as AttendeeList (organizer dashboard's Attendees
@@ -13,7 +14,7 @@ interface UsersTableProps {
 // name/email stacked cell, status pill on the right — so the admin
 // console's Users table reads as the same product rather than a
 // differently-styled screen bolted on.
-export function UsersTable({ users }: UsersTableProps) {
+export function UsersTable({ users, currency }: UsersTableProps) {
   const navigate = useNavigate();
 
   if (users.length === 0) {
@@ -72,7 +73,7 @@ export function UsersTable({ users }: UsersTableProps) {
               </td>
               <td className="px-4 text-[16px] font-medium text-muted-foreground">{user.email}</td>
               <td className="px-4 text-foreground text-[16px]">{user.ordersCount}</td>
-              <td className="px-4 text-foreground text-[16px]">{formatNaira(user.totalSpent)}</td>
+              <td className="px-4 text-foreground text-[16px]">{formatNaira(user.totalSpent, currency)}</td>
               <td className="px-4 text-foreground text-[16px]">
                 {formatDateTime(user.createdAt, "MMM d, yyyy")}
               </td>

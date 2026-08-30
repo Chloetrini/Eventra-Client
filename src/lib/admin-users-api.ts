@@ -16,6 +16,10 @@ export interface FetchAdminUsersParams {
 export interface FetchAdminUsersResult {
   users: AdminUserListItem[];
   meta: AdminUsersListMeta;
+  // The viewer admin's own currency — every user's totalSpent in `users`
+  // is already converted into it server-side, same pattern as every other
+  // admin money page.
+  currency?: string;
 }
 
 // GET /api/v1/admin/users — see listUsers in admin.controller.ts. `status`

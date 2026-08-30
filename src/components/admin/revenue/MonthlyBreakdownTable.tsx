@@ -4,9 +4,13 @@ import type { MonthlyBreakdownRow } from "@/types/revenue";
 
 interface MonthlyBreakdownTableProps {
     rows: MonthlyBreakdownRow[];
+    // Every amount here is already converted server-side into the
+    // viewer's currency (see RevenuePageData.currency) — optional so an
+    // older cached response without it still falls back to Naira.
+    currency?: string;
 }
 
-export default function MonthlyBreakdownTable ({rows} : MonthlyBreakdownTableProps) {
+export default function MonthlyBreakdownTable ({rows, currency} : MonthlyBreakdownTableProps) {
     return (
         <div className="border rounded-lg overflow-x-auto min-w-0">
             <div className="px-4 min-[400px]:px-6 py-3 min-[400px]:py-4 border-b">
@@ -30,16 +34,16 @@ export default function MonthlyBreakdownTable ({rows} : MonthlyBreakdownTablePro
                         <tr key={row.month} className="border-b last:border-b-0">
                             <td className="py-3 min-[400px]:py-5 px-4 min-[400px]:px-8 text-xs min-[400px]:text-[18px] font-bold text-[#000000]">{row.month}</td>
                             <td className="px-4 min-[400px]:px-8 text-[#000000] text-xs min-[400px]:text-[18px] font-bold">
-                                <span className="font-medium text-[#1A1523]">₦ </span>{formatCompactNaira(row.grossSales)}
+                                {formatCompactNaira(row.grossSales, currency)}
                             </td>
                             <td className="px-4 min-[400px]:px-8 text-[#000000] text-xs min-[400px]:text-[18px] font-bold">
-                                <span className="font-medium text-[#1A1523]">₦ </span>{formatCompactNaira(row.commission)}
+                                {formatCompactNaira(row.commission, currency)}
                             </td>
                             <td className="px-4 min-[400px]:px-8 text-[#000000] text-xs min-[400px]:text-[18px] font-bold">
-                                <span className="font-medium text-[#1A1523]">₦ </span>{formatCompactNaira(row.promotion)}
+                                {formatCompactNaira(row.promotion, currency)}
                             </td>
                             <td className="px-4 min-[400px]:px-8 text-[#000000] text-xs min-[400px]:text-[18px] font-bold">
-                                <span className="font-medium text-[#1A1523]">₦ </span>{formatCompactNaira(row.total)}
+                                {formatCompactNaira(row.total, currency)}
                             </td>
                         </tr>
                     ))}

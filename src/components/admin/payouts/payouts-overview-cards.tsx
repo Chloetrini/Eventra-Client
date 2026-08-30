@@ -1,10 +1,16 @@
 import type { AdminPayoutOverview } from "@/lib/api/admin-payouts"
+import { CURRENCY_SYMBOLS } from "@/lib/utils"
 
-function formatShortCurrency(amount: number): string {
-  if (amount >= 1_000_000_000) return `₦${(amount / 1_000_000_000).toFixed(1).replace(/\.0$/, "")}B`
-  if (amount >= 1_000_000) return `₦${(amount / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`
-  if (amount >= 1_000) return `₦${(amount / 1_000).toFixed(1).replace(/\.0$/, "")}K`
-  return `₦${amount.toLocaleString()}`
+// Was hardcoded to ₦ regardless of the admin's currency preference — kept
+// the same B/M/K compacting (the shared formatCompactNaira in lib/utils
+// has no billions tier, and platform-wide totals here can cross into the
+// billions), just parameterized the symbol.
+function formatShortCurrency(amount: number, currency: string = "Naira"): string {
+  const symbol = CURRENCY_SYMBOLS[currency] ?? "₦"
+  if (amount >= 1_000_000_000) return `${symbol}${(amount / 1_000_000_000).toFixed(1).replace(/\.0$/, "")}B`
+  if (amount >= 1_000_000) return `${symbol}${(amount / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`
+  if (amount >= 1_000) return `${symbol}${(amount / 1_000).toFixed(1).replace(/\.0$/, "")}K`
+  return `${symbol}${amount.toLocaleString()}`
 }
 
 interface Props {
@@ -22,7 +28,7 @@ export function PayoutsOverviewCards({ overview, isLoading }: Props) {
             HELD IN ESCROW
           </p>
           <p className="text-[34px] font-space font-bold mt-3 tracking-tight">
-            {isLoading ? "..." : formatShortCurrency(overview?.heldInEscrow ?? 0)}
+            {isLoading ? "..." : formatShortCurrency(overview?.heldInEscrow ?? 0, overview?.currency)}
           </p>
           <p className="text-[16px] text-muted-foreground mt-2">
             Across {overview?.heldInEscrowEventsCount ?? 0} events
@@ -34,7 +40,7 @@ export function PayoutsOverviewCards({ overview, isLoading }: Props) {
             READY TO RELEASE
           </p>
           <p className="text-[34px] font-space font-[700] mt-3 tracking-tight">
-            {isLoading ? "..." : formatShortCurrency(overview?.readyToRelease ?? 0)}
+            {isLoading ? "..." : formatShortCurrency(overview?.readyToRelease ?? 0, overview?.currency)}
           </p>
            <p className="text-[16px] text-muted-foreground mt-2">Events already held</p>
         </div>
@@ -44,7 +50,7 @@ export function PayoutsOverviewCards({ overview, isLoading }: Props) {
             PAID OUT (ALL TIME)
           </p>
           <p className="text-[34px] font-space font-[700] mt-3 tracking-tight">
-            {isLoading ? "..." : formatShortCurrency(overview?.paidOutAllTime ?? 0)}
+            {isLoading ? "..." : formatShortCurrency(overview?.paidOutAllTime ?? 0, overview?.currency)}
           </p>
            <p className="text-[16px] text-muted-foreground mt-2">Since Launch</p>
         </div>
@@ -54,7 +60,7 @@ export function PayoutsOverviewCards({ overview, isLoading }: Props) {
             COMMISSION COLLECTED
           </p>
           <p className="text-[34px] font-space font-[700] mt-3 tracking-tight">
-            {isLoading ? "..." : formatShortCurrency(overview?.commissionCollected ?? 0)}
+            {isLoading ? "..." : formatShortCurrency(overview?.commissionCollected ?? 0, overview?.currency)}
           </p>
            <p className="text-[16px] text-muted-foreground mt-2">Platform earnings</p>
         </div>

@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Alert, AlertTitle, AlertDescription, AlertAction } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { cn, formatDate } from "@/lib/utils"
+import { cn, formatDate, formatNaira } from "@/lib/utils"
 import { fetchMyEvents } from "@/lib/events-api"
 import { useOrganizerStatus } from "@/lib/organizer-api"
 import {
@@ -53,10 +53,6 @@ const PromotionStatusBadge = ({ status }: { status: PromotionStatus }) => {
       {labels[status]}
     </Badge>
   )
-}
-
-const formatNaira = (amount: number) => {
-  return `₦${amount.toLocaleString()}`
 }
 
 const Promotions = () => {
@@ -224,7 +220,7 @@ const Promotions = () => {
                       <p className="mt-1 text-sm text-muted-foreground">{pkg.description}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-[#0A4F41] dark:text-[#4ADE80]">{formatNaira(pkg.priceNaira)}</p>
+                      <p className="font-semibold text-[#0A4F41] dark:text-[#4ADE80]">{formatNaira(pkg.priceNaira, pkg.currency)}</p>
                       {isSelected && (
                         <span className="flex size-4 items-center justify-center rounded-full bg-[#0A4F41] text-[#FFFFFF]">
                           <Check className="size-3" />
@@ -247,7 +243,7 @@ const Promotions = () => {
               {promoteMutation.isPending
                 ? "Starting checkout…"
                 : selectedPackage
-                  ? `Promote for ${formatNaira(selectedPackage.priceNaira)}`
+                  ? `Promote for ${formatNaira(selectedPackage.priceNaira, selectedPackage.currency)}`
                   : "Choose a package"}
             </Button>
 
@@ -318,7 +314,7 @@ const Promotions = () => {
                     </td>
                     <td className="px-(--card-spacing) py-3">
                       <p className="font-bold text-foreground">
-                        {promo.priceNaira !== null ? formatNaira(promo.priceNaira) : "-"}
+                        {promo.priceNaira !== null ? formatNaira(promo.priceNaira, promo.currency) : "-"}
                       </p>
                       {!promo.paid && (
                         <p className="text-xs text-foreground font-bold">awaiting payment</p>

@@ -6,11 +6,9 @@ export interface AdminPayoutOverview {
   readyToRelease: number
   paidOutAllTime: number
   commissionCollected: number
-  // Added alongside the admin currency-conversion wiring — the currency
-  // every amount above is already expressed in (the viewer's own
-  // currencyPreference, or the platform default). See viewerCurrency.ts
-  // on the backend. Optional so this type doesn't break against an older
-  // deployed backend that hasn't shipped the field yet.
+  // The admin's resolved display currency — every amount above is already
+  // converted into this. See resolveViewerCurrency, lib/viewerCurrency.ts
+  // on the backend.
   currency?: string
 }
 
@@ -24,10 +22,9 @@ export interface AwaitingPayoutItem {
   status: "processing" | "ready" | "held"
 }
 
-// BREAKING CHANGE (backend, admin currency-conversion wiring): this
-// endpoint's body used to be a bare AwaitingPayoutItem[]. It's now an
-// object carrying the currency every `amount` is expressed in, same shape
-// as PayoutHistoryResponse below.
+// listAwaitingPayouts (admin.controller.ts) returns { payouts, currency },
+// not a bare array — matches the shape every other admin money endpoint
+// uses to carry the viewer's currency alongside its data.
 export interface AwaitingPayoutsResponse {
   payouts: AwaitingPayoutItem[]
   currency?: string

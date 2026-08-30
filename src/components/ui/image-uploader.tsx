@@ -15,7 +15,7 @@ type ImageUploaderProps = {
   placeholder?: string
   errors?: FieldErrorType | undefined
   isUploading?: boolean
-  variant?: "default" | "avatar"
+  variant?: "default" | "avatar" | "report-evidence" | "refund-evidence"
   value?: string
 }
 

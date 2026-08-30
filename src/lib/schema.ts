@@ -162,7 +162,15 @@ export const eventSchema = z.object({
     z.null(),
   ]),
   coverImage: z.string().optional(),
-  venue: eventVenueSchema,
+  // Optional to match the backend model exactly: "Physical venue — absent
+  // when isOnline is true" (see IEventVenue's own comment in the backend's
+  // models/event.ts). Every existing card/detail component reads
+  // event.venue.name/.city unconditionally though, so leaving this
+  // genuinely undefined would just trade "the whole list fails to parse"
+  // for "the app crashes rendering this one card" — the .transform below
+  // fills in a placeholder venue for online events instead, so this stays
+  // a data-shape fix and none of those components need to change.
+  venue: eventVenueSchema.optional(),
   startDate: z.string(),
   endDate: z.string().optional(),
   minPrice: z.number().min(0),
@@ -191,6 +199,16 @@ export const eventSchema = z.object({
   relatedEventSlugs: z.array(z.string()).optional(),
   location: z.any().optional(),
   organizer: z.any().optional(),
+  // Not a real per-event backend field — every list/detail endpoint that
+  // returns events (listPublicEvents, getSpotlightEvents, getEventBySlug)
+  // now also returns a top-level `currency` alongside the event(s): the
+  // viewer's own currencyPreference (or the platform default) that every
+  // price on this response has already been converted into. The fetch
+  // layer (events-api.ts) denormalizes that onto each event object so
+  // every card/detail component can format its price in the right
+  // currency without needing the raw API response threaded through as a
+  // separate prop. See lib/viewerCurrency.ts on the backend.
+  currency: z.enum(["Naira", "Dollar", "Cedis", "Pound"]).optional(),
 }).transform((event) => {
   // Derive BOTH a display name and a real ID from the single raw `category` value.
   let categoryName = "Uncategorized";
@@ -205,6 +223,10 @@ export const eventSchema = z.object({
 
   return {
     ...event,
+    // See the venue field's comment above — an online event legitimately
+    // has no venue from the backend; this keeps every existing
+    // event.venue.name/.city read site working unchanged.
+    venue: event.venue ?? { name: "Online event", address: "", city: "Online", state: "" },
     category: categoryName,
     categoryId,
   };
@@ -745,3 +767,38 @@ export const REFUNDS_FIELDS = [
   "evidence",
   "additionalInformation",
 ] as const satisfies Path<RefundsValues>[]
+
+export const reportSchema = z.object({
+  category: z
+    .string()
+    .min(1, "Please select a category"),
+
+  reason: z
+    .string()
+    .trim()
+    .min(20, "Please provide more details about what happened")
+    .max(2000, "Reason cannot exceed 2000 characters"),
+
+  evidence: z
+    .array(z.object({ url: z.string().nullable() }))
+    .min(1, "Please upload at least one piece of evidence")
+    .max(3, "You can upload a maximum of 3 screenshots")
+    .refine(
+      (evidence) => evidence.some((item) => !!item.url),
+      "Please upload at least one piece of evidence"
+    ),
+
+  additionalInformation: z
+    .string()
+    .trim()
+    .max(2000, "Additional information cannot exceed 2000 characters"),
+})
+
+export type ReportValues = z.infer<typeof reportSchema>
+
+export const REPORT_FIELDS = [
+  "category",
+  "reason",
+  "evidence",
+  "additionalInformation",
+] as const satisfies Path<ReportValues>[]

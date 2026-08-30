@@ -43,7 +43,7 @@ type FormFieldProps<T extends FieldValues> = {
   imageAccept?: string
   imagePreviewStyle?: string
   imageDefaultStyle?: string
-  imageVariant?: 'default' | 'avatar'
+  imageVariant?: 'default' | 'avatar' | 'report-evidence' | 'refund-evidence'
   onImageFileSelected?: (file: File | null) => void
   onUploadStatusChange?: (uploading: boolean) => void
 }

@@ -13,6 +13,7 @@ import type {
   OrganizerFlagDetail,
 } from "@/types/report";
 import { formatCompactNaira, formatRequestedAgo } from "@/lib/utils";
+import type { RevenuePageData } from "@/types/revenue";
 
 // Raw shape of GET /admin/overview, as actually returned by
 // getAdminOverview in admin.controller.ts — counts and unformatted
@@ -21,6 +22,14 @@ import { formatCompactNaira, formatRequestedAgo } from "@/lib/utils";
 // of the existing Overview components (StatsRow, TrustSafetyCard,
 // RecentActivityCard, etc.) need to change.
 interface RawAdminOverview {
+  // The admin's own resolved display currency — every money figure below
+  // is already converted into this. Was being silently dropped here,
+  // which is why the Overview stat cards kept showing ₦ even after
+  // switching currency in Settings (the main site's price displays read
+  // this same field on their own responses — see events-api.ts — but the
+  // admin console's overview fetch never picked it up). See
+  // resolveViewerCurrency, lib/viewerCurrency.ts on the backend.
+  currency: string;
   needsAction: {
     pendingEventsCount: number;
     organizersToVerifyCount: number;
@@ -141,13 +150,13 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
     {
       id: "gross-ticket-sales",
       label: "Gross ticket sales",
-      value: `₦${formatCompactNaira(raw.stats.grossTicketSales)}`,
+      value: formatCompactNaira(raw.stats.grossTicketSales, raw.currency),
       icon: "ticket",
     },
     {
       id: "platform-revenue",
       label: "Platform revenue",
-      value: `₦${formatCompactNaira(raw.stats.platformRevenue)}`,
+      value: formatCompactNaira(raw.stats.platformRevenue, raw.currency),
       icon: "dollar",
       caption: "Commissions + promotions",
       ...(raw.stats.platformRevenueChangePct !== null
@@ -163,7 +172,7 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
     {
       id: "held-in-escrow",
       label: "Held in escrow",
-      value: `₦${formatCompactNaira(raw.stats.heldInEscrow)}`,
+      value: formatCompactNaira(raw.stats.heldInEscrow, raw.currency),
       icon: "shield",
     },
     {
@@ -217,7 +226,7 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
   const topOrganizers: OverviewSummary["topOrganizers"] = raw.topOrganizers.map((org) => ({
     id: org.organizerId,
     name: org.businessName,
-    revenue: `₦${formatCompactNaira(org.grossSales)}`,
+    revenue: formatCompactNaira(org.grossSales, raw.currency),
   }));
 
   return { totalAttentionItems, needsAction, stats, trustSafety, recentActivity, topOrganizers };
@@ -282,9 +291,58 @@ export async function getPlatformRevenue(range: RevenueRange): Promise<PlatformR
 
   return {
     range,
-    value: `₦${formatCompactNaira(raw.stats.platformRevenue)}`,
+    value: formatCompactNaira(raw.stats.platformRevenue, raw.currency),
     deltaPercent: raw.stats.platformRevenueChangePct ?? 0,
     deltaCaption: "vs last month",
     series: raw.revenueSeries,
+    // Passed through separately (not baked into `value`) so the chart's
+    // own axis/tooltip formatting — which format raw numbers, not the
+    // pre-formatted string above — can use the same currency.
+    currency: raw.currency,
   };
+}
+
+export async function getRevenue(): Promise<RevenuePageData> {
+    const res = await api.get("/admin/revenue");
+     const body = res.body as {
+         platformRevenue: number;
+         platformRevenueChangePct: number | null;
+         commissionRevenue: number;
+         commissionRatePct: number;
+         promotionRevenue: number;
+         grossTicketSales: number;
+         // The admin's resolved display currency — see the same field's
+         // comment on RawAdminOverview above. Was never read here, so this
+         // page kept showing ₦ no matter what currency was selected.
+         currency: string;
+         revenueBySource: { label: string; amount: number; percent: number }[];
+         topEarningEvents: { eventId: string; eventTitle: string; organizerName: string; commission: number }[];
+         monthlyBreakdown: { label: string; grossSales: number; commission: number; promotion: number; total: number }[];
+     }
+
+     return {
+        summary: {
+      platformRevenue: body.platformRevenue,
+      platformRevenueChangePct: body.platformRevenueChangePct,
+      commission: body.commissionRevenue,
+      commissionRatePct: body.commissionRatePct,
+      promotions: body.promotionRevenue,
+      grossTicketSales: body.grossTicketSales,
+    },
+     currency: body.currency,
+     revenueBySource: body.revenueBySource,
+    topEarningEvents: body.topEarningEvents.map((e: any) => ({
+      id: e.eventId,
+      eventTitle: e.eventTitle,
+      organizer: e.organizerName,
+      commission: e.commission,
+    })),
+    monthlyBreakdown: body.monthlyBreakdown.map((m: any) => ({
+      month: m.label,
+      grossSales: m.grossSales,
+      commission: m.commission,
+      promotion: m.promotion,
+      total: m.total,
+    })),
+     }
 }

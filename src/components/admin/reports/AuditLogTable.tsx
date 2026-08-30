@@ -7,6 +7,17 @@ interface AuditLogTableProps {
   isLoading: boolean;
 }
 
+// These action types have no real event/organizer behind them (the
+// backend sends target: "—" for all three), so the TARGET column shows
+// the full message instead — e.g. "Converted all platform amounts from
+// Naira to Dollar (rate: 0.00074)" instead of a dash. Every other action
+// type keeps showing its actual target (event/organizer name) as before.
+const MESSAGE_IN_TARGET_TYPES = new Set([
+  "currency_converted",
+  "admin_invited",
+  "admin_removed",
+]);
+
 export default function AuditLogTable({
   entries,
   isLoading,
@@ -64,7 +75,9 @@ export default function AuditLogTable({
                 {entry.action}{" "}
                 {entry.amount && <span className="font-space">{entry.amount}</span>}
               </td>
-              <td className="px-4 text-foreground text-[16px]">{entry.target}</td>
+              <td className="px-4 text-foreground text-[16px]">
+                {MESSAGE_IN_TARGET_TYPES.has(entry.type) ? entry.message : entry.target}
+              </td>
               <td className="px-4 text-[16px] text-foreground">{entry.actorName}</td>
               <td className="px-4 text-[16px] text-muted-foreground">
                 {formatRequestedAgo(entry.createdAt)}

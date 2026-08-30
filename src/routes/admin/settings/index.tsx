@@ -22,6 +22,7 @@ import { useAuth } from "@/context/auth.context"
 import { useAdminTeam, useDeleteAdmin, useInviteAdmin, useUpdateAdminRole } from "@/hooks/use-admin-team"
 import { usePlatformSettings, useUpdatePlatformSettings } from "@/hooks/use-platform-settings"
 import type { AdminTier } from "@/types/admin-settings"
+import { CurrencyPreference } from "@/components/profile-settings/CurrencyPreference"
 
 interface ToggleSwitchProps {
   checked: boolean
@@ -252,7 +253,7 @@ export default function PlatformSettings() {
   const isOwner = user?.role === "admin" && (user.adminRole ?? "owner") === "owner"
 
   const { data: settings } = usePlatformSettings()
-  const { mutate: updateSettings } = useUpdatePlatformSettings()
+  const { mutate: updateSettings, isPending: isSavingSettings } = useUpdatePlatformSettings()
 
   const [platformFee, setPlatformFee] = useState(3)
   const [currency, setCurrency] = useState("")
@@ -281,11 +282,29 @@ export default function PlatformSettings() {
     )
   }
 
+  // NOTE: this is display-only, and safe to fire freely. It used to
+  // re-convert every stored money field platform-wide on every change
+  // (see updatePlatformSettings on the backend for how that mechanism
+  // caused a real currency-corruption incident) — that's retired now.
+  // Changing this only changes the sitewide DEFAULT a viewer sees when
+  // they haven't set their own currencyPreference; nothing stored ever
+  // moves. The `disabled={isSavingSettings}` on the Select below just
+  // avoids two in-flight saves stepping on each other's toast/rollback,
+  // not a data-safety guard.
   const onCurrencyChange = (val: string) => {
+    if (isSavingSettings) return
     setCurrency(val)
     updateSettings(
-      { currency: val as "Naira" | "Dollar" | "Cedis" },
-      { onError: (err: Error) => toast.error(err.message || "Could not save currency.") }
+      { currency: val as "Naira" | "Dollar" | "Cedis" | "Pound" },
+      {
+        onError: (err: Error) => {
+          toast.error(err.message || "Could not save currency.")
+          // Roll the dropdown back to whatever's actually saved — leaving
+          // it on the failed target would show a currency the backend
+          // never actually switched to.
+          setCurrency(settings?.currency ?? "")
+        },
+      }
     )
   }
 
@@ -343,6 +362,23 @@ export default function PlatformSettings() {
         </p>
       </div>
 
+      {/* My display currency — a personal preference (this admin account
+          only), separate from "Platform Configuration" below which sets
+          the sitewide DEFAULT every viewer without their own preference
+          falls back to. Both use the same four currencies. */}
+      <Card>
+        <CardHeader>
+          <CardTitle>My display currency</CardTitle>
+        </CardHeader>
+        <div className="border mx-4"/>
+        <CardContent className="flex flex-col gap-2">
+          <CurrencyPreference
+            title="Currency"
+            description="Changes how prices show on your own dashboard — Overview, Revenue, Payouts, Refunds. Doesn't affect what other admins or organizers see."
+          />
+        </CardContent>
+      </Card>
+
       {/* Commission rate */}
       <Card>
         <CardHeader>
@@ -375,7 +411,7 @@ export default function PlatformSettings() {
         <CardContent className="flex flex-col gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">CURRENCY</label>
-            <Select value={currency} onValueChange={(val) => onCurrencyChange(val ?? '')}>
+            <Select value={currency} onValueChange={(val) => onCurrencyChange(val ?? '')} disabled={isSavingSettings}>
               <SelectTrigger className="w-49.75">
                 <SelectValue placeholder="Choose your currency"/>
               </SelectTrigger>
@@ -383,8 +419,12 @@ export default function PlatformSettings() {
                 <SelectItem value="Naira">Naira (₦)</SelectItem>
                 <SelectItem value="Dollar">Dollar ($)</SelectItem>
                 <SelectItem value="Cedis">Cedis (₵)</SelectItem>
+                <SelectItem value="Pound">Pound (£)</SelectItem>
               </SelectContent>
             </Select>
+            {isSavingSettings && (
+              <p className="text-xs text-muted-foreground">Saving…</p>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">

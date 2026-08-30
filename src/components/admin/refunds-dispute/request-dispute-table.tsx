@@ -104,7 +104,7 @@ const RequestDisputeTable = ({ activeTab, refundRequests, disputes }: RequestDis
     if (activeTab === "requests") {
         return (
             <>
-                <div className="min-w-[900px] border-2 border-[#E8E6E0] dark:border-border rounded-[10px] overflow-hidden">
+                <div className="min-w-225 border-2 border-[#E8E6E0] dark:border-border rounded-[10px] overflow-hidden">
                     <div className={`${REQUEST_GRID_COLS} py-4 border-b-2 border-[#E8E6E0] dark:border-border rounded-b-[10px]`}>
                         <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">ATTENDEE</p>
                         <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide truncate">EVENT</p>
@@ -193,7 +193,7 @@ const RequestDisputeTable = ({ activeTab, refundRequests, disputes }: RequestDis
 
     return (
         <>
-            <div className="min-w-[900px] border-2 border-[#E8E6E0] dark:border-border rounded-[10px] overflow-hidden">
+            <div className="min-w-225 border-2 border-[#E8E6E0] dark:border-border rounded-[10px] overflow-hidden">
                 <div className={`${DISPUTE_GRID_COLS} py-4 border-b-2 border-[#E8E6E0] dark:border-border rounded-b-[10px]`}>
                     <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">ATTENDEE</p>
                     <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide truncate">EVENT</p>

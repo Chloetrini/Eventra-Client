@@ -14,9 +14,14 @@ export type EventsResponse = {
   hasMore: boolean;
 };
 
-// Matches the backend's actual shape: { events: [...], meta: { total, hasMore, ... } }
+// Matches the backend's actual shape: { events: [...], currency, meta: { total, hasMore, ... } }
 const eventsResponseSchema = z.object({
   events: z.array(eventSchema),
+  // The viewer's currency — every price on every event in this response has
+  // already been converted into it server-side. See the `currency` field's
+  // comment on eventSchema (lib/schema.ts) for why this gets denormalized
+  // onto each event below instead of just left as a response-level field.
+  currency: z.enum(["Naira", "Dollar", "Cedis", "Pound"]).optional(),
   meta: z.object({
     currentPage: z.number(),
     limit: z.number(),
@@ -92,7 +97,11 @@ export async function fetchEventsReal(filters: EventFilters): Promise<EventsResp
   const parsed = eventsResponseSchema.parse(res.body);
 
   return {
-    events: parsed.events,
+    // Denormalize the response-level `currency` onto each event so every
+    // card that renders event.minPrice can format it with the right
+    // symbol without needing this whole response threaded through as a
+    // separate prop. See the `currency` field's comment on eventSchema.
+    events: parsed.events.map((event) => ({ ...event, currency: parsed.currency ?? event.currency })),
     total: parsed.meta.total,
     hasMore: parsed.meta.hasMore,
   };
@@ -130,8 +139,11 @@ export async function fetchSpotlightEvents(
   limit = 8
 ): Promise<Event[]> {
   const res = await api.get(`/events/spotlight?placement=${placement}&limit=${limit}`);
-  const body = res.body as { events: unknown[] };
-  return z.array(eventSchema).parse(body.events ?? []);
+  const body = res.body as { events: unknown[]; currency?: "Naira" | "Dollar" | "Cedis" | "Pound" };
+  const events = z.array(eventSchema).parse(body.events ?? []);
+  // Same denormalization as fetchEventsReal above — every price in this
+  // response is already converted into `body.currency`.
+  return events.map((event) => ({ ...event, currency: body.currency ?? event.currency }));
 }
 
 export async function fetchCategories(): Promise<EventCategory[]> {
@@ -469,4 +481,15 @@ export type CheckInResult = {
 export async function checkInTicket(eventId: string, code: string): Promise<CheckInResult> {
   const res = await api.post(`/events/${eventId}/check-in`, { code });
   return res.body as CheckInResult;
+}
+
+export async function createReportRequest(eventId: string, targetType: 'event' | 'organizer', reason: string, category: string, evidence: { url: string | null }[], additionalInformation: string): Promise<void> {
+  await api.post(`/events/${eventId}/report`, {
+    eventId,
+    targetType,
+    reason,
+    category,
+    evidence,
+    additionalInformation,
+  });
 }

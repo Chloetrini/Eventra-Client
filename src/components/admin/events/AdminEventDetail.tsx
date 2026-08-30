@@ -28,30 +28,10 @@ export default function AdminEventDetail({
 }: AdminEventDetailProps) {
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
 
-  const details = event.details || {
-    category: "CONCERT",
-    description:
-      "Organizer-provided description. Afrobeats Night Market is presented by Lagos Live Co. This is the full write-up attendees will see on the public event pae. including what to expect, line-up and entry details.",
-    formattedDate: "Sat 14 Feb - 6:00 PM",
-    venue: "Muri Okunola Park, Lagos",
-    capacity: 400,
-    agePolicy: "18+",
-    refundPolicy: "Refunds until 3 days before",
-    organizer: {
-      id: "org-1",
-      name: event.organizerName || "Lagos Live Co.",
-      initials: "LL",
-      verified: true,
-    },
-    ticketTypes: [
-      { id: "t-1", name: "Regular", price: 15000, quantity: 300 },
-      { id: "t-2", name: "VIP", price: 35000, quantity: 100 },
-    ],
-  };
 
   const handleConfirmRemove = () => {
     setIsRemoveModalOpen(false);
-    onRemove?.(event.id);
+    onRemove?.(event._id);
   };
 
   const isFlagged = event.status === "FLAGGED";
@@ -93,8 +73,7 @@ export default function AdminEventDetail({
           className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity"
           style={{
             backgroundImage: `url(${
-              details.bannerImage ||
-              "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1200&auto=format&fit=crop"
+              event.details?.bannerImage 
             })`,
           }}
         />
@@ -102,13 +81,13 @@ export default function AdminEventDetail({
 
         <div className="relative z-10 max-w-xl mt-27.85 sm:mt-32 md:mt-34.75 lg:mt-50">
           <p className="font-geist text-xs font-semibold tracking-widest text-[#F5A524] uppercase">
-            {details.category}
+            {event.details?.category}
           </p>
           <h2 className="mt-2 font-grotesk text-3xl sm:text-4xl font-bold tracking-tight text-white">
             {event.title}s
           </h2>
           <p className="mt-3 text-sm sm:text-base font-medium text-slate-200">
-            {details.formattedDate} - {details.venue}
+            {event.details?.formattedDate} - {event.details?.venue}
           </p>
         </div>
       </div>
@@ -123,7 +102,7 @@ export default function AdminEventDetail({
               About this event
             </h3>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-              {details.description}
+              {event.details?.description}
             </p>
           </div>
 
@@ -139,7 +118,7 @@ export default function AdminEventDetail({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/50">
-                  {details.ticketTypes.map((tier) => (
+                  {event.details?.ticketTypes.map((tier) => (
                     <tr key={tier.id}>
                       <td className="py-3.5 font-bold text-foreground">
                         {tier.name}
@@ -168,14 +147,14 @@ export default function AdminEventDetail({
             </h3>
             <div className="mt-4 flex items-center gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted font-bold text-foreground text-sm border border-border">
-                {details.organizer.initials}
+                {event.details?.organizer.initials}
               </div>
               <div>
                 <p className="font-bold text-foreground text-sm font-grotesk">
-                  {details.organizer.name}
+                  {event.details?.organizer.name}
                 </p>
                 <p className="text-xs text-muted-foreground font-bold font-space">
-                  {details.organizer.verified ? "Verified" : "Unverified"}
+                  {event.details?.organizer.verified ? "Verified" : "Unverified"}
                 </p>
               </div>
             </div>
@@ -196,7 +175,7 @@ export default function AdminEventDetail({
                   Date
                 </span>
                 <span className="font-semibold text-foreground text-right">
-                  {details.formattedDate}
+                  {event.details?.formattedDate}
                 </span>
               </div>
               <div className="flex justify-between py-2.5">
@@ -204,7 +183,7 @@ export default function AdminEventDetail({
                   Venue
                 </span>
                 <span className="font-semibold text-foreground text-right">
-                  {details.venue}
+                  {event.details?.venue}
                 </span>
               </div>
               <div className="flex justify-between py-2.5">
@@ -212,7 +191,7 @@ export default function AdminEventDetail({
                   Capacity
                 </span>
                 <span className="font-space font-semibold text-foreground text-right">
-                  {details.capacity}
+                  {event.details?.capacity}
                 </span>
               </div>
               <div className="flex justify-between py-2.5">
@@ -220,7 +199,7 @@ export default function AdminEventDetail({
                   Age policy
                 </span>
                 <span className="font-space font-semibold text-foreground text-right">
-                  {details.agePolicy}
+                  {event.details?.agePolicy}
                 </span>
               </div>
               <div className="flex justify-between py-2.5">
@@ -228,7 +207,7 @@ export default function AdminEventDetail({
                   Refund policy
                 </span>
                 <span className="font-semibold text-foreground text-right">
-                  {details.refundPolicy}
+                  {event.details?.refundPolicy}
                 </span>
               </div>
             </div>
@@ -243,7 +222,7 @@ export default function AdminEventDetail({
         </p>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => onFlag?.(event.id)}
+            onClick={() => onFlag?.(event._id)}
             className={`flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-bold transition-colors cursor-pointer shadow-md ${
               isFlagged
                 ? "border-[#DC2626] bg-[#FCE8E6] dark:bg-[#DC2626]/20 text-[#DC2626]"

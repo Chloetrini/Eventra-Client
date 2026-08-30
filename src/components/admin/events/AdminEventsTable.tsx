@@ -96,7 +96,7 @@ export default function AdminEventsTable({
           <tbody className="divide-y divide-border">
             {events.map((evt) => (
               <tr
-                key={evt.id}
+                key={evt._id}
                 onClick={() => onEventClick?.(evt)}
                 className="group cursor-pointer hover:bg-accent/50 transition-colors"
               >
@@ -106,7 +106,7 @@ export default function AdminEventsTable({
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1F2937] text-xs font-bold text-white shadow-xs">
                       {evt.organizerInitials}
                     </div>
-                    <span className="font-bold text-foreground group-hover:text-primary transition-colors">
+                    <span className={`font-bold text-foreground group-hover:text-primary transition-colors ${evt.status === "REJECTED" ? "line-through text-muted-foreground group-hover:text-muted-foreground" : evt.status === "FLAGGED" ? "text-red-500" : ""}`}>
                       {evt.title}
                     </span>
                   </div>

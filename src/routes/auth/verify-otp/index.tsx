@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
@@ -15,7 +15,19 @@ const RESEND_SECONDS = 60;
 export default function VerifyOtp() {
   const navigate = useNavigate();
   const location = useLocation();
-  const email = (location.state as { email?: string } | null)?.email;
+  const [searchParams] = useSearchParams();
+  // A normal in-app signup lands here via navigate(..., { state: { email } }),
+  // but every verify-otp link sent by email (admin invite, and anyone
+  // opening their verification email in a fresh tab/device) is a hard page
+  // load with no router state — only the `?email=` query param the backend
+  // puts on that link (see verifyEmailLink in auth.controller.ts). Without
+  // this fallback, email was always undefined for every one of those links,
+  // so verification silently failed before it could ever reach the
+  // mustSetPassword redirect below.
+  const email =
+    (location.state as { email?: string } | null)?.email ??
+    searchParams.get("email") ??
+    undefined;
   const isOrganizer = location.pathname.includes("/organizer");
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [error, setError] = useState<string | null>(null);

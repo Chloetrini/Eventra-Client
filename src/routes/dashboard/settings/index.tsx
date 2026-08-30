@@ -20,6 +20,7 @@ import type { BankAccount, OrganizationSettings } from "@/types/settings";
 import { Badge } from "@/components/ui/badge";
 import { AddBankAccountDialog } from "@/components/add-bank-account";
 import { Switch } from "@/components/ui/switch";
+import { CurrencyPreference } from "@/components/profile-settings/CurrencyPreference";
 
 export default function Settings() {
   const queryClient = useQueryClient();
@@ -308,6 +309,17 @@ export default function Settings() {
             "Save changes"
           )}
         </Button>
+      </div>
+
+      {/* Currency */}
+      <div className="border border-border rounded-lg p-6">
+        <h2 className="text-base font-semibold text-foreground mb-4">
+          Currency
+        </h2>
+        <CurrencyPreference
+          title="Display currency"
+          description="Prices across your dashboard — overview, events, payouts — will show in this currency."
+        />
       </div>
 
       {/* Bank account & payouts */}

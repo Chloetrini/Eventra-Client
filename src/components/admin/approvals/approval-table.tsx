@@ -48,7 +48,7 @@ export function formatBankDetails(bankName?: string, accountNumber?: string): st
   return `${formattedBank} ••••${lastFour}`
 }
 
-const ApprovalTable = ({ activeTab, events, organizer, promotions, currency }: ApprovalTableProps) => {
+const ApprovalTable = ({ activeTab, events, organizer, promotions }: ApprovalTableProps) => {
   const navigate = useNavigate()
   const approveEvent = useApproveEvent()
   const rejectEvent = useRejectEvent()

@@ -57,9 +57,8 @@ function RefundsDisputeTableSkeleton({ activeTab }: { activeTab: RefundDisputeTa
 const RefundsDispute = () => {
     const [activeTab, setActiveTab] = useState<RefundDisputeTab>("requests")
 
-    const { data: refundRequestsData, isLoading: requestsLoading } = useAdminRefundRequests()
+    const { data: refundRequests = [], isLoading: requestsLoading } = useAdminRefundRequests()
     const { data: disputes = [], isLoading: disputesLoading } = useAdminDisputes()
-    const refundRequests = refundRequestsData?.refundRequests ?? []
 
     const isLoading = activeTab === "requests" ? requestsLoading : disputesLoading
 
@@ -86,7 +85,6 @@ const RefundsDispute = () => {
                         activeTab={activeTab}
                         refundRequests={refundRequests}
                         disputes={disputes}
-                        currency={refundRequestsData?.currency}
                     />
                 )}
             </div>

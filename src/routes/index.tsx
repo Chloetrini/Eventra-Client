@@ -447,6 +447,16 @@ const routes = [
             path: "admin",
             children: [
               {
+                // Every other auth group (top-level /auth, /auth/organizer)
+                // already redirects its bare path straight to its login
+                // route — this one didn't, so /auth/admin alone rendered
+                // AuthLayout's admin card shell (logo, mint gradient) with
+                // no form inside it, and only /auth/admin/login actually
+                // showed the login inputs.
+                index: true,
+                element: <Navigate to="login" replace />,
+              },
+              {
                 path: "login",
                 handle: {
                   seo: {

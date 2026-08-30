@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useSearchParams } from "react-router"
 import RefundDisputeSelector, { type RefundDisputeTab } from "@/components/admin/refunds-dispute/refund-dispute-selector"
 import RequestDisputeTable from "@/components/admin/refunds-dispute/request-dispute-table"
 import PageWrapper from "@/components/page-wrapper"
@@ -62,8 +63,20 @@ function EventOrganizerTableSkeleton({ activeTab }: { activeTab: EventOrganizerT
     )
 }
 
+const VALID_APPROVAL_TABS: EventOrganizerTab[] = ["events", "organizers", "promotions"]
+
 const Approval = () => {
-    const [activeTab, setActiveTab] = useState<EventOrganizerTab>("events")
+    // Lets the "Needs action" cards on the admin Overview page (and any
+    // other link) land straight on the right tab, e.g. /admin/approvals?tab=promotions
+    // — previously this always opened on "events" regardless of ?tab=,
+    // silently ignoring the query string.
+    const [searchParams] = useSearchParams()
+    const requestedTab = searchParams.get("tab")
+    const initialTab: EventOrganizerTab = VALID_APPROVAL_TABS.includes(requestedTab as EventOrganizerTab)
+        ? (requestedTab as EventOrganizerTab)
+        : "events"
+
+    const [activeTab, setActiveTab] = useState<EventOrganizerTab>(initialTab)
 
     const { data: pendingEvents= [], isLoading: eventLoading } =usePendingAdminEvents();
     const { data: organizersData, isLoading: organizersLoading } = usePendingAdminOrganizers()

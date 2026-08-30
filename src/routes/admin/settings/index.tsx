@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import { Plus, DotIcon, Trash2, ShieldAlert } from "lucide-react"
 import { toast } from "react-toastify"
 import { Button } from "@/components/ui/button"
@@ -257,6 +258,7 @@ export default function PlatformSettings() {
   const { data: settings } = usePlatformSettings()
   const { mutate: updateSettings } = useUpdatePlatformSettings()
   const updateProfileMutation = useUpdateProfile()
+  const queryClient = useQueryClient()
 
   const [platformFee, setPlatformFee] = useState(3)
   const [payoutHold, setPayoutHold] = useState("")
@@ -303,6 +305,13 @@ export default function PlatformSettings() {
         currencyPreference: val as CurrencyPreferenceValue,
       })
       setUser(updatedUser as User)
+      // This duplicates the shared CurrencyPreference component's own
+      // change handler (see its doc comment) instead of using the
+      // component directly, and it was missing the same fix: every price
+      // on the site is a separately cached React Query request, so without
+      // invalidating the cache here too, Overview/Revenue/Payouts/Refunds
+      // kept showing the old currency for this admin until a full reload.
+      queryClient.invalidateQueries()
       toast.success("Currency updated")
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not update currency")

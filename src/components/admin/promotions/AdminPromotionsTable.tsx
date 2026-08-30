@@ -76,7 +76,8 @@ export default function AdminPromotionsTable({ promotions, currency, onRowClick 
               <th className="px-6 py-4">ORGANIZER</th>
               <th className="px-6 py-4">PACKAGE</th>
               <th className="px-6 py-4">PRICE</th>
-              <th className="px-6 py-4">DATES</th>
+              <th className="px-6 py-4">STARTS</th>
+              <th className="px-6 py-4">ENDS</th>
               <th className="px-6 py-4">STATUS</th>
             </tr>
           </thead>
@@ -110,10 +111,15 @@ export default function AdminPromotionsTable({ promotions, currency, onRowClick 
                   {promo.price !== null ? formatNaira(promo.price, currency) : "—"}
                 </td>
 
+                {/* Was a single "DATES" column showing "start – end" as one
+                    dashed string — split into their own STARTS/ENDS columns
+                    so the table stops shifting/wobbling when one date is
+                    longer than the other. */}
                 <td className="px-6 py-4 text-muted-foreground">
-                  {promo.startsAt && promo.endsAt
-                    ? `${formatDate(promo.startsAt)} – ${formatDate(promo.endsAt)}`
-                    : "Starts once approved"}
+                  {promo.startsAt ? formatDate(promo.startsAt) : "Once approved"}
+                </td>
+                <td className="px-6 py-4 text-muted-foreground">
+                  {promo.endsAt ? formatDate(promo.endsAt) : "—"}
                 </td>
 
                 <td className="px-6 py-4">

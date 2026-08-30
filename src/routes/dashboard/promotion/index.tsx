@@ -307,7 +307,8 @@ const Promotions = () => {
                   <th className="px-(--card-spacing) py-2 font-normal">Event</th>
                   <th className="px-(--card-spacing) py-2 font-normal">Package</th>
                   <th className="px-(--card-spacing) py-2 font-normal">Placement</th>
-                  <th className="px-(--card-spacing) py-2 font-normal">Dates</th>
+                  <th className="px-(--card-spacing) py-2 font-normal">Starts</th>
+                  <th className="px-(--card-spacing) py-2 font-normal">Ends</th>
                   <th className="px-(--card-spacing) py-2 font-normal">Spend</th>
                   <th className="px-(--card-spacing) py-2 font-normal">Status</th>
                 </tr>
@@ -318,10 +319,15 @@ const Promotions = () => {
                     <td className="px-(--card-spacing) py-3 font-semibold text-foreground">{promo.eventTitle}</td>
                     <td className="px-(--card-spacing) py-3 text-foreground">{promo.packageLabel}</td>
                     <td className="px-(--card-spacing) py-3 text-foreground">{promo.placementLabel ?? "-"}</td>
+                    {/* Was a single "Dates" column showing "start – end" as
+                        one dashed string — split into their own Starts/Ends
+                        columns so the table stops shifting/wobbling when
+                        one date is longer than the other. */}
                     <td className="px-(--card-spacing) py-3 text-foreground">
-                      {promo.startsAt && promo.endsAt
-                        ? `${formatDate(promo.startsAt)} – ${formatDate(promo.endsAt)}`
-                        : "Starts once approved"}
+                      {promo.startsAt ? formatDate(promo.startsAt) : "Once approved"}
+                    </td>
+                    <td className="px-(--card-spacing) py-3 text-foreground">
+                      {promo.endsAt ? formatDate(promo.endsAt) : "—"}
                     </td>
                     <td className="px-(--card-spacing) py-3">
                       <p className="font-bold text-foreground">

@@ -17,7 +17,7 @@ export function DottedGlowBackgroundDemo({ onClick, text, disabled }: DottedGlow
             <div className="bg-gray-100 flex items-center justify-center absolute inset-0 z-20 size-32 m-auto rounded-lg transition-transform duration-300 group-hover:scale-105">
                 <div>
                     <img
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/960px-QR_code_for_mobile_English_Wikipedia.svg.png"
+                        src="https://res.cloudinary.com/dyeh9qvbl/image/upload/v1788092545/https_eventra-client-delta_vercel_app__ssn902.png"
                         alt="QR code"
                         className="z-30 size-30"
                     />

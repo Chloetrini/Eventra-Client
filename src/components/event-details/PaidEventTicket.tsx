@@ -22,6 +22,16 @@ const TierRow = ({
   onDecrement: () => void;
 }) => {
   const isSoldOut = tier.availability === "sold out";
+  // Same limit the backend already enforces at checkout
+  // (ticket.controller.ts rejects an order over purchaseLimitPerPerson) —
+  // this just stops the picker from letting someone dial past it in the
+  // first place, instead of only finding out after they hit "Select
+  // tickets". Also cap on remaining stock for the same reason: nothing
+  // here previously stopped the "+" button once quantityLeft ran out.
+  const atLimit =
+    tier.purchaseLimitPerPerson !== undefined && quantity >= tier.purchaseLimitPerPerson;
+  const atStock = quantity >= tier.quantityLeft;
+  const canIncrement = !isSoldOut && !atLimit && !atStock;
 
   return (
     <div className={cn("space-y-1", isSoldOut && "opacity-60")}>
@@ -64,11 +74,24 @@ const TierRow = ({
           <button
             type="button"
             onClick={onIncrement}
-            className="flex h-7 w-7 items-center justify-center rounded-full border text-sm transition hover:scale-110 cursor-pointer"
+            disabled={!canIncrement}
+            aria-label={
+              atLimit
+                ? `Limit ${tier.purchaseLimitPerPerson} per order reached`
+                : atStock
+                  ? "No more left"
+                  : `Add another ${tier.type} ticket`
+            }
+            className="flex h-7 w-7 items-center justify-center rounded-full border text-sm transition hover:scale-110 disabled:opacity-40 disabled:hover:scale-100 disabled:cursor-not-allowed cursor-pointer"
           >
             +
           </button>
         </div>
+      )}
+      {!isSoldOut && atLimit && (
+        <p className="text-right text-xs text-muted-foreground">
+          Limit {tier.purchaseLimitPerPerson} per order
+        </p>
       )}
       {isSoldOut && (
         <div className="flex justify-end">
@@ -127,8 +150,13 @@ export const PaidEventTicket = ({
   // 4. Safe check for scarce availability
   const isSelling = ticketTiers.some((t) => t.availability === "scarce");
 
-  const increment = (tierKey: string | number) => {
-    setQuantities((prev) => ({ ...prev, [tierKey]: (prev[tierKey] ?? 0) + 1 }));
+  const increment = (tierKey: string | number, tier: TicketTier) => {
+    setQuantities((prev) => {
+      const current = prev[tierKey] ?? 0;
+      const limit = tier.purchaseLimitPerPerson ?? Infinity;
+      if (current >= limit || current >= tier.quantityLeft) return prev;
+      return { ...prev, [tierKey]: current + 1 };
+    });
   };
 
   const decrement = (tierKey: string | number) => {
@@ -192,7 +220,7 @@ export const PaidEventTicket = ({
               tier={tier}
               quantity={quantities[key] ?? 0}
               currency={currency}
-              onIncrement={() => increment(key)}
+              onIncrement={() => increment(key, tier)}
               onDecrement={() => decrement(key)}
             />
           );

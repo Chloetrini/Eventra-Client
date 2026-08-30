@@ -1,5 +1,6 @@
 import { api } from "@/lib/api";
-import type { AdminPromotionListItem, AdminPromotionDetail, AdminPromotionStatus } from "@/types/admin-promotion";
+import type { AdminPromotion, AdminPromotionListItem, AdminPromotionDetail, AdminPromotionStatus } from "@/types/admin-promotion";
+import type { PromotionStatusFilterOption } from "@/components/admin/promotions/AdminPromotionsFilterBar";
 
 interface RawAdminPromotionListItem {
   eventId: string;
@@ -12,6 +13,25 @@ interface RawAdminPromotionListItem {
   placementLabel?: string;
   priceNaira: number | null;
   durationDays?: number;
+  paidAt?: string;
+  paystackReference?: string;
+}
+
+// Raw shape of one row from GET /admin/promotions, as returned by
+// listPromotionsForAdmin (admin.controller.ts).
+interface RawAdminPromotion {
+  eventId: string;
+  eventTitle: string;
+  eventCoverImage?: string;
+  organizerId?: string;
+  organizerName: string;
+  packageId: string;
+  packageLabel: string;
+  placementLabel?: string;
+  priceNaira: number | null;
+  status: AdminPromotionStatus;
+  startsAt?: string | null;
+  endsAt?: string | null;
   paidAt?: string;
   paystackReference?: string;
 }
@@ -60,6 +80,25 @@ function mapListItem(raw: RawAdminPromotionListItem): AdminPromotionListItem {
   };
 }
 
+function mapPromotion(raw: RawAdminPromotion): AdminPromotion {
+  return {
+    eventId: raw.eventId,
+    eventTitle: raw.eventTitle,
+    eventCoverImage: raw.eventCoverImage,
+    organizerId: raw.organizerId,
+    organizerName: raw.organizerName,
+    packageId: raw.packageId,
+    packageLabel: raw.packageLabel,
+    placementLabel: raw.placementLabel,
+    price: raw.priceNaira,
+    status: raw.status,
+    startsAt: raw.startsAt ?? undefined,
+    endsAt: raw.endsAt ?? undefined,
+    paidAt: raw.paidAt,
+    paystackReference: raw.paystackReference,
+  };
+}
+
 function mapDetail(raw: RawAdminPromotionDetail): AdminPromotionDetail {
   return {
     eventId: raw.eventId,
@@ -82,6 +121,22 @@ function mapDetail(raw: RawAdminPromotionDetail): AdminPromotionDetail {
     paystackReference: raw.paystackReference,
     currency: raw.currency,
   };
+}
+
+// Matches: GET /admin/promotions — the standalone Promotions page under
+// Manage. limit=100 flat fetch, same convention fetchAdminEvents already
+// uses (no pagination controls on that page's table either), rather than
+// building out a second, separate paging UI just for this one.
+export async function fetchAdminPromotions(
+  params: { tab?: PromotionStatusFilterOption; q?: string } = {}
+): Promise<{ promotions: AdminPromotion[]; currency: string }> {
+  const query = new URLSearchParams({ limit: "100" });
+  if (params.tab && params.tab !== "all") query.set("tab", params.tab);
+  if (params.q) query.set("q", params.q);
+
+  const res = await api.get(`/admin/promotions?${query.toString()}`);
+  const body = res.body as { promotions: RawAdminPromotion[]; currency: string };
+  return { promotions: body.promotions.map(mapPromotion), currency: body.currency };
 }
 
 // Matches: GET /admin/promotions/pending

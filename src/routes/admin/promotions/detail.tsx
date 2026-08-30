@@ -35,12 +35,14 @@ function PromotionDetailSkeleton() {
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-[#F4DFB6] text-[#7A4E02]",
   approved: "bg-[#E4F1EB] text-[#0F6E56]",
+  expired: "bg-[#E8E6E0] text-[#3A3A3A]",
   rejected: "bg-[#FFC4C4] text-[#BE2525]",
 }
 
 const STATUS_LABELS: Record<string, string> = {
   pending: "PENDING REVIEW",
   approved: "ACTIVE",
+  expired: "EXPIRED",
   rejected: "REJECTED",
 }
 
@@ -88,11 +90,16 @@ const AdminPromotionDetailPage = () => {
         <div>
           <button
             type="button"
-            onClick={() => navigate("/admin/approvals")}
+            // Was hardcoded to /admin/approvals — right when this was only
+            // ever reached from the Approvals page's Promotions tab, but
+            // it's now also reachable from the standalone Promotions list
+            // (which shows every status, not just pending). Going back to
+            // wherever the click actually came from works for both.
+            onClick={() => navigate(-1)}
             className="flex items-center gap-2 font-space text-[13px] text-[#0F6E56] dark:text-[#4ADE80] mb-2 hover:underline"
           >
             <ArrowLeft className="w-4 h-4" />
-            BACK TO APPROVALS
+            BACK
           </button>
           <div className="flex items-center gap-3">
             <h1 className="text-[28px] font-bold font-grotesk">{promotion.eventTitle}</h1>
@@ -175,7 +182,7 @@ const AdminPromotionDetailPage = () => {
                   {promotion.paystackReference ?? "—"}
                 </span>
               </div>
-              {promotion.status === "approved" && (
+              {(promotion.status === "approved" || promotion.status === "expired") && (
                 <>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Live from</span>

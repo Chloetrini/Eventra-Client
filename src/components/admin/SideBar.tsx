@@ -12,6 +12,7 @@ import {
   Calendar,
   Building2,
   Users,
+  Star,
   TrendingUp,
   Wallet,
   Settings,
@@ -41,6 +42,7 @@ const manageItems = [
   { icon: Calendar, label: 'Events', path: '/admin/events' },
   { icon: Building2, label: 'Organizers', path: '/admin/organizers' },
   { icon: Users, label: 'Users', path: '/admin/users' },
+  { icon: Star, label: 'Promotions', path: '/admin/promotions' },
 ];
 
 const platformItems = [

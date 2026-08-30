@@ -20,7 +20,7 @@ export default function RecentActivityCard({ entries, isLoading }: RecentActivit
             audit log lives on the Reports page's "Audit log" tab), so this
             was a dead link. */}
         
-          href="/admin/reports?tab=audit"
+          <a href="/admin/reports?tab=audit"
           className={cn(buttonVariants({ variant: "link", size: "sm" }), "h-auto p-0")}
         >
           Audit log

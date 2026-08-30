@@ -80,12 +80,14 @@ export function UsersTable({ users, currency }: UsersTableProps) {
               <td className="px-4">
                 <Badge
                   className={
-                    user.isSuspended
+                    user.isDeleted
+                      ? "bg-muted text-muted-foreground hover:bg-muted rounded-[15px] w-[110px] h-[36px] font-semibold text-[13px]"
+                      : user.isSuspended
                       ? "bg-destructive/10 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 rounded-[15px] w-[110px] h-[36px] font-semibold text-[13px]"
                       : "bg-[#E4F1EB] dark:bg-[#0F6E56]/15 text-[#0F6E56] dark:text-[#4ADE80] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15 rounded-[15px] w-[110px] h-[36px] font-semibold text-[13px]"
                   }
                 >
-                  {user.isSuspended ? "SUSPENDED" : "ACTIVE"}
+                  {user.isDeleted ? "DELETED" : user.isSuspended ? "SUSPENDED" : "ACTIVE"}
                 </Badge>
               </td>
             </tr>

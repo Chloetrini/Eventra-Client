@@ -13,6 +13,7 @@ const FILTERS: { value: AdminUserStatusFilter; label: string }[] = [
   { value: "all", label: "All" },
   { value: "active", label: "Active" },
   { value: "suspended", label: "Suspended" },
+  { value: "deleted", label: "Deleted" },
 ];
 
 const PAGE_SIZE = 20;

@@ -59,3 +59,15 @@ export async function suspendAdminUser(id: string): Promise<void> {
 export async function unsuspendAdminUser(id: string): Promise<void> {
   await api.patch(`/admin/users/${id}/unsuspend`, {});
 }
+
+// PATCH /api/v1/admin/users/:id/delete — see deleteUser in admin.controller.ts.
+// A soft delete: blocks login and signs the account out, but keeps the
+// row (and past orders/records referencing it) intact.
+export async function deleteAdminUser(id: string): Promise<void> {
+  await api.patch(`/admin/users/${id}/delete`, {});
+}
+
+// PATCH /api/v1/admin/users/:id/restore — see restoreUser in admin.controller.ts.
+export async function restoreAdminUser(id: string): Promise<void> {
+  await api.patch(`/admin/users/${id}/restore`, {});
+}

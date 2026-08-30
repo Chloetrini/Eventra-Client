@@ -11,6 +11,12 @@ export interface AdminUserListItem {
   avatarUrl?: string;
   role: "attendee" | "organizer" | "admin";
   isSuspended: boolean;
+  // Soft delete — see deleteUser/restoreUser in admin.controller.ts. A
+  // deleted account is excluded from every list filter except "deleted",
+  // but keeping the field here means a row rendered from a "deleted"
+  // filter result can still show the right badge.
+  isDeleted?: boolean;
+  deletedAt?: string;
   createdAt: string;
   ordersCount: number;
   totalSpent: number;
@@ -30,6 +36,8 @@ export interface AdminUserDetail {
   avatarUrl?: string;
   role: "attendee" | "organizer" | "admin";
   isSuspended: boolean;
+  isDeleted?: boolean;
+  deletedAt?: string;
   createdAt: string;
   ordersCount: number;
   totalSpent: number;
@@ -49,4 +57,4 @@ export interface AdminUsersListMeta {
   hasMore: boolean;
 }
 
-export type AdminUserStatusFilter = "all" | "active" | "suspended";
+export type AdminUserStatusFilter = "all" | "active" | "suspended" | "deleted";

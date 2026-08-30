@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSearchParams, Link } from "react-router"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "react-toastify"
@@ -12,7 +12,7 @@ import { cn, formatDate, formatNaira } from "@/lib/utils"
 import { fetchMyEvents } from "@/lib/events-api"
 import { useOrganizerStatus } from "@/lib/organizer-api"
 import {
-  fetchPromotionPackages,
+  fetchPromotionPackages,  
   fetchMyPromotions,
   requestPromotion,
   type PromotionPackageId,
@@ -81,6 +81,14 @@ const Promotions = () => {
     queryFn: fetchMyPromotions,
   })
 
+  // Auto-select initial package once packages are loaded
+  useEffect(() => {
+    if (packages.length > 0 && !selectedPackageId) {
+      const defaultPkgId = packages.find((p) => p.popular)?.id ?? packages[0]?.id ?? null
+      setSelectedPackageId(defaultPkgId)
+    }
+  }, [packages, selectedPackageId])
+
   const promoteMutation = useMutation({
     mutationFn: () => {
       if (!selectedEventId || !selectedPackageId) {
@@ -90,8 +98,6 @@ const Promotions = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["my-promotions"] })
-      // Backend collects payment via Paystack before the promotion goes live —
-      // hand off to Paystack's hosted checkout.
       window.location.href = data.authorizationUrl
     },
     onError: (err) => {
@@ -99,8 +105,10 @@ const Promotions = () => {
     },
   })
 
-  const selectedPackage = packages.find(p => p.id === selectedPackageId)
-  const effectivePackageId = selectedPackageId ?? (packages.find(p => p.popular)?.id ?? packages[0]?.id ?? null)
+  // Helper to extract ID regardless of whether API uses _id or id
+  const getEventId = (event: (typeof myEvents)[number]) => event._id || (event as unknown as { id: string }).id
+  const selectedEvent = myEvents.find((e) => getEventId(e) === selectedEventId)
+  const selectedPackage = packages.find((p) => p.id === selectedPackageId)
 
   if (eventsLoading || packagesLoading) {
     return <PromotionSkeleton />
@@ -122,7 +130,6 @@ const Promotions = () => {
         </p>
       </div>
 
-      {/* Only show this for organizers who haven't finished onboarding — verified/pending organizers don't need it */}
       {showVerifyBanner && organizerStatus === "unverified" && (
         <Alert className="border-[#f1ebdd] bg-[#F4DFB6] dark:border-[#7A4E02]/40 dark:bg-[#7A4E02]/20">
           <LockKeyhole className="mt-3 text-[#7A4E02] dark:text-[#FBBF24]" />
@@ -168,19 +175,20 @@ const Promotions = () => {
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder={eventsLoading ? "Loading your events…" : "Select an event"}>
-                    {selectedEventId
-                      ? myEvents.find(e => e._id === selectedEventId)
-                        ? `${myEvents.find(e => e._id === selectedEventId)!.eventTitle} — ${myEvents.find(e => e._id === selectedEventId)!.status}`
-                        : selectedEventId
+                    {selectedEvent
+                      ? `${selectedEvent.eventTitle} — ${selectedEvent.status}`
                       : null}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  {myEvents.map(event => (
-                    <SelectItem key={event._id} value={event._id}>
-                      {event.eventTitle} — {event.status}
-                    </SelectItem>
-                  ))}
+                  {myEvents.map((event) => {
+                    const id = getEventId(event)
+                    return (
+                      <SelectItem key={id} value={id}>
+                        {event.eventTitle} — {event.status}
+                      </SelectItem>
+                    )
+                  })}
                 </SelectContent>
               </Select>
               {!eventsLoading && myEvents.length === 0 && (
@@ -199,8 +207,8 @@ const Promotions = () => {
                 <p className="text-xs text-muted-foreground">Loading packages…</p>
               )}
 
-              {packages.map(pkg => {
-                const isSelected = pkg.id === effectivePackageId
+              {packages.map((pkg) => {
+                const isSelected = pkg.id === selectedPackageId
                 return (
                   <button
                     key={pkg.id}
@@ -240,11 +248,8 @@ const Promotions = () => {
 
             <Button
               className="h-11 w-full bg-[#0A4F41] text-[#FFFFFF] hover:bg-[#0F766E]"
-              disabled={!selectedEventId || !effectivePackageId || promoteMutation.isPending}
-              onClick={() => {
-                setSelectedPackageId(effectivePackageId)
-                promoteMutation.mutate()
-              }}
+              disabled={!selectedEventId || !selectedPackageId || promoteMutation.isPending}
+              onClick={() => promoteMutation.mutate()}
             >
               {promoteMutation.isPending
                 ? "Starting checkout…"
@@ -268,7 +273,7 @@ const Promotions = () => {
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <ul className="flex flex-col gap-3">
-              {wherePromotedEventsAppear.map(item => (
+              {wherePromotedEventsAppear.map((item) => (
                 <li key={item.text} className="flex items-start gap-2 text-sm">
                   <item.icon className="mt-0.5 size-3.5 text-[#0F6E56] " />
                   {item.text}
@@ -339,4 +344,5 @@ const Promotions = () => {
     </div>
   )
 }
+
 export default Promotions

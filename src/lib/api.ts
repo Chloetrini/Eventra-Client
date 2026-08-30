@@ -15,25 +15,7 @@ export const axiosClient = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-// auth.middleware.ts (backend) sends this exact string on every route that
-// requires a session and doesn't have one — verifySession, requireRole,
-// requireAdmin, all of it. It's meant as an API error code, not user-facing
-// copy: a login *attempt* that fails (wrong password, unverified email,
-// etc.) always gets its own specific message from auth.controller.ts
-// instead, so this string only ever means "some request needed a session
-// and there wasn't one" — that covers a genuinely expired session, but
-// also a brand-new session where the just-set login cookie hasn't fully
-// landed yet (see the login()/googleAuth() comments in auth.context.tsx
-// for the specific case this caught on mobile). Either way it's not
-// something to assert as fact ("your session expired") when it might be
-// someone's very first login attempt. Most mutations across the app do
-// `onError: (err) => toast.error(err.message)` with no filtering, and
-// react-toastify's container lives at the app root, so this raw string can
-// end up as a toast sitting on top of the *login* page after a redirect —
-// reading as a non sequitur while the person is already looking at the
-// login form. Rewrite it once here, at the single place every
-// request/upload error passes through, into wording that's accurate
-// either way.
+
 const SESSION_MISSING_MESSAGE = 'Unauthorized: please log in to continue'
 function friendlyErrorMessage(message: string | undefined): string | undefined {
   return message === SESSION_MISSING_MESSAGE ? "We couldn't verify your session. Please try again." : message

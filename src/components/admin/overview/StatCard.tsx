@@ -9,7 +9,7 @@ export default function StatCard({ stat }: { stat: StatCardData }) {
   return (
     <div className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+        <p className="text-[13px] md:text-[15px] font-[400] tracking-wide text-muted-foreground uppercase">
           {stat.label}
         </p>
         <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
@@ -17,7 +17,7 @@ export default function StatCard({ stat }: { stat: StatCardData }) {
         </span>
       </div>
 
-      <p className="mt-2 text-xl font-bold text-foreground">{stat.value}</p>
+      <p className="mt-2 text-[20px] font-[700] md:text-[34px] font-space  text-foreground">{stat.value}</p>
 
       {stat.trend ? (
         <div className="mt-1 flex items-center gap-1 text-xs">

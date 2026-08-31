@@ -1,4 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth, type User } from "@/context/auth.context";
 import { useUpdateProfile } from "@/hooks/use-profile";
 import type { CurrencyPreference as CurrencyPreferenceValue } from "@/lib/user-api";
@@ -37,6 +38,7 @@ export function CurrencyPreference({
 }: CurrencyPreferenceProps) {
   const { user, setUser } = useAuth();
   const updateProfileMutation = useUpdateProfile();
+  const queryClient = useQueryClient();
 
   const handleChange = async (value: string) => {
     if (!value) return;
@@ -45,6 +47,17 @@ export function CurrencyPreference({
         currencyPreference: value as CurrencyPreferenceValue,
       });
       setUser(updatedUser as User);
+      // Every price on the site is converted server-side per request from
+      // resolveViewerCurrency (backend, lib/viewerCurrency.ts) — changing
+      // the preference here doesn't touch anything already sitting in the
+      // React Query cache (home page, explore, tickets, dashboard/admin
+      // revenue, etc.), so without this, prices kept showing the old
+      // currency everywhere until a full page refresh forced a refetch.
+      // A blanket invalidateQueries() is the safe fix: currency changes
+      // are rare, and this guarantees every currency-dependent view on the
+      // site refetches, instead of trying to enumerate every query key
+      // that happens to show a price today (and missing new ones later).
+      queryClient.invalidateQueries();
       toast.success("Currency updated");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not update currency");

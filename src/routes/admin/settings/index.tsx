@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import { Plus, DotIcon, Trash2, ShieldAlert } from "lucide-react"
 import { toast } from "react-toastify"
 import { Button } from "@/components/ui/button"
@@ -22,7 +23,9 @@ import { useAuth } from "@/context/auth.context"
 import { useAdminTeam, useDeleteAdmin, useInviteAdmin, useUpdateAdminRole } from "@/hooks/use-admin-team"
 import { usePlatformSettings, useUpdatePlatformSettings } from "@/hooks/use-platform-settings"
 import type { AdminTier } from "@/types/admin-settings"
-import { CurrencyPreference } from "@/components/profile-settings/CurrencyPreference"
+import { useUpdateProfile } from "@/hooks/use-profile"
+import type { User } from "@/context/auth.context"
+import type { CurrencyPreference as CurrencyPreferenceValue } from "@/lib/user-api"
 
 interface ToggleSwitchProps {
   checked: boolean
@@ -245,7 +248,7 @@ function DeleteAdminDialog({ id, name }: { id: string; name: string }) {
 }
 
 export default function PlatformSettings() {
-  const { user } = useAuth()
+  const { user, setUser } = useAuth()
   // Owner-tier only — mirrors requireAdminTier('owner') on every
   // /admin/settings/* route on the backend (see admin.routes.ts). A
   // missing adminRole is treated as owner, same default the backend uses
@@ -253,10 +256,11 @@ export default function PlatformSettings() {
   const isOwner = user?.role === "admin" && (user.adminRole ?? "owner") === "owner"
 
   const { data: settings } = usePlatformSettings()
-  const { mutate: updateSettings, isPending: isSavingSettings } = useUpdatePlatformSettings()
+  const { mutate: updateSettings } = useUpdatePlatformSettings()
+  const updateProfileMutation = useUpdateProfile()
+  const queryClient = useQueryClient()
 
   const [platformFee, setPlatformFee] = useState(3)
-  const [currency, setCurrency] = useState("")
   const [payoutHold, setPayoutHold] = useState("")
 
   // The fetched row is the source of truth; local state only tracks
@@ -265,7 +269,6 @@ export default function PlatformSettings() {
   useEffect(() => {
     if (!settings) return
     setPlatformFee(settings.platformFeePercent)
-    setCurrency(settings.currency)
     setPayoutHold(settings.payoutHold)
   }, [settings])
 
@@ -282,30 +285,37 @@ export default function PlatformSettings() {
     )
   }
 
-  // NOTE: this is display-only, and safe to fire freely. It used to
-  // re-convert every stored money field platform-wide on every change
-  // (see updatePlatformSettings on the backend for how that mechanism
-  // caused a real currency-corruption incident) — that's retired now.
-  // Changing this only changes the sitewide DEFAULT a viewer sees when
-  // they haven't set their own currencyPreference; nothing stored ever
-  // moves. The `disabled={isSavingSettings}` on the Select below just
-  // avoids two in-flight saves stepping on each other's toast/rollback,
-  // not a data-safety guard.
-  const onCurrencyChange = (val: string) => {
-    if (isSavingSettings) return
-    setCurrency(val)
-    updateSettings(
-      { currency: val as "Naira" | "Dollar" | "Cedis" | "Pound" },
-      {
-        onError: (err: Error) => {
-          toast.error(err.message || "Could not save currency.")
-          // Roll the dropdown back to whatever's actually saved — leaving
-          // it on the failed target would show a currency the backend
-          // never actually switched to.
-          setCurrency(settings?.currency ?? "")
-        },
-      }
-    )
+  // Per Chloe's explicit request, this Select no longer writes to
+  // PlatformSettings.currency (the sitewide default every viewer without
+  // their own preference falls back to) — it now writes this admin's own
+  // `currencyPreference` on their User account, the exact same call the
+  // old standalone "My display currency" card (CurrencyPreference
+  // component) made. That's why it's positioned inside "Platform
+  // Configuration" but behaves personally: changing it only changes what
+  // this admin sees across Overview/Revenue/Payouts/Refunds, not what any
+  // other admin or organizer sees. PlatformSettings.currency itself is
+  // left alone on the backend (still there, just no longer driven from
+  // this control) rather than removed, per the additive-only rule — if a
+  // true sitewide-default control is wanted again later it can be
+  // reintroduced deliberately rather than guessed at here.
+  const onCurrencyChange = async (val: string) => {
+    if (!val || updateProfileMutation.isPending) return
+    try {
+      const updatedUser = await updateProfileMutation.mutateAsync({
+        currencyPreference: val as CurrencyPreferenceValue,
+      })
+      setUser(updatedUser as User)
+      // This duplicates the shared CurrencyPreference component's own
+      // change handler (see its doc comment) instead of using the
+      // component directly, and it was missing the same fix: every price
+      // on the site is a separately cached React Query request, so without
+      // invalidating the cache here too, Overview/Revenue/Payouts/Refunds
+      // kept showing the old currency for this admin until a full reload.
+      queryClient.invalidateQueries()
+      toast.success("Currency updated")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not update currency")
+    }
   }
 
   const onPayoutHoldChange = (val: string) => {
@@ -362,23 +372,6 @@ export default function PlatformSettings() {
         </p>
       </div>
 
-      {/* My display currency — a personal preference (this admin account
-          only), separate from "Platform Configuration" below which sets
-          the sitewide DEFAULT every viewer without their own preference
-          falls back to. Both use the same four currencies. */}
-      <Card>
-        <CardHeader>
-          <CardTitle>My display currency</CardTitle>
-        </CardHeader>
-        <div className="border mx-4"/>
-        <CardContent className="flex flex-col gap-2">
-          <CurrencyPreference
-            title="Currency"
-            description="Changes how prices show on your own dashboard — Overview, Revenue, Payouts, Refunds. Doesn't affect what other admins or organizers see."
-          />
-        </CardContent>
-      </Card>
-
       {/* Commission rate */}
       <Card>
         <CardHeader>
@@ -411,7 +404,11 @@ export default function PlatformSettings() {
         <CardContent className="flex flex-col gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">CURRENCY</label>
-            <Select value={currency} onValueChange={(val) => onCurrencyChange(val ?? '')} disabled={isSavingSettings}>
+            <Select
+              value={user?.currencyPreference ?? ""}
+              onValueChange={(val) => onCurrencyChange(val ?? '')}
+              disabled={updateProfileMutation.isPending}
+            >
               <SelectTrigger className="w-49.75">
                 <SelectValue placeholder="Choose your currency"/>
               </SelectTrigger>
@@ -422,7 +419,10 @@ export default function PlatformSettings() {
                 <SelectItem value="Pound">Pound (£)</SelectItem>
               </SelectContent>
             </Select>
-            {isSavingSettings && (
+            <p className="text-xs text-muted-foreground">
+              Changes how prices show on your own dashboard only — not what other admins or organizers see.
+            </p>
+            {updateProfileMutation.isPending && (
               <p className="text-xs text-muted-foreground">Saving…</p>
             )}
           </div>

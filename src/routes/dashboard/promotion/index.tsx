@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSearchParams, Link } from "react-router"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "react-toastify"
@@ -8,11 +8,11 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Alert, AlertTitle, AlertDescription, AlertAction } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { cn, formatDate } from "@/lib/utils"
+import { cn, formatDate, formatNaira } from "@/lib/utils"
 import { fetchMyEvents } from "@/lib/events-api"
 import { useOrganizerStatus } from "@/lib/organizer-api"
 import {
-  fetchPromotionPackages,
+  fetchPromotionPackages,  
   fetchMyPromotions,
   requestPromotion,
   type PromotionPackageId,
@@ -55,10 +55,6 @@ const PromotionStatusBadge = ({ status }: { status: PromotionStatus }) => {
   )
 }
 
-const formatNaira = (amount: number) => {
-  return `₦${amount.toLocaleString()}`
-}
-
 const Promotions = () => {
   const [searchParams] = useSearchParams()
   const preselectedEventId = searchParams.get("event")
@@ -85,6 +81,14 @@ const Promotions = () => {
     queryFn: fetchMyPromotions,
   })
 
+  // Auto-select initial package once packages are loaded
+  useEffect(() => {
+    if (packages.length > 0 && !selectedPackageId) {
+      const defaultPkgId = packages.find((p) => p.popular)?.id ?? packages[0]?.id ?? null
+      setSelectedPackageId(defaultPkgId)
+    }
+  }, [packages, selectedPackageId])
+
   const promoteMutation = useMutation({
     mutationFn: () => {
       if (!selectedEventId || !selectedPackageId) {
@@ -94,8 +98,6 @@ const Promotions = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["my-promotions"] })
-      // Backend collects payment via Paystack before the promotion goes live —
-      // hand off to Paystack's hosted checkout.
       window.location.href = data.authorizationUrl
     },
     onError: (err) => {
@@ -103,8 +105,10 @@ const Promotions = () => {
     },
   })
 
-  const selectedPackage = packages.find(p => p.id === selectedPackageId)
-  const effectivePackageId = selectedPackageId ?? (packages.find(p => p.popular)?.id ?? packages[0]?.id ?? null)
+  // Helper to extract ID regardless of whether API uses _id or id
+  const getEventId = (event: (typeof myEvents)[number]) => event._id || (event as unknown as { id: string }).id
+  const selectedEvent = myEvents.find((e) => getEventId(e) === selectedEventId)
+  const selectedPackage = packages.find((p) => p.id === selectedPackageId)
 
   if (eventsLoading || packagesLoading) {
     return <PromotionSkeleton />
@@ -115,7 +119,7 @@ const Promotions = () => {
 
       <div>
         <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-         Grow
+          Grow
         </p>
         <h2 className="mt-1 flex items-center gap-2 text-lg font-bold">
           <Star className="border border-border rounded-lg bg-[#E4F1EB] size-3 text-[#4A4451] w-[35px] h-[29px] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]" />
@@ -126,10 +130,9 @@ const Promotions = () => {
         </p>
       </div>
 
-      {/* Only show this for organizers who haven't finished onboarding — verified/pending organizers don't need it */}
       {showVerifyBanner && organizerStatus === "unverified" && (
         <Alert className="border-[#f1ebdd] bg-[#F4DFB6] dark:border-[#7A4E02]/40 dark:bg-[#7A4E02]/20">
-            <LockKeyhole className="mt-3 text-[#7A4E02] dark:text-[#FBBF24]"/>
+          <LockKeyhole className="mt-3 text-[#7A4E02] dark:text-[#FBBF24]" />
           <AlertTitle className="flex items-center gap-2 text-[#1A1523] dark:text-zinc-50">
             Finish setting up your account
             <Badge className="border-transparent bg-[#E4F1EB] text-[#1A1523] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80]">
@@ -171,14 +174,21 @@ const Promotions = () => {
                 disabled={eventsLoading || myEvents.length === 0}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder={eventsLoading ? "Loading your events…" : "Select an event"} />
+                  <SelectValue placeholder={eventsLoading ? "Loading your events…" : "Select an event"}>
+                    {selectedEvent
+                      ? `${selectedEvent.eventTitle} — ${selectedEvent.status}`
+                      : null}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  {myEvents.map(event => (
-                    <SelectItem key={event._id} value={event._id}>
-                      {event.eventTitle} — {event.status}
-                    </SelectItem>
-                  ))}
+                  {myEvents.map((event) => {
+                    const id = getEventId(event)
+                    return (
+                      <SelectItem key={id} value={id}>
+                        {event.eventTitle} — {event.status}
+                      </SelectItem>
+                    )
+                  })}
                 </SelectContent>
               </Select>
               {!eventsLoading && myEvents.length === 0 && (
@@ -197,8 +207,8 @@ const Promotions = () => {
                 <p className="text-xs text-muted-foreground">Loading packages…</p>
               )}
 
-              {packages.map(pkg => {
-                const isSelected = pkg.id === effectivePackageId
+              {packages.map((pkg) => {
+                const isSelected = pkg.id === selectedPackageId
                 return (
                   <button
                     key={pkg.id}
@@ -224,7 +234,7 @@ const Promotions = () => {
                       <p className="mt-1 text-sm text-muted-foreground">{pkg.description}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-[#0A4F41] dark:text-[#4ADE80]">{formatNaira(pkg.priceNaira)}</p>
+                      <p className="font-semibold text-[#0A4F41] dark:text-[#4ADE80]">{formatNaira(pkg.priceNaira, pkg.currency)}</p>
                       {isSelected && (
                         <span className="flex size-4 items-center justify-center rounded-full bg-[#0A4F41] text-[#FFFFFF]">
                           <Check className="size-3" />
@@ -238,21 +248,18 @@ const Promotions = () => {
 
             <Button
               className="h-11 w-full bg-[#0A4F41] text-[#FFFFFF] hover:bg-[#0F766E]"
-              disabled={!selectedEventId || !effectivePackageId || promoteMutation.isPending}
-              onClick={() => {
-                setSelectedPackageId(effectivePackageId)
-                promoteMutation.mutate()
-              }}
+              disabled={!selectedEventId || !selectedPackageId || promoteMutation.isPending}
+              onClick={() => promoteMutation.mutate()}
             >
               {promoteMutation.isPending
                 ? "Starting checkout…"
                 : selectedPackage
-                  ? `Promote for ${formatNaira(selectedPackage.priceNaira)}`
+                  ? `Promote for ${formatNaira(selectedPackage.priceNaira, selectedPackage.currency)}`
                   : "Choose a package"}
             </Button>
 
             <span className="flex gap-2 justify-center items-center text-xs text-muted-foreground">
-              <CircleAlert size={12}/>
+              <CircleAlert size={12} />
               <p>
                 Payment is via Paystack. Promotions go live once an admin approves.
               </p>
@@ -266,7 +273,7 @@ const Promotions = () => {
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <ul className="flex flex-col gap-3">
-              {wherePromotedEventsAppear.map(item => (
+              {wherePromotedEventsAppear.map((item) => (
                 <li key={item.text} className="flex items-start gap-2 text-sm">
                   <item.icon className="mt-0.5 size-3.5 text-[#0F6E56] " />
                   {item.text}
@@ -300,7 +307,8 @@ const Promotions = () => {
                   <th className="px-(--card-spacing) py-2 font-normal">Event</th>
                   <th className="px-(--card-spacing) py-2 font-normal">Package</th>
                   <th className="px-(--card-spacing) py-2 font-normal">Placement</th>
-                  <th className="px-(--card-spacing) py-2 font-normal">Dates</th>
+                  <th className="px-(--card-spacing) py-2 font-normal">Starts</th>
+                  <th className="px-(--card-spacing) py-2 font-normal">Ends</th>
                   <th className="px-(--card-spacing) py-2 font-normal">Spend</th>
                   <th className="px-(--card-spacing) py-2 font-normal">Status</th>
                 </tr>
@@ -311,14 +319,19 @@ const Promotions = () => {
                     <td className="px-(--card-spacing) py-3 font-semibold text-foreground">{promo.eventTitle}</td>
                     <td className="px-(--card-spacing) py-3 text-foreground">{promo.packageLabel}</td>
                     <td className="px-(--card-spacing) py-3 text-foreground">{promo.placementLabel ?? "-"}</td>
+                    {/* Was a single "Dates" column showing "start – end" as
+                        one dashed string — split into their own Starts/Ends
+                        columns so the table stops shifting/wobbling when
+                        one date is longer than the other. */}
                     <td className="px-(--card-spacing) py-3 text-foreground">
-                      {promo.startsAt && promo.endsAt
-                        ? `${formatDate(promo.startsAt)} – ${formatDate(promo.endsAt)}`
-                        : "Starts once approved"}
+                      {promo.startsAt ? formatDate(promo.startsAt) : "Once approved"}
+                    </td>
+                    <td className="px-(--card-spacing) py-3 text-foreground">
+                      {promo.endsAt ? formatDate(promo.endsAt) : "—"}
                     </td>
                     <td className="px-(--card-spacing) py-3">
                       <p className="font-bold text-foreground">
-                        {promo.priceNaira !== null ? formatNaira(promo.priceNaira) : "-"}
+                        {promo.priceNaira !== null ? formatNaira(promo.priceNaira, promo.currency) : "-"}
                       </p>
                       {!promo.paid && (
                         <p className="text-xs text-foreground font-bold">awaiting payment</p>
@@ -337,4 +350,5 @@ const Promotions = () => {
     </div>
   )
 }
+
 export default Promotions

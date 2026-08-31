@@ -56,9 +56,9 @@ export default function DashboardPage() {
   const [period, setPeriod] = useState<RevenuePeriod>("30d");
   const { data, isLoading, isError } = useDashboard(period);
   const navigate = useNavigate();
-  const { status } = useOrganizerStatus();
-  const { bankStatus } = useOrganizerBankStatus();
-  const { isProfileComplete } = useOrganizerProfileComplete();
+  const { status, isLoading: statusLoading } = useOrganizerStatus();
+  const { bankStatus, isLoading: bankStatusLoading } = useOrganizerBankStatus();
+  const { isProfileComplete, isLoading: profileCompleteLoading } = useOrganizerProfileComplete();
 
   if (isLoading) return <DashboardPageSkeleton />;
   if (isError || !data) {
@@ -81,11 +81,23 @@ export default function DashboardPage() {
   return (
     
     <div className="space-y-6">
-      <AccountReviewBanner 
-        status={status} 
-        bankStatus={bankStatus}
-        isProfileComplete={isProfileComplete}
-        />
+      {/* useOrganizerStatus/useOrganizerBankStatus/useOrganizerProfileComplete
+          each fire their own /organizers/profile request, separate from
+          (and not covered by) the isLoading gate above — that one only
+          covers useDashboard. Before this, all three defaulted to their
+          "not verified yet" value (status: "unverified", bankStatus:
+          "unverified", isProfileComplete: false) while still loading, so
+          an already-verified organizer briefly saw the "Finish setting up
+          your account" banner flash on every page load before it
+          disappeared once the real data came back. Now the banner simply
+          doesn't render until all three have resolved. */}
+      {!statusLoading && !bankStatusLoading && !profileCompleteLoading && (
+        <AccountReviewBanner
+          status={status}
+          bankStatus={bankStatus}
+          isProfileComplete={isProfileComplete}
+          />
+      )}
 
       <div>
         <p className="text-[10px] font-bold font-space text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-widest mb-1">
@@ -102,7 +114,7 @@ export default function DashboardPage() {
       <StatsCards stats={data.stats} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <RevenueChart data={data.revenueSeries} period={period} onPeriodChange={setPeriod} />
+        <RevenueChart data={data.revenueSeries} period={period} onPeriodChange={setPeriod} currency={data.currency} />
         <TicketsByTypeChart data={data.ticketsByType} />
       </div>
 

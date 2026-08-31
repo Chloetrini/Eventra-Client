@@ -18,8 +18,28 @@ export function FeaturedEventCard({ event, onGetTickets }: FeaturedEventCardProp
     hour12: true,
   });
 
+  // The whole spotlight card navigates to the event now, not just the
+  // "Get tickets" button — same click target the rest of the app's event
+  // cards use (see EventCard). This component has no router import of its
+  // own; it goes through onGetTickets, whatever the caller wired it to
+  // (Explore's spotlight passes `navigate(`/events/${slug}`)`), so the
+  // card and the button both just call the same prop rather than the card
+  // needing its own <Link>.
+  const goToEvent = () => onGetTickets?.(event.slug);
+
   return (
-    <article className="flex flex-col md:flex-row overflow-hidden rounded-2xl border border-orange-200 dark:border-orange-900/40 gap-6 md:gap-[35px] w-full  md:h-[231px]">
+    <article
+      onClick={goToEvent}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          goToEvent();
+        }
+      }}
+      className="flex flex-col md:flex-row overflow-hidden rounded-2xl border border-orange-200 dark:border-orange-900/40 gap-6 md:gap-[35px] w-full  md:h-[231px] cursor-pointer"
+    >
       <div className="relative aspect-[4/3] md:aspect-auto w-full md:w-[314px] md:shrink-0">
         <img
           src={event.coverImage}
@@ -47,7 +67,13 @@ export function FeaturedEventCard({ event, onGetTickets }: FeaturedEventCardProp
         <div className="mt-2 flex flex-wrap items-center gap-[24px]">
           <span className="md:text-[20px] text-[18px] font-[700] font-mono text-foreground">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice, event.currency)}</span>
           <Button
-            onClick={() => onGetTickets?.(event.slug)}
+            onClick={(e) => {
+              // Stop this from also bubbling to the card's own onClick
+              // above — harmless either way (both just call goToEvent),
+              // but this keeps it to a single call.
+              e.stopPropagation();
+              goToEvent();
+            }}
             className="bg-[#0F6E56] hover:bg-emerald-800 w-[122px] h-[42px] font-[700] text-[15px]"
           >
             Get tickets

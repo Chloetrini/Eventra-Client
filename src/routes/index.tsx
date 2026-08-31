@@ -299,66 +299,70 @@ const routes = [
               },
             },
 
-                        lazy: async () => {
-                            const { default: Component } =
-                                await import("@/routes/auth/verify-otp/index");
-                            return { Component };
-                        },
-                    },
-                    {
-                        path: "forgot-password",
-                        handle: {
-                            seo: {
-                                title: "forgot password",
-                                description: "reset your password.",
-                            }
-                        },
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/auth/verify-otp/index");
+              return { Component };
+            },
+          },
+          {
+            path: "forgot-password",
+            handle: {
+              seo: {
+                title: "forgot password",
+                description: "reset your password.",
+              },
+            },
 
-                        lazy: async () => {
-                            const { default: Component } =
-                                await import("@/routes/auth/forgot-password/index");
-                            return { Component };
-                        },
-                    },
-                    {
-                        path: "organizer",
-                        children: [
-                            {
-                                path: "login",
-                                handle: {
-                                    seo: {
-                                        title: "organizer login",
-                                        description: "sign in to your organizer account.",
-                                    }
-                                },
-                                lazy: async () => {
-                                    const { default: Component } =
-                                        await import("@/routes/auth/login/index");
-                                    return { Component };
-                                },
-                            },
-                            {
-                                path: "register",
-                                handle: {
-                                    seo: {
-                                        title: "organizer sign up",
-                                        description: "create your organizer account.",
-                                    }
-                                },
-                                lazy: async () => {
-                                    const { default: Component } =
-                                        await import("@/routes/auth/register/index");
-                                    return { Component };
-                                },
-                            },
-                            {
-                                path: "reset-password",
-                                handle: {
-                                    seo: {
-                                        title: "organizer reset password",
-                                        description: "reset your password.",
-                                    }
-                                },
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/auth/forgot-password/index");
+              return { Component };
+            },
+          },
+          {
+            path: "organizer",
+            children: [
+              {
+                index: true,
+                element: <Navigate to="login" replace />,
+              },
+              {
+                path: "login",
+                handle: {
+                  seo: {
+                    title: "organizer login",
+                    description: "sign in to your organizer account.",
+                  },
+                },
+                lazy: async () => {
+                  const { default: Component } =
+                    await import("@/routes/auth/login/index");
+                  return { Component };
+                },
+              },
+              {
+                path: "register",
+                handle: {
+                  seo: {
+                    title: "organizer sign up",
+                    description: "create your organizer account.",
+                  },
+                },
+                lazy: async () => {
+                  const { default: Component } =
+                    await import("@/routes/auth/register/index");
+                  return { Component };
+                },
+              },
+              {
+                path: "reset-password",
+                handle: {
+                  seo: {
+                    title: "organizer reset password",
+                    description: "reset your password.",
+                  },
+                },
 
                 lazy: async () => {
                   const { default: Component } =
@@ -439,10 +443,70 @@ const routes = [
                         ],
                     },
                 ],
-            },
-            {
-                path: "onboarding",
-                Component: Onboardinglayout,
+              },
+              {
+                path: "promotions",
+                children: [
+                  {
+                    index: true,
+                    handle: {
+                      seo: {
+                        title: "Admin Promotions | Eventra",
+                        description: "Every promotion ever requested, its status, and when it goes live or expires.",
+                      },
+                    },
+                    lazy: async () => {
+                      const { default: Component } =
+                        await import("@/routes/admin/promotions/index");
+                      return { Component };
+                    },
+                  },
+                  {
+                    path: ":eventId",
+                    handle: {
+                      seo: {
+                        title: "Admin Promotion Details | Eventra",
+                        description: "Review a promotion request before moderation.",
+                      },
+                    },
+                    lazy: async () => {
+                      const { default: Component } =
+                        await import("@/routes/admin/promotions/detail");
+                      return { Component };
+                    },
+                  },
+                ],
+              },
+              {
+                path: "settings",
+                handle: {
+                  seo: {
+                    title: "admin settings",
+                    description: "Manage the organisers and attendees.",
+                  },
+                },
+                lazy: async () => {
+                  const { default: Component } =
+                    await import("@/routes/admin/settings/index");
+                  return { Component };
+                },
+              },
+              {
+                path: "payouts",
+                handle: {
+                  seo: {
+                    title: "admin payouts",
+                    description: "Manage the organisers payouts.",
+                  },
+                },
+                lazy: async () => {
+                  const { default: Component } =
+                    await import("@/routes/admin/payouts/index");
+                  return { Component };
+                },
+              },
+              {
+                path: "organizers",
                 children: [
                     {
                         index: true,
@@ -798,17 +862,44 @@ const routes = [
               },
               {
                 path: "promotion",
-                handle: {
-                  seo: {
-                    title: "Promote",
-                    description: "Promote your shows.",
+                children: [
+                  {
+                    index: true,
+                    handle: {
+                      seo: {
+                        title: "Promote",
+                        description: "Promote your shows.",
+                      },
+                    },
+                    lazy: async () => {
+                      const { default: Component } =
+                        await import("@/routes/dashboard/promotion");
+                      return { Component };
+                    },
                   },
-                },
-                lazy: async () => {
-                  const { default: Component } =
-                    await import("@/routes/dashboard/promotion");
-                  return { Component };
-                },
+                  {
+                    // Where Paystack sends an organizer's browser back
+                    // after paying to promote an event — see the doc
+                    // comment on requestPromotion (promotion.controller.ts)
+                    // and this page itself
+                    // (routes/dashboard/promotion/callback/index.tsx).
+                    // Previously pointed at /organizer/promotions/callback,
+                    // a URL nothing on the frontend ever served — a 404
+                    // right after paying.
+                    path: "callback",
+                    handle: {
+                      seo: {
+                        title: "Confirming promotion payment",
+                        description: "Confirming your promotion payment.",
+                      },
+                    },
+                    lazy: async () => {
+                      const { default: Component } =
+                        await import("@/routes/dashboard/promotion/callback");
+                      return { Component };
+                    },
+                  },
+                ],
               },
               {
                 path: "payouts",

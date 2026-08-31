@@ -4,7 +4,7 @@ import { useEvents, useCategories, useSpotlightEvents } from "@/hooks/use-event"
 import { EventGrid } from "@/components/events/event-grid";
 import { FeaturedEventsCarousel } from "@/components/events/featured-event-carousel";
 import { FilterSidebar } from "@/components/events/filters/filter-sidebar";
-import { type EventFilters } from "@/types/event-types";
+import { DEFAULT_FILTERS, type EventFilters } from "@/types/event-types";
 import { Button } from "@/components/ui/button";
 import { TopBarFilter } from "@/components/events/filters/filter-topbar";
 import { useEffect } from "react";
@@ -21,20 +21,20 @@ export default function ExplorePage() {
   const { data, isLoading, isFetching, isError, refetch ,loadMore} = useEvents(filters);
   const { categories } = useCategories();
   const events = data?.events ?? [];
-  // Was `events.filter(e => e.isPromoted)` — that only ever showed whatever
-  // promoted events happened to be on the CURRENT filtered/paginated page,
-  // so the carousel emptied out the moment a search or filter excluded
-  // them, and it had no concept of Explore's own "spotlight" placement
-  // tier vs. the home page's hero/featured tiers. Now it's a real,
-  // independent fetch of the events promoted specifically to Explore
-  // (spotlight package — also includes anything promoted to hero, since
-  // hero implies broader visibility), unaffected by the grid's filters.
+
   const { events: featured } = useSpotlightEvents("spotlight", 8);
-  // The grid always shows every event that matches the current filters,
-  // promoted or not; the carousel above is just an extra highlight on top,
-  // not the only place a promoted event appears.
+ 
   const rest = events;
   const { savedIds, toggleSave } = useSavedEvents();
+
+ 
+  const isFiltering =
+    Boolean(filters.search) ||
+    filters.categories.length > 0 ||
+    filters.when !== DEFAULT_FILTERS.when ||
+    filters.price !== DEFAULT_FILTERS.price ||
+    filters.access !== DEFAULT_FILTERS.access ||
+    Boolean(filters.state);
 
   const stateLabel = filters.state || "All Nigeria";
   const monthLabel = new Date().toLocaleString("en-NG", {
@@ -99,7 +99,7 @@ export default function ExplorePage() {
         </div>
 
         <main className="min-w-0 space-y-6">
-          {featured.length > 0 && (
+          {featured.length > 0 && !isFiltering && (
             <FeaturedEventsCarousel
               events={featured}
               onGetTickets={(slug) => navigate(`/events/${slug}`)}

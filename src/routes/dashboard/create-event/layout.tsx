@@ -45,6 +45,15 @@ const emptyValues: EventFormValues = {
   tickets: []
 }
 
+function getAtPath(obj: unknown, path: string): unknown {
+  return path
+    .split(".")
+    .reduce<unknown>(
+      (acc, key) => (acc && typeof acc === "object" ? (acc as Record<string, unknown>)[key] : undefined),
+      obj
+    )
+}
+
 const getSavedValues = (): Partial<EventFormValues> => {
   try {
     const raw = localStorage.getItem(CREATE_EVENT_STORAGE_KEY)
@@ -144,10 +153,10 @@ const CreateEventLayout = () => {
       hasLineup,
       acts: hasLineup
         ? event.lineup.map((member: any) => ({
-            name: member.name ?? "",
-            role: member.role ?? "",
-            imageUrl: member.imageUrl ?? "",
-          }))
+          name: member.name ?? "",
+          role: member.role ?? "",
+          imageUrl: member.imageUrl ?? "",
+        }))
         : [{ name: "", role: "", imageUrl: "" }],
       hasAgePolicy: Boolean(event.agePolicy),
       policyText: event.agePolicy ?? "",
@@ -205,11 +214,21 @@ const CreateEventLayout = () => {
   }, [editEventId]);
 
   useEffect(() => {
-    const subscription = methods.watch((values) => {
+    const subscription = methods.watch((values, { name }) => {
       try {
         localStorage.setItem(CREATE_EVENT_STORAGE_KEY, JSON.stringify(values))
       } catch {
         // storage full or unavailable — form still works in-memory
+      }
+
+      // clear stale errors immediately once the field becomes valid,
+      // instead of waiting for blur (RHF mode:"onBlur" quirk — see
+      // https://github.com/react-hook-form/react-hook-form/issues/3122).
+      // Uses a path-aware getter (not errors[name]) because array fields
+      // like "acts.0.name" or "tickets.2.price" need a nested lookup —
+      // errors is shaped as errors.acts?.[0]?.name, not flat-keyed.
+      if (name && getAtPath(methods.formState.errors, name)) {
+        methods.trigger(name as keyof EventFormValues)
       }
     })
     return () => subscription.unsubscribe()

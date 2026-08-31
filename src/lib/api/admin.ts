@@ -100,7 +100,12 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
       count: raw.needsAction.pendingEventsCount,
       label: "Events pending review",
       ctaLabel: "Review",
-      href: "/admin/events?status=pending",
+      // Was "/admin/events?status=pending" — the standalone Events page
+      // filters via its own button state, not a URL param, so that link
+      // silently landed on the unfiltered "All" tab. The Approvals page's
+      // Events tab is the actual pending-review queue, and it reads its
+      // starting tab from ?tab= (see routes/admin/approval/index.tsx).
+      href: "/admin/approvals?tab=events",
       variant: "default" as const,
     },
     {
@@ -108,7 +113,10 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
       count: raw.needsAction.organizersToVerifyCount,
       label: "Organizers to verify",
       ctaLabel: "Review",
-      href: "/admin/organizers?status=pending",
+      // Same fix as events-pending above — /admin/organizers doesn't read
+      // a status query param either; the Approvals page's Organizers tab
+      // is where pending verification actually lives.
+      href: "/admin/approvals?tab=organizers",
       variant: "default" as const,
     },
     {
@@ -116,7 +124,10 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
       count: raw.needsAction.promotionsPendingCount,
       label: "Promotions pending",
       ctaLabel: "Review",
-      href: "/admin/promotions?status=pending",
+      // Was "/admin/promotions?status=pending" — that's the standalone
+      // all-promotions list page, not the pending-review queue. Pending
+      // promotions are reviewed on the Approvals page's Promotions tab.
+      href: "/admin/approvals?tab=promotions",
       variant: "default" as const,
     },
     {
@@ -124,7 +135,12 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
       count: raw.needsAction.pendingRefundsCount,
       label: "Refund requests",
       ctaLabel: "Review",
-      href: "/admin/refunds-dispute",
+      // Was "/admin/refunds-dispute" — the actual route is "/admin/refunds"
+      // (refunds-dispute is just the folder name under src/routes); that
+      // typo made this a dead link. Refund requests is already the default
+      // tab on that page, but ?tab= is passed explicitly for clarity and
+      // to stay correct if that default ever changes.
+      href: "/admin/refunds?tab=requests",
       variant: "default" as const,
     },
     // refundsToInvestigateCount is null until the backend actually tracks
@@ -137,7 +153,7 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
             count: raw.needsAction.refundsToInvestigateCount,
             label: "Refunds to investigate",
             ctaLabel: "Investigate",
-            href: "/admin/refunds-dispute",
+            href: "/admin/refunds?tab=disputes",
             variant: "urgent" as const,
           },
         ]

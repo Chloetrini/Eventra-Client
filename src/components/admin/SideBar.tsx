@@ -176,15 +176,15 @@ const SideBar: React.FC<AdminSideBarProps> = ({ isOpen = false, onClose }) => {
             between orgs), so no chevron / dropdown affordance here. */}
         <div className="px-4 pb-4 border-b border-border">
           <div className="flex items-center gap-3 rounded-lg border border-border bg-muted px-3 py-2.5">
-            <UserAvatar avatarUrl={user?.avatarUrl} name={user?.fullname} className="h-8 w-8 text-xs shrink-0" />
+            <UserAvatar avatarUrl={user?.avatarUrl} name={user?.fullname} className="h-8 w-8 rounded-[6px] text-xs shrink-0" />
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-foreground">
-                {user?.fullname || 'Admin Console'}
+                Admin Console
               </p>
               {/* Falls back to "Operations" until roles are modeled on the
                   user object — every admin in the Figma shows a role label
                   under their name. */}
-              <p className="truncate text-xs text-muted-foreground">{user?.role || 'Operations'}</p>
+              <p className="truncate text-xs text-muted-foreground">OPERATIONS</p>
             </div>
           </div>
         </div>

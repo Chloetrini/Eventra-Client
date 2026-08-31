@@ -21,31 +21,13 @@ export default function ExplorePage() {
   const { data, isLoading, isFetching, isError, refetch ,loadMore} = useEvents(filters);
   const { categories } = useCategories();
   const events = data?.events ?? [];
-  // Was `events.filter(e => e.isPromoted)` — that only ever showed whatever
-  // promoted events happened to be on the CURRENT filtered/paginated page,
-  // so the carousel emptied out the moment a search or filter excluded
-  // them, and it had no concept of Explore's own "spotlight" placement
-  // tier vs. the home page's hero/featured tiers. Now it's a real,
-  // independent fetch of the events promoted specifically to Explore
-  // (spotlight package — also includes anything promoted to hero, since
-  // hero implies broader visibility), unaffected by the grid's filters.
+
   const { events: featured } = useSpotlightEvents("spotlight", 8);
-  // The grid always shows every event that matches the current filters,
-  // promoted or not; the carousel above is just an extra highlight on top,
-  // not the only place a promoted event appears.
+ 
   const rest = events;
   const { savedIds, toggleSave } = useSavedEvents();
 
-  // Spotlight is a "browse normally" thing, not a search/filter result —
-  // it should only show when the visitor is just browsing with nothing
-  // narrowed down. The moment ANY filter is active — a typed search, a
-  // category checkbox, a price/date/access pick, or a state other than
-  // "All Nigeria" — the carousel above the grid hides so it doesn't show
-  // an unrelated promoted event (e.g. a Tech & Startups spotlight event
-  // while "Arts & Theatre" is checked) sitting above filtered results
-  // that don't match it. Previously this only checked filters.search, so
-  // picking a category left the carousel showing regardless of category
-  // match.
+ 
   const isFiltering =
     Boolean(filters.search) ||
     filters.categories.length > 0 ||

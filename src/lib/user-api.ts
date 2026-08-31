@@ -9,6 +9,16 @@ export async function updateProfile(payload: {
   city?: string;
   currentPassword?: string;
   newPassword?: string;
+  notificationPreferences?: Partial<{
+    eventReminders: boolean;
+    weeklyPicks: boolean;
+    organizerUpdates: boolean;
+  }>;
+  adminNotificationPreferences?: Partial<{
+    approvals: boolean;
+    refunds: boolean;
+    reports: boolean;
+  }>;
 }) {
   // The backend treats each of these as "optional, but if present must be
   // non-empty" (min-length validation on fullname/phone/city) — an empty

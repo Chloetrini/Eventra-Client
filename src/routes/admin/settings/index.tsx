@@ -18,7 +18,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import PageWrapper from "@/components/page-wrapper"
-import { useAuth } from "@/context/auth.context"
+import { useAuth, type User } from "@/context/auth.context"
+import { useUpdateProfile } from "@/hooks/use-profile"
 import { useAdminTeam, useDeleteAdmin, useInviteAdmin, useUpdateAdminRole } from "@/hooks/use-admin-team"
 import { usePlatformSettings, useUpdatePlatformSettings } from "@/hooks/use-platform-settings"
 import type { AdminTier } from "@/types/admin-settings"
@@ -244,7 +245,44 @@ function DeleteAdminDialog({ id, name }: { id: string; name: string }) {
 }
 
 export default function PlatformSettings() {
-  const { user } = useAuth()
+ const { user, setUser } = useAuth()
+  const updateProfileMutation = useUpdateProfile()
+
+  const [adminToggles, setAdminToggles] = useState({
+    approvals: true,
+    refunds: true,
+    reports: true,
+  })
+
+  useEffect(() => {
+    if (user?.adminNotificationPreferences) {
+      setAdminToggles(user.adminNotificationPreferences)
+    }
+  }, [user?.adminNotificationPreferences])
+
+  const handleAdminNotificationToggle = (
+    key: "approvals" | "refunds" | "reports",
+    checked: boolean
+  ) => {
+    console.log("TOGGLE CLICKED:", key, "new value:", checked, "current adminToggles:", adminToggles);
+  const previous = adminToggles
+  const next = { ...adminToggles, [key]: checked }
+  setAdminToggles(next)
+
+  console.log("SENDING TO BACKEND:", { adminNotificationPreferences: { [key]: checked } });
+     updateProfileMutation.mutate(
+      { adminNotificationPreferences: { [key]: checked } },
+      {
+        onSuccess: (updatedUser) => {
+          setUser(updatedUser as User)
+        },
+        onError: (err: Error) => {
+          setAdminToggles(previous)
+          toast.error(err.message || "Could not save this preference")
+        },
+      }
+    )
+  }
   // Owner-tier only — mirrors requireAdminTier('owner') on every
   // /admin/settings/* route on the backend (see admin.routes.ts). A
   // missing adminRole is treated as owner, same default the backend uses
@@ -453,10 +491,59 @@ export default function PlatformSettings() {
                 Show a maintenance page to all users
               </p>
             </div>
-            <ToggleSwitch checked={settings?.maintenanceMode ?? false} onCheckedChange={onMaintenanceModeChange} />
+                       <ToggleSwitch checked={settings?.maintenanceMode ?? false} onCheckedChange={onMaintenanceModeChange} />
           </div>
         </CardContent>
       </Card>
+
+      {/* Notifications */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Notifications</CardTitle>
+        </CardHeader>
+        <div className="border mx-4"/>
+        <CardContent className="flex flex-col gap-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-foreground">Approvals</p>
+              <p className="text-xs text-muted-foreground">
+                New events, organizers, or promotions awaiting review
+              </p>
+            </div>
+            <ToggleSwitch
+              checked={adminToggles.approvals}
+              onCheckedChange={(checked) => handleAdminNotificationToggle("approvals", checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-foreground">Refunds</p>
+              <p className="text-xs text-muted-foreground">
+                A new refund request needs review
+              </p>
+            </div>
+            <ToggleSwitch
+              checked={adminToggles.refunds}
+              onCheckedChange={(checked) => handleAdminNotificationToggle("refunds", checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-foreground">Reports</p>
+              <p className="text-xs text-muted-foreground">
+                An attendee reported an event or organizer
+              </p>
+            </div>
+            <ToggleSwitch
+              checked={adminToggles.reports}
+              onCheckedChange={(checked) => handleAdminNotificationToggle("reports", checked)}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
 
       {/* Admin, Teams & Roles */}
       <Card size="sm">

@@ -8,11 +8,18 @@ export type User = {
   fullname: string;
   email: string;
   role: "attendee" | "organizer" | "admin";
-  // Only meaningful when role === "admin" — see its comment on the backend
-  // User model. Used on the Settings page to gate the whole page to
-  // owner-tier accounts only.
   adminRole?: "owner" | "admin" | "support";
   avatarUrl?: string;
+  notificationPreferences?: {
+    eventReminders: boolean;
+    weeklyPicks: boolean;
+    organizerUpdates: boolean;
+  };
+  adminNotificationPreferences?: {
+    approvals: boolean;
+    refunds: boolean;
+    reports: boolean;
+  };
   [key: string]: unknown;
 };
 

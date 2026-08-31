@@ -3,6 +3,10 @@ import PageWrapper from "@/components/page-wrapper";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import eventraLogo from "@/assets/Eventra-logo.png"
+import { api } from "@/lib/api";
+
+
+
 const DISCOVER_LINKS = [
     { to: "/explore", label: "Explore events" },
     { to: "/explore?when=weekend", label: "This weekend" },
@@ -58,7 +62,7 @@ export default function Footer() {
     const [error, setError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubscribe = async (e: React.FormEvent) => {
+         const handleSubscribe = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
 
@@ -73,12 +77,11 @@ export default function Footer() {
 
         setIsSubmitting(true);
         try {
-            // TODO: wire to a real endpoint once backend confirms one exists
-            // e.g. await api.post("/newsletter/subscribe", { email });
-            toast.info("Newsletter signup isn't wired to the backend yet.");
+            const res = await api.post("/newsletter/subscribe", { email });
+            toast.success(res.message || "Subscribed successfully!");
             setEmail("");
         } catch (err) {
-            toast.error("Could not subscribe. Please try again.");
+            toast.error(err instanceof Error ? err.message : "Could not subscribe. Please try again.");
         } finally {
             setIsSubmitting(false);
         }

@@ -38,7 +38,7 @@ export function UserAvatar({ avatarUrl, name, className }: UserAvatarProps) {
   return (
     <div
       className={cn(
-        "flex items-center justify-center rounded-full bg-[#333333] text-white font-bold shrink-0",
+        "flex items-center justify-center rounded-full bg-[#F5A524] text-[#7A4E02] font-bold shrink-0",
         className
       )}
     >

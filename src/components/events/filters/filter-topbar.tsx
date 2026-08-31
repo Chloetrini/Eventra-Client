@@ -41,12 +41,7 @@ export function TopBarFilter({
     debounceMs = 300,
 }: TopBarProps) {
     const [local, setLocal] = useState(searchValue);
-    // Suggestions dropdown — same reusable EventSearchSuggestions/
-    // useEventSearchSuggestions pieces built for the home page hero
-    // search, wired up here per Chloe's ask to reuse it on Explore too.
-    // Runs off `local` (the immediate typed value, its own internal
-    // 300ms debounce) rather than the already-debounced `searchValue`
-    // filter, so suggestions feel responsive while typing.
+   
     const [suggestionsOpen, setSuggestionsOpen] = useState(false);
     const navigate = useNavigate();
     const { suggestions, isLoading: suggestionsLoading } = useEventSearchSuggestions(local);

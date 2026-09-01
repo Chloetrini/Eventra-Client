@@ -3,7 +3,7 @@ import { api } from "@/lib/api";
 import {
   eventSchema,
 } from "@/lib/schema";
-import { type Event, type EventFilters } from "@/types/event-types";
+import { type Event, type EventFilters, DEFAULT_FILTERS } from "@/types/event-types";
 import type { Attendee } from "@/types/attendees";
 import type { OrganizerEventDetails } from "@/types/organizer-event";
 import { formatDate } from "@/lib/utils";
@@ -88,8 +88,39 @@ function buildParams(filters: EventFilters): string {
   }
 
   p.set("page", String(filters.page));
+  if (filters.limit) p.set("limit", String(filters.limit));
 
   return p.toString();
+}
+
+export type ThisWeekEventsResponse = EventsResponse & {
+  /** Nigerian state used for the filter, or null when showing nationwide. */
+  locationLabel: string | null;
+};
+
+/** Home hero count + "happening this week" row: date-window first, city only
+ * when that city actually has upcoming events this week. */
+export async function fetchThisWeekEvents(
+  city: string | null,
+  limit = 6
+): Promise<ThisWeekEventsResponse> {
+  const base: EventFilters = {
+    ...DEFAULT_FILTERS,
+    when: "week",
+    sort: "date",
+    page: 1,
+    limit,
+  };
+
+  if (city) {
+    const local = await fetchEventsReal({ ...base, state: city as EventFilters["state"] });
+    if (local.total > 0) {
+      return { ...local, locationLabel: city };
+    }
+  }
+
+  const nationwide = await fetchEventsReal({ ...base, state: "" });
+  return { ...nationwide, locationLabel: null };
 }
 
 export async function fetchEventsReal(filters: EventFilters): Promise<EventsResponse> {

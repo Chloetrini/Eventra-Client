@@ -22,6 +22,14 @@ import type { RevenuePageData } from "@/types/revenue";
 // of the existing Overview components (StatsRow, TrustSafetyCard,
 // RecentActivityCard, etc.) need to change.
 interface RawAdminOverview {
+  // The admin's own resolved display currency — every money figure below
+  // is already converted into this. Was being silently dropped here,
+  // which is why the Overview stat cards kept showing ₦ even after
+  // switching currency in Settings (the main site's price displays read
+  // this same field on their own responses — see events-api.ts — but the
+  // admin console's overview fetch never picked it up). See
+  // resolveViewerCurrency, lib/viewerCurrency.ts on the backend.
+  currency: string;
   needsAction: {
     pendingEventsCount: number;
     organizersToVerifyCount: number;
@@ -92,7 +100,12 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
       count: raw.needsAction.pendingEventsCount,
       label: "Events pending review",
       ctaLabel: "Review",
-      href: "/admin/events?status=pending",
+      // Was "/admin/events?status=pending" — the standalone Events page
+      // filters via its own button state, not a URL param, so that link
+      // silently landed on the unfiltered "All" tab. The Approvals page's
+      // Events tab is the actual pending-review queue, and it reads its
+      // starting tab from ?tab= (see routes/admin/approval/index.tsx).
+      href: "/admin/approvals?tab=events",
       variant: "default" as const,
     },
     {
@@ -100,7 +113,10 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
       count: raw.needsAction.organizersToVerifyCount,
       label: "Organizers to verify",
       ctaLabel: "Review",
-      href: "/admin/organizers?status=pending",
+      // Same fix as events-pending above — /admin/organizers doesn't read
+      // a status query param either; the Approvals page's Organizers tab
+      // is where pending verification actually lives.
+      href: "/admin/approvals?tab=organizers",
       variant: "default" as const,
     },
     {
@@ -108,7 +124,10 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
       count: raw.needsAction.promotionsPendingCount,
       label: "Promotions pending",
       ctaLabel: "Review",
-      href: "/admin/promotions?status=pending",
+      // Was "/admin/promotions?status=pending" — that's the standalone
+      // all-promotions list page, not the pending-review queue. Pending
+      // promotions are reviewed on the Approvals page's Promotions tab.
+      href: "/admin/approvals?tab=promotions",
       variant: "default" as const,
     },
     {
@@ -116,7 +135,12 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
       count: raw.needsAction.pendingRefundsCount,
       label: "Refund requests",
       ctaLabel: "Review",
-      href: "/admin/refunds-dispute",
+      // Was "/admin/refunds-dispute" — the actual route is "/admin/refunds"
+      // (refunds-dispute is just the folder name under src/routes); that
+      // typo made this a dead link. Refund requests is already the default
+      // tab on that page, but ?tab= is passed explicitly for clarity and
+      // to stay correct if that default ever changes.
+      href: "/admin/refunds?tab=requests",
       variant: "default" as const,
     },
     // refundsToInvestigateCount is null until the backend actually tracks
@@ -129,7 +153,7 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
             count: raw.needsAction.refundsToInvestigateCount,
             label: "Refunds to investigate",
             ctaLabel: "Investigate",
-            href: "/admin/refunds-dispute",
+            href: "/admin/refunds?tab=disputes",
             variant: "urgent" as const,
           },
         ]
@@ -142,13 +166,13 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
     {
       id: "gross-ticket-sales",
       label: "Gross ticket sales",
-      value: `₦${formatCompactNaira(raw.stats.grossTicketSales)}`,
+      value: formatCompactNaira(raw.stats.grossTicketSales, raw.currency),
       icon: "ticket",
     },
     {
       id: "platform-revenue",
       label: "Platform revenue",
-      value: `₦${formatCompactNaira(raw.stats.platformRevenue)}`,
+      value: formatCompactNaira(raw.stats.platformRevenue, raw.currency),
       icon: "dollar",
       caption: "Commissions + promotions",
       ...(raw.stats.platformRevenueChangePct !== null
@@ -164,7 +188,7 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
     {
       id: "held-in-escrow",
       label: "Held in escrow",
-      value: `₦${formatCompactNaira(raw.stats.heldInEscrow)}`,
+      value: formatCompactNaira(raw.stats.heldInEscrow, raw.currency),
       icon: "shield",
     },
     {
@@ -218,7 +242,7 @@ export async function getOverviewSummary(): Promise<OverviewSummary> {
   const topOrganizers: OverviewSummary["topOrganizers"] = raw.topOrganizers.map((org) => ({
     id: org.organizerId,
     name: org.businessName,
-    revenue: `₦${formatCompactNaira(org.grossSales)}`,
+    revenue: formatCompactNaira(org.grossSales, raw.currency),
   }));
 
   return { totalAttentionItems, needsAction, stats, trustSafety, recentActivity, topOrganizers };
@@ -283,10 +307,14 @@ export async function getPlatformRevenue(range: RevenueRange): Promise<PlatformR
 
   return {
     range,
-    value: `₦${formatCompactNaira(raw.stats.platformRevenue)}`,
+    value: formatCompactNaira(raw.stats.platformRevenue, raw.currency),
     deltaPercent: raw.stats.platformRevenueChangePct ?? 0,
     deltaCaption: "vs last month",
     series: raw.revenueSeries,
+    // Passed through separately (not baked into `value`) so the chart's
+    // own axis/tooltip formatting — which format raw numbers, not the
+    // pre-formatted string above — can use the same currency.
+    currency: raw.currency,
   };
 }
 
@@ -299,6 +327,10 @@ export async function getRevenue(): Promise<RevenuePageData> {
          commissionRatePct: number;
          promotionRevenue: number;
          grossTicketSales: number;
+         // The admin's resolved display currency — see the same field's
+         // comment on RawAdminOverview above. Was never read here, so this
+         // page kept showing ₦ no matter what currency was selected.
+         currency: string;
          revenueBySource: { label: string; amount: number; percent: number }[];
          topEarningEvents: { eventId: string; eventTitle: string; organizerName: string; commission: number }[];
          monthlyBreakdown: { label: string; grossSales: number; commission: number; promotion: number; total: number }[];
@@ -313,6 +345,7 @@ export async function getRevenue(): Promise<RevenuePageData> {
       promotions: body.promotionRevenue,
       grossTicketSales: body.grossTicketSales,
     },
+     currency: body.currency,
      revenueBySource: body.revenueBySource,
     topEarningEvents: body.topEarningEvents.map((e: any) => ({
       id: e.eventId,

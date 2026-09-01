@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Heart, ArrowUpRight, Star } from "lucide-react";
 import { cn, shortEventNo } from "@/lib/utils";
 import type { Event } from "@/types/event-types";
@@ -34,10 +34,34 @@ export function EventCard({
   const eventNo = shortEventNo(event);
   const isHome = variant === "home";
   const { requireAuth } = useAuthGate();
+  const navigate = useNavigate();
+  // Whole card navigates to the event now, not just the small arrow
+  // button. This first tried a "stretched link" — an absolutely
+  // positioned <Link> laid under everything else — but that only catches
+  // a click if it's literally the topmost element at that pixel, and the
+  // image wrapper below (`position: relative`, no z-index of its own)
+  // painted above it by DOM order regardless, silently swallowing clicks
+  // on the image/badges with nothing to bubble to (a sibling <Link> never
+  // sees a click that landed on a DIFFERENT sibling, only a genuine
+  // ancestor does). Putting the handler directly on the card and letting
+  // the click bubble up to it — the normal way React event handling
+  // works — doesn't depend on stacking order at all. The heart button and
+  // the arrow link both stop propagation so clicking THEM doesn't also
+  // trigger this.
+  const goToEvent = () => navigate(`/events/${event.slug}`);
   return (
     <article
+      onClick={goToEvent}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          goToEvent();
+        }
+      }}
       className={cn(
-        "group overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md w-full  min-h-[398px]",
+        "group relative overflow-hidden rounded-xl border bg-card transition-shadow hover:shadow-md w-full  min-h-[398px] cursor-pointer",
         className
       )}
     >
@@ -81,7 +105,9 @@ export function EventCard({
             {onToggleSave && (
               <button
                 type="button"
-                onClick={() => {
+                onClick={(e) => {
+                  // Don't also trigger the card's own onClick (navigate)
+                  e.stopPropagation();
                   if (!requireAuth("save-event")) return;
                   onToggleSave(event.slug);
                 }}
@@ -137,10 +163,12 @@ export function EventCard({
         </Tooltip>
 
         <div className="mt-auto flex items-center justify-between pt-8 pb-2">
-          <span className="font-[16px] font-mono text-foreground font-[700]">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice)} </span>
+          <span className="font-[16px] font-mono text-foreground font-[700]">{event.minPrice === 0 ? "Free" : formatNaira(event.minPrice, event.currency)} </span>
           <Link
             to={`/events/${event.slug}`}
             aria-label={`View ${event.title}`}
+            tabIndex={-1}
+            onClick={(e) => e.stopPropagation()}
             className="grid h-[35px] w-[35px] place-items-center rounded-full bg-[#E4F1EB] text-[#0A4F41] dark:bg-[#0F6E56]/15 dark:text-[#4ADE80] transition hover:bg-emerald-100 dark:hover:bg-[#0F6E56]/25"
           >
             <ArrowUpRight className="h-4 w-4" />

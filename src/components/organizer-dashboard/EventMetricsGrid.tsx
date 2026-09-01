@@ -1,5 +1,6 @@
 import React from 'react';
 import type { EventMetrics } from '@/types/organizer-event';
+import { formatCompactNaira } from '@/lib/utils';
 
 interface StatCardProps {
   label: string;
@@ -19,30 +20,14 @@ export function StatCard({ label, value }: StatCardProps) {
   );
 }
 
-// Helper to format currency numbers (e.g. 1000000 -> ₦ 1M, 10000000 -> ₦ 10M)
-function formatRevenue(num: number | null): string {
-  if (num === null) return '--';
-  if (num === 0) return '₦ 0';
-  if (num >= 1_000_000) {
-    const formatted = (num / 1_000_000).toLocaleString('en-US', {
-      maximumFractionDigits: 1,
-    });
-    return `₦ ${formatted}M`;
-  }
-  if (num >= 1_000) {
-    const formatted = (num / 1_000).toLocaleString('en-US', {
-      maximumFractionDigits: 1,
-    });
-    return `₦ ${formatted}K`;
-  }
-  return `₦ ${num.toLocaleString('en-US')}`;
-}
-
 interface EventMetricsGridProps {
   metrics: EventMetrics;
+  // The organizer's own viewer currency — metrics.revenue is already
+  // converted into it server-side (see OrganizerEventDetails.currency).
+  currency?: string;
 }
 
-export default function EventMetricsGrid({ metrics }: EventMetricsGridProps) {
+export default function EventMetricsGrid({ metrics, currency }: EventMetricsGridProps) {
   // Format Tickets Sold
   const ticketsSoldVal =
     metrics.ticketsSold !== null && metrics.totalTickets !== null
@@ -51,8 +36,9 @@ export default function EventMetricsGrid({ metrics }: EventMetricsGridProps) {
       ? `${metrics.ticketsSold}`
       : '--';
 
-  // Format Revenue
-  const revenueVal = formatRevenue(metrics.revenue);
+  // Format Revenue — was a hardcoded-₦ local formatter; delegates to the
+  // shared currency-aware formatCompactNaira now, same M/K compacting.
+  const revenueVal = metrics.revenue === null ? '--' : formatCompactNaira(metrics.revenue, currency);
 
   // Format Remaining
   const remainingVal =

@@ -28,8 +28,8 @@ export default function AdminPayoutsPage() {
       <PayoutsOverviewCards overview={overview} isLoading={isOverviewLoading} />
 
       {/* Tables */}
-      <AwaitingPayoutsTable list={awaitingList} isLoading={isAwaitingLoading} />
-      <PayoutHistoryTable history={historyData?.payouts} isLoading={isHistoryLoading} />
+      <AwaitingPayoutsTable list={awaitingList?.payouts} isLoading={isAwaitingLoading} currency={awaitingList?.currency} />
+      <PayoutHistoryTable history={historyData?.payouts} isLoading={isHistoryLoading} currency={historyData?.currency} />
     </PageWrapper>
   )
 }

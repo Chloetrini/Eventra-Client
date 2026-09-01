@@ -10,4 +10,7 @@ export interface Event {
     capacity: number | null;
     revenue: number | null;
     status: "Live" | "Draft" | "Pending" | "Sold out" | "Past" | "Rejected" | "Cancelled" | "Postponed";
+    // The organizer's own viewer currency — `revenue` above is already
+    // converted into it server-side (see fetchMyEvents, events-api.ts).
+    currency?: string;
 }

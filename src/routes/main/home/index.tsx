@@ -31,18 +31,40 @@ import {
   HomeHeroCardSkeleton,
   FeaturedEventsSkeleton,
 } from "@/components/skeletons/home-skeleton";
+import { useEventSearchSuggestions } from "@/hooks/use-event-search-suggestions";
+import { EventSearchSuggestions } from "@/components/search/event-search-suggestions";
 
 const Home: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const navigate = useNavigate();
   const [heroSearch, setHeroSearch] = useState("");
   const [heroState, setHeroState] = useState("all");
+  // Separate open flags for the mobile/desktop search bars — only one is
+  // ever visible at a time (the `lg:hidden` / `hidden lg:flex` split
+  // below), but both share the one debounced suggestions fetch so typing
+  // in either doesn't trigger two separate requests.
+  const [mobileSuggestionsOpen, setMobileSuggestionsOpen] = useState(false);
+  const [desktopSuggestionsOpen, setDesktopSuggestionsOpen] = useState(false);
+  const { suggestions: searchSuggestions, isLoading: suggestionsLoading } =
+    useEventSearchSuggestions(heroSearch);
 
   const handleHeroSearch = () => {
     const params = new URLSearchParams();
     if (heroSearch.trim()) params.set("search", heroSearch.trim());
     if (heroState && heroState !== "all") params.set("state", heroState);
     navigate(`/explore?${params.toString()}`);
+  };
+
+  const goToSuggestedEvent = (slug: string) => {
+    setMobileSuggestionsOpen(false);
+    setDesktopSuggestionsOpen(false);
+    navigate(`/events/${slug}`);
+  };
+
+  const seeAllResults = () => {
+    setMobileSuggestionsOpen(false);
+    setDesktopSuggestionsOpen(false);
+    handleHeroSearch();
   };
 
   // Still used for the "N events this week" count in the eyebrow above the
@@ -67,14 +89,24 @@ const Home: React.FC = () => {
   return (
     <>
       {/* 1. HERO SECTION */}
-      <section className="relative flex items-center bg-[#4A4451] text-white overflow-hidden">
+      {/* overflow-hidden moved off the section (was here, on the
+          section itself) onto the new bg-layer div directly below —
+          it's still needed to clip the scaled/blurred background image
+          to the hero's bounds, but on the section itself it was ALSO
+          clipping the search-suggestions dropdown (which pops out below
+          the search bar and legitimately extends past the hero's bottom
+          edge), cutting it off right where it met the stats bar section
+          underneath. */}
+      <section className="relative flex items-center bg-[#4A4451] text-white">
         <PageWrapper className="p-[20px]">
 
-          <div
-            className="absolute inset-0 bg-cover bg-center z-0 scale-110 blur-[18px] md:blur-[4px]"
-            style={{ backgroundImage: `url(${UI_ASSETS.bgDesktop})` }}
-          />
-          <div className="absolute inset-0 bg-linear-to-b from-black/70 to-black/30 z-1" />
+          <div className="absolute inset-0 overflow-hidden">
+            <div
+              className="absolute inset-0 bg-cover bg-center z-0 scale-110 blur-[18px] md:blur-[4px]"
+              style={{ backgroundImage: `url(${UI_ASSETS.bgDesktop})` }}
+            />
+            <div className="absolute inset-0 bg-linear-to-b from-black/70 to-black/30 z-1" />
+          </div>
 
           <div className="relative z-10 w-full ">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
@@ -101,19 +133,40 @@ const Home: React.FC = () => {
                 </p>
 
                 {/* Search Bar */}
-                <div className="bg-card shadow-lg rounded-xl overflow-hidden">
+                {/* No overflow-hidden here (was: "bg-card shadow-lg
+                    rounded-xl overflow-hidden") — nothing inside this card
+                    ever bled past its own rounded corners, so the
+                    overflow-hidden was doing nothing visually, but it WAS
+                    silently clipping the EventSearchSuggestions dropdown
+                    below (which pops out via `absolute ... top-full` from
+                    the relative wrapper on each input row). That's why
+                    typing into the search box never showed any
+                    suggestions — the dropdown was rendering, just
+                    invisible, cut off by this ancestor. */}
+                <div className="bg-card shadow-lg rounded-xl">
                   {/* Mobile */}
                   <div className="lg:hidden">
-                    <div className="flex items-center gap-2 px-4 py-3">
+                    <div className="relative flex items-center gap-2 px-4 py-3">
                       <Search className="w-4 h-4 text-muted-foreground shrink-0 rotate-90" />
                       <input
                         type="text"
                         value={heroSearch}
                         onChange={(e) => setHeroSearch(e.target.value)}
+                        onFocus={() => setMobileSuggestionsOpen(true)}
+                        onBlur={() => setMobileSuggestionsOpen(false)}
                         onKeyDown={(e) => e.key === "Enter" && handleHeroSearch()}
                         placeholder="Search, events, artists and venues"
                         className="bg-transparent border-none text-foreground placeholder-muted-foreground text-sm focus:outline-none w-full font-geist"
                       />
+                      {mobileSuggestionsOpen && (
+                        <EventSearchSuggestions
+                          query={heroSearch}
+                          suggestions={searchSuggestions}
+                          isLoading={suggestionsLoading}
+                          onSelectEvent={goToSuggestedEvent}
+                          onSeeAll={seeAllResults}
+                        />
+                      )}
                     </div>
 
                     {/* Divider */}
@@ -147,16 +200,27 @@ const Home: React.FC = () => {
                   </div>
 
                   {/* Desktop */}
-                  <div className="hidden gap-1 lg:flex items-center  px-4 py-2">
+                  <div className="relative hidden gap-1 lg:flex items-center  px-4 py-2">
                     <Search className="w-4 h-4 text-muted-foreground shrink-0 rotate-90 " />
                     <input
                       type="text"
                       value={heroSearch}
                       onChange={(e) => setHeroSearch(e.target.value)}
+                      onFocus={() => setDesktopSuggestionsOpen(true)}
+                      onBlur={() => setDesktopSuggestionsOpen(false)}
                       onKeyDown={(e) => e.key === "Enter" && handleHeroSearch()}
                       placeholder="Search, events, artists and venues"
                       className="bg-transparent border-none text-foreground placeholder-muted-foreground text-sm focus:outline-none flex-1 font-geist"
                     />
+                    {desktopSuggestionsOpen && (
+                      <EventSearchSuggestions
+                        query={heroSearch}
+                        suggestions={searchSuggestions}
+                        isLoading={suggestionsLoading}
+                        onSelectEvent={goToSuggestedEvent}
+                        onSeeAll={seeAllResults}
+                      />
+                    )}
 
                     {/* Vertical divider */}
                     <div className="h-6 w-px bg-border shrink-0" />
@@ -255,7 +319,7 @@ const Home: React.FC = () => {
                             <span className="text-lg font-bold font-space text-foreground">
                               {heroEvent.minPrice === 0
                                 ? "Free"
-                                : Format.amount(heroEvent.minPrice)}
+                                : Format.amount(heroEvent.minPrice, heroEvent.currency)}
                             </span>
                             <span className="text-xs text-muted-foreground block font-geist">
                               from Regular

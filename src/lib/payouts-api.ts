@@ -21,6 +21,10 @@ export type PayoutHistoryRow = {
 export type PayoutsData = {
   earningsByEvent: EarningsByEventRow[];
   payoutHistory: PayoutHistoryRow[];
+  // The organizer's own viewer currency — every money field above is
+  // already converted into it server-side (see listOrganizerPayouts,
+  // organizer.controller.ts).
+  currency?: string;
 };
 
 export async function fetchPayouts(): Promise<PayoutsData> {

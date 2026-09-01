@@ -126,6 +126,8 @@ export type EventFilters = {
   access: Access;
   sort: SortOption;
   page: number;
+  /** Optional page size — backend defaults to 10 when omitted. */
+  limit?: number;
 };
 
 export const DEFAULT_FILTERS: EventFilters = {

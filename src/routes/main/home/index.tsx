@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -20,7 +20,7 @@ import {
   FAQ_ITEMS,
   TESTIMONIALS,
 } from "@/lib/home-constants";
-import { fetchEvents } from "@/lib/events-api";
+import { fetchEvents, fetchThisWeekEvents } from "@/lib/events-api";
 import { useSpotlightEvents } from "@/hooks/use-event";
 import { DEFAULT_FILTERS } from "@/types/event-types";
 import { Format, shortEventNo } from "@/lib/utils";
@@ -33,12 +33,20 @@ import {
 } from "@/components/skeletons/home-skeleton";
 import { useEventSearchSuggestions } from "@/hooks/use-event-search-suggestions";
 import { EventSearchSuggestions } from "@/components/search/event-search-suggestions";
+import { useViewerCity } from "@/hooks/use-viewer-city";
 
 const Home: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const navigate = useNavigate();
   const [heroSearch, setHeroSearch] = useState("");
   const [heroState, setHeroState] = useState("all");
+   const { city: viewerCity, isReady: cityReady } = useViewerCity();
+
+    useEffect(() => {
+    if (cityReady && viewerCity) {
+      setHeroState((prev) => (prev === "all" ? viewerCity : prev));
+    }
+  }, [cityReady, viewerCity]);
   // Separate open flags for the mobile/desktop search bars — only one is
   // ever visible at a time (the `lg:hidden` / `hidden lg:flex` split
   // below), but both share the one debounced suggestions fetch so typing
@@ -73,7 +81,11 @@ const Home: React.FC = () => {
     queryKey: ["home-events"],
     queryFn: () => fetchEvents(DEFAULT_FILTERS),
   });
-
+ const { data: thisWeek, isLoading: thisWeekLoading } = useQuery({
+    queryKey: ["home-this-week", viewerCity],
+    queryFn: () => fetchThisWeekEvents(viewerCity, 6),
+    enabled: cityReady,
+  });
   // Hero and "Featured this week" now each pull from the real placement
   // endpoint instead of both reading the same client-side
   // `.filter(e => e.isPromoted)` list — an event promoted to "featured"
@@ -81,7 +93,9 @@ const Home: React.FC = () => {
   const { events: heroEvents, isLoading: heroLoading } = useSpotlightEvents("hero", 3);
   const { events: featuredEvents, isLoading: featuredLoading } = useSpotlightEvents("featured", 8);
   const heroEvent = heroEvents[0];
-
+  const weekEvents = thisWeek?.events ?? [];
+  const weekTotal = thisWeek?.total ?? 0;
+  const weekCity = thisWeek?.locationLabel;
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
   };
@@ -116,8 +130,9 @@ const Home: React.FC = () => {
                   {eventsLoading ? (
                     <HomeEventCountSkeleton />
                   ) : (
-                    <span className="inline-block text-[#FCD98A] text-[12px] uppercase tracking-[0.08em] font-regular font-space">
-                      {eventsData?.total ?? 0} EVENTS THIS WEEK . LAGOS
+                     <span className="inline-block text-[#FCD98A] text-[12px] uppercase tracking-[0.08em] font-regular font-space">
+                      {weekTotal} {weekTotal === 1 ? "EVENT" : "EVENTS"} THIS WEEK
+                      {weekCity ? ` · ${weekCity.toUpperCase()}` : ""}
                     </span>
                   )}
                 </div>

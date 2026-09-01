@@ -21,9 +21,9 @@ import { useDeleteEvent, useCancelEvent, usePostponeEvent } from "@/hooks/use-ev
 export default function OrganizerEventDetailsRoute() {
   const { eventId } = useParams<{ eventId?: string }>();
   const navigate = useNavigate();
-  const { status } = useOrganizerStatus();
-    const { bankStatus } = useOrganizerBankStatus();
-  const { isProfileComplete } = useOrganizerProfileComplete();
+  const { status, isLoading: statusLoading } = useOrganizerStatus();
+  const { bankStatus, isLoading: bankStatusLoading } = useOrganizerBankStatus();
+  const { isProfileComplete, isLoading: profileCompleteLoading } = useOrganizerProfileComplete();
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [confirmingCancel, setConfirmingCancel] = useState(false);
   const [confirmingPostpone, setConfirmingPostpone] = useState(false);
@@ -143,10 +143,17 @@ export default function OrganizerEventDetailsRoute() {
 
   return (
     <PageWrapper className="py-6 px-4 md:px-8 space-y-6 max-w-6xl mx-auto">
-      {/* 1. Account Review Banner (driven by the organizer's real approval status) */}
-      <AccountReviewBanner status={status}
-        bankStatus={bankStatus}
-        isProfileComplete={isProfileComplete} />
+      {/* 1. Account Review Banner (driven by the organizer's real approval status).
+          These three profile queries default to "not verified yet" while
+          in flight — see the doc comment on the same fix in
+          dashboard/overview/index.tsx — so this waits for all three before
+          rendering, instead of flashing "unverified" for an already
+          verified organizer on every load. */}
+      {!statusLoading && !bankStatusLoading && !profileCompleteLoading && (
+        <AccountReviewBanner status={status}
+          bankStatus={bankStatus}
+          isProfileComplete={isProfileComplete} />
+      )}
 
       {/* 2. Top Navigation & Action Header */}
       <OrganizerEventHeader
@@ -159,7 +166,7 @@ export default function OrganizerEventDetailsRoute() {
 
       <OrganizerEventHero event={event} />
 
-      <EventMetricsGrid metrics={event.metrics} />
+      <EventMetricsGrid metrics={event.metrics} currency={event.currency} />
 
       {/* Main 2-Column Dashboard */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
@@ -168,6 +175,7 @@ export default function OrganizerEventDetailsRoute() {
           <TicketTypesTable
             ticketTypes={event.ticketTypes}
             onEdit={handleEditClick}
+            currency={event.currency}
           />
           <PromotionsCard
             isPromoted={event.isPromoted}

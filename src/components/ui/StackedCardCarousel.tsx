@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { UI_ASSETS } from "@/lib/assets";
 import { Format, shortEventNo } from "@/lib/utils";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import type { Event } from "@/types/event-types";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -13,18 +13,22 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
   events,
 }) => {
   const DISPLAY_EVENTS = events.slice(0, 3);
+  const navigate = useNavigate();
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [animating, setAnimating] = useState(false);
 
+  // Used to advance activeIndex through a 400ms setTimeout inside a 3000ms
+  // interval — that 400ms delay didn't correspond to anything (the
+  // `animating` flag it toggled was never actually read anywhere in the
+  // JSX below), so all it did was push the front card's crossfade start
+  // 400ms late every single cycle, out of sync with the back/middle
+  // cards' position swap (which reacts the instant activeIndex changes).
+  // Advancing on every tick, right when the interval fires, removes that
+  // dead delay so both layers move together.
   useEffect(() => {
     if (DISPLAY_EVENTS.length === 0) return;
     const interval = setInterval(() => {
-      setAnimating(true);
-      setTimeout(() => {
-        setActiveIndex((prev) => (prev + 1) % DISPLAY_EVENTS.length);
-        setAnimating(false);
-      }, 400);
+      setActiveIndex((prev) => (prev + 1) % DISPLAY_EVENTS.length);
     }, 3000);
     return () => clearInterval(interval);
   }, [DISPLAY_EVENTS.length]);
@@ -43,7 +47,16 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
         return (
           <div
             key={event.slug}
-            className="absolute w-full bg-white rounded-2xl overflow-hidden shadow-xl transition-all duration-500 ease-in-out"
+            onClick={() => navigate(`/events/${event.slug}`)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                navigate(`/events/${event.slug}`);
+              }
+            }}
+            className="absolute w-full bg-white rounded-2xl overflow-hidden shadow-xl transition-all duration-500 ease-in-out cursor-pointer"
             style={{
               top: isMiddle ? "8px" : "16px",
               right: isMiddle ? "-6px" : "-12px",
@@ -58,11 +71,26 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
         );
       })}
 
-      {/* Front card — animated slide */}
-      <AnimatePresence mode="wait">
+      {/* Front card — animated slide. mode="wait" (removed) makes
+          AnimatePresence run the outgoing card's whole exit animation
+          before even starting the incoming card's enter — a strictly
+          sequential slide-out-then-slide-in, which is what actually read
+          as "not smooth" (a visible pause between the two). Dropping it
+          back to the default (both animate at the same time) gives the
+          usual crossfade-while-sliding carousel look instead. */}
+      <AnimatePresence>
         <motion.div
           key={activeIndex}
-          className="absolute w-full bg-white rounded-2xl overflow-hidden shadow-2xl"
+          onClick={() => navigate(`/events/${DISPLAY_EVENTS[activeIndex].slug}`)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              navigate(`/events/${DISPLAY_EVENTS[activeIndex].slug}`);
+            }
+          }}
+          className="absolute w-full bg-white rounded-2xl overflow-hidden shadow-2xl cursor-pointer"
           style={{ zIndex: 30, top: 0, right: 0 }}
           initial={{ x: "100%", opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
@@ -121,7 +149,7 @@ const CardContent: React.FC<{ event: Event }> = ({ event }) => (
       <div className="mt-4 pt-3 border-t border-[#E8E6E0] flex items-center justify-between">
         <div>
           <span className="text-lg font-bold font-space text-[#1A1523]">
-            {event.minPrice === 0 ? "Free" : Format.amount(event.minPrice)}
+            {event.minPrice === 0 ? "Free" : Format.amount(event.minPrice, event.currency)}
           </span>
           <span className="text-xs text-[#4A4451] block font-geist">
             from Regular

@@ -18,9 +18,10 @@ const STATUS_LABEL: Record<PayoutEventStatus, string> = {
 
 interface EarningsByEventProps {
   earnings: EarningsByEventRow[];
+  currency?: string;
 }
 
-export function EarningsByEvent({ earnings }: EarningsByEventProps) {
+export function EarningsByEvent({ earnings, currency }: EarningsByEventProps) {
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden">
       <h2 className="px-4 sm:px-6 pt-4 pb-1 text-[18px] sm:text-[20px] font-grotesk font-bold text-foreground">
@@ -60,13 +61,13 @@ export function EarningsByEvent({ earnings }: EarningsByEventProps) {
                     <p className="font-semibold text-foreground">{row.eventTitle}</p>
                   </td>
                   <td className="px-4 py-4 text-left font-bold font-space text-foreground">
-                    {row.status === "free_no_payout" ? "–" : formatNaira(row.grossSales)}
+                    {row.status === "free_no_payout" ? "–" : formatNaira(row.grossSales, currency)}
                   </td>
                   <td className="px-4 py-4 text-left text-foreground">
-                    {row.status === "free_no_payout" ? "–" : formatNaira(row.commission)}
+                    {row.status === "free_no_payout" ? "–" : formatNaira(row.commission, currency)}
                   </td>
                   <td className="px-4 py-4 text-left font-bold font-space text-foreground">
-                    {row.status === "free_no_payout" ? "–" : formatNaira(row.earnings)}
+                    {row.status === "free_no_payout" ? "–" : formatNaira(row.earnings, currency)}
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-left">
                     <Badge

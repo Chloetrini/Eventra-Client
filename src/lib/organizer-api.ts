@@ -35,6 +35,10 @@ type RealOverviewResponse = {
   }>;
   revenueSeries: RevenueSeriesPoint[];
   ticketsByType: TicketsByTypeSlice[];
+  // The organizer's own viewer currency — every money figure on this
+  // response (revenue, payoutDue) is already converted into it
+  // server-side (see getOrganizerOverview, organizer.controller.ts).
+  currency?: string;
 };
 
 type RealOrganizerProfile = {
@@ -94,7 +98,7 @@ function adaptOverview(raw: RealOverviewResponse) {
         subtext: changeSubtext(raw.ticketsSoldChangePct),
       },
       revenue: {
-        value: formatCompactNaira(raw.revenue),
+        value: formatCompactNaira(raw.revenue, raw.currency),
         change: raw.revenueChangePct,
         subtext: changeSubtext(raw.revenueChangePct),
       },
@@ -103,7 +107,7 @@ function adaptOverview(raw: RealOverviewResponse) {
         subtext: raw.liveEventsCount > 0 ? `${raw.liveEventsCount} selling now` : "None right now",
       },
       payoutDue: {
-        value: formatCompactNaira(raw.payoutDue),
+        value: formatCompactNaira(raw.payoutDue, raw.currency),
         subtext: raw.nextPayoutInDays !== null
           ? `Next payout in ${raw.nextPayoutInDays} days`
           : "No payout scheduled",
@@ -125,6 +129,10 @@ function adaptOverview(raw: RealOverviewResponse) {
     })),
     revenueSeries: raw.revenueSeries,
     ticketsByType: raw.ticketsByType,
+    // Threaded through so RevenueChart (which shows a live-formatted
+    // amount per point, not the pre-formatted string above) can also
+    // render in the organizer's chosen currency.
+    currency: raw.currency,
   };
 }
 

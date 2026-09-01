@@ -50,7 +50,11 @@ export default function VerifyOtp() {
       // login as before.
       const user = (data?.body as { mustSetPassword?: boolean } | undefined);
       if (user?.mustSetPassword) {
-        navigate("/auth/set-password");
+        // /auth/admin/set-password — the "/admin" segment is what makes
+        // AuthLayout render it in the same centered-card frame as admin
+        // login, instead of the attendee/organizer split-screen layout.
+        // See the doc comment on routes/auth/set-password/index.tsx.
+        navigate("/auth/admin/set-password");
         return;
       }
       navigate(authPath("login", isOrganizer));

@@ -4,9 +4,10 @@ import type { PayoutHistoryRow } from "@/lib/payouts-api";
 
 interface PayoutHistoryProps {
   history: PayoutHistoryRow[];
+  currency?: string;
 }
 
-export function PayoutHistory({ history }: PayoutHistoryProps) {
+export function PayoutHistory({ history, currency }: PayoutHistoryProps) {
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden">
       <h2 className="px-4 sm:px-6 pt-4 pb-1 text-[18px] sm:text-[20px] font-grotesk font-bold text-foreground">
@@ -41,7 +42,7 @@ export function PayoutHistory({ history }: PayoutHistoryProps) {
                 <tr key={`${item.date}-${i}`} className="border-t border-border">
                   <td className="px-4 sm:px-6 py-4 text-foreground">{formatDate(item.date)}</td>
                   <td className="px-4 py-4 font-bold font-space text-foreground">
-                    {formatNaira(item.amount)}
+                    {formatNaira(item.amount, currency)}
                   </td>
                   <td className="px-4 py-4 font-bold font-space text-foreground">
                     {item.bankLabel ?? "-"}

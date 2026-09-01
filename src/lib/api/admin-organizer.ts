@@ -1,6 +1,6 @@
 import { api } from "@/lib/api";
 import type { AdminOrganizer, AdminOrganizerStatus, AdminOrganizerDetailsData } from "@/types/admin-organizer";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatNaira } from "@/lib/utils";
 import type { OrganizerStatusFilterOption } from "@/components/admin/organizer/AdminOrganizerFilterBar";
 
 export interface RawAdminOrganizerListItem {
@@ -12,6 +12,7 @@ export interface RawAdminOrganizerListItem {
   createdAt: string;
   organizerProfile?: {
     businessName?: string;
+    category?: string;
     approvalStatus: "pending" | "approved" | "rejected" | "suspended";
     phone?: string;
     bio?: string;
@@ -81,15 +82,14 @@ function deriveOrganizerStatus(raw: RawAdminOrganizerListItem): AdminOrganizerSt
   }
 }
 
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    maximumFractionDigits: 0,
-  }).format(amount);
+// Was a hardcoded Intl.NumberFormat pinned to NGN — every admin saw
+// organizer revenue in Naira regardless of their own currency preference.
+// Delegates to the shared currency-aware formatNaira now.
+function formatCurrency(amount: number, currency?: string): string {
+  return formatNaira(amount, currency ?? "Naira");
 }
 
-function mapOrganizerListItem(raw: RawAdminOrganizerListItem): AdminOrganizer {
+function mapOrganizerListItem(raw: RawAdminOrganizerListItem, currency?: string): AdminOrganizer {
   const name = organizerDisplayName(raw);
   const totalRevenue = raw.revenue ?? 0;
   const profile = raw.organizerProfile;
@@ -98,12 +98,14 @@ function mapOrganizerListItem(raw: RawAdminOrganizerListItem): AdminOrganizer {
     _id: raw._id,
     name,
     email: raw.email,
+    category: profile?.category,
     initials: initialsFrom(name),
     avatarUrl: raw.avatarUrl,
     status: deriveOrganizerStatus(raw),
     eventCount: raw.eventsCount ?? 0,
     rawRevenue: totalRevenue,
-    formattedRevenue: formatCurrency(totalRevenue),
+    formattedRevenue: formatCurrency(totalRevenue, currency),
+    currency,
     createdAt: formatDate(raw.createdAt), // Formats ISO string into clean UI date
     details: {
       email: raw.email,
@@ -126,8 +128,8 @@ function mapOrganizerListItem(raw: RawAdminOrganizerListItem): AdminOrganizer {
   };
 }
 
-function mapOrganizerDetail(raw: RawAdminOrganizerDetail): AdminOrganizer {
-  const base = mapOrganizerListItem(raw);
+function mapOrganizerDetail(raw: RawAdminOrganizerDetail, currency?: string): AdminOrganizer {
+  const base = mapOrganizerListItem(raw, currency);
   const profile = raw.organizerProfile;
   const totalRev = raw.revenue ?? base.rawRevenue;
 
@@ -160,7 +162,7 @@ function mapOrganizerDetail(raw: RawAdminOrganizerDetail): AdminOrganizer {
     ...base,
     eventCount: raw.eventsRunCount ?? base.eventCount,
     rawRevenue: totalRev,
-    formattedRevenue: formatCurrency(totalRev),
+    formattedRevenue: formatCurrency(totalRev, currency),
     details,
   };
 }
@@ -176,25 +178,26 @@ export async function fetchAdminOrganizers(
   if (params.limit) query.set("limit", String(params.limit));
 
   const res = await api.get(`/admin/organizers?${query.toString()}`);
-  const body = res.body as { organizers: RawAdminOrganizerListItem[]; meta: any };
+  const body = res.body as { organizers: RawAdminOrganizerListItem[]; currency?: string; meta: any };
   return {
-    organizers: body.organizers.map(mapOrganizerListItem),
+    organizers: body.organizers.map(raw => mapOrganizerListItem(raw, body.currency)),
     meta: body.meta,
   };
 }
 
 export async function fetchPendingAdminOrganizers(): Promise<{ organizers: AdminOrganizer[] }> {
   const res = await api.get("/admin/organizers/pending");
-  const body = res.body as { organizers: RawAdminOrganizerListItem[] };
-  
+  const body = res.body as { organizers: RawAdminOrganizerListItem[]; currency?: string };
+
   return {
-    organizers: body.organizers.map(mapOrganizerListItem)
+    organizers: body.organizers.map(raw => mapOrganizerListItem(raw, body.currency))
   };
 }
 
 export async function fetchAdminOrganizerDetail(id: string): Promise<AdminOrganizer> {
   const res = await api.get(`/admin/organizers/${id}`);
-  return mapOrganizerDetail(res.body as RawAdminOrganizerDetail);
+  const body = res.body as RawAdminOrganizerDetail & { currency?: string };
+  return mapOrganizerDetail(body, body.currency);
 }
 
 // Matches: PATCH /admin/organizers/:id/approve

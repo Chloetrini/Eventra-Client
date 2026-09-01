@@ -1,6 +1,6 @@
 import { useState } from "react"
 import ActionBtn from "@/components/ui/action-btn"
-import { formatRequestedAgo } from "@/lib/utils"
+import { formatNaira, formatRequestedAgo } from "@/lib/utils"
 import { useNavigate } from "react-router"
 import { toast } from "react-toastify"
 import type { RefundRequestSummary, DisputeSummary } from "@/types/refunds"
@@ -143,7 +143,7 @@ const RequestDisputeTable = ({ activeTab, refundRequests, disputes }: RequestDis
                                 <p>{request.event.title}</p>
 
                                 <p className="font-space font-bold">
-                                    ₦{request.amount.toLocaleString()}
+                                    {formatNaira(request.amount, request.currency)}
                                 </p>
 
                                 <p className="text-muted-foreground">{request.reason}</p>
@@ -236,7 +236,7 @@ const RequestDisputeTable = ({ activeTab, refundRequests, disputes }: RequestDis
                             <p>{dispute.event?.title ?? "Unknown event"}</p>
 
                             <p className="font-space font-bold">
-                                ₦{dispute.amount.toLocaleString()}
+                                {formatNaira(dispute.amount, dispute.currency)}
                             </p>
 
                             <p className="text-muted-foreground">Paystack</p>

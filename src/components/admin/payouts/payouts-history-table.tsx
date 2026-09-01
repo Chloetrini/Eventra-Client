@@ -1,7 +1,10 @@
 import type { PayoutHistoryItem } from "@/lib/api/admin-payouts"
+import { CURRENCY_SYMBOLS } from "@/lib/utils"
 
-function formatExactCurrency(amount: number): string {
-  return `₦${amount.toLocaleString("en-NG")}`
+// Was hardcoded to ₦ regardless of the admin's currency preference.
+function formatExactCurrency(amount: number, currency: string = "Naira"): string {
+  const symbol = CURRENCY_SYMBOLS[currency] ?? "₦"
+  return `${symbol}${amount.toLocaleString("en-NG")}`
 }
 
 function formatFullDate(dateStr: string): string {
@@ -11,9 +14,10 @@ function formatFullDate(dateStr: string): string {
 interface Props {
   history?: PayoutHistoryItem[]
   isLoading: boolean
+  currency?: string
 }
 
-export function PayoutHistoryTable({ history, isLoading }: Props) {
+export function PayoutHistoryTable({ history, isLoading, currency }: Props) {
   return (
     <div className="border border-border rounded-xl overflow-hidden bg-card">
       <div className="p-5 border-b border-border">
@@ -51,7 +55,7 @@ export function PayoutHistoryTable({ history, isLoading }: Props) {
               <tr key={`${historyItem.organizerName}-${idx}`} className="hover:bg-muted/30">
                 <td className="py-4 px-6 text-muted-foreground text-[16px] font-geist font-[400]">{formatFullDate(historyItem.paidAt)}</td>
                 <td className="py-4 px-6 text-[17px] font-geist font-[700]">{historyItem.organizerName}</td>
-                <td className="py-4 px-6 font-space font-[700] text-[20px]">{formatExactCurrency(historyItem.amount)}</td>
+                <td className="py-4 px-6 font-space font-[700] text-[20px]">{formatExactCurrency(historyItem.amount, currency)}</td>
                 <td className="py-4 px-6">
                   <span className="inline-flex items-center gap-1.5 px-4 py-0.5 rounded-full text-[16px] font-[700] font-space bg-[#E4F1EB] text-[#0A4F41] dark:bg-[#16A34A]/20 dark:text-[#4ADE80]">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#0A4F41] dark:bg-[#4ADE80]" />

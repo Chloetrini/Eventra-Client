@@ -1,9 +1,12 @@
 import ActionBtn from "@/components/ui/action-btn"
 import type { AwaitingPayoutItem } from "@/lib/api/admin-payouts"
 import { useReleasePayout } from "@/hooks/use-admin-payouts"
+import { CURRENCY_SYMBOLS } from "@/lib/utils"
 
-function formatExactCurrency(amount: number): string {
-  return `₦${amount.toLocaleString("en-NG")}`
+// Was hardcoded to ₦ regardless of the admin's currency preference.
+function formatExactCurrency(amount: number, currency: string = "Naira"): string {
+  const symbol = CURRENCY_SYMBOLS[currency] ?? "₦"
+  return `${symbol}${amount.toLocaleString("en-NG")}`
 }
 
 function formatDate(dateStr: string | null): string {
@@ -18,9 +21,10 @@ function initialsFor(name: string): string {
 interface Props {
   list?: AwaitingPayoutItem[]
   isLoading: boolean
+  currency?: string
 }
 
-export function AwaitingPayoutsTable({ list, isLoading }: Props) {
+export function AwaitingPayoutsTable({ list, isLoading, currency }: Props) {
   const releaseMutation = useReleasePayout()
 
   return (
@@ -75,7 +79,7 @@ export function AwaitingPayoutsTable({ list, isLoading }: Props) {
                     </div>
                   </td>
                   <td className="py-4 px-6 text-muted-foreground text-[16px] font-geist font-[400]">{item.eventTitle}</td>
-                  <td className="py-4 px-6 font-space font-[700] text-[20px]">{formatExactCurrency(item.amount)}</td>
+                  <td className="py-4 px-6 font-space font-[700] text-[20px]">{formatExactCurrency(item.amount, currency)}</td>
                   <td className="py-4 px-6 text-muted-foreground font-geist text-[16px] font-[400]">{formatDate(item.releaseDate)}</td>
                   <td className="py-4 px-6">
                     {item.status === "ready" && (

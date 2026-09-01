@@ -30,6 +30,8 @@ export default function QRScannerModal({
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isScanningRef = useRef(isScanning);
+  const lastScanRef = useRef<{ code: string; at: number } | null>(null);
+  const SCAN_COOLDOWN_MS = 3000; // don't re-submit the same code while it's still sitting in frame
 
   useEffect(() => {
     isScanningRef.current = isScanning;
@@ -37,7 +39,7 @@ export default function QRScannerModal({
 
   const startScanner = useCallback(async () => {
     if (!containerRef.current) return;
-
+    lastScanRef.current = null;
     if (scannerRef.current) {
       try {
         await scannerRef.current.stop();
@@ -58,9 +60,23 @@ export default function QRScannerModal({
       };
 
       const onDecode = (decodedText: string) => {
-        if (!isScanningRef.current && decodedText) {
-          onScan(decodedText);
+        if (!decodedText || isScanningRef.current) return;
+
+        const last = lastScanRef.current;
+        const now = Date.now();
+        // Ignore repeat decodes of the SAME code within the cooldown
+        // window — the camera re-reads whatever's in frame every ~66ms
+        // (fps: 15), so without this, a ticket the organizer is still
+        // holding up (e.g. checking an "already used" result) gets
+        // resubmitted dozens of times a second, each one firing its own
+        // toast that clobbers the last before it's visible. A different
+        // code is never blocked, only the exact one just scanned.
+        if (last && last.code === decodedText && now - last.at < SCAN_COOLDOWN_MS) {
+          return;
         }
+
+        lastScanRef.current = { code: decodedText, at: now };
+        onScan(decodedText);
       };
 
       const onFrameError = (_errorMessage: string) => {
@@ -153,14 +169,6 @@ export default function QRScannerModal({
         <DialogHeader className="px-6 py-4 border-b">
           <div className="flex items-center justify-between">
             <DialogTitle className=" text-lg font-semibold">Scan Ticket QR Code</DialogTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="h-8 w-8"
-            >
-              <X className="h-4 w-4" />
-            </Button>
           </div>
           <DialogDescription>
             Position the QR code within the frame to scan

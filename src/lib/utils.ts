@@ -35,9 +35,25 @@ export const formatTime = (iso: string) => {
   }).format(new Date(iso))
 }
 
-export const formatPrice = (price: number) => {
+// Every amount that reaches these formatters has already been converted,
+// server-side, into whichever of these four currencies the viewer is
+// looking at (see resolveViewerCurrency/getDisplayRate, lib/viewerCurrency.ts
+// on the backend) — these just pick the matching symbol. Never hardcode ₦
+// here again: that was the bug where the hero carousel and the "Featured
+// this week" cards showed the same event's price with the wrong symbol
+// (and, separately, different rounding) once a viewer's currency was
+// anything other than Naira.
+export const CURRENCY_SYMBOLS: Record<string, string> = {
+  Naira: '₦',
+  Dollar: '$',
+  Cedis: '₵',
+  Pound: '£',
+};
+
+export const formatPrice = (price: number, currency: string = 'Naira') => {
   if (price === 0) return 'Free'
-  return `₦${price.toLocaleString()}`
+  const symbol = CURRENCY_SYMBOLS[currency] ?? '₦'
+  return `${symbol}${price.toLocaleString()}`
 }
 
 // --- Chloe's formatters (restored after merge) ---
@@ -45,17 +61,20 @@ export const formatDateTime = (eventDateTime: string, displayFormat: string) => 
   return format(new Date(eventDateTime), displayFormat);
 };
 
-export const formatNaira = (amount: number): string =>
-  `₦${amount.toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+export const formatNaira = (amount: number, currency: string = 'Naira'): string => {
+  const symbol = CURRENCY_SYMBOLS[currency] ?? '₦';
+  return `${symbol}${amount.toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+};
 
-export const formatCompactNaira = (amount: number): string => {
+export const formatCompactNaira = (amount: number, currency: string = 'Naira'): string => {
+  const symbol = CURRENCY_SYMBOLS[currency] ?? '₦';
   if (amount >= 1_000_000) {
-    return `${(amount / 1_000_000).toFixed(2)}M`;
+    return `${symbol}${(amount / 1_000_000).toFixed(2)}M`;
   }
   if (amount >= 1_000) {
-    return `${(amount / 1_000).toFixed(0)}K`;
+    return `${symbol}${(amount / 1_000).toFixed(0)}K`;
   }
-  return `${amount.toLocaleString("en-NG")}`;
+  return `${symbol}${amount.toLocaleString("en-NG")}`;
 };
 
 const DAY_MS = 86_400_000;
@@ -104,14 +123,21 @@ export function shortEventNo(event: { no?: string; _id: string }): string {
 
 export const Format = {
   /**
-   * Formats numbers into Nigerian Naira (₦) currency format or specified currency
+   * Formats a price into the given currency's symbol + number.
+   *
+   * Used to hardcode `currency: "NGN"` and `maximumFractionDigits: 0` via
+   * Intl.NumberFormat — always showing a ₦ symbol rounded to a whole
+   * number, no matter what currency the amount actually was in or how
+   * many decimal places it genuinely needed. That's exactly why the
+   * homepage hero carousel (which called this) and the "Featured this
+   * week" cards (which called formatNaira) could show two different
+   * numbers with two different symbols for the very same event's price —
+   * see formatNaira's comment above. This now delegates to formatNaira so
+   * every price on the site is formatted the same way: the real currency
+   * symbol, up to 2 decimal places.
    */
-  amount: (value: number, currency: string = "NGN"): string => {
-    return new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: currency,
-      maximumFractionDigits: 0,
-    }).format(value);
+  amount: (value: number, currency: string = "Naira"): string => {
+    return formatNaira(value, currency);
   },
 
   /**
@@ -154,11 +180,20 @@ export const Format = {
   },
 };
 
+// Used across the admin console (approvals, refunds, reports, audit log)
+// for "requested X ago" timestamps. Used to jump straight from "Just now"
+// to whole hours — anything under an hour old showed "Just now" no matter
+// if it was 2 minutes ago or 55 minutes ago, which reads as broken/stale
+// on a queue admins are actively working through in real time. Now steps
+// through minutes first, so "just came in" and "sat for 40 minutes" are
+// visibly different.
 export function formatRequestedAgo(isoDate: string): string {
     const diffMs = Date.now() - new Date(isoDate).getTime()
+    const diffMinutes = Math.floor(diffMs / (1000 * 60))
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
 
-    if (diffHours < 1) return "Just now"
+    if (diffMinutes < 1) return "Just now"
+    if (diffMinutes < 60) return `${diffMinutes}m ago`
     if (diffHours < 24) return `${diffHours}h ago`
     if (diffHours < 48) return "Yesterday"
     return new Date(isoDate).toLocaleDateString()

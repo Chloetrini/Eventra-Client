@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { EventActionsMenu } from '@/components/event-actions-menu';
 
 interface Event {
@@ -32,6 +33,8 @@ const statusColors = {
 };
 
 const RecentEventsTable: React.FC<RecentEventsTableProps> = ({ events, onViewAll }) => {
+  const navigate = useNavigate();
+
   if (!events || events.length === 0) {
     return (
       <div className="bg-card border border-border rounded-xl overflow-hidden mt-8">
@@ -70,7 +73,11 @@ const RecentEventsTable: React.FC<RecentEventsTableProps> = ({ events, onViewAll
           </thead>
           <tbody className="divide-y divide-border">
             {events.map((event) => (
-              <tr key={event.id} className="hover:bg-accent transition-colors">
+              <tr
+                key={event.id}
+                onClick={() => navigate(`/dashboard/events/${event.id}`)}
+                className="cursor-pointer hover:bg-accent transition-colors"
+              >
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-lg bg-muted shrink-0 overflow-hidden">
@@ -93,7 +100,7 @@ const RecentEventsTable: React.FC<RecentEventsTableProps> = ({ events, onViewAll
                     {event.status}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
                   <EventActionsMenu eventId={event.id} eventTitle={event.title} status={event.status} startDate={event.startDate} />
                 </td>
               </tr>

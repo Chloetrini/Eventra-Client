@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Flag, ArrowRight, ArrowLeft } from "lucide-react";
 import type { AdminEvent } from "@/types/admin-event";
 import { StatusBadge } from "./AdminEventsTable";
-import { UI_ASSETS } from "@/lib/assets";
 import {
   Dialog,
   DialogContent,
@@ -37,7 +36,7 @@ export default function AdminEventDetail({
   const isFlagged = event.status === "FLAGGED";
 
   return (
-    <PageWrapper className="flex flex-col gap-6 p-[20px]">
+    <PageWrapper className="flex flex-col gap-6 p-5">
       {/* Top Back Link */}
       <div>
         <button

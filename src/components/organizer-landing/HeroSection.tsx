@@ -30,12 +30,12 @@ const HeroSec: React.FC = () => {
         </div>
 
         {/* Main heading */}
-        <h1 className="font-extrabold  text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground leading-tight tracking-tight max-w-4xl">
+        <h1 className="font-extrabold text-start sm:text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-foreground leading-tight tracking-tight max-w-4xl">
           Sell tickets. <span className="text-[#0F6E56] dark:text-[#4ADE80]">Get paid.</span> No stress.
         </h1>
 
         {/* Subtitle */}
-        <p className="font-bold text-center text-base sm:text-lg md:text-[18px] text-muted-foreground max-w-2xl mx-auto md:w-129">
+        <p className="font-bold text-start sm:text-center text-base sm:text-lg md:text-[18px] text-muted-foreground max-w-2xl mx-auto md:w-129">
           Publish a polished event in minutes, sell with real payments, check guests in at the gate and get settled a few days later – all from one dashboard.
         </p>
 

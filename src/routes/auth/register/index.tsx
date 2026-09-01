@@ -4,13 +4,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { attendeeRegisterSchema, type AttendeeRegisterValues } from "@/lib/schema";
+import {
+  attendeeRegisterSchema,
+  type AttendeeRegisterValues,
+} from "@/lib/schema";
 import EventraLogo from "@/assets/Eventra-logo.png";
 import { authPath } from "@/lib/auth-path";
 import { useAuth } from "@/context/auth.context";
@@ -60,15 +63,22 @@ export default function Register() {
   const handleGoogleSignup = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
-        const user = await googleAuth(tokenResponse.access_token, isOrganizer ? "organizer" : "attendee");
+        const user = await googleAuth(
+          tokenResponse.access_token,
+          isOrganizer ? "organizer" : "attendee",
+        );
 
         if (isOrganizer && user.role !== "organizer") {
-          toast.error("This is an attendee account. Please use the attendee login page.");
+          toast.error(
+            "This is an attendee account. Please use the attendee login page.",
+          );
           await logout();
           return;
         }
         if (!isOrganizer && user.role === "organizer") {
-          toast.error("This is an organizer account. Please use the organizer login page.");
+          toast.error(
+            "This is an organizer account. Please use the organizer login page.",
+          );
           await logout();
           return;
         }
@@ -76,7 +86,9 @@ export default function Register() {
         toast.success("Account ready!");
         navigate(user.role === "organizer" ? "/onboarding/organisation" : "/");
       } catch (err) {
-        toast.error(err instanceof Error ? err.message : "Google sign-up failed");
+        toast.error(
+          err instanceof Error ? err.message : "Google sign-up failed",
+        );
       }
     },
     onError: () => {
@@ -86,17 +98,30 @@ export default function Register() {
 
   return (
     <>
-      <Link to="/" className="flex items-center gap-2 mb-[50px] w-fit">
-        <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
-        <span className="text-[22.8px] font-extrabold text-foreground tracking-[-0.02em]">
-          Eventra
-        </span>
-        {isOrganizer && (
-          <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] dark:bg-[#0F6E56]/20 dark:text-[#4ADE80] w-[118px] text-center text-[15px]">
-            Organizer
+      {/* Back to home button */}
+      <div className="mb-[10px]">
+        <div className="mb-6 lg:mb-20">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 inline-flex items-center gap-2 text-[#0F6E56] dark:text-[#4ADE80] font-medium hover:bg-accent hover:text-accent-foreground transition-colors rounded-xl"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </button>
+        </div>
+        <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
+          <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
+          <span className="text-[22.8px] font-extrabold text-foreground tracking-[-0.02em]">
+            Eventra
           </span>
-        )}
-      </Link>
+          {isOrganizer && (
+            <span className="ml-1 rounded-[7px] bg-[#BBE0CF] py-[5px] text-[11px] font-[400] font-mono uppercase tracking-wide text-[#0F6E56] dark:bg-[#0F6E56]/20 dark:text-[#4ADE80] w-[118px] text-center text-[15px]">
+              Organizer
+            </span>
+          )}
+        </Link>
+      </div>
+
       <h1 className="text-[34px] font-extrabold mb-[12px] tracking-[-0.02em] leading-[40px] text-foreground">
         {isOrganizer ? "Start selling tickets." : "Create your account"}
       </h1>
@@ -165,7 +190,9 @@ export default function Register() {
           />
 
           {errors.phoneNumber && (
-            <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>
+            <p className="text-sm text-destructive">
+              {errors.phoneNumber.message}
+            </p>
           )}
         </div>
 

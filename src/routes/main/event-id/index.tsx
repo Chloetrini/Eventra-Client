@@ -53,7 +53,7 @@ const EventDetailPage = () => {
   }
   const isFree = event.minPrice === 0;
   return (
-    <PageWrapper className="p-5">
+    <PageWrapper className="p-[20px] md:p-[40px] lg:p-[60px] xl:p-[80px] 2xl:p-[100px]">
       <nav className="flex items-center gap-1 pb-4 text-xs text-muted-foreground mt-3">
         <Link to={getExploreUrl()} className="hover:text-foreground">
           Explore

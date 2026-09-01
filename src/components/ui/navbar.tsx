@@ -236,7 +236,7 @@ function Navbar() {
           </div>
 
           {/* Mobile toggle */}
-          <button
+           <button
             type="button"
             className="ml-auto inline-flex size-9 items-center justify-center rounded-md text-[#1A1523] dark:text-white lg:hidden"
             aria-label={open ? "Close menu" : "Open menu"}
@@ -247,9 +247,14 @@ function Navbar() {
           </button>
         </div>
 
-        {/* Mobile nav */}
-        {open && (
-          <div className="flex flex-col gap-3 border-t border-[#E8E6E0] dark:border-white/10 p-4 lg:hidden">
+        {/* Mobile nav (Animate grid-rows from 0fr to 1fr) */}
+        <div 
+          className={`grid transition-all duration-300 ease-in-out lg:hidden ${
+            open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+          }`}
+        >
+          {/* Inner wrapper MUST have overflow-hidden for the slide height effect to work */}
+          <div className="overflow-hidden flex flex-col gap-3 border-t border-[#E8E6E0] dark:border-white/10 p-4">
             {NAV_LINKS.map((link) => (
               <NavItem key={link.to} {...link} onClick={closeMenu} />
             ))}
@@ -317,7 +322,7 @@ function Navbar() {
               )}
             </div>
           </div>
-        )}
+        </div>
       </div>
     </PageWrapper>
         </div>

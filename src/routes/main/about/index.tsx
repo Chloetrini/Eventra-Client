@@ -1,5 +1,4 @@
 import React from "react";
-import { ArrowLeft } from "lucide-react";
 import PartyHandsUp from "@/assets/party handsup.png";
 import { FaShield } from "react-icons/fa6";
 import { FaStar } from "react-icons/fa";
@@ -64,20 +63,13 @@ export default function About() {
     const rows = [stats.slice(0, 4)];
 
     return (
-        <PageWrapper className="p-[20px] md:p-[40px] lg:p-[60px] xl:p-[80px] 2xl:p-[100px]">
+        <PageWrapper className="p-[20px]">
 
             <main className=" overflow-x-hidden bg-background antialiased">
                 <section className="flex flex-col md:flex-row lg:flex-row items-center justify-between gap-6 lg:gap-15 ">
                     <div className="w-full lg:w-1/2 flex flex-col gap-4 md:gap-5 lg:items-start">
-                    <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-[12px] md:text-[16px] font-geist font-semibold uppercase mb-5 lg:mb-15 tracking-widest text-[#f5a524] hover:text-[#b77812] transition duration-300 hover:-translate-y-1"
-        >
-          <ArrowLeft className="h-4 w-4" /> Back
-        </button>
                         <div className="flex items-center gap-2 md:gap-4">
-                            <span className="border-1 w-3 md:w-8 md:h-0.75 border-[#F5A524] md:border-[#0F6E56] md:dark:border-[#4ADE80]"></span>
+                            <span className="border-2 w-3 md:w-8 md:h-[3px] border-[#F5A524] md:border-[#0F6E56] md:dark:border-[#4ADE80]"></span>
                             <p className="font-schibsted font-semibold text-sm md:text-2xl text-[#0F6E56] dark:text-[#4ADE80]">
                                 About Eventra
                             </p>
@@ -85,7 +77,7 @@ export default function About() {
 
                         <div className="flex flex-col gap-4 md:gap-6">
                             <h1 className="font-geist md:font-schibsted font-bold md:font-extrabold text-[30px] sm:text-[40px] md:text-[30px] lg:text-[40px] xl:text-[50px] 2xl:text-[50px] leading-tight text-foreground break-words">
-                                We&apos;re fixing how Nigeria buys tickets.
+                                We’re fixing how Nigeria buys tickets.
                             </h1>
                             <p className="font-geist font-normal md:font-medium text-md md:text-sm lg:text-md xl:text-[20px] leading-relaxed text-muted-foreground break-words">
                                 For too long, buying a ticket meant sending a transfer to a strong
@@ -113,7 +105,7 @@ export default function About() {
                         <h1 className="font-geist md:font-schibsted font-bold md:font-extrabold text-3xl sm:text-[40px] md:text-[25px] lg:text-[30px] xl:text-[35px] leading-tight text-foreground break-words">
                             Build for the way lagos actually parties.
                         </h1>
-                        <div className="flex flex-col gap-3 md:gap-2 text-[14px] sm:text-[19px] md:text-[13px] lg:text-[18px] leading-relaxed text-muted-foreground font-geist font-normal md:font-medium wrap-break-word">
+                        <div className="flex flex-col gap-3 md:gap-2 text-[14px] sm:text-[19px] md:text-[13px] lg:text-[18px] leading-relaxed text-muted-foreground font-geist font-normal md:font-medium break-words">
                             <p>
                                 Eventra started with a simple frustration: the best events in the city
                                 were the hardest to buy into. Tickets lived in DMs, payments were manual,
@@ -150,8 +142,8 @@ export default function About() {
                             <p className="font-geist font-medium text-sm sm:text-base md:text-lg text-[#0F6E56] dark:text-[#4ADE80]">
                                 WHAT WE BELIEVE
                             </p>
-                            <h1 className="font-geist font-extrabold text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-wide text-foreground">
-                                Our Principles
+                            <h1 className="font-geist font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-wide text-foreground">
+                                Our principles
                             </h1>
                         </div>
 
@@ -159,7 +151,7 @@ export default function About() {
                             {principles.map((item, index) => (
                                 <div
                                     key={index}
-                                    className="rounded-lg border border-border p-5 md:p-7 flex flex-col gap-4 bg-card shadow-sm hover:shadow-lg transition-shadow"
+                                    className="rounded-lg border border-border p-5 md:p-7 flex flex-col gap-4 bg-card shadow-sm hover:shadow-md transition-shadow"
                                 >
                                     <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#E4F1EB] dark:bg-[#0F6E56]/15 flex items-center justify-center text-[#0F6E56] dark:text-[#4ADE80]">
                                         {item.icon}
@@ -210,6 +202,35 @@ export default function About() {
                     </div>
                 </section>
 
+
+                <section className="w-full my-12">
+                    <div className="md:hidden w-full max-w-sm rounded-[15px] p-6 flex flex-col gap-6 bg-[#090519] mx-auto">
+                        <p className="font-[space-mono] text-sm text-[#F5A524] text-center">
+                            COME BUILD THE CULTURE
+                        </p>
+
+                        <div className="flex flex-col text-center gap-2">
+                            <h1 className="font-geist font-bold text-2xl leading-tight text-white">
+                                Ready to join the party?
+                            </h1>
+                            <p className="font-geist text-base text-white">
+                                Discover your next event, or start selling tickets to your own.
+                            </p>
+                        </div>
+
+                        <div className="flex flex-col gap-4">
+                            <button className="w-full rounded-md px-4 py-2 bg-[#0F6E56] text-[#E8E6E0] font-geist font-bold text-sm text-center cursor-pointer">
+                                Find an event
+                            </button>
+
+                            <button className="w-full rounded-md border border-white px-4 py-2 text-[#E8E6E0] font-geist font-bold text-sm text-center cursor-pointer">
+                                Talk to us
+                            </button>
+                        </div>
+                    </div>
+                    {/*-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/}
+
+                </section>
                    {/* 9. BOTTOM CTA BANNER */}
                            <CtaBanner
                              label="COME BUILD THE CULTURE"

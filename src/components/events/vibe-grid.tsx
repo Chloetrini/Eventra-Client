@@ -17,10 +17,6 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   "Arts & Theatre": UI_ASSETS.arts,
   "Food & Drink": UI_ASSETS.food,
   "Tech & Startups": UI_ASSETS.tech,
-  "Music": UI_ASSETS.music,
-  "Networking": UI_ASSETS.networking,
-  "Religious": UI_ASSETS.religious,
-  "Workshop": UI_ASSETS.workshop,
 };
 
 const FALLBACK_IMAGE = UI_ASSETS.tech; // pick any sensible default

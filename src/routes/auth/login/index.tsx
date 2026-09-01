@@ -6,7 +6,7 @@ import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useState } from "react";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,11 +32,8 @@ type AttendeeLoginValues = z.infer<typeof attendeeLoginSchema>;
 function getPostLoginPath(user: User): string {
   if (user.role === "admin") return "/admin/overview";
   if (user.role !== "organizer") return "/";
-  const approvalStatus = (
-    user.organizerProfile as { approvalStatus?: string } | undefined
-  )?.approvalStatus;
-  if (!approvalStatus || approvalStatus === "draft")
-    return "/onboarding/organisation";
+  const approvalStatus = (user.organizerProfile as { approvalStatus?: string } | undefined)?.approvalStatus;
+  if (!approvalStatus || approvalStatus === "draft") return "/onboarding/organisation";
   return "/dashboard/overview";
 }
 
@@ -81,16 +78,12 @@ export default function Login() {
         return;
       }
       if (isOrganizer && user.role !== "organizer") {
-        toast.error(
-          "This is an attendee account. Please use the attendee login page.",
-        );
+        toast.error("This is an attendee account. Please use the attendee login page.");
         logout();
         return;
       }
       if (!isOrganizer && !isAdmin && user.role === "organizer") {
-        toast.error(
-          "This is an organizer account. Please use the organizer login page.",
-        );
+        toast.error("This is an organizer account. Please use the organizer login page.");
         logout();
         return;
       }
@@ -109,30 +102,21 @@ export default function Login() {
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
-        const user = await googleAuth(
-          tokenResponse.access_token,
-          isOrganizer ? "organizer" : "attendee",
-        );
+        const user = await googleAuth(tokenResponse.access_token, isOrganizer ? "organizer" : "attendee");
         if (isOrganizer && user.role !== "organizer") {
-          toast.error(
-            "This is an attendee account. Please use the attendee login page.",
-          );
+          toast.error("This is an attendee account. Please use the attendee login page.");
           await logout();
           return;
         }
         if (!isOrganizer && user.role === "organizer") {
-          toast.error(
-            "This is an organizer account. Please use the organizer login page.",
-          );
+          toast.error("This is an organizer account. Please use the organizer login page.");
           await logout();
           return;
         }
         toast.success("Logged in successfully.");
         navigate(getPostLoginPath(user));
       } catch (err) {
-        toast.error(
-          err instanceof Error ? err.message : "Google sign-in failed",
-        );
+        toast.error(err instanceof Error ? err.message : "Google sign-in failed");
       }
     },
     onError: () => {
@@ -141,28 +125,12 @@ export default function Login() {
   });
 
   return (
-    <div
-      className={
-        isAdmin
-          ? "flex flex-col"
-          : "min-h-[494px] flex flex-col justify-center "
-      }
-    >
+    <div className={isAdmin ? "flex flex-col" : "min-h-[494px] flex flex-col justify-center "}>
       {/* Admin login's logo already lives centered above the card in
           AuthLayout's admin frame — skip the left-aligned link/logo header
           used by the attendee/organizer split-screen layout. */}
       {!isAdmin && (
-        <div className="mb-[10px]">
-          {/* Back to home button */}
-          <div className="mb-6 lg:mb-20">
-            <button
-              onClick={() => navigate(-1)}
-              className="p-2 inline-flex items-center gap-2 text-[#0F6E56] dark:text-[#4ADE80] font-medium hover:bg-accent hover:text-accent-foreground transition-colors rounded-xl"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </button>
-          </div>
+        <div className="mb-[12px] mt-[120px]">
           <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
             <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
             <span className="text-[22.8px] font-extrabold text-foreground tracking-[-0.02em]">
@@ -264,9 +232,7 @@ export default function Login() {
               defaultChecked
               className="h-4 w-4 rounded border-border accent-[#0F6E56]"
             />
-            <span className="text-[14px] text-muted-foreground">
-              Remember me
-            </span>
+            <span className="text-[14px] text-muted-foreground">Remember me</span>
           </label>
 
           {/* No self-service reset flow exists for the seeded admin account

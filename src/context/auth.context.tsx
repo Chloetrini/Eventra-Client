@@ -20,6 +20,10 @@ export type User = {
     refunds: boolean;
     reports: boolean;
   };
+  // This account's own display currency — available to every role, see
+  // its comment on updateProfile (lib/user-api.ts). Undefined means "use
+  // the platform's sitewide default".
+  currencyPreference?: "Naira" | "Dollar" | "Cedis" | "Pound";
   [key: string]: unknown;
 };
 
@@ -111,12 +115,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return api.post("/auth/resend-otp", { email });
   }
 
-  // --- Login: server sets the cookie, then we refetch /me ---
+  // --- Login ---
+  // Used to POST /auth/login (which only sets the session cookie, no user
+  // in the response) and then immediately GET /auth/me to fetch the user —
+  // two round-trips where the second one depends on the cookie the FIRST
+  // response just set already being attached. That's exactly the request
+  // this broke on: a brand-new mobile session, first login attempt ever,
+  // with nothing cached yet — a cross-site cookie (frontend and backend on
+  // different domains) that a mobile browser hasn't fully committed to
+  // storage yet before the very next fetch fires is a known rough edge
+  // (mobile Safari / in-app browsers especially), and when it doesn't make
+  // it in time, that immediate second request goes out with no session at
+  // all and 401s. The backend's login controller already hands back the
+  // full user object in the SAME response that sets the cookie
+  // (auth.controller.ts's login returns `body: sanitizeUser(user...)`) —
+  // so there's no reason to make a second, cookie-dependent request just
+  // to re-fetch data already sitting in the first response. Every other
+  // authenticated call after this still relies on the cookie as normal;
+  // this only removes the one redundant round-trip that was racing it.
   async function login(email: string, password: string): Promise<User> {
-    await api.post("/auth/login", { email, password });
-    // Refetch the user via the query so any subscriber updates
-    const meRes = await api.get("/auth/me");
-    const loggedInUser = meRes.body as User;
+    const res = await api.post("/auth/login", { email, password });
+    const loggedInUser = res.body as User;
     queryClient.setQueryData(ME_QUERY_KEY, loggedInUser);
     return loggedInUser;
   }
@@ -151,10 +170,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
 // --- Google OAuth login/register ---
+// Same fix as login() above — /auth/google already returns the user in
+// its own response body, so this no longer makes a second, cookie-
+// dependent /auth/me call right on its heels.
 async function googleAuth(accessToken: string, role?: "attendee" | "organizer") {
-  await api.post("/auth/google", { accessToken, role });
-  const meRes = await api.get("/auth/me");
-  const loggedInUser = meRes.body as User;
+  const res = await api.post("/auth/google", { accessToken, role });
+  const loggedInUser = res.body as User;
   queryClient.setQueryData(ME_QUERY_KEY, loggedInUser);
   return loggedInUser;
 }

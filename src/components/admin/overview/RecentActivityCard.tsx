@@ -16,8 +16,11 @@ export default function RecentActivityCard({ entries, isLoading }: RecentActivit
         <h3 className="font-heading text-base font-semibold text-foreground">
           Recent activity
         </h3>
-        <a
-          href="/admin/audit-log"
+        {/* Was "/admin/audit-log" — that route doesn't exist (the real
+            audit log lives on the Reports page's "Audit log" tab), so this
+            was a dead link. */}
+        
+          <a href="/admin/reports?tab=audit"
           className={cn(buttonVariants({ variant: "link", size: "sm" }), "h-auto p-0")}
         >
           Audit log

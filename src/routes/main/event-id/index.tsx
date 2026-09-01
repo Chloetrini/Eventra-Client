@@ -123,6 +123,7 @@ const EventDetailPage = () => {
                   availability: remaining <= 0 ? "sold out" as const
                     : remaining <= 10 ? "scarce" as const
                       : "available" as const,
+                  purchaseLimitPerPerson: tt.purchaseLimitPerPerson,
                 };
               })}
               serviceFeePercent={0}

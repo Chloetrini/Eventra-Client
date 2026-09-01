@@ -1,6 +1,7 @@
 
 import ProfileHeader from '@/components/profile-settings/ProfileHeader';
 import SettingsForm from "@/components/profile-settings/SettingsForm";
+import { CurrencyPreference } from '@/components/profile-settings/CurrencyPreference';
 import NToggles from '@/components/profile-settings/NToggles';
 import { ProfileSkeleton } from '@/components/skeletons/profile-skeleton';
 import { useAuth, type User } from '@/context/auth.context';
@@ -85,6 +86,15 @@ const memberSince = typeof user.createdAt === "string"
             }}
             onSave={handleSave}
             />
+          <div className="border border-border rounded-[20px] py-8 px-6 sm:px-14 mb-18">
+            <h2 className="font-grotesk font-semibold text-foreground text-[24px] sm:text-[34px] leading-10 md:leading-1 tracking-[-2%] pb-6">
+              Currency
+            </h2>
+            <CurrencyPreference
+              title="Display currency"
+              description="Choose the currency prices show in across the site — event listings, your tickets, everything."
+            />
+          </div>
           <NToggles />
 
       </PageWrapper>

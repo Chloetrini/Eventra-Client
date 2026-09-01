@@ -6,6 +6,10 @@ export interface AdminPayoutOverview {
   readyToRelease: number
   paidOutAllTime: number
   commissionCollected: number
+  // The admin's resolved display currency — every amount above is already
+  // converted into this. See resolveViewerCurrency, lib/viewerCurrency.ts
+  // on the backend.
+  currency?: string
 }
 
 export interface AwaitingPayoutItem {
@@ -18,6 +22,14 @@ export interface AwaitingPayoutItem {
   status: "processing" | "ready" | "held"
 }
 
+// listAwaitingPayouts (admin.controller.ts) returns { payouts, currency },
+// not a bare array — matches the shape every other admin money endpoint
+// uses to carry the viewer's currency alongside its data.
+export interface AwaitingPayoutsResponse {
+  payouts: AwaitingPayoutItem[]
+  currency?: string
+}
+
 export interface PayoutHistoryItem {
   organizerName: string
   eventTitle: string
@@ -27,6 +39,7 @@ export interface PayoutHistoryItem {
 
 export interface PayoutHistoryResponse {
   payouts: PayoutHistoryItem[]
+  currency?: string
   meta?: {
     page: number
     limit: number
@@ -39,9 +52,9 @@ export async function fetchAdminPayoutsOverview(): Promise<AdminPayoutOverview> 
   return res.body as AdminPayoutOverview
 }
 
-export async function fetchAwaitingPayouts(): Promise<AwaitingPayoutItem[]> {
+export async function fetchAwaitingPayouts(): Promise<AwaitingPayoutsResponse> {
   const res = await api.get("/admin/payouts/awaiting")
-  return res.body as AwaitingPayoutItem[]
+  return res.body as AwaitingPayoutsResponse
 }
 
 export async function fetchPayoutHistory(): Promise<PayoutHistoryResponse> {

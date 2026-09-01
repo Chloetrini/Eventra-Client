@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  deleteAdminUser,
   fetchAdminUserDetail,
   fetchAdminUsers,
+  restoreAdminUser,
   suspendAdminUser,
   unsuspendAdminUser,
   type FetchAdminUsersParams,
@@ -47,6 +49,26 @@ export function useUnsuspendAdminUser() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => unsuspendAdminUser(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminUsersKeys.all });
+    },
+  });
+}
+
+export function useDeleteAdminUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteAdminUser(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminUsersKeys.all });
+    },
+  });
+}
+
+export function useRestoreAdminUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => restoreAdminUser(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: adminUsersKeys.all });
     },

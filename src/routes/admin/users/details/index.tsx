@@ -7,8 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { SuspendUserDialog } from "@/components/dialogs/suspend-user-dialog";
+import { DeleteUserDialog } from "@/components/dialogs/delete-user-dialog";
 import {
   useAdminUserDetail,
+  useDeleteAdminUser,
+  useRestoreAdminUser,
   useSuspendAdminUser,
   useUnsuspendAdminUser,
 } from "@/hooks/use-admin-users";
@@ -36,10 +39,13 @@ export default function AdminUserDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [confirmingSuspend, setConfirmingSuspend] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const { data: user, isLoading, isError } = useAdminUserDetail(id);
   const suspendMutation = useSuspendAdminUser();
   const unsuspendMutation = useUnsuspendAdminUser();
+  const deleteMutation = useDeleteAdminUser();
+  const restoreMutation = useRestoreAdminUser();
 
   const handleSuspendConfirmed = async (userId: string) => {
     try {
@@ -58,6 +64,26 @@ export default function AdminUserDetailPage() {
       toast.success("Account unsuspended");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not unsuspend this account. Please try again.");
+    }
+  };
+
+  const handleDeleteConfirmed = async (userId: string) => {
+    try {
+      await deleteMutation.mutateAsync(userId);
+      toast.success("Account deleted");
+      setConfirmingDelete(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not delete this account. Please try again.");
+    }
+  };
+
+  const handleRestore = async () => {
+    if (!user) return;
+    try {
+      await restoreMutation.mutateAsync(user._id);
+      toast.success("Account restored");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not restore this account. Please try again.");
     }
   };
 
@@ -113,12 +139,14 @@ export default function AdminUserDetailPage() {
               </h1>
               <Badge
                 className={
-                  user.isSuspended
+                  user.isDeleted
+                    ? "bg-muted text-muted-foreground hover:bg-muted rounded-[15px] h-[28px] px-3 font-semibold text-[12px]"
+                    : user.isSuspended
                     ? "bg-destructive/10 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 rounded-[15px] h-[28px] px-3 font-semibold text-[12px]"
                     : "bg-[#E4F1EB] dark:bg-[#0F6E56]/15 text-[#0F6E56] dark:text-[#4ADE80] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15 rounded-[15px] h-[28px] px-3 font-semibold text-[12px]"
                 }
               >
-                {user.isSuspended ? "SUSPENDED" : "ACTIVE"}
+                {user.isDeleted ? "DELETED" : user.isSuspended ? "SUSPENDED" : "ACTIVE"}
               </Badge>
             </div>
             <p className="text-[15px] text-muted-foreground mt-1">
@@ -130,10 +158,10 @@ export default function AdminUserDetailPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 max-w-[900px]">
         <StatCard label="Total orders" value={String(user.ordersCount)} />
-        <StatCard label="Total spent" value={formatNaira(user.totalSpent)} />
+        <StatCard label="Total spent" value={formatNaira(user.totalSpent, user.currency)} />
         <StatCard
           label="Status"
-          value={user.isSuspended ? "SUSPENDED" : "ACTIVE"}
+          value={user.isDeleted ? "DELETED" : user.isSuspended ? "SUSPENDED" : "ACTIVE"}
         />
       </div>
 
@@ -172,7 +200,7 @@ export default function AdminUserDetailPage() {
                     </td>
                    
                     <td className="px-4 text-foreground text-[16px]">
-                      {formatNaira(order.amount)}
+                      {formatNaira(order.amount, user.currency)}
                     </td>
                      <td className="px-4 text-foreground text-[16px]">
                       {formatDateTime(order.date, "MMM d, yyyy")}
@@ -187,7 +215,9 @@ export default function AdminUserDetailPage() {
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-xl border border-border bg-card p-4 sm:p-5">
         <p className="text-[15px] font-medium text-foreground">
-          {user.isSuspended
+          {user.isDeleted
+            ? "This account has been deleted."
+            : user.isSuspended
             ? "This account is currently suspended."
             : "Account in good standing."}
         </p>
@@ -196,18 +226,33 @@ export default function AdminUserDetailPage() {
             <Mail className="size-4" />
             Message
           </Button>
-          {user.isSuspended ? (
+          {user.isDeleted ? (
             <Button
               variant="outline"
-              onClick={handleUnsuspend}
-              disabled={unsuspendMutation.isPending}
+              onClick={handleRestore}
+              disabled={restoreMutation.isPending}
             >
-              {unsuspendMutation.isPending ? "Unsuspending…" : "Unsuspend"}
+              {restoreMutation.isPending ? "Restoring…" : "Restore"}
             </Button>
           ) : (
-            <Button variant="destructive" onClick={() => setConfirmingSuspend(true)}>
-              Suspend
-            </Button>
+            <>
+              {user.isSuspended ? (
+                <Button
+                  variant="outline"
+                  onClick={handleUnsuspend}
+                  disabled={unsuspendMutation.isPending}
+                >
+                  {unsuspendMutation.isPending ? "Unsuspending…" : "Unsuspend"}
+                </Button>
+              ) : (
+                <Button variant="destructive" onClick={() => setConfirmingSuspend(true)}>
+                  Suspend
+                </Button>
+              )}
+              <Button variant="destructive" onClick={() => setConfirmingDelete(true)}>
+                Delete
+              </Button>
+            </>
           )}
         </div>
       </div>
@@ -218,6 +263,14 @@ export default function AdminUserDetailPage() {
         onOpenChange={setConfirmingSuspend}
         onConfirm={handleSuspendConfirmed}
         isPending={suspendMutation.isPending}
+      />
+
+      <DeleteUserDialog
+        user={confirmingDelete ? { id: user._id, name: user.fullname } : null}
+        open={confirmingDelete}
+        onOpenChange={setConfirmingDelete}
+        onConfirm={handleDeleteConfirmed}
+        isPending={deleteMutation.isPending}
       />
     </PageWrapper>
   );

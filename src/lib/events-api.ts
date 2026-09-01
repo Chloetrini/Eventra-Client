@@ -14,9 +14,14 @@ export type EventsResponse = {
   hasMore: boolean;
 };
 
-// Matches the backend's actual shape: { events: [...], meta: { total, hasMore, ... } }
+// Matches the backend's actual shape: { events: [...], currency, meta: { total, hasMore, ... } }
 const eventsResponseSchema = z.object({
   events: z.array(eventSchema),
+  // The viewer's currency — every price on every event in this response has
+  // already been converted into it server-side. See the `currency` field's
+  // comment on eventSchema (lib/schema.ts) for why this gets denormalized
+  // onto each event below instead of just left as a response-level field.
+  currency: z.enum(["Naira", "Dollar", "Cedis", "Pound"]).optional(),
   meta: z.object({
     currentPage: z.number(),
     limit: z.number(),
@@ -92,10 +97,35 @@ export async function fetchEventsReal(filters: EventFilters): Promise<EventsResp
   const parsed = eventsResponseSchema.parse(res.body);
 
   return {
-    events: parsed.events,
+    // Denormalize the response-level `currency` onto each event so every
+    // card that renders event.minPrice can format it with the right
+    // symbol without needing this whole response threaded through as a
+    // separate prop. See the `currency` field's comment on eventSchema.
+    events: parsed.events.map((event) => ({ ...event, currency: parsed.currency ?? event.currency })),
     total: parsed.meta.total,
     hasMore: parsed.meta.hasMore,
   };
+}
+
+// Lightweight fetch for the search-suggestions dropdown — bypasses
+// buildParams (which has no `limit` param) and hits the same public
+// /events endpoint directly with just `q`, `limit`, and `mode=prefix`.
+// mode=prefix switches the backend off its normal $text (stemmed,
+// whole-word) search onto a plain case-insensitive substring match on
+// the title — $text requires a full word before it matches anything,
+// which is right for the "hit search"/Explore results page but made the
+// live dropdown show nothing until a whole word was typed (e.g. "bo"
+// showed nothing until "Bolt" was typed out completely). Same currency
+// denormalization as fetchEventsReal above.
+export async function fetchEventSuggestions(query: string, limit = 6): Promise<Event[]> {
+  const trimmed = query.trim();
+  if (!trimmed) return [];
+
+  const params = new URLSearchParams({ q: trimmed, limit: String(limit), mode: "prefix" });
+  const res = await api.get(`/events?${params.toString()}`);
+  const parsed = eventsResponseSchema.parse(res.body);
+
+  return parsed.events.map((event) => ({ ...event, currency: parsed.currency ?? event.currency }));
 }
 
 async function fetchEventBySlugReal(slug: string): Promise<Event | null> {
@@ -130,8 +160,11 @@ export async function fetchSpotlightEvents(
   limit = 8
 ): Promise<Event[]> {
   const res = await api.get(`/events/spotlight?placement=${placement}&limit=${limit}`);
-  const body = res.body as { events: unknown[] };
-  return z.array(eventSchema).parse(body.events ?? []);
+  const body = res.body as { events: unknown[]; currency?: "Naira" | "Dollar" | "Cedis" | "Pound" };
+  const events = z.array(eventSchema).parse(body.events ?? []);
+  // Same denormalization as fetchEventsReal above — every price in this
+  // response is already converted into `body.currency`.
+  return events.map((event) => ({ ...event, currency: body.currency ?? event.currency }));
 }
 
 export async function fetchCategories(): Promise<EventCategory[]> {
@@ -194,7 +227,14 @@ function getMyEventCategoryName(category: RealMyEvent["category"]): string {
 
 export async function fetchMyEvents() {
   const res = await api.get("/events/mine");
-  const body = res.body as { events: RealMyEvent[]; meta: unknown };
+  const body = res.body as {
+    events: RealMyEvent[];
+    meta: unknown;
+    // The organizer's own viewer currency — revenueTotal on each event
+    // above is already converted into it server-side (see listMyEvents,
+    // event.controller.ts).
+    currency?: "Naira" | "Dollar" | "Cedis" | "Pound";
+  };
   return body.events.map((e, index) => ({
     _id: e._id,
     eventTitle: e.title ?? "Untitled Event",
@@ -207,6 +247,7 @@ export async function fetchMyEvents() {
     capacity: e.capacity ?? null,
     revenue: e.revenueTotal ?? null,
     status: mapMyEventStatus(e),
+    currency: body.currency ?? "Naira",
   }));
 }
 
@@ -310,6 +351,10 @@ type RealDashboard = {
     isActive: boolean;
   }>;
   payout: { amountDue: number };
+  // The organizer's own viewer currency — revenueTotal/ticketTypes[].price
+  // above are already converted into it server-side (see getEventDashboard,
+  // event.controller.ts).
+  currency?: string;
 };
 
 function getInitials(name: string): string {
@@ -406,6 +451,7 @@ export async function fetchEventDashboard(eventId: string): Promise<OrganizerEve
         : "This event is not promoted yet. Boost it for a featured spot on homepage and explore",
     canCancel: d.event.status === "approved" || d.event.status === "postponed",
     canPostpone: d.event.status === "approved",
+    currency: d.currency,
     ...buildEditability(d.event.status, d.event.startDate),
   };
 }

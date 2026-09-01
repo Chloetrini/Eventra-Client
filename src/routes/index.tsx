@@ -326,27 +326,6 @@ const routes = [
             },
           },
           {
-            // Where verify-otp navigates a mustSetPassword account
-            // (an inviteAdmin invite, see admin.controller.ts) to
-            // pick its own password. The page already existed
-            // (routes/auth/set-password/index.tsx) but was never
-            // registered here, so that navigate("/auth/set-password")
-            // 404'd every time.
-            path: "set-password",
-            handle: {
-              seo: {
-                title: "set password",
-                description: "set your account password.",
-              },
-            },
-
-            lazy: async () => {
-              const { default: Component } =
-                await import("@/routes/auth/set-password/index");
-              return { Component };
-            },
-          },
-          {
             path: "forgot-password",
             handle: {
               seo: {
@@ -468,6 +447,16 @@ const routes = [
             path: "admin",
             children: [
               {
+                // Every other auth group (top-level /auth, /auth/organizer)
+                // already redirects its bare path straight to its login
+                // route — this one didn't, so /auth/admin alone rendered
+                // AuthLayout's admin card shell (logo, mint gradient) with
+                // no form inside it, and only /auth/admin/login actually
+                // showed the login inputs.
+                index: true,
+                element: <Navigate to="login" replace />,
+              },
+              {
                 path: "login",
                 handle: {
                   seo: {
@@ -478,6 +467,27 @@ const routes = [
                 lazy: async () => {
                   const { default: Component } =
                     await import("@/routes/auth/login/index");
+                  return { Component };
+                },
+              },
+              {
+                // Where verify-otp navigates a mustSetPassword account (an
+                // inviteAdmin invite, see admin.controller.ts) to pick its
+                // own password. The "/admin" segment here is what makes
+                // AuthLayout's isAdmin check pick this up and render it in
+                // the same centered-card, mint-gradient frame as admin
+                // login just above — no sidebar/topbar, no split-screen
+                // hero image.
+                path: "set-password",
+                handle: {
+                  seo: {
+                    title: "Set password | Eventra Admin",
+                    description: "Set your admin account password.",
+                  },
+                },
+                lazy: async () => {
+                  const { default: Component } =
+                    await import("@/routes/auth/set-password/index");
                   return { Component };
                 },
               },
@@ -636,6 +646,39 @@ const routes = [
                     lazy: async () => {
                       const { default: Component } =
                         await import("@/routes/admin/events/detail");
+                      return { Component };
+                    },
+                  },
+                ],
+              },
+              {
+                path: "promotions",
+                children: [
+                  {
+                    index: true,
+                    handle: {
+                      seo: {
+                        title: "Admin Promotions | Eventra",
+                        description: "Every promotion ever requested, its status, and when it goes live or expires.",
+                      },
+                    },
+                    lazy: async () => {
+                      const { default: Component } =
+                        await import("@/routes/admin/promotions/index");
+                      return { Component };
+                    },
+                  },
+                  {
+                    path: ":eventId",
+                    handle: {
+                      seo: {
+                        title: "Admin Promotion Details | Eventra",
+                        description: "Review a promotion request before moderation.",
+                      },
+                    },
+                    lazy: async () => {
+                      const { default: Component } =
+                        await import("@/routes/admin/promotions/detail");
                       return { Component };
                     },
                   },
@@ -931,17 +974,44 @@ const routes = [
               },
               {
                 path: "promotion",
-                handle: {
-                  seo: {
-                    title: "Promote",
-                    description: "Promote your shows.",
+                children: [
+                  {
+                    index: true,
+                    handle: {
+                      seo: {
+                        title: "Promote",
+                        description: "Promote your shows.",
+                      },
+                    },
+                    lazy: async () => {
+                      const { default: Component } =
+                        await import("@/routes/dashboard/promotion");
+                      return { Component };
+                    },
                   },
-                },
-                lazy: async () => {
-                  const { default: Component } =
-                    await import("@/routes/dashboard/promotion");
-                  return { Component };
-                },
+                  {
+                    // Where Paystack sends an organizer's browser back
+                    // after paying to promote an event — see the doc
+                    // comment on requestPromotion (promotion.controller.ts)
+                    // and this page itself
+                    // (routes/dashboard/promotion/callback/index.tsx).
+                    // Previously pointed at /organizer/promotions/callback,
+                    // a URL nothing on the frontend ever served — a 404
+                    // right after paying.
+                    path: "callback",
+                    handle: {
+                      seo: {
+                        title: "Confirming promotion payment",
+                        description: "Confirming your promotion payment.",
+                      },
+                    },
+                    lazy: async () => {
+                      const { default: Component } =
+                        await import("@/routes/dashboard/promotion/callback");
+                      return { Component };
+                    },
+                  },
+                ],
               },
               {
                 path: "payouts",

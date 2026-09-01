@@ -15,6 +15,12 @@ export const axiosClient = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
+
+const SESSION_MISSING_MESSAGE = 'Unauthorized: please log in to continue'
+function friendlyErrorMessage(message: string | undefined): string | undefined {
+  return message === SESSION_MISSING_MESSAGE ? "We couldn't verify your session. Please try again." : message
+}
+
 async function request(
   method: string,
   path: string,
@@ -30,7 +36,7 @@ async function request(
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       const { message } = error.response.data ?? {}
-      throw new Error(message || 'Request failed', { cause: error })
+      throw new Error(friendlyErrorMessage(message) || 'Request failed', { cause: error })
     }
     throw new Error('Network error', { cause: error })
   }
@@ -53,7 +59,7 @@ async function upload(
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       const { message } = error.response.data ?? {}
-      throw new Error(message || 'Upload failed', { cause: error })
+      throw new Error(friendlyErrorMessage(message) || 'Upload failed', { cause: error })
     }
     throw new Error('Network error', { cause: error })
   }

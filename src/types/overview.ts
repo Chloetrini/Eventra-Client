@@ -87,8 +87,11 @@ export interface RevenuePoint {
 
 export interface PlatformRevenueData {
   range: RevenueRange;
-  value: string; // pre-formatted, e.g. "₦4.9M"
+  value: string; // pre-formatted, e.g. "₦4.9M" (in the viewer's own currency)
   deltaPercent: number;
   deltaCaption: string; // "vs last month"
   series: RevenuePoint[];
+  // The viewer's resolved display currency — `series` holds raw numbers
+  // (for the chart's axis/tooltip), so this travels alongside them.
+  currency: string;
 }

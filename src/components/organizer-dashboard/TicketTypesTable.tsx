@@ -1,19 +1,22 @@
 import React from 'react';
 import type { TicketTypeDetail } from '@/types/organizer-event';
+import { formatPrice } from '@/lib/utils';
 
 interface TicketTypesTableProps {
   ticketTypes: TicketTypeDetail[];
   onEdit?: () => void;
-}
-
-function formatPrice(price: number): string {
-  if (price === 0) return 'FREE';
-  return `₦${price.toLocaleString('en-US')}`;
+  // The organizer's own viewer currency — tier.price is already converted
+  // into it server-side (see OrganizerEventDetails.currency). Was a local
+  // formatter hardcoding ₦; delegates to the shared currency-aware
+  // formatPrice now (the "uppercase" cell class still renders its "Free"
+  // as FREE, same as before).
+  currency?: string;
 }
 
 export default function TicketTypesTable({
   ticketTypes,
   onEdit,
+  currency,
 }: TicketTypesTableProps) {
   return (
     <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-2xs">
@@ -45,7 +48,7 @@ export default function TicketTypesTable({
             {ticketTypes.map((tier) => (
               <tr key={tier.slug} className="hover:bg-muted/50">
                 <td className="py-4 px-5 uppercase font-geist font-normal">{tier.name}</td>
-                <td className="py-4 px-5 uppercase">{formatPrice(tier.price)}</td>
+                <td className="py-4 px-5 uppercase">{formatPrice(tier.price, currency)}</td>
                 <td className="py-4 px-5">
                   {tier.sold !== null ? tier.sold : '--'}
                 </td>

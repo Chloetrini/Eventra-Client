@@ -30,6 +30,9 @@ export interface MonthlyBreakdownRow{
 
 export interface RevenuePageData {
     summary: RevenueSummary;
+    // The viewer's resolved display currency — every number on this page
+    // (summary, revenueBySource, monthlyBreakdown) is already in this.
+    currency: string;
     revenueBySource: RevenueBySource[];
     topEarningEvents: TopEarningEvent[];
     monthlyBreakdown: MonthlyBreakdownRow[]

@@ -21,7 +21,7 @@ const ORGANIZER_LINKS = [
 const COMPANY_LINKS = [
     { to: "/about", label: "About" },
     { to: "/contact", label: "Contact" },
-    { to: "/terms", label: "Terms & Conditions" },
+    { to: "/terms", label: "Terms" },
     { to: "/privacy", label: "Privacy" },
 ] as const
 
@@ -34,7 +34,7 @@ function FooterColumn({
 }) {
     return (
         <div className="flex flex-col gap-4">
-            <h3 className="font-mono font-extrabold uppercase tracking-widest text-muted-foreground">
+            <h3 className="font-mono font-bold uppercase tracking-widest text-muted-foreground">
                 {heading}
             </h3>
             <ul className="flex flex-col gap-3">
@@ -42,7 +42,7 @@ function FooterColumn({
                     <li key={link.to}>
                         <NavLink
                             to={link.to}
-                            className="text-[15px] text-foreground/80 transition-colors hover:text-[#0f6e56] dark:hover:text-[#4ADE80] font-geist"
+                            className="text-[15px] text-foreground/80 transition-colors hover:text-foreground"
                         >
                             {link.label}
                         </NavLink>
@@ -94,7 +94,7 @@ export default function Footer() {
                 {/* Newsletter CTA */}
                 <div className="flex flex-col gap-6 py-14 md:flex-row md:items-center md:justify-between md:gap-10">
                     <div>
-                        <h2 className="text-3xl font-bold tracking-tight text-foreground font-grotesk">
+                        <h2 className="text-3xl font-bold tracking-tight text-foreground">
                             Never miss a good one.
                         </h2>
                         <p className="mt-2 text-[15px] text-muted-foreground">
@@ -132,7 +132,7 @@ export default function Footer() {
                     </div>
                 </div>
                 {/* Link columns */}
-                <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-t border-border py-12 md:grid-cols-4">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-10 border-t border-border py-12 sm:grid-cols-4">
                     <div className="col-span-2 flex flex-col gap-4 sm:col-span-1">
                         <NavLink to="/" className="flex items-center gap-2">
                             <img className="h-8 w-6" src={eventraLogo}alt="Eventra" />
@@ -140,7 +140,7 @@ export default function Footer() {
                                 Eventra
                             </span>
                         </NavLink>
-                        <p className="max-w-[26ch] text-[15px] text-muted-foreground font-geist">
+                        <p className="max-w-[26ch] text-[15px] text-muted-foreground">
                             The trusted way to discover events and buy tickets in Nigeria.
                         </p>
                     </div>
@@ -151,8 +151,8 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom bar */}
-                <div className="flex flex-col gap-3 border-t border-border py-6 font-Geist text-xs uppercase tracking-widest text-muted-foreground font-medium sm:flex-row sm:items-center sm:justify-between font-space">
-                    <span>{new Date().getFullYear()} Eventra · Lagos, Nigeria.</span>
+                <div className="flex flex-col gap-3 border-t border-border py-6 font-Geist text-xs uppercase tracking-widest text-muted-foreground font-medium sm:flex-row sm:items-center sm:justify-between">
+                    <span>© 2026 Eventra · Lagos, Nigeria</span>
                     <span className="inline-flex items-center gap-1.5">
                         Made for the culture <span aria-hidden="true">◇</span>
                     </span>

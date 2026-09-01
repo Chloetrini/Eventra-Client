@@ -54,18 +54,11 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="relative bg-linear-to-r from-emerald-50 via-emerald-50/50 to-white dark:from-background dark:via-background dark:to-background">
-     <PageWrapper className="p-[20px] md:p-[40px] lg:p-[60px] xl:p-[80px] 2xl:p-[100px]">
+    <div className="relative bg-gradient-to-r from-emerald-50 via-emerald-50/50 to-white dark:from-background dark:via-background dark:to-background">
+     <PageWrapper className="p-[20px]">
 
         <div className="flex flex-col gap-10 lg:flex-row lg:items-stretch xl:gap-14">
           <div className="flex flex-1 flex-col lg:max-w-[46%]">
-            {/* <button
-            type="button"
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-[12px] md:text-[16px] font-geist font-semibold uppercase mb-5 lg:mb-15 tracking-widest text-[#f5a524] hover:text-[#b77812] transition duration-300 hover:-translate-y-1"
-        >
-          <ArrowLeft className="h-4 w-4" /> Back
-        </button> */}
             <div className="mb-5 flex items-center gap-2">
               <span className="h-0.5 w-6 bg-amber-400" />
               <span className="text-xs font-semibold tracking-widest text-emerald-700 dark:text-emerald-400">CONTACT</span>
@@ -81,7 +74,7 @@ export default function ContactPage() {
               <img src={crowdImage} alt="Crowd a-t an Eventra event" className="w-full object-cover rounded-3xl h-full" />
 
               <div className="absolute -left-2 -top-3 z-20 -rotate-8 rounded-lg bg-[#F5A524] pt-1 pl-2  md:pt-2.5 shadow-lg md:-top-3 md:pl-4 w-[110px] h-[68px] md:h-[125px] md:w-[203px]">
-                <p className="text-[11px] font-[700] font-grotesk tracking-wide text-[#4A4451] md:text-[20px] uppercase font-space">eventra</p>
+                <p className="text-[11px] font-[700] font-grotesk tracking-wide text-[#4A4451] md:text-[20px]">eventra</p>
                 <p className="text-[18px] font-[800] leading-tight text-[#4A4451] md:text-[34px] mb-2">VIP</p>
                 <p className="text-[6.5px] font-mono font-[400] tracking-widest text-[#6E6577] md:text-[12px]">No 0001 &middot; ADMIT ONE</p>
               </div>

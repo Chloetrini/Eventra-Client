@@ -12,7 +12,6 @@ import { forgotPasswordSchema } from "@/lib/schema";
 import EventraLogo from "@/assets/Eventra-logo.png";
 import { authPath } from "@/lib/auth-path";
 import { useAuth } from "@/context/auth.context";
-import { ArrowLeft } from "lucide-react";
 
 type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
 
@@ -60,17 +59,6 @@ export default function ForgotPassword() {
 
   return (
     <div className="flex flex-col">
-      <div className="mb-[10px]">
-        <div className="mb-6 lg:mb-20">
-          <button
-            onClick={() => navigate(-1)}
-            className="p-2 inline-flex items-center gap-2 text-[#0F6E56] dark:text-[#4ADE80] font-medium hover:bg-accent hover:text-accent-foreground transition-colors rounded-xl"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </button>
-        </div>
-      </div>
       <Link to="/" className="flex items-center gap-2 mb-12 w-fit">
         <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
         <span className="text-[22.8px] font-extrabold tracking-[-0.02em] text-foreground">

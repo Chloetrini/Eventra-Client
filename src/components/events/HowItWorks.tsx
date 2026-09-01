@@ -91,8 +91,8 @@ const HowItWorks: React.FC = () => {
             HOW EVENTRA WORKS
           </span>
           <h2 className="text-2xl md:text-[54px] font-bold text-white font-geist md:font-grotesk ">
-            From “Where&apos;s it happening?” to{" "}
-            <span className="text-[#C084A0]">"It&apos;s happening here!"</span>
+            From “where&apos;s it happening?” to{" "}
+            <span className="text-[#C084A0]">"it&apos;s happening here!"</span>
             {/* <span className="text-[#C084A0]">inside the gate.</span> */}
           </h2>
           <p className="text-white text-xs sm:text-sm font-geist leading-relaxed font-normal">

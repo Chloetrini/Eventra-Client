@@ -5,15 +5,14 @@ import { type RouteObject } from "react-router";
 import RootLayout from "./root/layout";
 import MainLayout from "./main/layout";
 import AuthLayout from "./auth/layout";
+import Onboardinglayout from "./onboarding/layout";
 
 import CreateEventLayout from "./dashboard/create-event/layout";
 import DashBoardLayout from "./dashboard/layout";
 import { RequireOrganizer } from "@/components/require-organizer";
 import { RequireAdmin } from "@/components/require-admin";
 import AdminLayout from "./admin/layout";
-import Onboardinglayout from "@/routes/onboarding/layout";
 import { Children } from "react";
-import PrivacyPage from "./main/privacy";
 
 const routes = [
   {
@@ -95,6 +94,20 @@ const routes = [
             },
           },
           {
+            path: "events/:slug/report",
+            handle: {
+              seo: {
+                title: "Report Event",
+                description: "Report an issue with this event",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/main/report-event");
+              return { Component };
+            },
+          },
+          {
             path: "contact",
             handle: {
               seo: {
@@ -148,34 +161,6 @@ const routes = [
             lazy: async () => {
               const { default: Component } =
                 await import("@/routes/main/profile");
-              return { Component };
-            },
-          },
-          {
-            path: "privacy",
-            handle: {
-              seo: {
-                title: "Privacy Policy",
-                description: "Read our privacy policy guidelines.",
-              },
-            },
-            lazy: async () => {
-              const { default: Component } =
-                await import("@/routes/main/privacy");
-              return { Component };
-            },
-          },
-          {
-            path: "terms",
-            handle: {
-              seo: {
-                title: "Terms of Service",
-                description: "Read our platform terms and conditions.",
-              },
-            },
-            lazy: async () => {
-              const { default: Component } =
-                await import("@/routes/main/terms");
               return { Component };
             },
           },
@@ -462,6 +447,16 @@ const routes = [
             path: "admin",
             children: [
               {
+                // Every other auth group (top-level /auth, /auth/organizer)
+                // already redirects its bare path straight to its login
+                // route — this one didn't, so /auth/admin alone rendered
+                // AuthLayout's admin card shell (logo, mint gradient) with
+                // no form inside it, and only /auth/admin/login actually
+                // showed the login inputs.
+                index: true,
+                element: <Navigate to="login" replace />,
+              },
+              {
                 path: "login",
                 handle: {
                   seo: {
@@ -475,74 +470,33 @@ const routes = [
                   return { Component };
                 },
               },
+              {
+                // Where verify-otp navigates a mustSetPassword account (an
+                // inviteAdmin invite, see admin.controller.ts) to pick its
+                // own password. The "/admin" segment here is what makes
+                // AuthLayout's isAdmin check pick this up and render it in
+                // the same centered-card, mint-gradient frame as admin
+                // login just above — no sidebar/topbar, no split-screen
+                // hero image.
+                path: "set-password",
+                handle: {
+                  seo: {
+                    title: "Set password | Eventra Admin",
+                    description: "Set your admin account password.",
+                  },
+                },
+                lazy: async () => {
+                  const { default: Component } =
+                    await import("@/routes/auth/set-password/index");
+                  return { Component };
+                },
+              },
             ],
           },
         ],
       },
       {
-        path: "promotions",
-        children: [
-          {
-            index: true,
-            handle: {
-              seo: {
-                title: "Admin Promotions | Eventra",
-                description:
-                  "Every promotion ever requested, its status, and when it goes live or expires.",
-              },
-            },
-            lazy: async () => {
-              const { default: Component } =
-                await import("@/routes/admin/promotions/index");
-              return { Component };
-            },
-          },
-          {
-            path: ":eventId",
-            handle: {
-              seo: {
-                title: "Admin Promotion Details | Eventra",
-                description: "Review a promotion request before moderation.",
-              },
-            },
-            lazy: async () => {
-              const { default: Component } =
-                await import("@/routes/admin/promotions/detail");
-              return { Component };
-            },
-          },
-        ],
-      },
-      {
-        path: "settings",
-        handle: {
-          seo: {
-            title: "admin settings",
-            description: "Manage the organisers and attendees.",
-          },
-        },
-        lazy: async () => {
-          const { default: Component } =
-            await import("@/routes/admin/settings/index");
-          return { Component };
-        },
-      },
-      {
-        path: "payouts",
-        handle: {
-          seo: {
-            title: "admin payouts",
-            description: "Manage the organisers payouts.",
-          },
-        },
-        lazy: async () => {
-          const { default: Component } =
-            await import("@/routes/admin/payouts/index");
-          return { Component };
-        },
-      },
-      {
-        path: "organizers",
+        path: "onboarding",
         Component: Onboardinglayout,
         children: [
           {
@@ -649,6 +603,21 @@ const routes = [
                 },
               },
               {
+                path: "approvals",
+                handle: {
+                  seo: {
+                    title: "Admin Approvals | Eventra",
+                    description:
+                      "Every event/organizer on the platform. Moderate or remove any of them.",
+                  },
+                },
+                lazy: async () => {
+                  const { default: Component } =
+                    await import("@/routes/admin/approval/index");
+                  return { Component };
+                },
+              },
+              {
                 path: "events",
                 children: [
                   {
@@ -683,6 +652,39 @@ const routes = [
                 ],
               },
               {
+                path: "promotions",
+                children: [
+                  {
+                    index: true,
+                    handle: {
+                      seo: {
+                        title: "Admin Promotions | Eventra",
+                        description: "Every promotion ever requested, its status, and when it goes live or expires.",
+                      },
+                    },
+                    lazy: async () => {
+                      const { default: Component } =
+                        await import("@/routes/admin/promotions/index");
+                      return { Component };
+                    },
+                  },
+                  {
+                    path: ":eventId",
+                    handle: {
+                      seo: {
+                        title: "Admin Promotion Details | Eventra",
+                        description: "Review a promotion request before moderation.",
+                      },
+                    },
+                    lazy: async () => {
+                      const { default: Component } =
+                        await import("@/routes/admin/promotions/detail");
+                      return { Component };
+                    },
+                  },
+                ],
+              },
+              {
                 path: "settings",
                 handle: {
                   seo: {
@@ -695,6 +697,53 @@ const routes = [
                     await import("@/routes/admin/settings/index");
                   return { Component };
                 },
+              },
+              {
+                path: "payouts",
+                handle: {
+                  seo: {
+                    title: "admin payouts",
+                    description: "Manage the organisers payouts.",
+                  },
+                },
+                lazy: async () => {
+                  const { default: Component } =
+                    await import("@/routes/admin/payouts/index");
+                  return { Component };
+                },
+              },
+              {
+                path: "organizers",
+                children: [
+                  {
+                    index: true,
+                    handle: {
+                      seo: {
+                        title: "admin organizers",
+                        description: "Manage the organisers.",
+                      },
+                    },
+                    lazy: async () => {
+                      const { default: Component } =
+                        await import("@/routes/admin/organizer/index");
+                      return { Component };
+                    },
+                  },
+                  {
+                    path: ":id",
+                    handle: {
+                      seo: {
+                        title: "Organizer Details",
+                        description: "View details of an organizer",
+                      },
+                    },
+                    lazy: async () => {
+                      const { default: Component } =
+                        await import("@/routes/admin/organizer/detail");
+                      return { Component };
+                    },
+                  },
+                ],
               },
               {
                 path: "refunds",
@@ -757,7 +806,21 @@ const routes = [
                     },
                     lazy: async () => {
                       const { default: Component } =
-                        await import("@/routes/admin/reports-list/index");
+                        await import("@/routes/admin/reports-list");
+                      return { Component };
+                    },
+                  },
+                  {
+                    path: ":flagId/details",
+                    handle: {
+                      seo: {
+                        title: "Report Details",
+                        description: "Review a flagged event or user.",
+                      },
+                    },
+                    lazy: async () => {
+                      const { default: Component } =
+                        await import("@/routes/admin/reports-detail");
                       return { Component };
                     },
                   },
@@ -797,6 +860,21 @@ const routes = [
                     },
                   },
                 ],
+              },
+              {
+                path: "revenue",
+                handle: {
+                  seo: {
+                    title: "Revenue",
+                    description:
+                      "Where Eventra's earnings come from, over time.",
+                  },
+                },
+                lazy: async () => {
+                  const { default: Component } =
+                    await import("@/routes/admin/revenue/index");
+                  return { Component };
+                },
               },
             ],
           },

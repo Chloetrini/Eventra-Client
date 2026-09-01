@@ -1,52 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Switch } from "@/components/ui/switch";
 import { useNavigate } from 'react-router';
-import { useAuth } from '@/context/auth.context';
+import { useAuth, type User } from '@/context/auth.context';
 import { toast } from 'react-toastify';
+import { useUpdateProfile } from '@/hooks/use-profile';
+
 
 interface NotificationItem {
-  id: string;
+  id: 'eventReminders' | 'weeklyPicks' | 'organizerUpdates';
   title: string;
   description: string;
-  defaultEnabled: boolean;
+  // defaultEnabled: boolean;
 }
 
 const NOTIFICATIONS: NotificationItem[] = [
   {
-    id: 'reminders',
+     id: 'eventReminders',
     title: 'Event reminders',
     description: "A nudge before events you're attending",
-    defaultEnabled: true,
+    // defaultEnabled: true,
   },
   {
-    id: 'weekly',
+   id: 'weeklyPicks',
     title: 'Weekly picks',
     description: 'The best events near you, once a week',
-    defaultEnabled: false,
+    // defaultEnabled: false,
   },
   {
-    id: 'organizer',
+        id: 'organizerUpdates',
     title: 'Organizer updates',
     description: 'News from organizer you follow',
-    defaultEnabled: true,
+    // defaultEnabled: true,
   },
 ];
 
 const NotificationToggles: React.FC = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, logout, setUser } = useAuth();
+const updateProfileMutation = useUpdateProfile();
 
-  const [toggles, setToggles] = useState<Record<string, boolean>>(() =>
-    NOTIFICATIONS.reduce(
-      (acc, item) => ({ ...acc, [item.id]: item.defaultEnabled }),
-      {}
-    )
-  );
+  const [toggles, setToggles] = useState<Record<string, boolean>>({
+    eventReminders: true,
+    weeklyPicks: false,
+    organizerUpdates: true,
+  })
+
+    // Sync from the real signed-in user once it's loaded — this is the
+  // actual saved state, not a hardcoded default.
+
+  useEffect(() => {
+    if (user?.notificationPreferences) {
+      setToggles(user.notificationPreferences);
+    }
+  }, [user?.notificationPreferences]);
 
   const handleToggle = (id: string, checked: boolean) => {
-    setToggles((prev) => ({ ...prev, [id]: checked }));
+    const previous = toggles;
+    const next = { ...toggles, [id]: checked };
+    setToggles(next);
+
+     updateProfileMutation.mutate(
+      { notificationPreferences: { [id]: checked } },
+      {
+        onSuccess: (updatedUser) => {
+          setUser(updatedUser as User);
+        },
+        onError: (err) => {
+          setToggles(previous);
+          toast.error(err instanceof Error ? err.message : "Could not save this preference");
+        },
+      }
+    );
   };
 
   const handleSignOut = async () => {

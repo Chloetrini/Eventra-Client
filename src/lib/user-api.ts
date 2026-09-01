@@ -19,6 +19,16 @@ export async function updateProfile(payload: {
   currencyPreference?: CurrencyPreference;
   currentPassword?: string;
   newPassword?: string;
+  notificationPreferences?: Partial<{
+    eventReminders: boolean;
+    weeklyPicks: boolean;
+    organizerUpdates: boolean;
+  }>;
+  adminNotificationPreferences?: Partial<{
+    approvals: boolean;
+    refunds: boolean;
+    reports: boolean;
+  }>;
 }) {
   // The backend treats each of these as "optional, but if present must be
   // non-empty" (min-length validation on fullname/phone/city) — an empty
@@ -41,4 +51,13 @@ export async function uploadAvatar(file: File) {
   formData.append("image", file);
   const res = await api.upload("/users/avatar", formData);
   return res.body;
+}
+
+// POST /api/v1/users/follow/:organizerId
+export async function followOrganizer(organizerId: string): Promise<void> {
+  await api.post(`/users/follow/${organizerId}`, {});
+}
+// DELETE /api/v1/users/follow/:organizerId
+export async function unfollowOrganizer(organizerId: string): Promise<void> {
+  await api.delete(`/users/follow/${organizerId}`);
 }

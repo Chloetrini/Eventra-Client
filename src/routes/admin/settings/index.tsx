@@ -248,6 +248,7 @@ function DeleteAdminDialog({ id, name }: { id: string; name: string }) {
 }
 
 export default function PlatformSettings() {
+ 
   const { user, setUser } = useAuth()
   // Owner-tier only — mirrors requireAdminTier('owner') on every
   // /admin/settings/* route on the backend (see admin.routes.ts). A
@@ -471,10 +472,59 @@ export default function PlatformSettings() {
                 Show a maintenance page to all users
               </p>
             </div>
-            <ToggleSwitch checked={settings?.maintenanceMode ?? false} onCheckedChange={onMaintenanceModeChange} />
+                       <ToggleSwitch checked={settings?.maintenanceMode ?? false} onCheckedChange={onMaintenanceModeChange} />
           </div>
         </CardContent>
       </Card>
+
+      {/* Notifications */}
+      {/* <Card>
+        <CardHeader>
+          <CardTitle>Notifications</CardTitle>
+        </CardHeader>
+        <div className="border mx-4"/>
+        <CardContent className="flex flex-col gap-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-foreground">Approvals</p>
+              <p className="text-xs text-muted-foreground">
+                New events, organizers, or promotions awaiting review
+              </p>
+            </div>
+            <ToggleSwitch
+              checked={adminToggles.approvals}
+              onCheckedChange={(checked) => handleAdminNotificationToggle("approvals", checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-foreground">Refunds</p>
+              <p className="text-xs text-muted-foreground">
+                A new refund request needs review
+              </p>
+            </div>
+            <ToggleSwitch
+              checked={adminToggles.refunds}
+              onCheckedChange={(checked) => handleAdminNotificationToggle("refunds", checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-foreground">Reports</p>
+              <p className="text-xs text-muted-foreground">
+                An attendee reported an event or organizer
+              </p>
+            </div>
+            <ToggleSwitch
+              checked={adminToggles.reports}
+              onCheckedChange={(checked) => handleAdminNotificationToggle("reports", checked)}
+            />
+          </div>
+        </CardContent>
+      </Card>  */}
+
 
       {/* Admin, Teams & Roles */}
       <Card size="sm">

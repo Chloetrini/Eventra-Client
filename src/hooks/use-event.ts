@@ -27,12 +27,13 @@ export function useEvents(filters: EventFilters) {
   const events = query.data?.pages.flatMap((p) => p.events) ?? [];
   const total = query.data?.pages[0]?.total ?? 0;
   const hasMore = query.hasNextPage ?? false;
-
+  
   return {
     data: { events, total, hasMore },
     isLoading: query.isLoading,
     isFetching: query.isFetchingNextPage || query.isFetching,
     isError: query.isError,
+    error: query.error,
     refetch: query.refetch,
     loadMore: query.fetchNextPage,
   };

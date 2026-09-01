@@ -17,7 +17,6 @@ import PageWrapper from "../page-wrapper";
 import { useAuth } from "@/context/auth.context";
 import { useTheme } from "@/context/theme.context";
 import { UserAvatar } from "@/components/ui/user-avatar";
-import { NotificationBell } from "@/components/notifications/notificationBell";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NotificationBell } from "@/components/notifications/notificationBell";
 
 const NAV_LINKS = [
   { to: "/explore", label: "Events" },
@@ -293,6 +293,7 @@ function Navbar() {
                 </span>
                 {ThemeToggleButton}
               </div>
+
               {user && (
                 <div className="flex items-center justify-between py-2 border-t border-[#E8E6E0] dark:border-white/10">
                   <span className="text-sm font-semibold text-[#1A1523] dark:text-white">

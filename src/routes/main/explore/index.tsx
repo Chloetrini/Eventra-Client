@@ -8,7 +8,7 @@ import { DEFAULT_FILTERS, type EventFilters } from "@/types/event-types";
 import { Button } from "@/components/ui/button";
 import { TopBarFilter } from "@/components/events/filters/filter-topbar";
 import { useEffect } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { useSavedEvents } from "@/hooks/use-saved-events";
 import { useNavigate, useLocation } from "react-router";
 import { saveExploreUrl } from "@/lib/explore-history";
@@ -62,14 +62,22 @@ export default function ExplorePage() {
   }
 
   return (
-    <PageWrapper className="p-[20px] " >
+    <PageWrapper className="p-5 md:p-7">
       <header className="space mb-4">
-        <p className=" flex items-center  text-[12px] font-[400] font-sans uppercase tracking-widest  text-[#0A4F41] dark:text-[#4ADE80] gap-2">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-[12px] md:text-[16px] font-geist font-semibold uppercase mb-5 lg:mb-15 tracking-widest text-[#f5a524] hover:text-[#b77812] transition duration-300 hover:-translate-y-1"
+        >
+          <ArrowLeft className="h-4 w-4" /> Back
+        </button>
+        <p className=" flex items-center  text-[12px] font-normal font-space uppercase tracking-widest  text-[#0A4F41] dark:text-[#4ADE80] gap-2">
+          
           <span className="inline-block h-px  w-[12px] bg-[#F5A524] " />
           {stateLabel} · {monthLabel}
         </p>
-        <h1 className="text-[32px] md:text-[54px] font-[800] tracking-tight font-grotesk text-foreground">Explore events</h1>
-        <p className="text-[13px] md:text-[15px] font-[400] font-mono uppercase tracking-wide text-muted-foreground mt-1">
+        <h1 className="text-[32px] md:text-[54px] font-extrabold tracking-tight font-grotesk text-foreground">Explore events</h1>
+        <p className="text-[13px] md:text-[15px] font-normal font-mono uppercase tracking-wide text-muted-foreground mt-1">
           Showing <span className="text-foreground">{data?.total ?? 0}</span> events·Updated just now
         </p>
       </header>

@@ -65,7 +65,7 @@ export default function AuthLayout() {
 
               <div className="absolute bottom-0 left-0 p-8 text-white">
                 <p className="text-[#F5A524] text-sm font-semibold tracking-wide mb-3 uppercase">
-                  № ORG · SELL WITH EVENTRA
+                  № 1 ORG · SELL WITH EVENTRA
                 </p>
                 <h2 className="text-3xl font-bold mb-5 leading-tight font-grotesk">
                   Your events,<br />properly run.

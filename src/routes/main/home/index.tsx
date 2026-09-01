@@ -112,7 +112,7 @@ const Home: React.FC = () => {
           edge), cutting it off right where it met the stats bar section
           underneath. */}
       <section className="relative flex items-center bg-[#4A4451] text-white">
-        <PageWrapper className="p-[20px]">
+        <PageWrapper className="p-[20px] md:p-[40px] lg:p-[60px] xl:p-[80px] 2xl:p-[100px]">
 
           <div className="absolute inset-0 overflow-hidden">
             <div
@@ -367,7 +367,7 @@ const Home: React.FC = () => {
         </PageWrapper>
       </section>
 
-      <PageWrapper className="p-[20px]">
+      <PageWrapper className="p-[20px] md:p-[40px] lg:p-[60px] xl:p-[80px] 2xl:p-[100px]">
         {/* 2. STATS BAR */}
         <section className="py-6 border-y border-border">
           <div className="grid grid-cols-4 md:gap-8 items-center justify-center text-center relative">
@@ -547,7 +547,7 @@ const Home: React.FC = () => {
       <HowItWorks />
       <OrganizersCta />
 
-      <PageWrapper className="pt-0">
+      <PageWrapper className="p-[20px] md:p-[40px] lg:p-[60px] xl:p-[80px] 2xl:p-[100px]">
         {" "}
         {/* 6. TESTIMONIALS */}
         <section className="py-12 border-t border-border">

@@ -2,12 +2,20 @@ import { useState, useEffect } from "react"
 import { useSearchParams, Link } from "react-router"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "react-toastify"
-import { Star, Triangle, Diamond, X, Check, LockKeyhole, CircleAlert } from "lucide-react"
+import { Star, Triangle, Diamond, X, Check, LockKeyhole, CircleAlert, TriangleAlert } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Alert, AlertTitle, AlertDescription, AlertAction } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import { cn, formatDate, formatNaira } from "@/lib/utils"
 import { fetchMyEvents } from "@/lib/events-api"
 import { useOrganizerStatus } from "@/lib/organizer-api"
@@ -64,6 +72,10 @@ const Promotions = () => {
   const [selectedEventId, setSelectedEventId] = useState<string | null>(preselectedEventId)
   const [selectedPackageId, setSelectedPackageId] = useState<PromotionPackageId | null>(null)
 
+  // Holds the package id the user just tried to activate, ONLY while we're
+  // waiting on them to confirm/cancel a downgrade. null = no warning showing.
+  const [downgradeWarningPackageId, setDowngradeWarningPackageId] = useState<PromotionPackageId | null>(null)
+
   const { status: organizerStatus } = useOrganizerStatus()
 
   const { data: myEvents = [], isLoading: eventsLoading } = useQuery({
@@ -90,11 +102,12 @@ const Promotions = () => {
   }, [packages, selectedPackageId])
 
   const promoteMutation = useMutation({
-    mutationFn: () => {
-      if (!selectedEventId || !selectedPackageId) {
+    mutationFn: (packageIdOverride?: PromotionPackageId) => {
+      const packageId = packageIdOverride ?? selectedPackageId
+      if (!selectedEventId || !packageId) {
         throw new Error("Pick an event and a package first")
       }
-      return requestPromotion(selectedEventId, selectedPackageId)
+      return requestPromotion(selectedEventId, packageId)
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["my-promotions"] })
@@ -105,10 +118,55 @@ const Promotions = () => {
     },
   })
 
-  // Helper to extract ID regardless of whether API uses _id or id
-  const getEventId = (event: (typeof myEvents)[number]) => event._id || (event as unknown as { id: string }).id
-  const selectedEvent = myEvents.find((e) => getEventId(e) === selectedEventId)
-  const selectedPackage = packages.find((p) => p.id === selectedPackageId)
+  const selectedPackage = packages.find(p => p.id === selectedPackageId)
+  const effectivePackageId = selectedPackageId ?? (packages.find(p => p.popular)?.id ?? packages[0]?.id ?? null)
+
+  const selectedEvent = myEvents.find(e => e._id === selectedEventId)
+  // fetchMyEvents maps startDate -> `date` (ISO string or null when the event
+  // has no date set). No date means we can't call it "past", so it stays promotable.
+  const isSelectedEventPast = selectedEvent?.date ? new Date(selectedEvent.date) < new Date() : false
+
+  const isSelectedDraftEvent = selectedEvent?.status === "Draft"
+
+  // The event's current live promotion, if any. We key off status === "approved"
+  // to match what PromotionStatusBadge already treats as "ACTIVE" elsewhere on
+  // this page, so the two stay in sync.
+  const activePromotionForEvent = selectedEventId
+    ? myPromotions.find(p => p.eventId === selectedEventId && p.status === "approved")
+    : undefined
+
+  // Price is the source of truth for upgrade/downgrade — a cheaper package than
+  // the one currently active counts as a downgrade, regardless of where it sits
+  // in PROMOTION_PACKAGES' display order.
+  const isLowerGrade = (pkgId: PromotionPackageId) => {
+    if (!activePromotionForEvent || activePromotionForEvent.priceNaira === null) return false
+    const pkg = packages.find(p => p.id === pkgId)
+    if (!pkg) return false
+    return pkg.priceNaira < activePromotionForEvent.priceNaira
+  }
+
+  const handlePromoteClick = () => {
+    if (!effectivePackageId || isSelectedEventPast || isSelectedDraftEvent) return
+
+    if (isLowerGrade(effectivePackageId)) {
+      // Don't kick off checkout yet — surface the warning modal and wait for
+      // the user to explicitly confirm they want to downgrade.
+      setDowngradeWarningPackageId(effectivePackageId)
+      return
+    }
+
+    setSelectedPackageId(effectivePackageId)
+    promoteMutation.mutate(effectivePackageId)
+  }
+
+  const confirmDowngrade = () => {
+    if (!downgradeWarningPackageId) return
+    setSelectedPackageId(downgradeWarningPackageId)
+    promoteMutation.mutate(downgradeWarningPackageId)
+    setDowngradeWarningPackageId(null)
+  }
+
+  const packagePendingConfirmation = packages.find(p => p.id === downgradeWarningPackageId)
 
   if (eventsLoading || packagesLoading) {
     return <PromotionSkeleton />
@@ -182,7 +240,7 @@ const Promotions = () => {
                 </SelectTrigger>
                 <SelectContent>
                   {myEvents.map((event) => {
-                    const id = getEventId(event)
+                    const id = event._id
                     return (
                       <SelectItem key={id} value={id}>
                         {event.eventTitle} — {event.status}
@@ -196,6 +254,16 @@ const Promotions = () => {
                   You don't have any events yet.
                 </p>
               )}
+              {isSelectedEventPast && (
+                <p className="text-xs text-[#BE2525] dark:text-[#FCA5A5]">
+                  This event has already happened — past events can't be promoted.
+                </p>
+              )}
+              {isSelectedDraftEvent && (
+                <p className="text-xs text-[#BE2525] dark:text-[#FCA5A5]">
+                  This event is still a draft — publish it before promoting.
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -207,15 +275,20 @@ const Promotions = () => {
                 <p className="text-xs text-muted-foreground">Loading packages…</p>
               )}
 
-              {packages.map((pkg) => {
-                const isSelected = pkg.id === selectedPackageId
+              {packages.map(pkg => {
+                const isSelected = pkg.id === effectivePackageId
+                // Matched by label since myPromotions entries don't carry a packageId —
+                // see the reasoning note on activePromotionForEvent above.
+                const isCurrentlyActive = activePromotionForEvent?.packageLabel === pkg.label
                 return (
                   <button
                     key={pkg.id}
                     type="button"
+                    disabled={isSelectedEventPast || isSelectedDraftEvent}
                     onClick={() => setSelectedPackageId(pkg.id)}
                     className={cn(
-                      "flex items-start justify-between rounded-xl border p-3 text-left transition-colors",
+                      "relative flex items-start justify-between rounded-xl border p-3 text-left transition-colors",
+                      (isSelectedEventPast || isSelectedDraftEvent) && "cursor-not-allowed opacity-50",
                       isSelected
                         ? "border-[#0A4F41] ring-1 ring-[#0A4F41] dark:border-[#4ADE80] dark:ring-[#4ADE80]"
                         : "border-border hover:bg-[#E8F5F0] dark:hover:bg-[#0F6E56]/10"
@@ -241,6 +314,12 @@ const Promotions = () => {
                         </span>
                       )}
                     </div>
+                    {/* Bottom-right tag showing which package is this event's currently live promotion */}
+                    {isCurrentlyActive && (
+                      <Badge className="absolute bottom-0 right-0 rounded-bl-none rounded-tr-none rounded-br-xl p-2 border-transparent bg-[#E4E4E7] text-[#3F3F46] dark:bg-[#3F3F46]/30 dark:text-[#D4D4D8] text-center">
+                        ACTIVE
+                      </Badge>
+                    )}
                   </button>
                 )
               })}
@@ -248,8 +327,8 @@ const Promotions = () => {
 
             <Button
               className="h-11 w-full bg-[#0A4F41] text-[#FFFFFF] hover:bg-[#0F766E]"
-              disabled={!selectedEventId || !selectedPackageId || promoteMutation.isPending}
-              onClick={() => promoteMutation.mutate()}
+              disabled={!selectedEventId || !effectivePackageId || isSelectedEventPast || isSelectedDraftEvent || promoteMutation.isPending}
+              onClick={handlePromoteClick}
             >
               {promoteMutation.isPending
                 ? "Starting checkout…"
@@ -347,6 +426,42 @@ const Promotions = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Confirmation modal shown only when the user tries to activate a package
+          cheaper than the one already live on this event. */}
+      <Dialog
+        open={downgradeWarningPackageId !== null}
+        onOpenChange={(open) => !open && setDowngradeWarningPackageId(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <TriangleAlert className="size-4 text-[#7A4E02] dark:text-[#FBBF24]" />
+              Downgrade this promotion?
+            </DialogTitle>
+            <DialogDescription>
+              {activePromotionForEvent && packagePendingConfirmation && (
+                <>
+                  This event already has an active <strong>{activePromotionForEvent.packageLabel}</strong> promotion.
+                  Switching to <strong>{packagePendingConfirmation.label}</strong> now is a lower-tier package and may
+                  reduce this event's placement and reach compared to what it currently has.
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDowngradeWarningPackageId(null)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-[#0A4F41] text-[#FFFFFF] hover:bg-[#0F766E]"
+              onClick={confirmDowngrade}
+            >
+              Continue anyway
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

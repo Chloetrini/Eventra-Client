@@ -42,3 +42,12 @@ export async function uploadAvatar(file: File) {
   const res = await api.upload("/users/avatar", formData);
   return res.body;
 }
+
+// POST /api/v1/users/follow/:organizerId
+export async function followOrganizer(organizerId: string): Promise<void> {
+  await api.post(`/users/follow/${organizerId}`, {});
+}
+// DELETE /api/v1/users/follow/:organizerId
+export async function unfollowOrganizer(organizerId: string): Promise<void> {
+  await api.delete(`/users/follow/${organizerId}`);
+}

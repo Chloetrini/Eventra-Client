@@ -18,8 +18,8 @@ export default function ExplorePage() {
   const { filters, setFilter, toggleCategory, clearAll } =
     useEventFilters();
 
-  const { data, isLoading, isFetching, isError, refetch ,loadMore} = useEvents(filters);
-  const { categories } = useCategories();
+  const { data, isLoading, isFetching, isError, error, refetch ,loadMore} = useEvents(filters);  const { categories } = useCategories();
+  
   const events = data?.events ?? [];
   // Was `events.filter(e => e.isPromoted)` — that only ever showed whatever
   // promoted events happened to be on the CURRENT filtered/paginated page,
@@ -47,11 +47,14 @@ export default function ExplorePage() {
     saveExploreUrl(location.pathname + location.search);
   }, [location.pathname, location.search]);
 
-  if (isError) {
+       if (isError) {
+    const isMaintenanceMode = error instanceof Error && error.message.toLowerCase().includes("maintenance");
     return (
       <PageWrapper className="py-20 text-center">
         <p className="mb-4 text-muted-foreground">
-          Couldn't load events. Check your connection and try again.
+          {isMaintenanceMode
+            ? error.message
+            : "Couldn't load events. Check your connection and try again."}
         </p>
         <Button onClick={() => refetch()}>Try again</Button>
       </PageWrapper>

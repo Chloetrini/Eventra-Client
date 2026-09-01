@@ -61,14 +61,14 @@ function buildEventPayload(values: EventFormValues, categoryId?: string) {
           onlinePlatform: values.onlinePlatform,
           onlineJoinLink: values.onlineJoinLink,
         }
-      : {
-          venue: {
-            name: values.venueName,
-            address: values.address,
-            city: values.city,
-            state: values.state,
-          },
-        }),
+      :  {
+    venue: {
+      name: values.venueName,
+      address: values.address,
+      city: values.city,
+      ...(values.state ? { state: values.state } : {}),
+    },
+  }),
     ...(values.hasRsvpLimit ? { capacity: Number(values.rsvpLimit) } : {}),
     lineup: values.hasLineup
       ? values.acts.map((act) => ({

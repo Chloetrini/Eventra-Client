@@ -18,8 +18,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import PageWrapper from "@/components/page-wrapper"
-import { useAuth, type User } from "@/context/auth.context"
-import { useUpdateProfile } from "@/hooks/use-profile"
+import { useAuth } from "@/context/auth.context"
 import { useAdminTeam, useDeleteAdmin, useInviteAdmin, useUpdateAdminRole } from "@/hooks/use-admin-team"
 import { usePlatformSettings, useUpdatePlatformSettings } from "@/hooks/use-platform-settings"
 import type { AdminTier } from "@/types/admin-settings"
@@ -245,44 +244,8 @@ function DeleteAdminDialog({ id, name }: { id: string; name: string }) {
 }
 
 export default function PlatformSettings() {
- const { user, setUser } = useAuth()
-  const updateProfileMutation = useUpdateProfile()
-
-  const [adminToggles, setAdminToggles] = useState({
-    approvals: true,
-    refunds: true,
-    reports: true,
-  })
-
-  useEffect(() => {
-    if (user?.adminNotificationPreferences) {
-      setAdminToggles(user.adminNotificationPreferences)
-    }
-  }, [user?.adminNotificationPreferences])
-
-  const handleAdminNotificationToggle = (
-    key: "approvals" | "refunds" | "reports",
-    checked: boolean
-  ) => {
-    console.log("TOGGLE CLICKED:", key, "new value:", checked, "current adminToggles:", adminToggles);
-  const previous = adminToggles
-  const next = { ...adminToggles, [key]: checked }
-  setAdminToggles(next)
-
-  console.log("SENDING TO BACKEND:", { adminNotificationPreferences: { [key]: checked } });
-     updateProfileMutation.mutate(
-      { adminNotificationPreferences: { [key]: checked } },
-      {
-        onSuccess: (updatedUser) => {
-          setUser(updatedUser as User)
-        },
-        onError: (err: Error) => {
-          setAdminToggles(previous)
-          toast.error(err.message || "Could not save this preference")
-        },
-      }
-    )
-  }
+ const { user } = useAuth()
+ 
   // Owner-tier only — mirrors requireAdminTier('owner') on every
   // /admin/settings/* route on the backend (see admin.routes.ts). A
   // missing adminRole is treated as owner, same default the backend uses
@@ -497,7 +460,7 @@ export default function PlatformSettings() {
       </Card>
 
       {/* Notifications */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Notifications</CardTitle>
         </CardHeader>
@@ -542,7 +505,7 @@ export default function PlatformSettings() {
             />
           </div>
         </CardContent>
-      </Card>
+      </Card>  */}
 
 
       {/* Admin, Teams & Roles */}

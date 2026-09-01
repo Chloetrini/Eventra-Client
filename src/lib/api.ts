@@ -66,3 +66,4 @@ export const api = {
   delete: (path: string) => request('DELETE', path),
   upload,
 }
+

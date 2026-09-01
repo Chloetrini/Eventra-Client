@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { type Event } from "@/types/event-types";
 import { type TicketTier } from "@/types/ticket-tiers";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, CURRENCY_SYMBOLS } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -11,15 +11,27 @@ import { Button } from "@/components/ui/button";
 const TierRow = ({
   tier,
   quantity,
+  currency,
   onIncrement,
   onDecrement,
 }: {
   tier: TicketTier;
   quantity: number;
+  currency?: string;
   onIncrement: () => void;
   onDecrement: () => void;
 }) => {
   const isSoldOut = tier.availability === "sold out";
+  // Same limit the backend already enforces at checkout
+  // (ticket.controller.ts rejects an order over purchaseLimitPerPerson) —
+  // this just stops the picker from letting someone dial past it in the
+  // first place, instead of only finding out after they hit "Select
+  // tickets". Also cap on remaining stock for the same reason: nothing
+  // here previously stopped the "+" button once quantityLeft ran out.
+  const atLimit =
+    tier.purchaseLimitPerPerson !== undefined && quantity >= tier.purchaseLimitPerPerson;
+  const atStock = quantity >= tier.quantityLeft;
+  const canIncrement = !isSoldOut && !atLimit && !atStock;
 
   return (
     <div className={cn("space-y-1", isSoldOut && "opacity-60")}>
@@ -40,7 +52,7 @@ const TierRow = ({
             {isSoldOut ? (
               <span className="text-[#c14747] dark:text-[#FFC4C4]">Sold out</span>
             ) : (
-              formatPrice(tier.unitPrice)
+              formatPrice(tier.unitPrice, currency)
             )}
           </p>
         </div>
@@ -62,11 +74,24 @@ const TierRow = ({
           <button
             type="button"
             onClick={onIncrement}
-            className="flex h-7 w-7 items-center justify-center rounded-full border text-sm transition hover:scale-110 cursor-pointer"
+            disabled={!canIncrement}
+            aria-label={
+              atLimit
+                ? `Limit ${tier.purchaseLimitPerPerson} per order reached`
+                : atStock
+                  ? "No more left"
+                  : `Add another ${tier.type} ticket`
+            }
+            className="flex h-7 w-7 items-center justify-center rounded-full border text-sm transition hover:scale-110 disabled:opacity-40 disabled:hover:scale-100 disabled:cursor-not-allowed cursor-pointer"
           >
             +
           </button>
         </div>
+      )}
+      {!isSoldOut && atLimit && (
+        <p className="text-right text-xs text-muted-foreground">
+          Limit {tier.purchaseLimitPerPerson} per order
+        </p>
       )}
       {isSoldOut && (
         <div className="flex justify-end">
@@ -91,6 +116,14 @@ export const PaidEventTicket = ({
   slug?: string
 }) => {
   const navigate = useNavigate();
+  // event.currency is denormalized onto every event by the fetch layer
+  // (events-api.ts) from the backend's getEventBySlug response — every
+  // price on this event (event.minPrice and each ticket type's price) has
+  // already been converted into it server-side. Was never read here, so
+  // this whole card always rendered with the hardcoded ₦ default instead
+  // of the viewer's actual currency.
+  const currency = event.currency ?? "Naira";
+  const currencySymbol = CURRENCY_SYMBOLS[currency] ?? "₦";
 
   // Helper to ensure a consistent tier key (_id or id)
   const getTierId = (tier: any, index: number): string | number =>
@@ -117,8 +150,13 @@ export const PaidEventTicket = ({
   // 4. Safe check for scarce availability
   const isSelling = ticketTiers.some((t) => t.availability === "scarce");
 
-  const increment = (tierKey: string | number) => {
-    setQuantities((prev) => ({ ...prev, [tierKey]: (prev[tierKey] ?? 0) + 1 }));
+  const increment = (tierKey: string | number, tier: TicketTier) => {
+    setQuantities((prev) => {
+      const current = prev[tierKey] ?? 0;
+      const limit = tier.purchaseLimitPerPerson ?? Infinity;
+      if (current >= limit || current >= tier.quantityLeft) return prev;
+      return { ...prev, [tierKey]: current + 1 };
+    });
   };
 
   const decrement = (tierKey: string | number) => {
@@ -149,7 +187,8 @@ export const PaidEventTicket = ({
         subtotal,
         serviceFee,
         total,
-        slug
+        slug,
+        currency,
       },
     });
   };
@@ -180,7 +219,8 @@ export const PaidEventTicket = ({
               key={key}
               tier={tier}
               quantity={quantities[key] ?? 0}
-              onIncrement={() => increment(key)}
+              currency={currency}
+              onIncrement={() => increment(key, tier)}
               onDecrement={() => decrement(key)}
             />
           );
@@ -190,18 +230,18 @@ export const PaidEventTicket = ({
       <div className="space-y-2 text-sm">
         <div className="flex items-center justify-between text-muted-foreground">
           <span>Subtotal</span>
-          <span>{subtotal === 0 ? "₦0" : formatPrice(subtotal)}</span>
+          <span>{subtotal === 0 ? `${currencySymbol}0` : formatPrice(subtotal, currency)}</span>
         </div>
         <div className="flex items-center justify-between text-muted-foreground">
           <span>Service fee ({feePercent}%)</span>
-          <span>{serviceFee === 0 ? "₦0" : formatPrice(serviceFee)}</span>
+          <span>{serviceFee === 0 ? `${currencySymbol}0` : formatPrice(serviceFee, currency)}</span>
         </div>
         <div className="flex items-center justify-between font-bold">
           <span>Total</span>
           {/* formatPrice shows "Free" for a genuinely free tier, which is
               correct everywhere else it's used — but here 0 just means
-              "nothing picked yet" on a paid event, so show ₦0 instead. */}
-          <span>{total === 0 ? "₦0" : formatPrice(total)}</span>
+              "nothing picked yet" on a paid event, so show {currencySymbol}0 instead. */}
+          <span>{total === 0 ? `${currencySymbol}0` : formatPrice(total, currency)}</span>
         </div>
       </div>
       <Button

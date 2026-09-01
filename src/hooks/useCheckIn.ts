@@ -6,7 +6,7 @@ import {
     checkInAttendee,
     manualCheckIn,
 } from '@/lib/check-in';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 // ─── Query Keys ──────────────────────────────────────────────────
 export const checkInKeys = {
@@ -16,6 +16,7 @@ export const checkInKeys = {
 
 // ─── Hook ──────────────────────────────────────────────────────
 export function useCheckIn(eventId: string) {
+
     const queryClient = useQueryClient();
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -126,8 +127,23 @@ export function useCheckIn(eventId: string) {
     );
 
     const handleQRCheckIn = useCallback(
-        async (ticketReference: string) => {
-            await qrCheckInMutation({ ticketReference });
+        async (ticketReference: string): Promise<boolean> => {
+            // Returns whether the scan succeeded, so the caller
+            // (CheckInContent's onQRScan) knows whether to close the
+            // scanner modal. onError above already shows the user-facing
+            // toast for a bad scan ('Not a valid ticket for this event' /
+            // 'already checked in') — this catch exists only to turn that
+            // rejection into a `false` return instead of letting it
+            // propagate, since propagating it would skip the modal-closing
+            // logic in the caller entirely (an uncaught throw there just
+            // aborts the async function, it doesn't "choose" to keep the
+            // modal open — it happens to, by accident, which is fragile).
+            try {
+                await qrCheckInMutation({ ticketReference });
+                return true;
+            } catch {
+                return false;
+            }
         },
         [qrCheckInMutation]
     );

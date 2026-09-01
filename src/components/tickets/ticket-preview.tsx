@@ -15,11 +15,17 @@ interface TicketPreviewProps {
     eventVenue: string
     ticketDetails: { type: string; unitPrice: number; quantity: number }[]
   }
+  // The viewer's currency — event.currency from the event-detail page,
+  // threaded through PaidEventTicket → checkout's location.state → here.
+  // ticketDetails[].unitPrice already arrives converted into this currency
+  // (see getEventBySlug on the backend); this component was just always
+  // formatting it with the hardcoded ₦ default regardless.
+  currency?: string
   onPay?: () => void
   isSubmitting?: boolean
 }
 
-const TicketPreview = ({ ticketCheckout, onPay, isSubmitting }: TicketPreviewProps) => {
+const TicketPreview = ({ ticketCheckout, currency, onPay, isSubmitting }: TicketPreviewProps) => {
 
   const subTotal = ticketCheckout.ticketDetails.reduce(
     (sum, item) => sum + item.unitPrice * item.quantity,
@@ -67,7 +73,7 @@ const TicketPreview = ({ ticketCheckout, onPay, isSubmitting }: TicketPreviewPro
                 )}
                 {!isFree && (
                   <p className='font-space font-bold'>
-                    {formatNaira(ticketDetails.unitPrice * ticketDetails.quantity)}
+                    {formatNaira(ticketDetails.unitPrice * ticketDetails.quantity, currency)}
                   </p>
                 )}
 
@@ -92,7 +98,7 @@ const TicketPreview = ({ ticketCheckout, onPay, isSubmitting }: TicketPreviewPro
               Total
             </p>
             <p className='font-space font-bold'>
-              {total ? formatNaira(total) : "Free"}
+              {total ? formatNaira(total, currency) : "Free"}
             </p>
           </div>
         </div>
@@ -108,7 +114,7 @@ const TicketPreview = ({ ticketCheckout, onPay, isSubmitting }: TicketPreviewPro
         ) : (
           <PaymentBtn
             classname='bg-[#0A4F41] hover:bg-[#083b31] text-white hover:text-white h-11.5'
-            text={isSubmitting ? "Redirecting..." : `Pay ${formatNaira(total)}`}
+            text={isSubmitting ? "Redirecting..." : `Pay ${formatNaira(total, currency)}`}
             icon={lock}
             editIcon='w-4 h-4'
             onClick={onPay}

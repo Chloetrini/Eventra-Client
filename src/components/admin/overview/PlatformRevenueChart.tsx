@@ -26,15 +26,16 @@ interface ChartTooltipProps {
   active?: boolean;
   payload?: Array<{ value?: number | string }>;
   label?: string;
+  currency?: string;
 }
 
-function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
+function ChartTooltip({ active, payload, label, currency }: ChartTooltipProps) {
   if (!active || !payload || payload.length === 0) return null;
   const amount = Number(payload[0]?.value ?? 0);
   return (
     <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-md">
       <p className="text-xs font-semibold text-muted-foreground">{label}</p>
-      <p className="text-sm font-bold text-foreground">{formatCompactNaira(amount)}</p>
+      <p className="text-sm font-bold text-foreground">{formatCompactNaira(amount, currency)}</p>
     </div>
   );
 }
@@ -113,7 +114,7 @@ export default function PlatformRevenueChart() {
                 tickLine={false}
                 axisLine={false}
                 tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
-                tickFormatter={(v) => formatCompactNaira(v)}
+                tickFormatter={(v) => formatCompactNaira(v, data?.currency)}
                 width={56}
               />
               <Tooltip
@@ -123,6 +124,7 @@ export default function PlatformRevenueChart() {
                     active={props.active}
                     payload={props.payload as unknown as ChartTooltipProps["payload"]}
                     label={props.label as string}
+                    currency={data?.currency}
                   />
                 )}
               />

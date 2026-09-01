@@ -5,7 +5,7 @@
 // translation layer between what's sent and what's rendered.
 export interface PlatformSettings {
   platformFeePercent: number;
-  currency: "Naira" | "Dollar" | "Cedis";
+  currency: "Naira" | "Dollar" | "Cedis" | "Pound";
   payoutHold: "3 days" | "5 days" | "7 days";
   autoApproveEvents: boolean;
   autoApprovePromotions: boolean;

@@ -20,6 +20,7 @@ export default function AdminReportDetailPage() {
 
   const event = data?.event;
   const reports = data?.reports;
+  const currency = data?.currency;
 
   if (isLoading) {
     return (
@@ -50,7 +51,8 @@ export default function AdminReportDetailPage() {
   const reportCount = reports?.length ?? 0;
 
   const formattedDate = event.startDate ? formatDateTime(event.startDate, "EEE d MMM") : "—";
-  const formattedPrice = event.type === "free" || event.minPrice === 0 ? "Free" : formatNaira(event.minPrice);
+  const formattedPrice =
+    event.type === "free" || event.minPrice === 0 ? "Free" : formatNaira(event.minPrice, currency);
 
   const handleDismiss = () => {
     dismissFlag.mutate({ targetType: "event", targetId: event._id }, { onSuccess: () => navigate("/admin/reports") });

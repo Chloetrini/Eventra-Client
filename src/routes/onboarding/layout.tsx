@@ -54,11 +54,17 @@ const Onboardinglayout = () => {
     // mirror values into localStorage so a refresh (or "Save & exit")
     // doesn't lose progress
     useEffect(() => {
-        const subscription = methods.watch((values) => {
+        const subscription = methods.watch((values, { name }) => {
             try {
                 localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(values))
             } catch {
                 // storage full or unavailable — form still works in-memory
+            }
+
+            // clear stale errors immediately once the field becomes valid,
+            // instead of waiting for blur (RHF mode:"onBlur" quirk)
+            if (name && methods.formState.errors[name]) {
+                methods.trigger(name)
             }
         })
         return () => subscription.unsubscribe()

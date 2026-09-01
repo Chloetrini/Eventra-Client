@@ -71,7 +71,7 @@ const BankDetailsForm = () => {
                 <img
                     src={user}
                     alt=""
-                    className={`w-6 h-6 absolute bottom-5 left-5${errors.accountHolderName ? "bottom-9 left-5" : ""} z-20`}
+                    className={`w-6 h-6 absolute bottom-5 left-5 ${errors.accountHolderName ? "bottom-9 left-5" : ""} z-20`}
                 />
                 <FormBox
                     inputType="input"
@@ -87,7 +87,7 @@ const BankDetailsForm = () => {
                     disabled={isVerifying}
                 />
             </span>
-            <div className="flex flex-col md:flex-row gap-[10px]">
+            <div className="flex flex-col md:flex-row gap-2.5">
                 <span className="h-full w-full relative">
                     <img
                         src={bankImg}

@@ -26,7 +26,7 @@ const navItems = [
   { icon: Users, label: 'Attendees', path: '/dashboard/attendees', countKey: 'attendees' as const },
   { icon: CheckSquare, label: 'Check-in', path: '/dashboard/check-in' },
   { icon: Wallet, label: 'Payouts', path: '/dashboard/payouts' },
-  { icon: Megaphone, label: 'Promotions', path: '/dashboard/promotion', countKey: 'promotions' as const },
+  { icon: Megaphone, label: 'Promotions', path: '/dashboard/promotion', countKey: null },
 ];
 
 const bottomItems = [

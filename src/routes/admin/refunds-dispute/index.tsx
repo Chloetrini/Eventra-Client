@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useSearchParams } from "react-router"
 import RefundDisputeSelector, { type RefundDisputeTab } from "@/components/admin/refunds-dispute/refund-dispute-selector"
 import RequestDisputeTable from "@/components/admin/refunds-dispute/request-dispute-table"
 import PageWrapper from "@/components/page-wrapper"
@@ -54,8 +55,20 @@ function RefundsDisputeTableSkeleton({ activeTab }: { activeTab: RefundDisputeTa
     )
 }
 
+const VALID_REFUND_TABS: RefundDisputeTab[] = ["requests", "disputes"]
+
 const RefundsDispute = () => {
-    const [activeTab, setActiveTab] = useState<RefundDisputeTab>("requests")
+    // Same fix as the Approvals page: let a link like
+    // /admin/refunds?tab=disputes (e.g. from the Overview page's "Needs
+    // action" cards) land on the right tab instead of always opening on
+    // "requests".
+    const [searchParams] = useSearchParams()
+    const requestedTab = searchParams.get("tab")
+    const initialTab: RefundDisputeTab = VALID_REFUND_TABS.includes(requestedTab as RefundDisputeTab)
+        ? (requestedTab as RefundDisputeTab)
+        : "requests"
+
+    const [activeTab, setActiveTab] = useState<RefundDisputeTab>(initialTab)
 
     const { data: refundRequests = [], isLoading: requestsLoading } = useAdminRefundRequests()
     const { data: disputes = [], isLoading: disputesLoading } = useAdminDisputes()

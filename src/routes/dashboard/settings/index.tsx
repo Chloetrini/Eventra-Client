@@ -20,12 +20,13 @@ import type { BankAccount, OrganizationSettings } from "@/types/settings";
 import { Badge } from "@/components/ui/badge";
 import { AddBankAccountDialog } from "@/components/add-bank-account";
 import { Switch } from "@/components/ui/switch";
+import { CurrencyPreference } from "@/components/profile-settings/CurrencyPreference";
 
 export default function Settings() {
   const queryClient = useQueryClient();
-  const { status: organizerStatus } = useOrganizerStatus();
-  const { bankStatus } = useOrganizerBankStatus();
-  const { isProfileComplete } = useOrganizerProfileComplete();
+  const { status: organizerStatus, isLoading: statusLoading } = useOrganizerStatus();
+  const { bankStatus, isLoading: bankStatusLoading } = useOrganizerBankStatus();
+  const { isProfileComplete, isLoading: profileCompleteLoading } = useOrganizerProfileComplete();
 
   const { user, setUser } = useAuth();
   const uploadAvatarMutation = useUploadAvatar();
@@ -154,9 +155,14 @@ export default function Settings() {
 
   return (
     <div className="space-y-6">
-      <AccountReviewBanner status={organizerStatus}
-        bankStatus={bankStatus}
-        isProfileComplete={isProfileComplete} />
+      {/* These three profile queries default to "not verified yet" while
+          in flight — see the same fix in dashboard/overview/index.tsx —
+          so this waits for all three before rendering the banner. */}
+      {!statusLoading && !bankStatusLoading && !profileCompleteLoading && (
+        <AccountReviewBanner status={organizerStatus}
+          bankStatus={bankStatus}
+          isProfileComplete={isProfileComplete} />
+      )}
 
       <div>
         <p className="text-[16px] font-medium font-space tracking-wide text-[#0F6E56] dark:text-[#4ADE80]">
@@ -308,6 +314,17 @@ export default function Settings() {
             "Save changes"
           )}
         </Button>
+      </div>
+
+      {/* Currency */}
+      <div className="border border-border rounded-lg p-6">
+        <h2 className="text-base font-semibold text-foreground mb-4">
+          Currency
+        </h2>
+        <CurrencyPreference
+          title="Display currency"
+          description="Prices across your dashboard — overview, events, payouts — will show in this currency."
+        />
       </div>
 
       {/* Bank account & payouts */}

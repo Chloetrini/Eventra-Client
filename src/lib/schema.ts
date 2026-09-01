@@ -199,6 +199,16 @@ export const eventSchema = z.object({
   relatedEventSlugs: z.array(z.string()).optional(),
   location: z.any().optional(),
   organizer: z.any().optional(),
+  // Not a real per-event backend field — every list/detail endpoint that
+  // returns events (listPublicEvents, getSpotlightEvents, getEventBySlug)
+  // now also returns a top-level `currency` alongside the event(s): the
+  // viewer's own currencyPreference (or the platform default) that every
+  // price on this response has already been converted into. The fetch
+  // layer (events-api.ts) denormalizes that onto each event object so
+  // every card/detail component can format its price in the right
+  // currency without needing the raw API response threaded through as a
+  // separate prop. See lib/viewerCurrency.ts on the backend.
+  currency: z.enum(["Naira", "Dollar", "Cedis", "Pound"]).optional(),
 }).transform((event) => {
   // Derive BOTH a display name and a real ID from the single raw `category` value.
   let categoryName = "Uncategorized";

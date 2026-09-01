@@ -17,6 +17,7 @@ interface CustomTooltipProps {
   payload?: Array<{ value?: number | string }>;
   label?: string | number;
   period: RevenuePeriod;
+  currency?: string;
 }
 
 // Brand green — the same hue StatsCards uses for positive trends and the
@@ -40,13 +41,13 @@ function formatLabel(label: string, period: RevenuePeriod): string {
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 }
 
-function CustomTooltip({ active, payload, label, period }: CustomTooltipProps) {
+function CustomTooltip({ active, payload, label, period, currency }: CustomTooltipProps) {
   if (!active || !payload || payload.length === 0) return null;
   const amount = Number(payload[0]?.value ?? 0);
   return (
     <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-md">
       <p className="text-xs font-semibold text-muted-foreground">{formatLabel(String(label), period)}</p>
-      <p className="text-sm font-bold text-foreground">{formatCompactNaira(amount)}</p>
+      <p className="text-sm font-bold text-foreground">{formatCompactNaira(amount, currency)}</p>
     </div>
   );
 }
@@ -55,9 +56,10 @@ interface RevenueChartProps {
   data: RevenueSeriesPoint[];
   period: RevenuePeriod;
   onPeriodChange: (period: RevenuePeriod) => void;
+  currency?: string;
 }
 
-const RevenueChart: React.FC<RevenueChartProps> = ({ data, period, onPeriodChange }) => {
+const RevenueChart: React.FC<RevenueChartProps> = ({ data, period, onPeriodChange, currency }) => {
   const hasData = data.length > 0 && data.some((d) => d.amount > 0);
 
   return (
@@ -115,7 +117,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period, onPeriodChang
                 tickLine={false}
                 axisLine={false}
                 tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
-                tickFormatter={(v) => formatCompactNaira(v)}
+                tickFormatter={(v) => formatCompactNaira(v, currency)}
                 width={56}
               />
               <Tooltip
@@ -126,6 +128,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, period, onPeriodChang
                     payload={props.payload as unknown as CustomTooltipProps["payload"]}
                     label={props.label}
                     period={period}
+                    currency={currency}
                   />
                 )}
               />

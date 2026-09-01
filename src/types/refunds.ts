@@ -48,6 +48,10 @@ export interface RefundRequestPopulated {
   status: RefundRequestStatus
   createdAt: string
   updatedAt: string
+  // The admin's own viewer currency — `amount` (and ticket.price) above
+  // are already converted into it server-side (see getRefundRequestDetail,
+  // admin.controller.ts).
+  currency?: string
 }
 
 // The admin Refunds table's list endpoint (listRefundRequests) populates a
@@ -69,6 +73,9 @@ export interface RefundRequestSummary {
   reason: string
   status: RefundRequestStatus
   createdAt: string
+  // The admin's own viewer currency — `amount` above is already converted
+  // into it server-side (see listRefundRequests, admin.controller.ts).
+  currency?: string
 }
 
 // Mirrors what `PaymentDispute.find().populate('event').populate('order')...`
@@ -95,4 +102,7 @@ export interface DisputeSummary {
   merchantRespondedAt?: string
   raisedAt: string
   resolvedAt?: string
+  // The admin's own viewer currency — `amount` above is already converted
+  // into it server-side (see listDisputes, admin.controller.ts).
+  currency?: string
 }

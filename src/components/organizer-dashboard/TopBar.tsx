@@ -1,10 +1,19 @@
 import React from 'react';
-import { Plus, Menu, Sun, Moon } from 'lucide-react';
+import { Plus, Menu, Sun, Moon, LogOut, Settings, ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
 import { useAuth } from '@/context/auth.context';
 import { useTheme } from '@/context/theme.context';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { NotificationBell } from '@/components/notifications/notificationBell';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface TopBarProps {
   organization: {
@@ -17,8 +26,23 @@ interface TopBarProps {
 }
 
 const TopBar: React.FC<TopBarProps> = ({ organization, onCreateEvent, onMenuClick, title }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+
+  // Previously there was no way to sign out from inside the organizer
+  // dashboard at all — the avatar button did nothing, so the only way out
+  // was to leave the dashboard for the main site's navbar first. This
+  // mirrors that navbar's own sign-out dropdown (components/ui/navbar.tsx).
+  const handleSignOut = async () => {
+    try {
+      await logout();
+      toast.success("Signed out.");
+      navigate("/auth/login");
+    } catch (err) {
+      toast.error("Could not sign out. Please try again.");
+    }
+  };
 
   return (
     <header className="bg-card border-b border-border px-4 sm:px-6 py-3 flex items-center justify-between gap-2 sm:gap-4">
@@ -76,12 +100,41 @@ const TopBar: React.FC<TopBarProps> = ({ organization, onCreateEvent, onMenuClic
             see components/notifications/NotificationBell.tsx. */}
         <NotificationBell />
 
-        <button
-          className="h-9 w-9 rounded-full overflow-hidden bg-[#0F6E56] text-white flex items-center justify-center font-bold text-sm shrink-0"
-          title={user?.fullname || "Account"}
-        >
-          <UserAvatar avatarUrl={user?.avatarUrl} name={user?.fullname} className="h-9 w-9 text-sm" />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className="flex items-center gap-1.5 rounded-full shrink-0 focus:outline-none"
+            title={user?.fullname || "Account"}
+          >
+            <span className="h-9 w-9 rounded-full overflow-hidden bg-[#0F6E56] text-white flex items-center justify-center font-bold text-sm shrink-0">
+              <UserAvatar avatarUrl={user?.avatarUrl} name={user?.fullname} className="h-9 w-9 text-sm" />
+            </span>
+            <ChevronDown className="hidden sm:block h-4 w-4 text-muted-foreground" />
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end" className="w-56">
+            <div className="px-2 py-1.5">
+              <p className="text-sm font-medium text-foreground truncate">{user?.fullname}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+            </div>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem onClick={() => navigate("/dashboard/settings")} className="cursor-pointer gap-2">
+              <Settings className="h-4 w-4" />
+              <span>Settings</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem
+              onClick={handleSignOut}
+              className="cursor-pointer gap-2 text-[#BE2525] dark:text-red-400 focus:text-[#BE2525] dark:focus:text-red-400"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Sign out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

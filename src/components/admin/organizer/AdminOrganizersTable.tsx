@@ -1,6 +1,7 @@
 import React from "react";
 import type { AdminOrganizer, AdminOrganizerStatus } from "@/types/admin-organizer";
 import { useNavigate } from "react-router";
+import { formatCompactNaira } from "@/lib/utils";
 
 interface AdminOrganizersTableProps {
   organizers: AdminOrganizer[];
@@ -41,28 +42,15 @@ export function StatusBadge({ status }: { status: AdminOrganizerStatus }) {
   }
 }
 
-function formatCompactCurrency(formattedStr: string | undefined | null): string {
-  if (!formattedStr) return "—";
-
-  // Strip out currency symbols (₦), commas, and spaces to extract raw digits
-  const cleanStr = formattedStr.replace(/[^0-9.-]+/g, "");
-  const numericVal = parseFloat(cleanStr);
-
-  if (isNaN(numericVal) || numericVal === 0) {
-    return "—";
-  }
-
-  if (numericVal >= 1_000_000_000) {
-    return `₦${(numericVal / 1_000_000_000).toFixed(1).replace(/\.0$/, "")}M`;
-  }
-  if (numericVal >= 1_000_000) {
-    return `₦${(numericVal / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
-  }
-  if (numericVal >= 1_000) {
-    return `₦${(numericVal / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
-  }
-
-  return `₦${numericVal.toLocaleString()}`;
+// Was reparsing the already-formatted, hardcoded-₦ `formattedRevenue`
+// string with a regex and re-adding a hardcoded ₦ — broke both the
+// M/K compacting (a value in the billions was labeled "M" too, see the
+// two identical 1_000_000_000/1_000_000 branches above) and the currency
+// symbol itself. Formats straight from the raw number + the row's own
+// currency now, via the shared formatCompactNaira.
+function formatCompactCurrency(rawRevenue: number | undefined | null, currency: string | undefined): string {
+  if (!rawRevenue) return "—";
+  return formatCompactNaira(rawRevenue, currency);
 }
 
 export default function AdminOrganizersTable({
@@ -126,7 +114,7 @@ export default function AdminOrganizersTable({
 
                 {/* REVENUE */}
                 <td className="px-6 py-4 font-space font-bold text-foreground">
-                  {formatCompactCurrency(org.formattedRevenue)}
+                  {formatCompactCurrency(org.rawRevenue, org.currency)}
                 </td>
 
                 {/* STATUS */}

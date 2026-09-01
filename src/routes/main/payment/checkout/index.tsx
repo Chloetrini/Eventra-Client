@@ -38,6 +38,11 @@ const Checkout = () => {
         total: number
         slug: string
         guests?: number
+        // Set by PaidEventTicket (from event.currency — already the
+        // viewer's own currency, converted server-side). Absent from the
+        // free-RSVP flow's state, which is fine: TicketPreview only shows
+        // "Free" there regardless of currency.
+        currency?: string
     } | null
 
     const isFree = ticket?.type === 'free'
@@ -206,6 +211,7 @@ const Checkout = () => {
                     <div className='w-full max-w-md lg:max-w-none'>
                         <TicketPreview
                             ticketCheckout={ticket}
+                            currency={ticket.currency}
                             onPay={handleSubmitForm}
                             isSubmitting={isSubmitting}
 

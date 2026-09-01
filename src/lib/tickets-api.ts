@@ -52,7 +52,14 @@ export function fetchEventTickets(eventIdOrSlug: string): Promise<EventTickets |
 async function fetchMyTicketsReal(): Promise<Ticket[]> {
   try {
     const res = await api.get("/tickets/my-tickets");
-    return res.body as Ticket[]; // validate with zod once the shape is confirmed
+    // Backend now wraps this in { tickets, currency } (see the admin/
+    // organizer currency-conversion wiring — myTickets picked up the same
+    // pattern) instead of returning a bare array. Handle both shapes so
+    // this doesn't silently break again against an older/newer backend —
+    // same defensive unwrap already used in fetchEventTicketsReal above.
+    const body = res.body as any;
+    const rawTickets = Array.isArray(body) ? body : body?.tickets ?? [];
+    return rawTickets as Ticket[]; // validate with zod once the shape is confirmed
   } catch (error) {
     return [];
   }

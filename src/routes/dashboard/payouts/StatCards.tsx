@@ -5,9 +5,10 @@ import { formatNaira } from "@/lib/utils";
 interface StatCardsProps {
   earnings: EarningsByEventRow[];
   history: PayoutHistoryRow[];
+  currency?: string;
 }
 
-export function StatCards({ earnings, history }: StatCardsProps) {
+export function StatCards({ earnings, history, currency }: StatCardsProps) {
   const totalEarnings = earnings.reduce((sum, row) => sum + row.earnings, 0);
   const heldOrReady = earnings
     .filter((row) => row.status === "held" || row.status === "ready")
@@ -15,9 +16,9 @@ export function StatCards({ earnings, history }: StatCardsProps) {
   const paidOut = history.reduce((sum, row) => sum + row.amount, 0);
 
   const cards = [
-    { label: "TOTAL EARNINGS", value: formatNaira(totalEarnings), icon: Wallet },
-    { label: "HELD / PENDING PAYOUT", value: formatNaira(heldOrReady), icon: Clock3 },
-    { label: "PAID OUT TO DATE", value: formatNaira(paidOut), icon: BadgeCheck },
+    { label: "TOTAL EARNINGS", value: formatNaira(totalEarnings, currency), icon: Wallet },
+    { label: "HELD / PENDING PAYOUT", value: formatNaira(heldOrReady, currency), icon: Clock3 },
+    { label: "PAID OUT TO DATE", value: formatNaira(paidOut, currency), icon: BadgeCheck },
   ];
 
   return (

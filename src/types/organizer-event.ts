@@ -51,6 +51,10 @@ export interface OrganizerEventDetails {
    * cancelEvent/postponeEvent guards. */
   canCancel: boolean;
   canPostpone: boolean;
+  /** The organizer's own viewer currency — metrics.revenue and every
+   * ticketTypes[].price are already converted into it server-side (see
+   * fetchEventDashboard, events-api.ts). */
+  currency?: string;
   /** Whether the Edit button should be enabled at all. True for a draft or
    * rejected event (always), and also true for a live approved/postponed
    * event that hasn't yet crossed the 3-day-before-start cutoff — mirrors

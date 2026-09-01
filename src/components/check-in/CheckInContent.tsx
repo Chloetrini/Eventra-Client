@@ -13,6 +13,7 @@ import ScanCard from './ScanCard';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { QrCode, Loader2 } from 'lucide-react';
+import { DottedGlowBackgroundDemo } from '../organizer-dashboard/scan-animation';
 
 export default function CheckInContent() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -64,8 +65,14 @@ export default function CheckInContent() {
 
   const onQRScan = useCallback(
     async (ticketReference: string) => {
-      await handleQRCheckIn(ticketReference);
-      setIsScannerOpen(false);
+      const success = await handleQRCheckIn(ticketReference);
+      if (success) {
+        setIsScannerOpen(false);
+      }
+      // On failure, the modal stays open and the camera keeps running —
+      // the organizer sees the error toast and can immediately try the
+      // next attendee's ticket without having to re-tap "Tap to start
+      // scan" each time. See handleQRCheckIn in useCheckIn.ts.
     },
     [handleQRCheckIn]
   );
@@ -156,48 +163,14 @@ export default function CheckInContent() {
           totalAttendees={stats.totalAttendees}
         />
       </div>
-
       {/* 2-COLUMN GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-
-        {/* LEFT COLUMN — wrapped per Frame 1171277892 (border, padding, gap) */}
-        <div className="flex flex-col gap-3 pt-5 pr-2.5 pb-5 pl-2.5 rounded-lg border border-border">
-
-          {/* Scanner placeholder — "Scanner" component: 470x260, radius 10, bg #0E0A14 */}
-          <div className="relative aspect-470/260 bg-[#0E0A14] rounded-lg overflow-hidden flex items-center justify-center">
-
-            {/* Faint inner frame — inset 30px, 410x200, 1px border #E8E6E0 @15% opacity */}
-            <div className="absolute inset-7.5 rounded-lg border border-[#E8E6E0]/15 pointer-events-none" />
-
-            {/* Top-left corner bracket — "Rectangle 8": 36x36, 30px offset, 2px #F5A524 */}
-            <div className="absolute top-7.5 left-7.5 w-9 h-9 border-t-2 border-l-2 border-[#F5A524] rounded-tl-lg pointer-events-none" />
-
-            {/* Bottom-right corner bracket (opposite corner, mirrors Rectangle 8) */}
-            <div className="absolute bottom-7.5 right-7.5 w-9 h-9 border-b-2 border-r-2 border-[#F5A524] rounded-br-lg pointer-events-none" />
-
-            {/* Decorative scan-line glow — "Line 14": 365px wide, gradient */}
-            <div
-              className="absolute h-0.5 w-80 top-14 left-12 pointer-events-none"
-              style={{
-                background:
-                  'linear-gradient(to right, #0E0A14, #F5A524, #F5A524, #DC9626, #0E0A14)',
-              }}
-            />
-
-            <p className="text-muted-foreground text-xs italic z-0">Tap Scan to start camera</p>
-          </div>
-
-          <Button
-            onClick={() => setIsScannerOpen(true)}
-            className="w-full bg-[#0F6E56] hover:bg-[#0A5240] h-12 text-base font-medium rounded-lg flex items-center justify-center gap-2"
-            disabled={isScanning || !eventId}
-          >
-            {isScanning ? <Loader2 className="h-5 w-5 animate-spin" /> : <QrCode className="h-5 w-5" />}
-            {isScanning ? 'Verifying...' : 'Scan'}
-          </Button>
-
-          {recentScan && <ScanCard attendee={recentScan} />}
-        </div>
+        <DottedGlowBackgroundDemo
+          onClick={() => setIsScannerOpen(true)}
+          text={isScanning ? 'Verifying...' : 'Tap to start scan'}
+          disabled={isScanning || !eventId}
+        />
+        {recentScan && <ScanCard attendee={recentScan} />}
 
         {/* RIGHT COLUMN */}
         <div className="space-y-6">

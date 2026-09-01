@@ -1,10 +1,12 @@
+
 import { useState } from "react"
 import ActionBtn from "@/components/ui/action-btn"
-import { formatRequestedAgo } from "@/lib/utils"
+import { formatRequestedAgo, formatNaira } from "@/lib/utils"
 import { useNavigate } from "react-router"
 import { toast } from "react-toastify"
 import type { AdminOrganizer } from "@/types/admin-organizer"
 import type { AdminEvent } from "@/types/admin-event"
+import type { AdminPromotionListItem } from "@/types/admin-promotion"
 import { useApproveEvent, useRejectEvent } from "@/hooks/use-admin-events"
 import { useApproveOrganizer, useRejectOrganizer } from "@/hooks/use-admin-organizers"
 import {
@@ -15,14 +17,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { useApproveEventPromotion, useRejectEventPromotion } from "@/hooks/use-admin-promotions"
 
 const EVENT_GRID_COLS = "grid grid-cols-[3fr_1fr_1fr_1fr_250px] gap-8 px-6"
 const ORGANIZER_GRID_COLS = "grid grid-cols-[2fr_2fr_1fr_1fr_250px] gap-4 px-6"
+const PROMOTION_GRID_COLS = "grid grid-cols-[2fr_1.5fr_1fr_1fr_250px] gap-4 px-6"
 
 interface ApprovalTableProps {
-  activeTab: "events" | "organizers"
+  activeTab: "events" | "organizers" | "promotions"
   organizer: AdminOrganizer[]
   events: AdminEvent[]
+  promotions: AdminPromotionListItem[]
+  currency: string
 }
 
 function initialsFor(name: string): string {
@@ -43,12 +49,14 @@ export function formatBankDetails(bankName?: string, accountNumber?: string): st
   return `${formattedBank} ••••${lastFour}`
 }
 
-const ApprovalTable = ({ activeTab, events, organizer }: ApprovalTableProps) => {
+const ApprovalTable = ({ activeTab, events, organizer, promotions }: ApprovalTableProps) => {
   const navigate = useNavigate()
   const approveEvent = useApproveEvent()
   const rejectEvent = useRejectEvent()
   const approveOrganizer = useApproveOrganizer()
   const rejectOrganizer = useRejectOrganizer()
+  const approvePromotion = useApproveEventPromotion()
+  const rejectPromotion = useRejectEventPromotion()
 
   // Track event selected for decline dialogue
   const [eventTarget, setEventTarget] = useState<{ id: string; title: string } | null>(null)
@@ -99,6 +107,25 @@ const ApprovalTable = ({ activeTab, events, organizer }: ApprovalTableProps) => 
       }
     )
   }
+  const handleApprovePromotion = (promotionId: string) => {
+    approvePromotion.mutate(promotionId, {
+      onSuccess: () => toast.success("Promotion approved"),
+      onError: (err) =>
+        toast.error(err instanceof Error ? err.message : "Could not approve this promotion"),
+    })
+  }
+
+  // Direct rejection without dialogue
+  const handleRejectPromotion = (promotionId: string) => {
+    rejectPromotion.mutate(
+      promotionId,
+      {
+        onSuccess: () => toast.success("Promotion rejected"),
+        onError: (err) =>
+          toast.error(err instanceof Error ? err.message : "Could not reject this promotion"),
+      }
+    )
+  }
 
   if (activeTab === "events") {
     return (
@@ -127,9 +154,8 @@ const ApprovalTable = ({ activeTab, events, organizer }: ApprovalTableProps) => 
               <div
                 key={event._id}
                 onClick={() => navigate(`/admin/events/${event._id}`)}
-                className={`${EVENT_GRID_COLS} py-5 items-center rounded-b-[10px] cursor-pointer hover:bg-muted/40 transition-colors dark:border-border ${
-                  index < events.length - 1 ? "border-b-2 border-[#E8E6E0]" : ""
-                }`}
+                className={`${EVENT_GRID_COLS} py-5 items-center rounded-b-[10px] cursor-pointer hover:bg-muted/40 transition-colors dark:border-border ${index < events.length - 1 ? "border-b-2 border-[#E8E6E0]" : ""
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-[#E4F1EB] dark:bg-[#0F6E56]/20 flex items-center justify-center text-sm font-medium text-[#0F6E56] dark:text-[#4ADE80]">
@@ -153,7 +179,7 @@ const ApprovalTable = ({ activeTab, events, organizer }: ApprovalTableProps) => 
                   />
                   <ActionBtn
                     type="button"
-                    text="Decline"
+                    text="Reject"
                     variant="outline"
                     loading={isThisDeclining}
                     disabled={approveEvent.isPending || rejectEvent.isPending}
@@ -211,6 +237,71 @@ const ApprovalTable = ({ activeTab, events, organizer }: ApprovalTableProps) => 
     )
   }
 
+  if (activeTab === "promotions") {
+    return (
+      <div className="min-w-[900px] border-2 border-[#E8E6E0] dark:border-border rounded-[10px] overflow-hidden">
+        <div className={`${PROMOTION_GRID_COLS} py-4 border-b-2 border-[#E8E6E0] dark:border-border rounded-b-[10px]`}>
+          <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">EVENT</p>
+          <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide truncate">ORGANIZER</p>
+          <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">PACKAGE</p>
+          <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">SUBMITTED</p>
+          <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">STATUS</p>
+        </div>
+
+        {promotions.length === 0 && (
+          <p className="py-8 text-center text-sm text-muted-foreground">
+            No promotion requests right now.
+          </p>
+        )}
+
+        {promotions.map((promo, index) => {
+          const isThisApproving = approvePromotion.isPending && approveEvent.variables === promo.eventId
+          const isThisDeclining = rejectEvent.isPending && rejectEvent.variables?.id === promo.eventId
+          return (
+            <div
+              key={promo.eventId}
+              onClick={() => navigate(`/admin/promotions/${promo.eventId}`)}
+              className={`${PROMOTION_GRID_COLS} py-5 items-center rounded-b-[10px] cursor-pointer hover:bg-muted/40 transition-colors dark:border-border ${index < promotions.length - 1 ? "border-b-2 border-[#E8E6E0]" : ""
+                }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-[#E4F1EB] dark:bg-[#0F6E56]/20 flex items-center justify-center text-sm font-medium text-[#0F6E56] dark:text-[#4ADE80]">
+                  {initialsFor(promo.eventTitle)}
+                </div>
+                <p className="font-bold">{promo.eventTitle}</p>
+              </div>
+
+              <p className="truncate">{promo.organizerName}</p>
+              <p className="font-space font-bold">{promo.packageLabel}</p>
+              <p className="text-muted-foreground">
+                {promo.paidAt ? formatRequestedAgo(promo.paidAt) : "—"}
+              </p>
+              <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                <ActionBtn
+                  type="button"
+                  text="Approve"
+                  loading={isThisApproving}
+                  disabled={approvePromotion.isPending || rejectPromotion.isPending}
+                  onClick={() => handleApprovePromotion(promo.eventId)}
+                  classname="bg-[#0F6E56] hover:bg-[#095341] text-white text-sm px-4 py-2 h-auto"
+                />
+                <ActionBtn
+                  type="button"
+                  text="Reject"
+                  variant="outline"
+                  loading={isThisDeclining}
+                  disabled={approvePromotion.isPending || rejectPromotion.isPending}
+                  onClick={() => handleRejectPromotion(promo.eventId)}
+                  classname="border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white text-sm px-4 py-2 h-auto"
+                />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
   return (
     <div className="min-w-[900px] border-2 border-[#E8E6E0] dark:border-border rounded-[10px] overflow-hidden">
       <div className={`${ORGANIZER_GRID_COLS} py-4 border-b-2 border-[#E8E6E0] dark:border-border rounded-b-[10px]`}>
@@ -235,10 +326,9 @@ const ApprovalTable = ({ activeTab, events, organizer }: ApprovalTableProps) => 
         return (
           <div
             key={org._id}
-             onClick={() => navigate(`/admin/organizers/${org._id}`)}
-            className={`${ORGANIZER_GRID_COLS} py-5 items-center rounded-b-[10px] dark:border-border ${
-              index < organizer.length - 1 ? "border-b-2 border-[#E8E6E0]" : ""
-            }`}
+            onClick={() => navigate(`/admin/organizers/${org._id}`)}
+            className={`${ORGANIZER_GRID_COLS} py-5 items-center rounded-b-[10px] dark:border-border ${index < organizer.length - 1 ? "border-b-2 border-[#E8E6E0]" : ""
+              }`}
           >
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-[#E4F1EB] dark:bg-[#0F6E56]/20 flex items-center justify-center text-sm font-medium text-[#0F6E56] dark:text-[#4ADE80]">
@@ -253,12 +343,15 @@ const ApprovalTable = ({ activeTab, events, organizer }: ApprovalTableProps) => 
               <p>{org.name}</p>
             </div>
             <p>{org.email}</p>
-            <p className="font-bold">
+            <p
+              className="font-bold truncate"
+              title={formatBankDetails(org.details?.bankDetails?.bankName, org.details?.bankDetails?.accountNumber)}
+            >
               {formatBankDetails(org.details?.bankDetails?.bankName, org.details?.bankDetails?.accountNumber)}
             </p>
             <p className="text-muted-foreground">
-  {formatRequestedAgo(org.createdAt)}
-</p>
+              {formatRequestedAgo(org.createdAt)}
+            </p>
 
             <div className="flex gap-2">
               <ActionBtn

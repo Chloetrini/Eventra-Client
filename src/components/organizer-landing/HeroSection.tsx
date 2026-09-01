@@ -57,6 +57,21 @@ const HeroSec: React.FC = () => {
           </Link>
         </div>
 
+        {/* Nothing on this page previously pointed an already-registered
+            organizer back to their own login — "Start selling" above only
+            ever went to sign-up, so the one way in for someone who already
+            has an account was to already know the /auth/organizer/login
+            URL by heart. */}
+        <p className="text-sm text-muted-foreground -mt-2">
+          Already selling with us?{" "}
+          <Link
+            to="/auth/organizer/login"
+            className="font-semibold text-[#0F6E56] dark:text-[#4ADE80] hover:underline"
+          >
+            Log in
+          </Link>
+        </p>
+
         {/* Avatars + Trust badge */}
         <div className="flex flex-col sm:flex-row items-center gap-1 mt-8">
           {/* Avatar stack */}

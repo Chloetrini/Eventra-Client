@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Flag, ArrowRight, ArrowLeft } from "lucide-react";
+import { Flag, ArrowRight, ArrowLeft, Trash2 } from "lucide-react";
 import type { AdminEvent } from "@/types/admin-event";
 import { StatusBadge } from "./AdminEventsTable";
 import {
@@ -17,8 +17,10 @@ import {
   useRejectEvent,
   useSuspendEvent,
   useUnsuspendEvent,
+  useRemoveAdminEvent,
 } from "@/hooks/use-admin-events";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
 
 interface AdminEventDetailProps {
   event: AdminEvent;
@@ -31,12 +33,15 @@ export default function AdminEventDetail({
   onBack,
   onFlag,
 }: AdminEventDetailProps) {
+  const navigate = useNavigate();
   const approveEvent = useApproveEvent();
   const rejectEvent = useRejectEvent();
   const suspendEvent = useSuspendEvent();
   const unsuspendEvent = useUnsuspendEvent();
+  const removeEvent = useRemoveAdminEvent();
 
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [declineReason, setDeclineReason] = useState("");
 
   const handleApproveEvent = (eventId: string) => {
@@ -68,22 +73,58 @@ export default function AdminEventDetail({
     );
   };
 
+  const handleConfirmDeleteEvent = () => {
+    removeEvent.mutate(event._id, {
+      onSuccess: () => {
+        toast.success("Event removed successfully");
+        setIsDeleteModalOpen(false);
+        if (onBack) {
+          onBack();
+        } else {
+          navigate("/admin/events");
+        }
+      },
+     onError: (err: unknown) => {
+  const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
+  toast.error(errorMessage);
+}
+    });
+  };
+
   // Status checks
+// Status checks
   const statusStr = String(event.status).toUpperCase();
   const isFreeEvent = event.type === "FREE";
-  
-  // Free events treat state as approved by default
-  const isApprovedOrLive = statusStr === "APPROVED" || statusStr === "LIVE" || isFreeEvent;
+
+
+  const isPastEvent = statusStr === "PAST"
+  const isCanceled = statusStr === "CANCELED" || statusStr === "CANCELLED";
+
+  // A free event is only actively managed if it's currently live/approved (not past & not canceled)
+  const isFreeAndLive = isFreeEvent && !isPastEvent && !isCanceled && statusStr !== "SUSPENDED" && statusStr !== "FLAGGED";
+
+  // Active Approved / Live state
+  const isApprovedOrLive =
+    (statusStr === "APPROVED" || statusStr === "LIVE" || isFreeAndLive) &&
+    statusStr !== "SUSPENDED" &&
+    statusStr !== "FLAGGED";
+
   const isSuspended = statusStr === "SUSPENDED";
   const isFlagged = statusStr === "FLAGGED";
   const isPending = statusStr === "PENDING" && !isFreeEvent;
   const isRejected = statusStr === "REJECTED";
 
-  // Active action loaders
+  // Suspend & Flag controls are available ONLY for active approved/live, suspended, or flagged events (Excludes past/canceled free events)
+  const canFlagOrSuspend = (isApprovedOrLive || isSuspended || isFlagged) && !isPastEvent && !isCanceled;
+
+  // Remove event: Exclusively for SUSPENDED, FLAGGED, REJECTED, or finished/canceled free events (Hidden for active LIVE/APPROVED and PENDING)
+  const canRemoveEvent = isSuspended || isFlagged || isRejected || (isFreeEvent && (isPastEvent || isCanceled));
+  // Action pending loaders
   const isThisApproving = approveEvent.isPending && approveEvent.variables === event._id;
   const isThisDeclining = rejectEvent.isPending && rejectEvent.variables?.id === event._id;
   const isThisSuspending = suspendEvent.isPending && suspendEvent.variables?.id === event._id;
   const isThisUnsuspending = unsuspendEvent.isPending && unsuspendEvent.variables === event._id;
+  const isThisDeleting = removeEvent.isPending && removeEvent.variables === event._id;
 
   const handleToggleSuspend = () => {
     if (isSuspended) {
@@ -221,7 +262,10 @@ export default function AdminEventDetail({
                 </p>
               </div>
             </div>
-            <button className="mt-5 flex w-[70%] items-center justify-center gap-2 rounded-lg border border-border bg-card py-2.5 text-sm font-semibold text-foreground hover:bg-accent transition-colors cursor-pointer font-geist">
+            <button
+              onClick={() => navigate(`/admin/organizers/${event.details?.organizer.id}`)}
+              className="mt-5 flex w-[70%] items-center justify-center gap-2 rounded-lg border border-border bg-card py-2.5 text-sm font-semibold text-foreground hover:bg-accent transition-colors cursor-pointer font-geist"
+            >
               View organizer
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
@@ -268,82 +312,93 @@ export default function AdminEventDetail({
       </div>
 
       {/* Bottom Action Footer */}
-      {!isRejected && (
-        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-t border-border pt-6">
-          <p className="text-sm text-muted-foreground font-medium">
-            Review the details before you decide.
-          </p>
+      <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-t border-border pt-6">
+        <p className="text-sm text-muted-foreground font-medium">
+          Review the details before you decide.
+        </p>
 
-          <div className="flex items-center gap-3">
-            {/* Flag Button - Only shown when approved/live or suspended */}
-            {(isApprovedOrLive || isSuspended || isFlagged) && (
-              <button
-                onClick={() => onFlag?.(event._id)}
-                className={`flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-bold transition-colors cursor-pointer shadow-md ${
-                  isFlagged
-                    ? "border-[#DC2626] bg-[#FCE8E6] dark:bg-[#DC2626]/20 text-[#DC2626]"
-                    : "border-border bg-card text-foreground hover:bg-accent"
-                }`}
-              >
-                <Flag className={`h-4 w-4 ${isFlagged ? "text-[#DC2626]" : ""}`} />
-                {isFlagged ? "Unflag" : "Flag"}
-              </button>
-            )}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Flag / Unflag Button */}
+          {canFlagOrSuspend && (
+            <button
+              onClick={() => onFlag?.(event._id)}
+              className={`flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-bold transition-colors cursor-pointer shadow-md ${
+                isFlagged
+                  ? "border-[#DC2626] bg-[#FCE8E6] dark:bg-[#DC2626]/20 text-[#DC2626]"
+                  : "border-border bg-card text-foreground hover:bg-accent"
+              }`}
+            >
+              <Flag className={`h-4 w-4 ${isFlagged ? "text-[#DC2626]" : ""}`} />
+              {isFlagged ? "Unflag" : "Flag"}
+            </button>
+          )}
 
-            {/* Paid & Pending Approval Actions */}
-            {isPending && (
-              <div className="flex items-center gap-2">
-                <ActionBtn
-                  type="button"
-                  text="Approve"
-                  loading={isThisApproving}
-                  disabled={approveEvent.isPending || rejectEvent.isPending}
-                  onClick={() => handleApproveEvent(event._id)}
-                  classname="bg-[#0F6E56] hover:bg-[#095341] text-white text-xs sm:text-sm px-4 py-2.5 h-auto shrink-0 rounded-xl font-bold"
-                />
-                <ActionBtn
-                  type="button"
-                  text="Reject"
-                  variant="outline"
-                  loading={isThisDeclining}
-                  disabled={approveEvent.isPending || rejectEvent.isPending}
-                  onClick={() => setIsRejectModalOpen(true)}
-                  classname="border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white text-xs sm:text-sm px-4 py-2.5 h-auto shrink-0 rounded-xl font-bold"
-                />
-              </div>
-            )}
-
-            {/* Free Event Badge Indicator */}
-            {isFreeEvent && !isSuspended && (
-              <button
-                disabled
-                className="bg-[#0F6E56]/15 text-[#0F6E56] dark:text-[#4ADE80] border border-[#0F6E56]/30 px-4 py-2.5 text-sm font-bold rounded-xl cursor-default"
-              >
-                Approved (Free Event)
-              </button>
-            )}
-
-            {/* Suspend / Unsuspend Toggle */}
-            {(isApprovedOrLive || isSuspended) && (
+          {/* Pending Approval / Rejection Actions */}
+          {isPending && (
+            <div className="flex items-center gap-2">
               <ActionBtn
                 type="button"
-                text={isSuspended ? "Unsuspend event" : "Suspend event"}
-                loading={isThisSuspending || isThisUnsuspending}
-                disabled={suspendEvent.isPending || unsuspendEvent.isPending}
-                onClick={handleToggleSuspend}
-                variant="outline"
-                classname={`text-xs sm:text-sm px-4 py-2.5 h-auto shrink-0 border rounded-xl font-bold transition-colors ${
-                  isSuspended
-                    ? "border-[#0F6E56] text-[#0F6E56] dark:text-[#4ADE80] hover:bg-[#0F6E56]/10"
-                    : "border-[#D97706] text-[#D97706] hover:bg-[#D97706]/10"
-                }`}
+                text="Approve"
+                loading={isThisApproving}
+                disabled={approveEvent.isPending || rejectEvent.isPending}
+                onClick={() => handleApproveEvent(event._id)}
+                classname="bg-[#0F6E56] hover:bg-[#095341] text-white text-xs sm:text-sm px-4 py-2.5 h-auto shrink-0 rounded-xl font-bold"
               />
-            )}
-          </div>
-        </div>
-      )}
+              <ActionBtn
+                type="button"
+                text="Reject"
+                variant="outline"
+                loading={isThisDeclining}
+                disabled={approveEvent.isPending || rejectEvent.isPending}
+                onClick={() => setIsRejectModalOpen(true)}
+                classname="border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white text-xs sm:text-sm px-4 py-2.5 h-auto shrink-0 rounded-xl font-bold"
+              />
+            </div>
+          )}
 
-      {/* Reject Event Modal with Reason Field */}
+          {/* Free Event Indicator Badge */}
+          {isFreeEvent && !isSuspended && (
+            <button
+              disabled
+              className="bg-[#0F6E56]/15 text-[#0F6E56] dark:text-[#4ADE80] border border-[#0F6E56]/30 px-4 py-2.5 text-sm font-bold rounded-xl cursor-default"
+            >
+              Approved (Free Event)
+            </button>
+          )}
+
+          {/* Suspend / Unsuspend Toggle */}
+          {canFlagOrSuspend && (
+            <ActionBtn
+              type="button"
+              text={isSuspended ? "Unsuspend event" : "Suspend event"}
+              loading={isThisSuspending || isThisUnsuspending}
+              disabled={suspendEvent.isPending || unsuspendEvent.isPending}
+              onClick={handleToggleSuspend}
+              variant="outline"
+              classname={`text-xs sm:text-sm px-4 py-2.5 h-auto shrink-0 border rounded-xl font-bold transition-colors ${
+                isSuspended
+                  ? "border-[#0F6E56] text-[#0F6E56] dark:text-[#4ADE80] hover:bg-[#0F6E56]/10"
+                  : "border-[#D97706] text-[#D97706] hover:bg-[#D97706]/10"
+              }`}
+            />
+          )}
+
+          {/* Remove Event Button — EXCLUSIVELY shown when SUSPENDED, FLAGGED, or REJECTED */}
+          {canRemoveEvent && (
+            <ActionBtn
+              type="button"
+              text="Remove event"
+              variant="outline"
+              loading={isThisDeleting}
+              disabled={removeEvent.isPending}
+              onClick={() => setIsDeleteModalOpen(true)}
+              classname="border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white text-xs sm:text-sm px-4 py-2.5 h-auto shrink-0 rounded-xl font-bold transition-colors"
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Reject Event Modal */}
       <Dialog open={isRejectModalOpen} onOpenChange={setIsRejectModalOpen}>
         <DialogContent className="max-w-md p-6">
           <form onSubmit={handleConfirmRejectEvent}>
@@ -383,6 +438,38 @@ export default function AdminEventDetail({
               />
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Remove Event Modal */}
+      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <DialogContent className="max-w-md p-6">
+          <DialogHeader className="space-y-2">
+            <DialogTitle className="font-grotesk text-lg font-bold text-foreground flex items-center gap-2">
+              <Trash2 className="h-5 w-5 text-[#BE2525]" />
+              Remove Event
+            </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">
+              Are you sure you want to permanently remove <strong>{event.title}</strong>? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="mt-6 flex items-center justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground hover:bg-accent cursor-pointer transition-colors"
+            >
+              Cancel
+            </button>
+            <ActionBtn
+              type="button"
+              text="Confirm Remove"
+              loading={isThisDeleting}
+              onClick={handleConfirmDeleteEvent}
+              classname="bg-[#BE2525] hover:bg-[#A11D1D] text-white text-sm px-4 py-2 h-auto rounded-xl font-bold"
+            />
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </PageWrapper>

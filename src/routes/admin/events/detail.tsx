@@ -40,7 +40,7 @@ export default function AdminEventDetailPage() {
   return (
     <AdminEventDetail
       event={event}
-      onBack={() => navigate("/admin/events")}
+      onBack={() => navigate(-1)}
       onFlag={id => {
         toggleFlag.mutate({ id, flagged: event.status === "FLAGGED" });
       }}

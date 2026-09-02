@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,25 @@ export default function AdminUsersPage() {
   const searchQuery = searchParams.get("q") ?? "";
   const [limit, setLimit] = useState(PAGE_SIZE);
 
+  // Live debounced search effect (300ms delay)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams(searchParams);
+      const trimmed = searchInput.trim();
+
+      if (trimmed) {
+        params.set("q", trimmed);
+      } else {
+        params.delete("q");
+      }
+
+      setSearchParams(params, { replace: true });
+      setLimit(PAGE_SIZE);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
   const { data, isLoading, isError } = useAdminUsers({
     page: 1,
     limit,
@@ -39,18 +58,6 @@ export default function AdminUsersPage() {
       params.delete("status");
     } else {
       params.set("status", status);
-    }
-    setSearchParams(params);
-    setLimit(PAGE_SIZE);
-  };
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const params = new URLSearchParams(searchParams);
-    if (searchInput) {
-      params.set("q", searchInput);
-    } else {
-      params.delete("q");
     }
     setSearchParams(params);
     setLimit(PAGE_SIZE);
@@ -71,7 +78,7 @@ export default function AdminUsersPage() {
       </div>
 
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
-        <form onSubmit={handleSearchSubmit} className="relative w-full ">
+        <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <input
             type="text"
@@ -80,7 +87,7 @@ export default function AdminUsersPage() {
             placeholder="Search by name or email"
             className="w-full pl-9 pr-3 py-2 text-[15px] text-foreground placeholder:text-muted-foreground bg-background border border-border rounded-[7px] outline-none"
           />
-        </form>
+        </div>
         <div className="flex w-full lg:w-auto gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
           {FILTERS.map((filter) => (
             <button
@@ -112,7 +119,7 @@ export default function AdminUsersPage() {
       ) : (
         <>
           <UsersTable users={data?.users ?? []} currency={data?.currency} />
-          {data?.meta.hasMore && (
+          {data?.meta?.hasMore && (
             <div className="flex justify-center">
               <Button variant="outline" onClick={() => setLimit((l) => l + PAGE_SIZE)}>
                 Load more

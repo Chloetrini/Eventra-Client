@@ -8,6 +8,7 @@ interface AdminOrganizerFilterBarProps {
   onSearchChange: (query: string) => void;
   activeFilter: OrganizerStatusFilterOption;
   onFilterChange: (filter: OrganizerStatusFilterOption) => void;
+
 }
 
 const FILTER_TABS: { label: string; value: OrganizerStatusFilterOption }[] = [

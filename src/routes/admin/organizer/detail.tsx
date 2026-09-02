@@ -99,7 +99,7 @@ const OrganizerApprovalDetailPage = () => {
             className="flex items-center gap-2 font-space text-[13px] text-[#0F6E56] dark:text-[#4ADE80] mb-2 hover:underline"
           >
             <ArrowLeft className="w-4 h-4" />
-            BACK TO APPROVALS
+            BACK TO ORGANIZERS
           </button>
           <div className="flex items-center gap-3">
             <h1 className="text-[28px] font-bold font-grotesk">{organizer.name}</h1>

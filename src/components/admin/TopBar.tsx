@@ -85,7 +85,7 @@ const AdminTopbar: React.FC<AdminTopbarProps> = ({ onMenuClick, title }) => {
             title={user?.fullname || "Admin"}
           >
             <span className="h-9 w-9 rounded-full overflow-hidden bg-[#1A1523] text-white flex items-center justify-center font-bold text-sm shrink-0">
-              <UserAvatar avatarUrl={user?.avatarUrl} name={user?.fullname} className="h-9 w-9 text-sm" />
+              <UserAvatar avatarUrl={user?.avatarUrl} name={user?.fullname} className="h-9 w-9 text-sm bg-[#1A1523] text-white " />
             </span>
             <ChevronDown className="hidden sm:block h-4 w-4 text-muted-foreground" />
           </DropdownMenuTrigger>

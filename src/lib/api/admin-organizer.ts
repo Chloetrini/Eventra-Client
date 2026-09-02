@@ -32,9 +32,6 @@ export interface RawAdminOrganizerListItem {
   revenue?: number;
 }
 
-/**
- * Backend response shape from `getOrganizerDetailForAdmin`
- */
 export interface RawAdminOrganizerDetail extends RawAdminOrganizerListItem {
   eventsRunCount?: number;
   ticketsSold?: number;
@@ -48,6 +45,24 @@ export interface RawAdminOrganizerDetail extends RawAdminOrganizerListItem {
     sold?: number;
     capacity?: number;
   }>;
+}
+
+export interface FetchAdminOrganizersParams {
+  status?: OrganizerStatusFilterOption;
+  tab?: OrganizerStatusFilterOption;
+  q?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface AdminOrganizersResponse {
+  organizers: AdminOrganizer[];
+  meta?: {
+    totalCount: number;
+    page: number;
+    limit: number;
+    hasMore?: boolean;
+  };
 }
 
 function initialsFrom(name: string): string {
@@ -82,9 +97,6 @@ function deriveOrganizerStatus(raw: RawAdminOrganizerListItem): AdminOrganizerSt
   }
 }
 
-// Was a hardcoded Intl.NumberFormat pinned to NGN — every admin saw
-// organizer revenue in Naira regardless of their own currency preference.
-// Delegates to the shared currency-aware formatNaira now.
 function formatCurrency(amount: number, currency?: string): string {
   return formatNaira(amount, currency ?? "Naira");
 }
@@ -107,7 +119,7 @@ function mapOrganizerListItem(raw: RawAdminOrganizerListItem, currency?: string)
     rawRevenue: totalRevenue,
     formattedRevenue: formatCurrency(totalRevenue, currency),
     currency,
-    createdAt: formatDate(raw.createdAt), // Formats ISO string into clean UI date
+    createdAt: formatDate(raw.createdAt),
     details: {
       email: raw.email,
       phone: profile?.phone ?? "N/A",
@@ -168,68 +180,117 @@ function mapOrganizerDetail(raw: RawAdminOrganizerDetail, currency?: string): Ad
   };
 }
 
-// API Calls - Aligned with tsRest controllers and backend response wrappers
+// API Calls
 export async function fetchAdminOrganizers(
-  params: { tab?: OrganizerStatusFilterOption; q?: string; page?: number; limit?: number } = {}
-): Promise<{ organizers: AdminOrganizer[]; meta?: any }> {
-  const query = new URLSearchParams();
-  if (params.tab && params.tab !== "all") query.set("tab", params.tab);
-  if (params.q) query.set("q", params.q);
-  if (params.page) query.set("page", String(params.page));
-  if (params.limit) query.set("limit", String(params.limit));
+  params: FetchAdminOrganizersParams = {}
+): Promise<AdminOrganizersResponse> {
+  const activeStatus = params.status ?? params.tab;
+  const page = params.page ?? 1;
+  const limit = params.limit ?? 20;
+
+  const query = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  if (activeStatus && activeStatus !== "all") {
+    query.set("tab", activeStatus);
+  }
+  if (params.q) {
+    query.set("q", params.q);
+  }
 
   const res = await api.get(`/admin/organizers?${query.toString()}`);
-  const body = res.body as { organizers: RawAdminOrganizerListItem[]; currency?: string; meta: any };
-  return {
-    organizers: body.organizers.map(raw => mapOrganizerListItem(raw, body.currency)),
-    meta: body.meta,
+  const body = res.body as {
+    organizers: RawAdminOrganizerListItem[];
+    currency?: string;
+    totalCount?: number;
+    meta?: {
+      totalCount: number;
+      page: number;
+      limit: number;
+      hasMore?: boolean;
+    };
   };
+
+  const organizers = body.organizers.map((raw) =>
+    mapOrganizerListItem(raw, body.currency)
+  );
+
+  const meta =
+    body.meta ??
+    (body.totalCount !== undefined
+      ? {
+          totalCount: body.totalCount,
+          page,
+          limit,
+          hasMore: page * limit < body.totalCount,
+        }
+      : undefined);
+
+  return { organizers, meta };
 }
 
-export async function fetchPendingAdminOrganizers(): Promise<{ organizers: AdminOrganizer[] }> {
+export async function fetchPendingAdminOrganizers(): Promise<{
+  organizers: AdminOrganizer[];
+}> {
   const res = await api.get("/admin/organizers/pending");
-  const body = res.body as { organizers: RawAdminOrganizerListItem[]; currency?: string };
+  const body = res.body as {
+    organizers: RawAdminOrganizerListItem[];
+    currency?: string;
+  };
 
   return {
-    organizers: body.organizers.map(raw => mapOrganizerListItem(raw, body.currency))
+    organizers: body.organizers.map((raw) =>
+      mapOrganizerListItem(raw, body.currency)
+    ),
   };
 }
 
-export async function fetchAdminOrganizerDetail(id: string): Promise<AdminOrganizer> {
+export async function fetchAdminOrganizerDetail(
+  id: string
+): Promise<AdminOrganizer> {
   const res = await api.get(`/admin/organizers/${id}`);
   const body = res.body as RawAdminOrganizerDetail & { currency?: string };
   return mapOrganizerDetail(body, body.currency);
 }
 
-// Matches: PATCH /admin/organizers/:id/approve
 export async function approveOrganizer(id: string): Promise<void> {
   await api.patch(`/admin/organizers/${id}/approve`, {});
 }
 
-// Matches: PATCH /admin/organizers/:id/reject
-export async function rejectOrganizer(id: string, reason?: string): Promise<void> {
+export async function rejectOrganizer(
+  id: string,
+  reason?: string
+): Promise<void> {
   await api.patch(`/admin/organizers/${id}/reject`, { reason });
 }
 
-export async function suspendOrganizer({ id, reason }: { id: string; reason?: string }): Promise<void> {
+export async function suspendOrganizer({
+  id,
+  reason,
+}: {
+  id: string;
+  reason?: string;
+}): Promise<void> {
   await api.patch(`/admin/organizers/${id}/suspend`, { reason });
 }
 
-// Matches: PATCH /admin/organizers/:id/unsuspend
 export async function unsuspendOrganizer(id: string): Promise<void> {
   await api.patch(`/admin/organizers/${id}/unsuspend`, {});
 }
 
-// Matches: PATCH /admin/organizers/:id/flag
-export async function flagOrganizer(id: string, reason?: string): Promise<void> {
+export async function flagOrganizer(
+  id: string,
+  reason?: string
+): Promise<void> {
   await api.patch(`/admin/organizers/${id}/flag`, { reason });
 }
-// Matches: PATCH /admin/organizers/:id/unflag
+
 export async function unflagOrganizer(id: string): Promise<void> {
   await api.patch(`/admin/organizers/${id}/unflag`, {});
 }
 
-// Matches: PATCH /admin/reports/flags/organizers/:id/dismiss
 export async function dismissOrganizerFlag(id: string): Promise<void> {
   await api.patch(`/admin/reports/flags/organizers/${id}/dismiss`, {});
 }

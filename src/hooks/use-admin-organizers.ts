@@ -13,29 +13,41 @@ import {
 } from "@/lib/api/admin-organizer";
 import type { OrganizerStatusFilterOption } from "@/components/admin/organizer/AdminOrganizerFilterBar";
 
+export interface FetchAdminOrganizersParams {
+  status?: OrganizerStatusFilterOption; // Add this line
+  tab?: OrganizerStatusFilterOption;
+  q?: string;
+  page?: number;
+  limit?: number;
+}
+
 // Scoped key factory for admin organizer management
 export const adminOrganizerKeys = {
   all: ["admin", "organizers"] as const,
   lists: () => [...adminOrganizerKeys.all, "list"] as const,
-  list: (tab: OrganizerStatusFilterOption, q: string, page = 1) =>
-    [...adminOrganizerKeys.lists(), { tab, q, page }] as const,
+  list: (params: FetchAdminOrganizersParams) =>
+    [...adminOrganizerKeys.lists(), params] as const,
   details: () => [...adminOrganizerKeys.all, "detail"] as const,
   detail: (id: string) => [...adminOrganizerKeys.details(), id] as const,
 };
 
 // Hook: Fetch paginated & filtered list of organizers for Admin Console
-export function useAdminOrganizers(tab: OrganizerStatusFilterOption, q: string, page = 1) {
+export function useAdminOrganizers(params: FetchAdminOrganizersParams = {}) {
+  const { tab = "all", q = "", page = 1, limit = 20 } = params;
+
   return useQuery({
-    queryKey: adminOrganizerKeys.list(tab, q, page),
-    queryFn: () => fetchAdminOrganizers({ tab, q: q || undefined, page }),
+    queryKey: adminOrganizerKeys.list({ tab, q, page, limit }),
+    queryFn: () => fetchAdminOrganizers({ tab, q: q || undefined, page, limit }),
   });
 }
+
 export function usePendingAdminOrganizers() {
   return useQuery({
     queryKey: ["admin", "organizers", "pending"],
     queryFn: fetchPendingAdminOrganizers,
-  })
+  });
 }
+
 // Hook: Fetch full details for a single organizer
 export function useAdminOrganizerDetail(id: string | undefined) {
   return useQuery({

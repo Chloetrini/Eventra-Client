@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dialog"
 import { useApproveEventPromotion, useRejectEventPromotion } from "@/hooks/use-admin-promotions"
 
-const EVENT_GRID_COLS = "grid grid-cols-[220px_160px_90px_120px_180px] sm:grid-cols-[3fr_1.5fr_1fr_1fr_200px] gap-4 sm:gap-8 px-4 sm:px-6"
+const EVENT_GRID_COLS = "grid grid-cols-[220px_160px_90px_120px_180px] sm:grid-cols-[2fr_1.5fr_1fr_1fr_200px] gap-4 sm:gap-8 px-4 sm:px-6"
 const ORGANIZER_GRID_COLS = "grid grid-cols-[200px_180px_150px_120px_180px] sm:grid-cols-[2fr_2fr_1.5fr_1fr_200px] gap-4 px-4 sm:px-6"
 const PROMOTION_GRID_COLS = "grid grid-cols-[200px_160px_120px_120px_180px] sm:grid-cols-[2fr_1.5fr_1fr_1fr_200px] gap-4 px-4 sm:px-6"
 
@@ -34,6 +34,7 @@ function initialsFor(name: string): string {
   const initials = name
     .split(" ")
     .filter(Boolean)
+    .slice(0, 2)
     .map((n) => n[0])
     .join("")
     .toUpperCase()

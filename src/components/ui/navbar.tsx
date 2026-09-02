@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { NavLink } from "react-router";
 import {
   Menu,
@@ -92,6 +92,7 @@ function AuthLink({ to, label, variant, className, onClick }: AuthLinkProps) {
 
 function Navbar() {
   const [open, setOpen] = useState(false);
+  const navRef = useRef<HTMLDivElement>(null);
   const closeMenu = () => setOpen(false);
 
   const { user, logout } = useAuth();
@@ -99,15 +100,31 @@ function Navbar() {
   const isOrganizer = user?.role === "organizer";
   const isAdmin = user?.role === "admin";
 
-  // An admin has no attendee "Profile" or organizer "Dashboard" — this
-  // dropdown item takes them straight to the admin console's overview
-  // instead. Falls back to the organizer/attendee behavior otherwise.
   const dashboardPath = isAdmin
     ? "/admin/overview"
     : isOrganizer
       ? "/dashboard/overview"
       : "/profile";
   const dashboardLabel = isAdmin || isOrganizer ? "Dashboard" : "Profile";
+
+  // Handle click outside to close mobile drawer
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [open]);
 
   const ThemeToggleButton = (
     <button
@@ -127,13 +144,14 @@ function Navbar() {
   );
 
   return (
-    <div className="sticky top-0 z-40 border-b-2 border-[#E8E6E0] bg-white/70 backdrop-blur-md dark:border-white/10 dark:bg-[#18181B]/80">
+    <div
+      ref={navRef}
+      className="sticky top-0 z-40 border-b-2 border-[#E8E6E0] bg-white/70 backdrop-blur-md dark:border-white/10 dark:bg-[#18181B]/80"
+    >
       <PageWrapper className="p-[20px]">
         <div className="w-full">
           <div className="flex w-full items-center">
-            {/* Logo — inlined (rather than <img src="/logo.svg">) so the
-              wordmark can follow the theme; a static image file can't
-              respond to dark mode, which is why it used to stay dark. */}
+            {/* Logo */}
             <NavLink
               to="/"
               className="flex items-center"

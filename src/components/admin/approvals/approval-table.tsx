@@ -1,7 +1,6 @@
-
 import { useState } from "react"
 import ActionBtn from "@/components/ui/action-btn"
-import { formatRequestedAgo, formatNaira } from "@/lib/utils"
+import { formatRequestedAgo } from "@/lib/utils"
 import { useNavigate } from "react-router"
 import { toast } from "react-toastify"
 import type { AdminOrganizer } from "@/types/admin-organizer"
@@ -19,9 +18,9 @@ import {
 } from "@/components/ui/dialog"
 import { useApproveEventPromotion, useRejectEventPromotion } from "@/hooks/use-admin-promotions"
 
-const EVENT_GRID_COLS = "grid grid-cols-[3fr_1fr_1fr_1fr_250px] gap-8 px-6"
-const ORGANIZER_GRID_COLS = "grid grid-cols-[2fr_2fr_1fr_1fr_250px] gap-4 px-6"
-const PROMOTION_GRID_COLS = "grid grid-cols-[2fr_1.5fr_1fr_1fr_250px] gap-4 px-6"
+const EVENT_GRID_COLS = "grid grid-cols-[220px_160px_90px_120px_180px] sm:grid-cols-[3fr_1.5fr_1fr_1fr_200px] gap-4 sm:gap-8 px-4 sm:px-6"
+const ORGANIZER_GRID_COLS = "grid grid-cols-[200px_180px_150px_120px_180px] sm:grid-cols-[2fr_2fr_1.5fr_1fr_200px] gap-4 px-4 sm:px-6"
+const PROMOTION_GRID_COLS = "grid grid-cols-[200px_160px_120px_120px_180px] sm:grid-cols-[2fr_1.5fr_1fr_1fr_200px] gap-4 px-4 sm:px-6"
 
 interface ApprovalTableProps {
   activeTab: "events" | "organizers" | "promotions"
@@ -96,7 +95,6 @@ const ApprovalTable = ({ activeTab, events, organizer, promotions }: ApprovalTab
     })
   }
 
-  // Direct rejection without dialogue
   const handleRejectOrganizer = (orgId: string) => {
     rejectOrganizer.mutate(
       { id: orgId },
@@ -107,6 +105,7 @@ const ApprovalTable = ({ activeTab, events, organizer, promotions }: ApprovalTab
       }
     )
   }
+
   const handleApprovePromotion = (promotionId: string) => {
     approvePromotion.mutate(promotionId, {
       onSuccess: () => toast.success("Promotion approved"),
@@ -115,7 +114,6 @@ const ApprovalTable = ({ activeTab, events, organizer, promotions }: ApprovalTab
     })
   }
 
-  // Direct rejection without dialogue
   const handleRejectPromotion = (promotionId: string) => {
     rejectPromotion.mutate(
       promotionId,
@@ -130,71 +128,85 @@ const ApprovalTable = ({ activeTab, events, organizer, promotions }: ApprovalTab
   if (activeTab === "events") {
     return (
       <>
-        <div className="min-w-[900px] border-2 border-[#E8E6E0] dark:border-border rounded-[10px] overflow-hidden">
-          <div className={`${EVENT_GRID_COLS} py-4 border-b-2 border-[#E8E6E0] dark:border-border rounded-b-[10px] w-full`}>
-            <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">EVENT</p>
-            <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide truncate">ORGANIZER</p>
-            <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">TYPE</p>
-            <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">SUBMITTED</p>
-            <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">STATUS</p>
-            <div />
-          </div>
+        <div className="w-full overflow-x-auto rounded-[10px] border-2 border-[#E8E6E0] dark:border-border bg-card">
+          <div className="min-w-[780px]">
+            <div className={`${EVENT_GRID_COLS} py-4 border-b-2 border-[#E8E6E0] dark:border-border bg-card/50`}>
+              <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">EVENT</p>
+              <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">ORGANIZER</p>
+              <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">TYPE</p>
+              <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">SUBMITTED</p>
+              <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">ACTIONS</p>
+            </div>
 
-          {events.length === 0 && (
-            <p className="py-8 text-center text-sm text-muted-foreground">
-              No event right now.
-            </p>
-          )}
+            {events.length === 0 && (
+              <p className="py-8 text-center text-sm text-muted-foreground">
+                No event right now.
+              </p>
+            )}
 
-          {events.map((event, index) => {
-            const isThisApproving = approveEvent.isPending && approveEvent.variables === event._id
-            const isThisDeclining = rejectEvent.isPending && rejectEvent.variables?.id === event._id
+            {events.map((event, index) => {
+              const isThisApproving = approveEvent.isPending && approveEvent.variables === event._id
+              const isThisDeclining = rejectEvent.isPending && rejectEvent.variables?.id === event._id
 
-            return (
-              <div
-                key={event._id}
-                onClick={() => navigate(`/admin/events/${event._id}`)}
-                className={`${EVENT_GRID_COLS} py-5 items-center rounded-b-[10px] cursor-pointer hover:bg-muted/40 transition-colors dark:border-border ${index < events.length - 1 ? "border-b-2 border-[#E8E6E0]" : ""
+              return (
+                <div
+                  key={event._id}
+                  onClick={() => navigate(`/admin/events/${event._id}`)}
+                  className={`${EVENT_GRID_COLS} py-4 items-center cursor-pointer hover:bg-muted/40 transition-colors dark:border-border ${
+                    index < events.length - 1 ? "border-b-2 border-[#E8E6E0]" : ""
                   }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#E4F1EB] dark:bg-[#0F6E56]/20 flex items-center justify-center text-sm font-medium text-[#0F6E56] dark:text-[#4ADE80]">
-                    {initialsFor(event.title)}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 shrink-0 rounded-full bg-[#E4F1EB] dark:bg-[#0F6E56]/20 flex items-center justify-center text-sm font-medium text-[#0F6E56] dark:text-[#4ADE80]">
+                      {initialsFor(event.title)}
+                    </div>
+                    <p
+                      title={event.title}
+                      className="font-bold truncate whitespace-nowrap max-w-[150px] sm:max-w-none text-foreground"
+                    >
+                      {event.title}
+                    </p>
                   </div>
-                  <p className="font-bold">{event.title}</p>
-                </div>
 
-                <p>{event.organizerName}</p>
-                <p className="font-space font-bold">{event.type}</p>
-                <p className="text-muted-foreground">{formatRequestedAgo(event.createdAt)}</p>
+                  <p
+                    title={event.organizerName}
+                    className="truncate whitespace-nowrap max-w-[130px] sm:max-w-none text-muted-foreground sm:text-foreground"
+                  >
+                    {event.organizerName}
+                  </p>
+                  <p className="font-space font-bold">{event.type}</p>
+                  <p className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap">
+                    {formatRequestedAgo(event.createdAt)}
+                  </p>
 
-                <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                  <ActionBtn
-                    type="button"
-                    text="Approve"
-                    loading={isThisApproving}
-                    disabled={approveEvent.isPending || rejectEvent.isPending}
-                    onClick={() => handleApproveEvent(event._id)}
-                    classname="bg-[#0F6E56] hover:bg-[#095341] text-white text-sm px-4 py-2 h-auto"
-                  />
-                  <ActionBtn
-                    type="button"
-                    text="Reject"
-                    variant="outline"
-                    loading={isThisDeclining}
-                    disabled={approveEvent.isPending || rejectEvent.isPending}
-                    onClick={() => setEventTarget({ id: event._id, title: event.title })}
-                    classname="border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white text-sm px-4 py-2 h-auto"
-                  />
+                  <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <ActionBtn
+                      type="button"
+                      text="Approve"
+                      loading={isThisApproving}
+                      disabled={approveEvent.isPending || rejectEvent.isPending}
+                      onClick={() => handleApproveEvent(event._id)}
+                      classname="bg-[#0F6E56] hover:bg-[#095341] text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 h-auto shrink-0"
+                    />
+                    <ActionBtn
+                      type="button"
+                      text="Reject"
+                      variant="outline"
+                      loading={isThisDeclining}
+                      disabled={approveEvent.isPending || rejectEvent.isPending}
+                      onClick={() => setEventTarget({ id: event._id, title: event.title })}
+                      classname="border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 h-auto shrink-0"
+                    />
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
 
         {/* Event Rejection Modal */}
         <Dialog open={Boolean(eventTarget)} onOpenChange={(open) => !open && setEventTarget(null)}>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-106.25">
             <form onSubmit={handleConfirmRejectEvent}>
               <DialogHeader>
                 <DialogTitle className="font-grotesk text-xl font-bold">Reject Event</DialogTitle>
@@ -239,143 +251,173 @@ const ApprovalTable = ({ activeTab, events, organizer, promotions }: ApprovalTab
 
   if (activeTab === "promotions") {
     return (
-      <div className="min-w-[900px] border-2 border-[#E8E6E0] dark:border-border rounded-[10px] overflow-hidden">
-        <div className={`${PROMOTION_GRID_COLS} py-4 border-b-2 border-[#E8E6E0] dark:border-border rounded-b-[10px]`}>
-          <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">EVENT</p>
-          <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide truncate">ORGANIZER</p>
-          <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">PACKAGE</p>
+      <div className="w-full overflow-x-auto rounded-[10px] border-2 border-[#E8E6E0] dark:border-border bg-card">
+        <div className="min-w-[780px]">
+          <div className={`${PROMOTION_GRID_COLS} py-4 border-b-2 border-[#E8E6E0] dark:border-border bg-card/50`}>
+            <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">EVENT</p>
+            <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">ORGANIZER</p>
+            <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">PACKAGE</p>
+            <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">SUBMITTED</p>
+            <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">ACTIONS</p>
+          </div>
+
+          {promotions.length === 0 && (
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              No promotion requests right now.
+            </p>
+          )}
+
+          {promotions.map((promo, index) => {
+            const isThisApproving = approvePromotion.isPending && approvePromotion.variables === promo.eventId
+            const isThisDeclining = rejectPromotion.isPending && rejectPromotion.variables === promo.eventId
+            return (
+              <div
+                key={promo.eventId}
+                onClick={() => navigate(`/admin/promotions/${promo.eventId}`)}
+                className={`${PROMOTION_GRID_COLS} py-4 items-center cursor-pointer hover:bg-muted/40 transition-colors dark:border-border ${
+                  index < promotions.length - 1 ? "border-b-2 border-[#E8E6E0]" : ""
+                }`}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-9 h-9 shrink-0 rounded-full bg-[#E4F1EB] dark:bg-[#0F6E56]/20 flex items-center justify-center text-sm font-medium text-[#0F6E56] dark:text-[#4ADE80]">
+                    {initialsFor(promo.eventTitle)}
+                  </div>
+                  <p
+                    title={promo.eventTitle}
+                    className="font-bold truncate whitespace-nowrap max-w-[140px] sm:max-w-none text-foreground"
+                  >
+                    {promo.eventTitle}
+                  </p>
+                </div>
+
+                <p
+                  title={promo.organizerName}
+                  className="truncate whitespace-nowrap max-w-[130px] sm:max-w-none text-muted-foreground sm:text-foreground"
+                >
+                  {promo.organizerName}
+                </p>
+                <p className="font-space font-bold truncate whitespace-nowrap max-w-[100px] sm:max-w-none">
+                  {promo.packageLabel}
+                </p>
+                <p className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap">
+                  {promo.paidAt ? formatRequestedAgo(promo.paidAt) : "—"}
+                </p>
+                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                  <ActionBtn
+                    type="button"
+                    text="Approve"
+                    loading={isThisApproving}
+                    disabled={approvePromotion.isPending || rejectPromotion.isPending}
+                    onClick={() => handleApprovePromotion(promo.eventId)}
+                    classname="bg-[#0F6E56] hover:bg-[#095341] text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 h-auto shrink-0"
+                  />
+                  <ActionBtn
+                    type="button"
+                    text="Reject"
+                    variant="outline"
+                    loading={isThisDeclining}
+                    disabled={approvePromotion.isPending || rejectPromotion.isPending}
+                    onClick={() => handleRejectPromotion(promo.eventId)}
+                    classname="border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 h-auto shrink-0"
+                  />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="w-full overflow-x-auto rounded-[10px] border-2 border-[#E8E6E0] dark:border-border bg-card">
+      <div className="min-w-[800px]">
+        <div className={`${ORGANIZER_GRID_COLS} py-4 border-b-2 border-[#E8E6E0] dark:border-border bg-card/50`}>
+          <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">ORGANIZER</p>
+          <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">CONTACT</p>
+          <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">BANK</p>
           <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">SUBMITTED</p>
-          <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">STATUS</p>
+          <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">ACTIONS</p>
         </div>
 
-        {promotions.length === 0 && (
+        {organizer.length === 0 && (
           <p className="py-8 text-center text-sm text-muted-foreground">
-            No promotion requests right now.
+            No organizer right now.
           </p>
         )}
 
-        {promotions.map((promo, index) => {
-          const isThisApproving = approvePromotion.isPending && approveEvent.variables === promo.eventId
-          const isThisDeclining = rejectEvent.isPending && rejectEvent.variables?.id === promo.eventId
+        {organizer.map((org: AdminOrganizer, index: number) => {
+          const isThisVerifying = approveOrganizer.isPending && approveOrganizer.variables === org._id
+          const isThisRejecting = rejectOrganizer.isPending && rejectOrganizer.variables?.id === org._id
+
           return (
             <div
-              key={promo.eventId}
-              onClick={() => navigate(`/admin/promotions/${promo.eventId}`)}
-              className={`${PROMOTION_GRID_COLS} py-5 items-center rounded-b-[10px] cursor-pointer hover:bg-muted/40 transition-colors dark:border-border ${index < promotions.length - 1 ? "border-b-2 border-[#E8E6E0]" : ""
-                }`}
+              key={org._id}
+              onClick={() => navigate(`/admin/organizers/${org._id}`)}
+              className={`${ORGANIZER_GRID_COLS} py-4 items-center cursor-pointer hover:bg-muted/40 transition-colors dark:border-border ${
+                index < organizer.length - 1 ? "border-b-2 border-[#E8E6E0]" : ""
+              }`}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-[#E4F1EB] dark:bg-[#0F6E56]/20 flex items-center justify-center text-sm font-medium text-[#0F6E56] dark:text-[#4ADE80]">
-                  {initialsFor(promo.eventTitle)}
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 shrink-0 rounded-full bg-[#E4F1EB] dark:bg-[#0F6E56]/20 flex items-center justify-center text-sm font-medium text-[#0F6E56] dark:text-[#4ADE80]">
+                  {org.avatarUrl ? (
+                    <img src={org.avatarUrl} alt={org.name} className="h-8 w-8 rounded-full object-cover" />
+                  ) : (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted font-medium">
+                      {org.initials}
+                    </div>
+                  )}
                 </div>
-                <p className="font-bold">{promo.eventTitle}</p>
+                <p
+                  title={org.name}
+                  className="font-bold truncate whitespace-nowrap max-w-[140px] sm:max-w-none text-foreground"
+                >
+                  {org.name}
+                </p>
               </div>
 
-              <p className="truncate">{promo.organizerName}</p>
-              <p className="font-space font-bold">{promo.packageLabel}</p>
-              <p className="text-muted-foreground">
-                {promo.paidAt ? formatRequestedAgo(promo.paidAt) : "—"}
+              <p
+                title={org.email}
+                className="truncate whitespace-nowrap max-w-[150px] sm:max-w-none text-muted-foreground sm:text-foreground"
+              >
+                {org.email}
               </p>
-              <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+
+              <p
+                className="font-bold truncate whitespace-nowrap max-w-[120px] sm:max-w-none"
+                title={formatBankDetails(org.details?.bankDetails?.bankName, org.details?.bankDetails?.accountNumber)}
+              >
+                {formatBankDetails(org.details?.bankDetails?.bankName, org.details?.bankDetails?.accountNumber)}
+              </p>
+
+              <p className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap">
+                {formatRequestedAgo(org.createdAt)}
+              </p>
+
+              <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                 <ActionBtn
                   type="button"
-                  text="Approve"
-                  loading={isThisApproving}
-                  disabled={approvePromotion.isPending || rejectPromotion.isPending}
-                  onClick={() => handleApprovePromotion(promo.eventId)}
-                  classname="bg-[#0F6E56] hover:bg-[#095341] text-white text-sm px-4 py-2 h-auto"
+                  text="Verify"
+                  variant="outline"
+                  loading={isThisVerifying}
+                  disabled={approveOrganizer.isPending || rejectOrganizer.isPending}
+                  onClick={() => handleApproveOrganizer(org._id)}
+                  classname="font-bold border-[#0F6E56] text-[#0F6E56] dark:text-[#4ADE80] hover:bg-[#0F6E56] hover:text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 h-auto shrink-0"
                 />
                 <ActionBtn
                   type="button"
                   text="Reject"
                   variant="outline"
-                  loading={isThisDeclining}
-                  disabled={approvePromotion.isPending || rejectPromotion.isPending}
-                  onClick={() => handleRejectPromotion(promo.eventId)}
-                  classname="border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white text-sm px-4 py-2 h-auto"
+                  loading={isThisRejecting}
+                  disabled={approveOrganizer.isPending || rejectOrganizer.isPending}
+                  onClick={() => handleRejectOrganizer(org._id)}
+                  classname="font-bold border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 h-auto shrink-0"
                 />
               </div>
             </div>
           )
         })}
       </div>
-    )
-  }
-
-  return (
-    <div className="min-w-[900px] border-2 border-[#E8E6E0] dark:border-border rounded-[10px] overflow-hidden">
-      <div className={`${ORGANIZER_GRID_COLS} py-4 border-b-2 border-[#E8E6E0] dark:border-border rounded-b-[10px]`}>
-        <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">ORGANIZER</p>
-        <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide truncate">CONTACT</p>
-        <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">BANK</p>
-        <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">SUBMITTED</p>
-        <p className="text-sm font-medium dark:text-gray-200 text-[#6E6577] font-space tracking-wide">STATUS</p>
-        <div />
-      </div>
-
-      {organizer.length === 0 && (
-        <p className="py-8 text-center text-sm text-muted-foreground">
-          No organizer right now.
-        </p>
-      )}
-
-      {organizer.map((org, index) => {
-        const isThisVerifying = approveOrganizer.isPending && approveOrganizer.variables === org._id
-        const isThisRejecting = rejectOrganizer.isPending && rejectOrganizer.variables?.id === org._id
-
-        return (
-          <div
-            key={org._id}
-            onClick={() => navigate(`/admin/organizers/${org._id}`)}
-            className={`${ORGANIZER_GRID_COLS} py-5 items-center rounded-b-[10px] dark:border-border ${index < organizer.length - 1 ? "border-b-2 border-[#E8E6E0]" : ""
-              }`}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-[#E4F1EB] dark:bg-[#0F6E56]/20 flex items-center justify-center text-sm font-medium text-[#0F6E56] dark:text-[#4ADE80]">
-                {org.avatarUrl ? (
-                  <img src={org.avatarUrl} alt={org.name} className="h-8 w-8 rounded-full object-cover" />
-                ) : (
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted font-medium">
-                    {org.initials}
-                  </div>
-                )}
-              </div>
-              <p>{org.name}</p>
-            </div>
-            <p>{org.email}</p>
-            <p
-              className="font-bold truncate"
-              title={formatBankDetails(org.details?.bankDetails?.bankName, org.details?.bankDetails?.accountNumber)}
-            >
-              {formatBankDetails(org.details?.bankDetails?.bankName, org.details?.bankDetails?.accountNumber)}
-            </p>
-            <p className="text-muted-foreground">
-              {formatRequestedAgo(org.createdAt)}
-            </p>
-
-            <div className="flex gap-2">
-              <ActionBtn
-                type="button"
-                text="Verify"
-                variant="outline"
-                loading={isThisVerifying}
-                disabled={approveOrganizer.isPending || rejectOrganizer.isPending}
-                onClick={() => handleApproveOrganizer(org._id)}
-                classname="font-bold border-[#0F6E56] text-[#0F6E56] dark:text-[#4ADE80] hover:bg-[#0F6E56] hover:text-white text-sm px-4 py-2 h-auto"
-              />
-              <ActionBtn
-                type="button"
-                text="Reject"
-                variant="outline"
-                loading={isThisRejecting}
-                disabled={approveOrganizer.isPending || rejectOrganizer.isPending}
-                onClick={() => handleRejectOrganizer(org._id)}
-                classname="font-bold border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white text-sm px-4 py-2 h-auto"
-              />
-            </div>
-          </div>
-        )
-      })}
     </div>
   )
 }

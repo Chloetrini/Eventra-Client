@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import PageWrapper from "@/components/page-wrapper"
 import { useAuth } from "@/context/auth.context"
@@ -47,14 +48,13 @@ function ToggleSwitch({ checked, onCheckedChange }: Omit<ToggleSwitchProps, "lab
     >
       <span
         className={cn(
-          "absolute top-0.5  right-6 size-5 rounded-full bg-white shadow transition-transform",
+          "absolute top-0.5 right-6 size-5 rounded-full bg-white shadow transition-transform",
           checked ? "translate-x-5.5" : "translate-x-0.5"
         )}
       />
     </button>
   )
 }
-
 
 interface NumberStepperProps {
   value: number
@@ -247,16 +247,130 @@ function DeleteAdminDialog({ id, name }: { id: string; name: string }) {
   )
 }
 
+function PlatformSettingsSkeleton() {
+  return (
+    <PageWrapper className="flex flex-col gap-6 p-[20px]">
+      <div className="flex flex-col gap-2">
+        <Skeleton className="h-3 w-16" />
+        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-4 w-64" />
+      </div>
+
+      {/* Commission Rate Skeleton */}
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-5 w-36" />
+        </CardHeader>
+        <div className="border mx-4" />
+        <CardContent className="flex flex-col gap-2 pt-4">
+          <Skeleton className="h-3 w-28" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-9 w-24" />
+            <Skeleton className="h-9 w-16" />
+          </div>
+          <Skeleton className="h-3 w-80" />
+        </CardContent>
+      </Card>
+
+      {/* Platform Configuration Skeleton */}
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-5 w-44" />
+        </CardHeader>
+        <div className="border mx-4" />
+        <CardContent className="flex flex-col gap-6 pt-4">
+          <div className="flex flex-col gap-1.5">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-9 w-49.75" />
+            <Skeleton className="h-3 w-96" />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Skeleton className="h-3 w-40" />
+            <Skeleton className="h-9 w-49.75" />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <Skeleton className="h-4 w-36" />
+              <Skeleton className="h-3 w-64" />
+            </div>
+            <Skeleton className="h-6 w-11 rounded-full" />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-3 w-56" />
+            </div>
+            <Skeleton className="h-6 w-11 rounded-full" />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-48" />
+            </div>
+            <Skeleton className="h-6 w-11 rounded-full" />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Admin, Teams & Roles Skeleton */}
+      <Card size="sm">
+        <CardHeader className="flex items-center justify-between">
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-8 w-28" />
+        </CardHeader>
+        <CardContent className="overflow-x-auto p-0 mx-4">
+          <table className="w-full table-fixed">
+            <colgroup>
+              <col className="w-2/5" />
+              <col className="w-2/5" />
+              <col className="w-1/6" />
+              <col className="w-10" />
+            </colgroup>
+            <thead>
+              <tr className="border-t">
+                <th className="px-4 py-2"><Skeleton className="h-3 w-12" /></th>
+                <th className="px-4 py-2"><Skeleton className="h-3 w-12" /></th>
+                <th className="px-4 py-2"><Skeleton className="h-3 w-10" /></th>
+                <th className="px-4 py-2" />
+              </tr>
+            </thead>
+            <tbody>
+              {[1, 2, 3].map(i => (
+                <tr key={i} className="border-t border-border/50">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2.5">
+                      <Skeleton className="size-8 rounded-full" />
+                      <Skeleton className="h-4 w-28" />
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <Skeleton className="h-4 w-40" />
+                  </td>
+                  <td className="px-4 py-3">
+                    <Skeleton className="h-8 w-22" />
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <Skeleton className="size-6 ml-auto" />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
+    </PageWrapper>
+  )
+}
+
 export default function PlatformSettings() {
- 
   const { user, setUser } = useAuth()
-  // Owner-tier only — mirrors requireAdminTier('owner') on every
-  // /admin/settings/* route on the backend (see admin.routes.ts). A
-  // missing adminRole is treated as owner, same default the backend uses
-  // for admin accounts that predate this field.
   const isOwner = user?.role === "admin" && (user.adminRole ?? "owner") === "owner"
 
-  const { data: settings } = usePlatformSettings()
+  const { data: settings, isLoading: isSettingsLoading } = usePlatformSettings()
   const { mutate: updateSettings } = useUpdatePlatformSettings()
   const updateProfileMutation = useUpdateProfile()
   const queryClient = useQueryClient()
@@ -264,16 +378,13 @@ export default function PlatformSettings() {
   const [platformFee, setPlatformFee] = useState(3)
   const [payoutHold, setPayoutHold] = useState("")
 
-  // The fetched row is the source of truth; local state only tracks
-  // in-progress edits (the fee stepper + its own Save button) so a save
-  // elsewhere on the page can't clobber what the admin is mid-typing.
   useEffect(() => {
     if (!settings) return
     setPlatformFee(settings.platformFeePercent)
     setPayoutHold(settings.payoutHold)
   }, [settings])
 
-  const { data: admins = [] } = useAdminTeam()
+  const { data: admins = [], isLoading: isAdminsLoading } = useAdminTeam()
   const { mutate: updateRole } = useUpdateAdminRole()
 
   const saveFee = () => {
@@ -286,19 +397,6 @@ export default function PlatformSettings() {
     )
   }
 
-  // Per Chloe's explicit request, this Select no longer writes to
-  // PlatformSettings.currency (the sitewide default every viewer without
-  // their own preference falls back to) — it now writes this admin's own
-  // `currencyPreference` on their User account, the exact same call the
-  // old standalone "My display currency" card (CurrencyPreference
-  // component) made. That's why it's positioned inside "Platform
-  // Configuration" but behaves personally: changing it only changes what
-  // this admin sees across Overview/Revenue/Payouts/Refunds, not what any
-  // other admin or organizer sees. PlatformSettings.currency itself is
-  // left alone on the backend (still there, just no longer driven from
-  // this control) rather than removed, per the additive-only rule — if a
-  // true sitewide-default control is wanted again later it can be
-  // reintroduced deliberately rather than guessed at here.
   const onCurrencyChange = async (val: string) => {
     if (!val || updateProfileMutation.isPending) return
     try {
@@ -306,12 +404,6 @@ export default function PlatformSettings() {
         currencyPreference: val as CurrencyPreferenceValue,
       })
       setUser(updatedUser as User)
-      // This duplicates the shared CurrencyPreference component's own
-      // change handler (see its doc comment) instead of using the
-      // component directly, and it was missing the same fix: every price
-      // on the site is a separately cached React Query request, so without
-      // invalidating the cache here too, Overview/Revenue/Payouts/Refunds
-      // kept showing the old currency for this admin until a full reload.
       queryClient.invalidateQueries()
       toast.success("Currency updated")
     } catch (err) {
@@ -362,6 +454,10 @@ export default function PlatformSettings() {
     )
   }
 
+  if (isSettingsLoading || isAdminsLoading) {
+    return <PlatformSettingsSkeleton />
+  }
+
   return (
     <PageWrapper className="flex flex-col gap-6 p-[20px]">
       {/* Page heading */}
@@ -395,8 +491,7 @@ export default function PlatformSettings() {
         </CardContent>
       </Card>
 
-
-{/* // Platform configuration — currency & payout defaults  */}
+      {/* Platform configuration — currency & payout defaults */}
       <Card>
         <CardHeader>
           <CardTitle>Platform Configuration</CardTitle>
@@ -444,7 +539,6 @@ export default function PlatformSettings() {
             </Select>
           </div>
 
-
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm font-bold text-foreground">Auto-approve events</p>
@@ -452,7 +546,7 @@ export default function PlatformSettings() {
                 Skip manual review and publish events instantly
               </p>
             </div>
-            <ToggleSwitch checked={settings?.autoApproveEvents ?? false} onCheckedChange={onAutoApproveEventsChange}  />
+            <ToggleSwitch checked={settings?.autoApproveEvents ?? false} onCheckedChange={onAutoApproveEventsChange} />
           </div>
 
           <div className="flex items-center justify-between gap-4">
@@ -472,59 +566,10 @@ export default function PlatformSettings() {
                 Show a maintenance page to all users
               </p>
             </div>
-                       <ToggleSwitch checked={settings?.maintenanceMode ?? false} onCheckedChange={onMaintenanceModeChange} />
+            <ToggleSwitch checked={settings?.maintenanceMode ?? false} onCheckedChange={onMaintenanceModeChange} />
           </div>
         </CardContent>
       </Card>
-
-      {/* Notifications */}
-      {/* <Card>
-        <CardHeader>
-          <CardTitle>Notifications</CardTitle>
-        </CardHeader>
-        <div className="border mx-4"/>
-        <CardContent className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-bold text-foreground">Approvals</p>
-              <p className="text-xs text-muted-foreground">
-                New events, organizers, or promotions awaiting review
-              </p>
-            </div>
-            <ToggleSwitch
-              checked={adminToggles.approvals}
-              onCheckedChange={(checked) => handleAdminNotificationToggle("approvals", checked)}
-            />
-          </div>
-
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-bold text-foreground">Refunds</p>
-              <p className="text-xs text-muted-foreground">
-                A new refund request needs review
-              </p>
-            </div>
-            <ToggleSwitch
-              checked={adminToggles.refunds}
-              onCheckedChange={(checked) => handleAdminNotificationToggle("refunds", checked)}
-            />
-          </div>
-
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-bold text-foreground">Reports</p>
-              <p className="text-xs text-muted-foreground">
-                An attendee reported an event or organizer
-              </p>
-            </div>
-            <ToggleSwitch
-              checked={adminToggles.reports}
-              onCheckedChange={(checked) => handleAdminNotificationToggle("reports", checked)}
-            />
-          </div>
-        </CardContent>
-      </Card>  */}
-
 
       {/* Admin, Teams & Roles */}
       <Card size="sm">
@@ -567,7 +612,7 @@ export default function PlatformSettings() {
                   <td className="px-(--card-spacing) py-3">
                     {admin.role === "owner" ? (
                       <Badge className="w-22 items-center justify-center gap-1 border-transparent bg-[#E4F1EB] dark:bg-[#0F6E56]/15 text-[#0F6E56] dark:text-[#4ADE80]">
-                       <DotIcon className="stroke-9" />
+                        <DotIcon className="stroke-9" />
                         OWNER
                       </Badge>
                     ) : (

@@ -63,5 +63,5 @@ export async function fetchPayoutHistory(): Promise<PayoutHistoryResponse> {
 }
 
 export async function releaseEventPayout(params: { organizerId: string; eventId: string }): Promise<void> {
-  await api.post(`/admin/payouts/release/${params.organizerId}/${params.eventId}`, {})
+  await api.post(`/admin/payouts/${params.organizerId}/${params.eventId}/release`, {})
 }

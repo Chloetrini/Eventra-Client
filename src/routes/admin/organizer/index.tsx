@@ -1,39 +1,77 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import AdminOrganizerFilterBar, { type OrganizerStatusFilterOption } from "@/components/admin/organizer/AdminOrganizerFilterBar";
-import { Skeleton } from "@/components/ui/skeleton";
-import PageWrapper from "@/components/page-wrapper";
+import { useSearchParams } from "react-router";
 import { useAdminOrganizers } from "@/hooks/use-admin-organizers";
+import AdminOrganizerFilterBar, {
+  type OrganizerStatusFilterOption,
+} from "@/components/admin/organizer/AdminOrganizerFilterBar";
+import AdminOrganizerTable from "@/components/admin/organizer/AdminOrganizersTable";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import AdminEventsHeader from "@/components/admin/events/AdminEventsHeader";
 import AdminOrganizerHeader from "@/components/admin/organizer/AdminOrganizersHeader";
-import AdminOrganizersTable from "@/components/admin/organizer/AdminOrganizersTable";
+
+const PAGE_SIZE = 20;
 
 export default function AdminOrganizerPage() {
-  const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilter, setActiveFilter] = useState<OrganizerStatusFilterOption>("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchInput, setSearchInput] = useState(searchParams.get("q") ?? "");
 
-  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const activeFilter =
+    (searchParams.get("status") as OrganizerStatusFilterOption) ?? "all";
+  const searchQuery = searchParams.get("q") ?? "";
+  const [limit, setLimit] = useState(PAGE_SIZE);
+
+  // Debounce typing so search updates live after 300ms pause
   useEffect(() => {
-    const timeout = setTimeout(() => setDebouncedQuery(searchQuery), 300);
-    return () => clearTimeout(timeout);
-  }, [searchQuery]);
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams(searchParams);
+      if (searchInput.trim()) {
+        params.set("q", searchInput.trim());
+      } else {
+        params.delete("q");
+      }
+      setSearchParams(params, { replace: true });
+      setLimit(PAGE_SIZE);
+    }, 300);
 
-  // Rename query response to `data` to extract organizers array clearly
-  const { data, isLoading } = useAdminOrganizers(activeFilter, debouncedQuery);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
-  const organizersList = data?.organizers ?? [];
+  const { data, isLoading, isError } = useAdminOrganizers({
+    page: 1,
+    limit,
+    q: searchQuery || undefined,
+    status: activeFilter,
+  });
+
+  const organizersList = Array.isArray(data) ? data : data?.organizers ?? [];
+  const meta = !Array.isArray(data) ? data?.meta : undefined;
+
+  const handleFilterChange = (status: OrganizerStatusFilterOption) => {
+    const params = new URLSearchParams(searchParams);
+    if (status === "all") {
+      params.delete("status");
+    } else {
+      params.set("status", status);
+    }
+    setSearchParams(params);
+    setLimit(PAGE_SIZE);
+  };
+
+  const hasMore = meta
+    ? meta.hasMore ?? (meta.page * meta.limit < meta.totalCount)
+    : false;
 
   return (
-    <PageWrapper className="flex flex-col gap-6 p-[20px]">
-      <AdminOrganizerHeader 
-        organizers={organizersList} 
-      />
-
+    <div className="flex flex-col gap-6 p-5">
+      <AdminOrganizerHeader
+       organizers={organizersList}
+     />
       <AdminOrganizerFilterBar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
+        searchQuery={searchInput}
+        onSearchChange={setSearchInput}
         activeFilter={activeFilter}
-        onFilterChange={setActiveFilter}
+        onFilterChange={handleFilterChange}
       />
 
       {isLoading ? (
@@ -42,9 +80,26 @@ export default function AdminOrganizerPage() {
             <Skeleton key={i} className="h-12 w-full" />
           ))}
         </div>
+      ) : isError ? (
+        <p className="text-center py-12 text-sm text-destructive">
+          Failed to load organizers.
+        </p>
       ) : (
-        <AdminOrganizersTable organizers={organizersList} />
+        <>
+          <AdminOrganizerTable organizers={organizersList} />
+
+          {hasMore && (
+            <div className="flex justify-center mt-4">
+              <Button
+                variant="outline"
+                onClick={() => setLimit((l) => l + PAGE_SIZE)}
+              >
+                Load more
+              </Button>
+            </div>
+          )}
+        </>
       )}
-    </PageWrapper>
+    </div>
   );
 }

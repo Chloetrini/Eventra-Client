@@ -10,8 +10,7 @@ interface RawAdminEventOrganizer {
   organizerProfile?: { businessName?: string; approvalStatus?: string };
 }
 
-// Raw shape of one row from GET /admin/events, as returned by
-// listEventsForAdmin (admin.controller.ts).
+// Raw shape of one row from GET /admin/events
 interface RawAdminEventListItem {
   _id: string;
   title?: string;
@@ -26,8 +25,6 @@ interface RawAdminEventListItem {
   organizer?: RawAdminEventOrganizer;
 }
 
-// Adds the fields only GET /admin/events/:id returns, as returned by
-// getEventDetailForAdmin.
 interface RawAdminEventDetail extends RawAdminEventListItem {
   description?: string;
   coverImage?: string;
@@ -39,6 +36,24 @@ interface RawAdminEventDetail extends RawAdminEventListItem {
   flagReason?: string;
   category?: { _id: string; name: string };
   ticketTypes: { _id: string; name: string; price: number; quantity: number }[];
+}
+
+export interface FetchAdminEventsParams {
+  status?: StatusFilterOption;
+  tab?: StatusFilterOption;
+  q?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface AdminEventsResponse {
+  events: AdminEvent[];
+  meta?: {
+    totalCount: number;
+    page: number;
+    limit: number;
+    hasMore?: boolean;
+  };
 }
 
 function initialsFrom(name: string): string {
@@ -57,11 +72,6 @@ function organizerDisplayName(organizer?: RawAdminEventOrganizer): string {
   return organizer?.organizerProfile?.businessName ?? organizer?.fullname ?? "Unknown organizer";
 }
 
-// Mirrors the priority the table's StatusBadge is built around — flagged
-// wins over everything else (a live, approved event can still be under
-// review), and PAST is derived from startDate client-side since the
-// backend's 'past' tab filter (endDate < now) isn't its own status value
-// on the event itself.
 function deriveStatus(raw: RawAdminEventListItem): AdminEventStatus {
   if (raw.flagged) return "FLAGGED";
   switch (raw.status) {
@@ -77,9 +87,6 @@ function deriveStatus(raw: RawAdminEventListItem): AdminEventStatus {
     case "postponed":
       return raw.startDate && new Date(raw.startDate) < new Date() ? "PAST" : "LIVE";
     default:
-      // 'removed' and anything else not modeled in AdminEventStatus falls
-      // through to the table's default StatusBadge branch, which just
-      // renders the raw status string uppercased instead of crashing.
       return raw.status.toUpperCase() as AdminEventStatus;
   }
 }
@@ -87,7 +94,7 @@ function deriveStatus(raw: RawAdminEventListItem): AdminEventStatus {
 function mapListItem(raw: RawAdminEventListItem): AdminEvent {
   const organizerName = organizerDisplayName(raw.organizer);
   return {
-   _id: raw._id,
+    _id: raw._id,
     title: raw.title ?? "Untitled event",
     slug: raw.slug,
     organizerName,
@@ -101,7 +108,7 @@ function mapListItem(raw: RawAdminEventListItem): AdminEvent {
     soldCount: raw.ticketsSoldCount,
     totalCapacity: raw.capacity,
     status: deriveStatus(raw),
-    createdAt: raw.createdAt
+    createdAt: raw.createdAt,
   };
 }
 
@@ -142,20 +149,57 @@ function mapDetail(raw: RawAdminEventDetail): AdminEvent {
   return { ...base, details };
 }
 
-export async function fetchAdminEvents(params: { tab?: StatusFilterOption; q?: string } = {}): Promise<AdminEvent[]> {
-  const query = new URLSearchParams({ limit: "100" });
-  if (params.tab && params.tab !== "all") query.set("tab", params.tab);
-  if (params.q) query.set("q", params.q);
+export async function fetchAdminEvents(
+  params: FetchAdminEventsParams = {}
+): Promise<AdminEventsResponse> {
+  const activeStatus = params.status ?? params.tab;
+  const page = params.page ?? 1;
+  const limit = params.limit ?? 20;
+
+  const query = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  if (activeStatus && activeStatus !== "all") {
+    query.set("tab", activeStatus);
+  }
+  if (params.q) {
+    query.set("q", params.q);
+  }
 
   const res = await api.get(`/admin/events?${query.toString()}`);
-  const body = res.body as { events: RawAdminEventListItem[] };
-  return body.events.map(mapListItem);
+  const body = res.body as {
+    events: RawAdminEventListItem[];
+    totalCount?: number;
+    meta?: {
+      totalCount: number;
+      page: number;
+      limit: number;
+      hasMore?: boolean;
+    };
+  };
+
+  const events = body.events.map(mapListItem);
+
+  const meta = body.meta ?? (body.totalCount !== undefined
+    ? {
+        totalCount: body.totalCount,
+        page,
+        limit,
+        hasMore: page * limit < body.totalCount,
+      }
+    : undefined);
+
+  return { events, meta };
 }
+
 export async function fetchPendingAdminEvents(): Promise<AdminEvent[]> {
-  const res = await api.get("/admin/events/pending")
+  const res = await api.get("/admin/events/pending");
   const body = res.body as { events: RawAdminEventListItem[] };
   return body.events.map(mapListItem);
 }
+
 export async function fetchAdminEventDetail(id: string): Promise<AdminEvent> {
   const res = await api.get(`/admin/events/${id}`);
   return mapDetail(res.body as RawAdminEventDetail);
@@ -177,10 +221,10 @@ export async function approveEvent(id: string): Promise<void> {
   await api.patch(`/admin/events/${id}/approve`, {});
 }
 
-
 export async function rejectEvent(id: string, reason?: string): Promise<void> {
   await api.patch(`/admin/events/${id}/reject`, { reason });
 }
+
 export async function suspendEvent(id: string, reason?: string): Promise<void> {
   await api.patch(`/admin/events/${id}/suspend`, { reason });
 }

@@ -13,26 +13,45 @@ import {
 } from "@/lib/api/admin-events";
 import type { StatusFilterOption } from "@/components/admin/events/AdminEventsFilterBar";
 
+export interface FetchAdminEventsParams {
+  status?: StatusFilterOption;
+  tab?: StatusFilterOption;
+  q?: string;
+  page?: number;
+  limit?: number;
+}
 
 export const adminEventsKeys = {
   all: ["admin", "events"] as const,
   lists: () => [...adminEventsKeys.all, "list"] as const,
-  list: (tab: StatusFilterOption, q: string) => [...adminEventsKeys.all, "list", tab, q] as const,
+  list: (params: FetchAdminEventsParams) =>
+    [...adminEventsKeys.lists(), params] as const,
   detail: (id: string) => [...adminEventsKeys.all, "detail", id] as const,
 };
 
-export function useAdminEvents(tab: StatusFilterOption, q: string) {
+export function useAdminEvents(params: FetchAdminEventsParams = {}) {
+  const { status, tab, q = "", page = 1, limit = 20 } = params;
+  const activeStatus = status ?? tab ?? "all";
+
   return useQuery({
-    queryKey: adminEventsKeys.list(tab, q),
-    queryFn: () => fetchAdminEvents({ tab, q: q || undefined }),
+    queryKey: adminEventsKeys.list({ status: activeStatus, q, page, limit }),
+    queryFn: () =>
+      fetchAdminEvents({
+        status: activeStatus,
+        q: q || undefined,
+        page,
+        limit,
+      }),
   });
 }
+
 export function usePendingAdminEvents() {
   return useQuery({
     queryKey: ["admin", "events", "pending"],
     queryFn: fetchPendingAdminEvents,
-  })
+  });
 }
+
 export function useAdminEventDetail(id: string | undefined) {
   return useQuery({
     queryKey: adminEventsKeys.detail(id as string),

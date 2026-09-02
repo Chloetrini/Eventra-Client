@@ -8,6 +8,7 @@ interface AdminEventsFilterBarProps {
   onSearchChange: (query: string) => void;
   activeFilter: StatusFilterOption;
   onFilterChange: (filter: StatusFilterOption) => void;
+  onSubmit?: (e: React.FormEvent) => void; // Add this line
 }
 
 const FILTER_TABS: { label: string; value: StatusFilterOption }[] = [
@@ -47,7 +48,7 @@ export default function AdminEventsFilterBar({
             <button
               key={tab.value}
               onClick={() => onFilterChange(tab.value)}
-              className={`rounded-lg px-4 py-1.5 text-[15px] font-geist font-[700] transition-all ${
+              className={`rounded-lg px-4 py-1 text-[15px] font-geist font-[700] transition-all ${
                 isActive
                   ? 'bg-foreground text-background shadow-xs'
                   : 'border border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground'

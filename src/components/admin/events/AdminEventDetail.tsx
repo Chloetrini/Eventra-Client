@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Flag, ArrowRight, ArrowLeft } from "lucide-react";
 import type { AdminEvent } from "@/types/admin-event";
 import { StatusBadge } from "./AdminEventsTable";
-import { UI_ASSETS } from "@/lib/assets";
 import {
   Dialog,
   DialogContent,
@@ -12,29 +11,98 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import PageWrapper from "@/components/page-wrapper";
+import ActionBtn from "@/components/ui/action-btn";
+import {
+  useApproveEvent,
+  useRejectEvent,
+  useSuspendEvent,
+  useUnsuspendEvent,
+} from "@/hooks/use-admin-events";
+import { toast } from "react-toastify";
 
 interface AdminEventDetailProps {
   event: AdminEvent;
   onBack?: () => void;
   onFlag?: (eventId: string) => void;
-  onRemove?: (eventId: string) => void;
 }
 
 export default function AdminEventDetail({
   event,
   onBack,
   onFlag,
-  onRemove,
 }: AdminEventDetailProps) {
-  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const approveEvent = useApproveEvent();
+  const rejectEvent = useRejectEvent();
+  const suspendEvent = useSuspendEvent();
+  const unsuspendEvent = useUnsuspendEvent();
 
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [declineReason, setDeclineReason] = useState("");
 
-  const handleConfirmRemove = () => {
-    setIsRemoveModalOpen(false);
-    onRemove?.(event._id);
+  const handleApproveEvent = (eventId: string) => {
+    approveEvent.mutate(eventId, {
+      onSuccess: () => toast.success("Event approved"),
+      onError: (err) =>
+        toast.error(err instanceof Error ? err.message : "Could not approve this event"),
+    });
   };
 
-  const isFlagged = event.status === "FLAGGED";
+  const handleConfirmRejectEvent = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!declineReason.trim()) {
+      toast.error("Please provide a reason for rejection");
+      return;
+    }
+
+    rejectEvent.mutate(
+      { id: event._id, reason: declineReason.trim() },
+      {
+        onSuccess: () => {
+          toast.success("Event rejected");
+          setIsRejectModalOpen(false);
+          setDeclineReason("");
+        },
+        onError: (err) =>
+          toast.error(err instanceof Error ? err.message : "Could not reject this event"),
+      }
+    );
+  };
+
+  // Status checks
+  const statusStr = String(event.status).toUpperCase();
+  const isFreeEvent = event.type === "FREE";
+  
+  // Free events treat state as approved by default
+  const isApprovedOrLive = statusStr === "APPROVED" || statusStr === "LIVE" || isFreeEvent;
+  const isSuspended = statusStr === "SUSPENDED";
+  const isFlagged = statusStr === "FLAGGED";
+  const isPending = statusStr === "PENDING" && !isFreeEvent;
+  const isRejected = statusStr === "REJECTED";
+
+  // Active action loaders
+  const isThisApproving = approveEvent.isPending && approveEvent.variables === event._id;
+  const isThisDeclining = rejectEvent.isPending && rejectEvent.variables?.id === event._id;
+  const isThisSuspending = suspendEvent.isPending && suspendEvent.variables?.id === event._id;
+  const isThisUnsuspending = unsuspendEvent.isPending && unsuspendEvent.variables === event._id;
+
+  const handleToggleSuspend = () => {
+    if (isSuspended) {
+      unsuspendEvent.mutate(event._id, {
+        onSuccess: () => toast.success("Event unsuspended"),
+        onError: (err) =>
+          toast.error(err instanceof Error ? err.message : "Could not unsuspend event"),
+      });
+    } else {
+      suspendEvent.mutate(
+        { id: event._id },
+        {
+          onSuccess: () => toast.success("Event suspended"),
+          onError: (err) =>
+            toast.error(err instanceof Error ? err.message : "Could not suspend event"),
+        }
+      );
+    }
+  };
 
   return (
     <PageWrapper className="flex flex-col gap-6 p-[20px]">
@@ -59,7 +127,7 @@ export default function AdminEventDetail({
           >
             {event.title}
           </h1>
-          <StatusBadge status={event.status} />
+          <StatusBadge status={isFreeEvent ? "APPROVED" : event.status} />
         </div>
         <p className="text-sm text-muted-foreground font-medium">
           By {event.organizerName}
@@ -68,13 +136,10 @@ export default function AdminEventDetail({
 
       {/* Hero Banner Card */}
       <div className="relative overflow-hidden rounded-2xl bg-slate-950 p-6 sm:p-10 text-white shadow-md pt-28.75">
-        {/* Background Image / Overlay */}
         <div
           className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity"
           style={{
-            backgroundImage: `url(${
-              event.details?.bannerImage 
-            })`,
+            backgroundImage: `url(${event.details?.bannerImage})`,
           }}
         />
         <div className="absolute inset-0 bg-linear-to-r from-slate-950 via-slate-950/80 to-transparent" />
@@ -84,7 +149,7 @@ export default function AdminEventDetail({
             {event.details?.category}
           </p>
           <h2 className="mt-2 font-grotesk text-3xl sm:text-4xl font-bold tracking-tight text-white">
-            {event.title}s
+            {event.title}
           </h2>
           <p className="mt-3 text-sm sm:text-base font-medium text-slate-200">
             {event.details?.formattedDate} - {event.details?.venue}
@@ -92,11 +157,10 @@ export default function AdminEventDetail({
         </div>
       </div>
 
-      {/* Main Content Grid: 2 Columns */}
+      {/* Main Content Grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {/* Left Column (7 cols) */}
+        {/* Left Column */}
         <div className="flex flex-col gap-6 lg:col-span-7">
-          {/* About this event Card */}
           <div className="rounded-2xl border border-border bg-card p-6 shadow-md">
             <h3 className="font-grotesk text-base font-bold text-foreground">
               About this event
@@ -106,7 +170,6 @@ export default function AdminEventDetail({
             </p>
           </div>
 
-          {/* Ticket Types Table Card */}
           <div className="rounded-2xl border border-border bg-card p-6 shadow-md">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
@@ -139,8 +202,8 @@ export default function AdminEventDetail({
           </div>
         </div>
 
+        {/* Right Column */}
         <div className="flex flex-col gap-6 lg:col-span-5">
-          {/* Organizer Card */}
           <div className="rounded-2xl border border-border bg-card p-6 shadow-md">
             <h3 className="font-grotesk text-base font-bold text-foreground">
               Organizer
@@ -158,54 +221,43 @@ export default function AdminEventDetail({
                 </p>
               </div>
             </div>
-            <button className="mt-5 flex w-[70%] items-center justify-center gap-2 rounded-lg border border-border bg-card py-2.5 text-sm font-semibold text-foreground hover:bg-accent transition-colors cursor-pointer font-geist ites">
+            <button className="mt-5 flex w-[70%] items-center justify-center gap-2 rounded-lg border border-border bg-card py-2.5 text-sm font-semibold text-foreground hover:bg-accent transition-colors cursor-pointer font-geist">
               View organizer
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </div>
 
-          {/* Details Card */}
           <div className="rounded-2xl border border-border bg-card p-6 shadow-md">
             <h3 className="font-grotesk text-base font-bold text-foreground">
               Details
             </h3>
             <div className="mt-4 divide-y divide-border/60 text-sm">
               <div className="flex justify-between py-2.5">
-                <span className="text-muted-foreground font-space text-xs">
-                  Date
-                </span>
+                <span className="text-muted-foreground font-space text-xs">Date</span>
                 <span className="font-semibold text-foreground text-right">
                   {event.details?.formattedDate}
                 </span>
               </div>
               <div className="flex justify-between py-2.5">
-                <span className="text-muted-foreground font-space text-xs">
-                  Venue
-                </span>
+                <span className="text-muted-foreground font-space text-xs">Venue</span>
                 <span className="font-semibold text-foreground text-right">
                   {event.details?.venue}
                 </span>
               </div>
               <div className="flex justify-between py-2.5">
-                <span className="text-muted-foreground font-space text-xs">
-                  Capacity
-                </span>
+                <span className="text-muted-foreground font-space text-xs">Capacity</span>
                 <span className="font-space font-semibold text-foreground text-right">
                   {event.details?.capacity}
                 </span>
               </div>
               <div className="flex justify-between py-2.5">
-                <span className="text-muted-foreground font-space text-xs">
-                  Age policy
-                </span>
+                <span className="text-muted-foreground font-space text-xs">Age policy</span>
                 <span className="font-space font-semibold text-foreground text-right">
                   {event.details?.agePolicy}
                 </span>
               </div>
               <div className="flex justify-between py-2.5">
-                <span className="text-muted-foreground font-space text-xs">
-                  Refund policy
-                </span>
+                <span className="text-muted-foreground font-space text-xs">Refund policy</span>
                 <span className="font-semibold text-foreground text-right">
                   {event.details?.refundPolicy}
                 </span>
@@ -216,59 +268,121 @@ export default function AdminEventDetail({
       </div>
 
       {/* Bottom Action Footer */}
-      <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-t border-border pt-6">
-        <p className="text-sm text-muted-foreground font-medium">
-          Review the details before you decide.
-        </p>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => onFlag?.(event._id)}
-            className={`flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-bold transition-colors cursor-pointer shadow-md ${
-              isFlagged
-                ? "border-[#DC2626] bg-[#FCE8E6] dark:bg-[#DC2626]/20 text-[#DC2626]"
-                : "border-border bg-card text-foreground hover:bg-accent"
-            }`}
-          >
-            <Flag className={`h-4 w-4 ${isFlagged ? "text-[#DC2626]" : ""}`} />
-            {isFlagged ? "Unflag" : "Flag"}
-          </button>
-          <button
-            onClick={() => setIsRemoveModalOpen(true)}
-            className="flex items-center gap-2 rounded-xl bg-[#DC2626] hover:bg-[#B91C1C] px-5 py-2.5 text-sm font-bold text-white transition-colors cursor-pointer shadow-md"
-          >
-            Remove
-          </button>
+      {!isRejected && (
+        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-t border-border pt-6">
+          <p className="text-sm text-muted-foreground font-medium">
+            Review the details before you decide.
+          </p>
+
+          <div className="flex items-center gap-3">
+            {/* Flag Button - Only shown when approved/live or suspended */}
+            {(isApprovedOrLive || isSuspended || isFlagged) && (
+              <button
+                onClick={() => onFlag?.(event._id)}
+                className={`flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-bold transition-colors cursor-pointer shadow-md ${
+                  isFlagged
+                    ? "border-[#DC2626] bg-[#FCE8E6] dark:bg-[#DC2626]/20 text-[#DC2626]"
+                    : "border-border bg-card text-foreground hover:bg-accent"
+                }`}
+              >
+                <Flag className={`h-4 w-4 ${isFlagged ? "text-[#DC2626]" : ""}`} />
+                {isFlagged ? "Unflag" : "Flag"}
+              </button>
+            )}
+
+            {/* Paid & Pending Approval Actions */}
+            {isPending && (
+              <div className="flex items-center gap-2">
+                <ActionBtn
+                  type="button"
+                  text="Approve"
+                  loading={isThisApproving}
+                  disabled={approveEvent.isPending || rejectEvent.isPending}
+                  onClick={() => handleApproveEvent(event._id)}
+                  classname="bg-[#0F6E56] hover:bg-[#095341] text-white text-xs sm:text-sm px-4 py-2.5 h-auto shrink-0 rounded-xl font-bold"
+                />
+                <ActionBtn
+                  type="button"
+                  text="Reject"
+                  variant="outline"
+                  loading={isThisDeclining}
+                  disabled={approveEvent.isPending || rejectEvent.isPending}
+                  onClick={() => setIsRejectModalOpen(true)}
+                  classname="border-[#BE2525] text-[#BE2525] hover:bg-[#BE2525] hover:text-white text-xs sm:text-sm px-4 py-2.5 h-auto shrink-0 rounded-xl font-bold"
+                />
+              </div>
+            )}
+
+            {/* Free Event Badge Indicator */}
+            {isFreeEvent && !isSuspended && (
+              <button
+                disabled
+                className="bg-[#0F6E56]/15 text-[#0F6E56] dark:text-[#4ADE80] border border-[#0F6E56]/30 px-4 py-2.5 text-sm font-bold rounded-xl cursor-default"
+              >
+                Approved (Free Event)
+              </button>
+            )}
+
+            {/* Suspend / Unsuspend Toggle */}
+            {(isApprovedOrLive || isSuspended) && (
+              <ActionBtn
+                type="button"
+                text={isSuspended ? "Unsuspend event" : "Suspend event"}
+                loading={isThisSuspending || isThisUnsuspending}
+                disabled={suspendEvent.isPending || unsuspendEvent.isPending}
+                onClick={handleToggleSuspend}
+                variant="outline"
+                classname={`text-xs sm:text-sm px-4 py-2.5 h-auto shrink-0 border rounded-xl font-bold transition-colors ${
+                  isSuspended
+                    ? "border-[#0F6E56] text-[#0F6E56] dark:text-[#4ADE80] hover:bg-[#0F6E56]/10"
+                    : "border-[#D97706] text-[#D97706] hover:bg-[#D97706]/10"
+                }`}
+              />
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Remove Event Confirmation Modal */}
-      <Dialog open={isRemoveModalOpen} onOpenChange={setIsRemoveModalOpen}>
+      {/* Reject Event Modal with Reason Field */}
+      <Dialog open={isRejectModalOpen} onOpenChange={setIsRejectModalOpen}>
         <DialogContent className="max-w-md p-6">
-          <DialogHeader className="space-y-2 items-center">
-            <DialogTitle className="font-grotesk text-lg font-bold text-foreground pt-5">
-              Are you sure you want to remove event?
-            </DialogTitle>
-            <DialogDescription className="text-sm text-muted-foreground font-medium">
-              This action cannot be reversed
-            </DialogDescription>
-          </DialogHeader>
+          <form onSubmit={handleConfirmRejectEvent}>
+            <DialogHeader className="space-y-2">
+              <DialogTitle className="font-grotesk text-lg font-bold text-foreground">
+                Reject Event
+              </DialogTitle>
+              <DialogDescription className="text-sm text-muted-foreground">
+                Please provide a reason for rejecting this event.
+              </DialogDescription>
+            </DialogHeader>
 
-          <DialogFooter className="mt-6 flex items-center justify-end gap-3 bg-white">
-            <button
-              type="button"
-              onClick={() => setIsRemoveModalOpen(false)}
-              className="rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground hover:bg-accent cursor-pointer transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleConfirmRemove}
-              className="rounded-xl bg-[#DC2626] hover:bg-[#B91C1C] px-4 py-2 text-sm font-bold text-white cursor-pointer transition-colors shadow-md"
-            >
-              Remove
-            </button>
-          </DialogFooter>
+            <div className="mt-4">
+              <textarea
+                value={declineReason}
+                onChange={(e) => setDeclineReason(e.target.value)}
+                placeholder="Enter rejection reason..."
+                rows={4}
+                className="w-full rounded-xl border border-border bg-background p-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#BE2525]"
+                required
+              />
+            </div>
+
+            <DialogFooter className="mt-6 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setIsRejectModalOpen(false)}
+                className="rounded-xl border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground hover:bg-accent cursor-pointer transition-colors"
+              >
+                Cancel
+              </button>
+              <ActionBtn
+                type="submit"
+                text="Confirm Rejection"
+                loading={rejectEvent.isPending}
+                classname="bg-[#BE2525] hover:bg-[#A11D1D] text-white text-sm px-4 py-2 h-auto rounded-xl font-bold"
+              />
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </PageWrapper>

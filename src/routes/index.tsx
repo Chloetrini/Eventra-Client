@@ -80,6 +80,34 @@ const routes = [
             },
           },
           {
+            path: "privacy",
+            handle: {
+              seo: {
+                title: "Privacy Policy",
+                description: "View our privacy policy.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/main/privacy");
+              return { Component };
+            },
+          },
+          {
+            path: "terms",
+            handle: {
+              seo: {
+                title: "Terms of Service",
+                description: "View our terms of service.",
+              },
+            },
+            lazy: async () => {
+              const { default: Component } =
+                await import("@/routes/main/terms");
+              return { Component };
+            },
+          },
+          {
             path: "events/:slug",
             handle: {
               seo: {

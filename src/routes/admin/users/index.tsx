@@ -59,19 +59,19 @@ export default function AdminUsersPage() {
   return (
     <PageWrapper className="flex flex-col gap-6 p-[20px]">
       <div>
-        <p className="text-[16px] min-[400px]:text-sm lg:text-[16px] font-medium tracking-wide uppercase text-[#0A4F41] dark:text-[#4ADE80]">
+        <p className="text-[16px] min-[400px]:text-sm lg:text-[17px] font-[400] tracking-wide font-geist uppercase text-[#0F6E56] dark:text-[#4ADE80]">
           Manage
         </p>
-        <h1 className="text-[34px] leading-[40px] font-grotesk font-semibold text-foreground mt-1">
+        <h1 className="text-[28px] leading-[40px] font-grotesk font-[700] text-foreground mt-1">
           Users
         </h1>
-        <p className="text-[16px] leading-[26px] font-medium min-[400px]:text-sm lg:text-[16px] text-muted-foreground mt-1">
+        <p className="text-[16px] leading-[26px] font-[400] font-geist min-[400px]:text-sm lg:text-[16px] text-muted-foreground mt-1">
           Attendee accounts across the platform.
         </p>
       </div>
 
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
-        <form onSubmit={handleSearchSubmit} className="relative w-full lg:w-72">
+        <form onSubmit={handleSearchSubmit} className="relative w-full ">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <input
             type="text"
@@ -87,9 +87,9 @@ export default function AdminUsersPage() {
               key={filter.value}
               onClick={() => handleFilterChange(filter.value)}
               className={cn(
-                "px-4 py-1.5 rounded-[7px] font-medium border transition-colors shrink-0",
+                "px-4 py-1.5 rounded-[30px] font-medium border transition-colors shrink-0 font[300]",
                 activeFilter === filter.value
-                  ? "bg-[#0A4F41] text-[#FFFFFF] border-[#0A4F41] font-bold text-[15px] dark:bg-[#0F6E56] dark:border-[#0F6E56]"
+                  ? "bg-[#0A4F41] text-[#FFFFFF] text-[16px] font-geist border-[#0A4F41] dark:bg-[#0F6E56] dark:border-[#0F6E56]"
                   : "bg-card text-[16px] text-muted-foreground border border-border"
               )}
             >

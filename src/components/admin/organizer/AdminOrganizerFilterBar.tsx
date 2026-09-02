@@ -28,7 +28,7 @@ export default function AdminOrganizerFilterBar({
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       {/* Search Input */}
-      <div className="relative flex-1 max-w-md">
+      <div className="relative flex-1 ">
         <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#B5B5B5]" />
         <input
           type="text"
@@ -47,7 +47,7 @@ export default function AdminOrganizerFilterBar({
             <button
               key={tab.value}
               onClick={() => onFilterChange(tab.value)}
-              className={`rounded-lg px-4 py-1.5 text-xs font-semibold transition-all ${
+              className={`rounded-lg px-4 py-1 text-[15px] font-geist font-[700] transition-all ${
                 isActive
                   ? 'bg-foreground text-background shadow-xs'
                   : 'border border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground'

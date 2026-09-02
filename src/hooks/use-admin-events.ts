@@ -8,6 +8,8 @@ import {
   approveEvent,
   rejectEvent,
   fetchPendingAdminEvents,
+  unsuspendEvent,
+  suspendEvent,
 } from "@/lib/api/admin-events";
 import type { StatusFilterOption } from "@/components/admin/events/AdminEventsFilterBar";
 
@@ -87,3 +89,27 @@ export function useRejectEvent() {
   });
 }
 
+// Hook: Suspend event with optional reason
+export function useSuspendEvent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
+      suspendEvent(id, reason),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: adminEventsKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: adminEventsKeys.lists() });
+    },
+  });
+}
+
+// Hook: Unsuspend event
+export function useUnsuspendEvent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => unsuspendEvent(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: adminEventsKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: adminEventsKeys.lists() });
+    },
+  });
+}

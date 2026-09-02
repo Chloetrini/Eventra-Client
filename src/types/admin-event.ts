@@ -1,4 +1,14 @@
-export type AdminEventStatus = 'LIVE' | 'PENDING' | 'FLAGGED' | 'PAST' | 'REJECTED' | 'DRAFT' | 'CANCELLED';
+export type AdminEventStatus =
+  | 'LIVE'
+  | 'PENDING'
+  | 'APPROVED'
+  | 'SUSPENDED'
+  | 'FLAGGED'
+  | 'PAST'
+  | 'REJECTED'
+  | 'DRAFT'
+  | 'CANCELLED';
+
 export type AdminPaymentType = 'PAID' | 'FREE';
 
 export interface AdminEventTicketType {
@@ -33,7 +43,7 @@ export interface AdminEvent {
   _id: string;
   title: string;
   slug: string;
- createdAt: string
+  createdAt: string;
   organizerName: string;
   organizerInitials: string;
   type: AdminPaymentType;

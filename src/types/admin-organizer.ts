@@ -31,7 +31,8 @@ export interface AdminOrganizerDetailsData {
 export interface AdminOrganizer {
   _id: string;
   name: string;
-  email: string;
+  email: string;  
+  isSuspended: boolean;
   createdAt: string
   category?:string;
   initials: string;

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { UI_ASSETS } from "@/lib/assets";
 import { Format, shortEventNo } from "@/lib/utils";
 import { Link, useNavigate } from "react-router";
 import type { Event } from "@/types/event-types";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 
 interface StackedCardCarouselProps {
   events: Event[];
@@ -12,152 +12,165 @@ interface StackedCardCarouselProps {
 export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
   events,
 }) => {
-  const DISPLAY_EVENTS = events.slice(0, 3);
   const navigate = useNavigate();
-
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
 
-  // Used to advance activeIndex through a 400ms setTimeout inside a 3000ms
-  // interval — that 400ms delay didn't correspond to anything (the
-  // `animating` flag it toggled was never actually read anywhere in the
-  // JSX below), so all it did was push the front card's crossfade start
-  // 400ms late every single cycle, out of sync with the back/middle
-  // cards' position swap (which reacts the instant activeIndex changes).
-  // Advancing on every tick, right when the interval fires, removes that
-  // dead delay so both layers move together.
+  // Memoize DISPLAY_EVENTS to preserve array identity across renders
+  const DISPLAY_EVENTS = useMemo(() => events.slice(0, 3), [events]);
+  const total = DISPLAY_EVENTS.length;
+
+  const handleNext = useCallback(() => {
+    setActiveIndex((prev) => (prev + 1) % total);
+  }, [total]);
+
+  // Infinite timer loop setup
   useEffect(() => {
-    if (DISPLAY_EVENTS.length === 0) return;
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % DISPLAY_EVENTS.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [DISPLAY_EVENTS.length]);
+    if (total <= 1 || isHovered) return;
 
-  if (DISPLAY_EVENTS.length === 0) return null;
+    const interval = setInterval(() => {
+      handleNext();
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, [total, isHovered, handleNext]);
+
+  if (total === 0) return null;
+
+  const handleDragEnd = (_: unknown, info: PanInfo) => {
+    if (info.offset.x < -40 || info.offset.x > 40) {
+      handleNext();
+    }
+  };
+
+  // Compute card positions safely based on current activeIndex
+  const frontEvent = DISPLAY_EVENTS[activeIndex % total];
+  const middleEvent = total > 1 ? DISPLAY_EVENTS[(activeIndex + 1) % total] : null;
+  const backEvent = total > 2 ? DISPLAY_EVENTS[(activeIndex + 2) % total] : null;
 
   return (
-    <div className="relative w-full h-95">
-      {DISPLAY_EVENTS.map((event, idx) => {
-        const position =
-          (idx - activeIndex + DISPLAY_EVENTS.length) % DISPLAY_EVENTS.length;
-        // position 0 = front, 1 = middle, 2 = back
-        const isFront = position === 0;
-        const isMiddle = position === 1;
-        const isBack = position === 2;
-        return (
-          <div
-            key={event.slug}
-            onClick={() => navigate(`/events/${event.slug}`)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                navigate(`/events/${event.slug}`);
-              }
-            }}
-            className="absolute w-full bg-white rounded-2xl overflow-hidden shadow-xl transition-all duration-500 ease-in-out cursor-pointer"
-            style={{
-              top: isMiddle ? "8px" : "16px",
-              right: isMiddle ? "-6px" : "-12px",
-              zIndex: isMiddle ? 20 : 10,
-              transform: isMiddle ? "scale(0.97)" : "scale(0.94)",
-              transformOrigin: "top center",
-              transition: "all 600ms cubic-bezier(0.4, 0, 0.2, 1)",
-            }}
-          >
-            <CardContent event={event} />
-          </div>
-        );
-      })}
+    <div
+      className="relative w-full h-[380px] select-none"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Back Card */}
+      {backEvent && (
+        <div
+          key={`back-${backEvent.slug}`}
+          className="absolute w-full bg-white dark:bg-card border border-border rounded-2xl overflow-hidden shadow-md pointer-events-none transition-all duration-500 ease-out"
+          style={{
+            top: "16px",
+            right: "-12px",
+            zIndex: 10,
+            transform: "scale(0.94)",
+            transformOrigin: "top center",
+            opacity: 0.75,
+          }}
+        >
+          <CardContent event={backEvent} />
+        </div>
+      )}
 
-      {/* Front card — animated slide. mode="wait" (removed) makes
-          AnimatePresence run the outgoing card's whole exit animation
-          before even starting the incoming card's enter — a strictly
-          sequential slide-out-then-slide-in, which is what actually read
-          as "not smooth" (a visible pause between the two). Dropping it
-          back to the default (both animate at the same time) gives the
-          usual crossfade-while-sliding carousel look instead. */}
-      <AnimatePresence>
+      {/* Middle Card */}
+      {middleEvent && (
+        <div
+          key={`middle-${middleEvent.slug}`}
+          className="absolute w-full bg-white dark:bg-card border border-border rounded-2xl overflow-hidden shadow-lg pointer-events-none transition-all duration-500 ease-out"
+          style={{
+            top: "8px",
+            right: "-6px",
+            zIndex: 20,
+            transform: "scale(0.97)",
+            transformOrigin: "top center",
+            opacity: 0.9,
+          }}
+        >
+          <CardContent event={middleEvent} />
+        </div>
+      )}
+
+      {/* Front Active Card (Slide Transition) */}
+      <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
-          key={activeIndex}
-          onClick={() => navigate(`/events/${DISPLAY_EVENTS[activeIndex].slug}`)}
+          key={frontEvent.slug}
+          onClick={() => navigate(`/events/${frontEvent.slug}`)}
           role="button"
           tabIndex={0}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.15}
+          onDragEnd={handleDragEnd}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
-              navigate(`/events/${DISPLAY_EVENTS[activeIndex].slug}`);
+              navigate(`/events/${frontEvent.slug}`);
             }
           }}
-          className="absolute w-full bg-white rounded-2xl overflow-hidden shadow-2xl cursor-pointer"
+          className="absolute w-full bg-white dark:bg-card border border-border rounded-2xl overflow-hidden shadow-2xl cursor-grab active:cursor-grabbing"
           style={{ zIndex: 30, top: 0, right: 0 }}
-          initial={{ x: "100%", opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: "-100%", opacity: 0 }}
-          transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+          initial={{ x: "100%", opacity: 0, scale: 0.96 }}
+          animate={{ x: 0, opacity: 1, scale: 1 }}
+          exit={{ x: "-100%", opacity: 0, scale: 0.96 }}
+          transition={{ duration: 0.55, ease: [0.32, 0.72, 0, 1] }}
         >
-          <CardContent event={DISPLAY_EVENTS[activeIndex]} />
+          <CardContent event={frontEvent} />
         </motion.div>
       </AnimatePresence>
     </div>
   );
 };
 
-// Extracted to avoid repeating JSX
-//
-// The number here used to be `index + 1` — just this card's position in the
-// 3-card stack (always "0001", "0002", "0003" no matter which events were
-// showing). It's now `shortEventNo(event)` — the same helper the mobile
-// hero card uses — which trims the event's real number (or its Mongo _id
-// as a fallback) down to the last 4 characters. So mobile and desktop show
-// the exact same short "No 0421" style tag for the same event, instead of
-// desktop's old fake position count OR a long untrimmed id.
 const CardContent: React.FC<{ event: Event }> = ({ event }) => (
   <>
-    <div className="relative h-45 overflow-hidden">
+    <div className="relative h-44 overflow-hidden">
       <img
         src={event.coverImage}
         alt={event.title}
-        className="w-full h-full object-cover"
+        className="w-full h-full object-cover pointer-events-none"
       />
-      <span className="absolute top-3 left-3 bg-[#F5A524] text-black text-[12px] font-medium font-geist px-3 py-1 rounded-full flex items-center gap-1">
+      <span className="absolute top-3 left-3 bg-[#F5A524] text-black text-[12px] font-medium font-geist px-3 py-1 rounded-full flex items-center gap-1 shadow-xs">
         <img className="h-3 w-3" src={UI_ASSETS.star} alt="star" />
         Featured
       </span>
-      <span className="absolute top-3 right-3 text-white font-bold text-[12px] font-space tracking-widest">
+      <span className="absolute top-3 right-3 text-white font-bold text-[12px] font-space tracking-widest drop-shadow-md">
         № {shortEventNo(event)}
       </span>
     </div>
 
-    <div className="p-4">
-      <span className="text-xs text-[#0F6E56] font-geist uppercase tracking-widest font-medium">
-        {event.category}
-      </span>
-      <h3 className="text-xl font-bold text-[#1A1523] font-grotesk mt-0.5">
-        {event.title}
-      </h3>
-      <p className="text-sm text-[#4A4451] font-geist mt-1">
-        {new Date(event.startDate).toLocaleDateString("en-GB", {
-          weekday: "short",
-          day: "numeric",
-          month: "short",
-        })}{" "}
-        · {event.venue.name}
-      </p>
+    <div className="p-4 flex flex-col justify-between">
+      <div>
+        <span className="text-xs text-[#0F6E56] dark:text-[#4ADE80] font-geist uppercase tracking-widest font-bold">
+          {event.category}
+        </span>
+        <h3 className="text-xl font-bold text-foreground font-grotesk mt-0.5 line-clamp-1">
+          {event.title}
+        </h3>
+        <p className="text-sm text-muted-foreground font-geist mt-1 truncate">
+          {new Date(event.startDate).toLocaleDateString("en-GB", {
+            weekday: "short",
+            day: "numeric",
+            month: "short",
+          })}{" "}
+          · {event.venue.name}
+        </p>
+      </div>
 
-      <div className="mt-4 pt-3 border-t border-[#E8E6E0] flex items-center justify-between">
+      <div className="mt-4 pt-3 border-t border-border flex items-center justify-between gap-2">
         <div>
-          <span className="text-lg font-bold font-space text-[#1A1523]">
-            {event.minPrice === 0 ? "Free" : Format.amount(event.minPrice, event.currency)}
+          <span className="text-lg font-bold font-space text-foreground block leading-tight">
+            {event.minPrice === 0
+              ? "Free"
+              : Format.amount(event.minPrice, event.currency)}
           </span>
-          <span className="text-xs text-[#4A4451] block font-geist">
+          <span className="text-xs text-muted-foreground block font-geist">
             from Regular
           </span>
         </div>
         <Link
           to={`/events/${event.slug}`}
-          className="px-4 py-2 bg-[#0F6E56] hover:bg-[#0A4F41] text-white font-bold text-sm rounded-lg transition-colors font-geist"
+          onClick={(e) => e.stopPropagation()}
+          className="px-4 py-2 bg-[#0F6E56] hover:bg-[#0A4F41] text-white font-bold text-sm rounded-lg transition-colors font-geist shrink-0 pointer-events-auto"
         >
           Get tickets
         </Link>
@@ -165,3 +178,5 @@ const CardContent: React.FC<{ event: Event }> = ({ event }) => (
     </div>
   </>
 );
+
+export default StackedCardCarousel;

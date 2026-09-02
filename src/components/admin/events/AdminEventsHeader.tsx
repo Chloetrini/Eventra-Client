@@ -25,13 +25,13 @@ export default function AdminEventsHeader({
     <div className="flex flex-col gap-6">
       {/* Eyebrow & Title */}
       <div>
-        <p className="text-xs font-medium tracking-widest text-[#0A4F41] dark:text-[#4ADE80] font-geist  uppercase">
+        <p className="text-[16px] min-[400px]:text-sm lg:text-[17px] font-[400] tracking-wide font-geist uppercase text-[#0F6E56] dark:text-[#4ADE80]">
           MANAGE
         </p>
-        <h1 className="mt-1 font-grotesk text-3xl font-bold text-foreground">
+        <h1 className="mt-1 font-grotesk text-[28px] font-[700] text-foreground">
           Events
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground font-geist">
+        <p className="mt-1 text-[16px] text-muted-foreground font-geist">
           Every event on the platform. Moderate or remove any of them.
         </p>
       </div>

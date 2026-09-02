@@ -131,7 +131,7 @@ const CheckoutCallback = () => {
   }
 
   return (
-    <PageWrapper className="p-5">
+    <PageWrapper className="p-5 min-h-screen ">
       <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#FCEBC9] dark:bg-[#7A4E02]/20">
           <AlertCircle className="h-7 w-7 text-[#7A4E02] dark:text-[#F5C877]" />

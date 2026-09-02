@@ -15,64 +15,40 @@ const EventOrganizerSelector = ({
     organizersCount,
     promotionsCount,
 }: EventOrganizerSelectorProps) => {
+    const tabs: { key: EventOrganizerTab; label: string; count: number }[] = [
+        { key: "events", label: "Events", count: eventsCount },
+        { key: "organizers", label: "Organizers", count: organizersCount },
+        { key: "promotions", label: "Promotions", count: promotionsCount },
+    ]
+
     return (
-        <div className="flex gap-3">
-            <button
-                type="button"
-                onClick={() => onTabChange("events")}
-                className={`flex items-center gap-2 px-5 py-3 rounded-[10px] font-medium text-sm transition-colors dark:border-2 ${activeTab === "events"
-                        ? "bg-[#0F0F0F] text-white dark:bg-white dark:text-black"
-                        : "bg-transparent border border-border text-foreground"
-                    }`}
-            >
-                Events
-                <span
-                    className={`flex items-center justify-center min-w-6 h-6 px-1.5 rounded-full text-xs ${activeTab === "events"
-                            ? "bg-[#4A4451] text-white"
-                            : "bg-[#F5A524] text-black"
+        <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto w-full pb-1 no-scrollbar">
+            {tabs.map((tab) => {
+                const isActive = activeTab === tab.key
+                return (
+                    <button
+                        key={tab.key}
+                        type="button"
+                        onClick={() => onTabChange(tab.key)}
+                        className={`flex items-center gap-2 px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-[10px] font-medium text-xs sm:text-sm whitespace-nowrap transition-colors shrink-0 ${
+                            isActive
+                                ? "bg-[#0F0F0F] text-white dark:bg-white dark:text-black dark:border-2 dark:border-white"
+                                : "bg-transparent border border-border text-foreground hover:bg-muted/50"
                         }`}
-                >
-                    {eventsCount}
-                </span>
-            </button>
-
-            <button
-                type="button"
-                onClick={() => onTabChange("organizers")}
-                className={`flex items-center gap-2 px-5 py-3 rounded-[10px] font-medium text-sm transition-colors dark:border-2 ${activeTab === "organizers"
-                        ? "bg-[#0F0F0F] text-white dark:bg-white dark:text-black"
-                        : "bg-transparent border border-border text-foreground"
-                    }`}
-            >
-                Organizers
-                <span
-                    className={`flex items-center justify-center min-w-6 h-6 px-1.5 rounded-full text-xs ${activeTab === "organizers"
-                            ? "bg-[#4A4451] text-white"
-                            : "bg-[#F5A524] text-black"
-                        }`}
-                >
-                    {organizersCount}
-                </span>
-            </button>
-
-            <button
-                type="button"
-                onClick={() => onTabChange("promotions")}
-                className={`flex items-center gap-2 px-5 py-3 rounded-[10px] font-medium text-sm transition-colors dark:border-2 ${activeTab === "promotions"
-                        ? "bg-[#0F0F0F] text-white dark:bg-white dark:text-black"
-                        : "bg-transparent border border-border text-foreground"
-                    }`}
-            >
-                Promotions
-                <span
-                    className={`flex items-center justify-center min-w-6 h-6 px-1.5 rounded-full text-xs ${activeTab === "promotions"
-                            ? "bg-[#4A4451] text-white"
-                            : "bg-[#F5A524] text-black"
-                        }`}
-                >
-                    {promotionsCount}
-                </span>
-            </button>
+                    >
+                        {tab.label}
+                        <span
+                            className={`flex items-center justify-center min-w-5 h-5 sm:min-w-6 sm:h-6 px-1.5 rounded-full text-[10px] sm:text-xs font-semibold ${
+                                isActive
+                                    ? "bg-[#4A4451] text-white dark:bg-muted dark:text-foreground"
+                                    : "bg-[#F5A524] text-black"
+                            }`}
+                        >
+                            {tab.count}
+                        </span>
+                    </button>
+                )
+            })}
         </div>
     )
 }

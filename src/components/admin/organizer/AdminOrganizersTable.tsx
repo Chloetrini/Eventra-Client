@@ -11,31 +11,31 @@ export function StatusBadge({ status }: { status: AdminOrganizerStatus }) {
   switch (status) {
     case "VERIFIED":
       return (
-        <span className="inline-flex items-center rounded-full bg-[#EBF8F1] dark:bg-[#0F6E56]/25 px-3 py-1 text-[11px] font-bold text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-wide">
+        <span className="inline-flex items-center rounded-full bg-[#EBF8F1] dark:bg-[#0F6E56]/25 px-3 py-1 text-[13px] font-bold text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-wide">
           VERIFIED
         </span>
       );
     case "PENDING":
       return (
-        <span className="inline-flex items-center rounded-full bg-[#F4DFB6] dark:bg-[#C97A17]/25 px-3 py-1 text-[11px] font-bold text-[#7A4E02] dark:text-[#FBBF24] uppercase tracking-wide">
+        <span className="inline-flex items-center rounded-full bg-[#F4DFB6] dark:bg-[#C97A17]/25 px-3 py-1 text-[13px] font-bold text-[#7A4E02] dark:text-[#FBBF24] uppercase tracking-wide">
           PENDING
         </span>
       );
     case "SUSPENDED":
       return (
-        <span className="inline-flex items-center rounded-full bg-[#FFC4C4] dark:bg-[#DC2626]/25 px-3.5 py-1 text-[11px] font-bold text-[#BE2525] dark:text-[#F87171] uppercase tracking-wide">
+        <span className="inline-flex items-center rounded-full bg-[#FFC4C4] dark:bg-[#DC2626]/25 px-3.5 py-1 text-[13px] font-bold text-[#BE2525] dark:text-[#F87171] uppercase tracking-wide">
           SUSPENDED
         </span>
       );
     case "REJECTED":
       return (
-        <span className="inline-flex items-center rounded-full bg-[#FFC4C4] dark:bg-[#DC2626]/25 px-3 py-1 text-[11px] font-bold text-[#BE2525] dark:text-[#F87171] uppercase tracking-wider">
+        <span className="inline-flex items-center rounded-full bg-[#FFC4C4] dark:bg-[#DC2626]/25 px-3 py-1 text-[13px] font-bold text-[#BE2525] dark:text-[#F87171] uppercase tracking-wider">
           REJECTED
         </span>
       );
     default:
       return (
-        <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+        <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-[13px] font-bold text-muted-foreground uppercase tracking-wider">
           {status}
         </span>
       );
@@ -73,7 +73,7 @@ export default function AdminOrganizersTable({
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-border bg-card/50 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+            <tr className="border-b border-border bg-card/50 text-[16px] font-space font-[400] uppercase tracking-wider text-muted-foreground">
               <th className="px-6 py-4">ORGANIZER</th>
               <th className="px-6 py-4">CONTACT</th>
               <th className="px-6 py-4">EVENTS</th>
@@ -104,16 +104,16 @@ export default function AdminOrganizersTable({
                   </div>
                 </td>
 
-                <td className="px-6 py-4 font-medium text-muted-foreground">
+                <td className="px-6 py-4 font-[16px] font-[400] font-geist text-muted-foreground">
                   {org.email}
                 </td>
 
-                <td className="px-6 py-4 font-medium text-muted-foreground">
+                <td className="px-6 py-4 font-[700] font-space text-[18px] text-foreground ">
                   {org.eventCount}
                 </td>
 
                 {/* REVENUE */}
-                <td className="px-6 py-4 font-space font-bold text-foreground">
+                <td className="px-6 py-4 font-grotesk text-[18px] font-[500] text-foreground">
                   {formatCompactCurrency(org.rawRevenue, org.currency)}
                 </td>
 

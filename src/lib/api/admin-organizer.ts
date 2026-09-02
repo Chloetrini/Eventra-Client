@@ -98,6 +98,7 @@ function mapOrganizerListItem(raw: RawAdminOrganizerListItem, currency?: string)
     _id: raw._id,
     name,
     email: raw.email,
+    isSuspended: raw.isSuspended ?? false,
     category: profile?.category,
     initials: initialsFrom(name),
     avatarUrl: raw.avatarUrl,
@@ -210,21 +211,19 @@ export async function rejectOrganizer(id: string, reason?: string): Promise<void
   await api.patch(`/admin/organizers/${id}/reject`, { reason });
 }
 
-// Matches: PATCH /admin/users/:id/suspend
-export async function suspendOrganizer(id: string): Promise<void> {
-  await api.patch(`/admin/users/${id}/suspend`, {});
+export async function suspendOrganizer({ id, reason }: { id: string; reason?: string }): Promise<void> {
+  await api.patch(`/admin/organizers/${id}/suspend`, { reason });
 }
 
-// Matches: PATCH /admin/users/:id/unsuspend
+// Matches: PATCH /admin/organizers/:id/unsuspend
 export async function unsuspendOrganizer(id: string): Promise<void> {
-  await api.patch(`/admin/users/${id}/unsuspend`, {});
+  await api.patch(`/admin/organizers/${id}/unsuspend`, {});
 }
 
 // Matches: PATCH /admin/organizers/:id/flag
 export async function flagOrganizer(id: string, reason?: string): Promise<void> {
   await api.patch(`/admin/organizers/${id}/flag`, { reason });
 }
-
 // Matches: PATCH /admin/organizers/:id/unflag
 export async function unflagOrganizer(id: string): Promise<void> {
   await api.patch(`/admin/organizers/${id}/unflag`, {});

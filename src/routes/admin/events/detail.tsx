@@ -44,11 +44,9 @@ export default function AdminEventDetailPage() {
       onFlag={id => {
         toggleFlag.mutate({ id, flagged: event.status === "FLAGGED" });
       }}
-      onRemove={id => {
-        removeEvent.mutate(id, {
-          onSuccess: () => navigate("/admin/events"),
-        });
-      }}
+     
     />
+
+    
   );
 }

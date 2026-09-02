@@ -41,68 +41,83 @@ export default function FlagsTable({ flags, isLoading, onDismiss, onSuspend }: F
   }
 
   return (
-    <div className="border-2 border-border rounded-lg overflow-x-auto min-w-0">
-      <table className="w-full min-w-[700px] text-sm">
+    <div className="w-full overflow-x-auto rounded-[10px] border-2 border-border bg-card">
+      <table className="w-full min-w-[800px] text-sm border-collapse">
         <thead>
-          <tr className="border-b-2 border-border">
-            <th className="text-left font-space py-5 px-4 font-medium text-muted-foreground text-[16px]">
+          <tr className="border-b-2 border-border bg-card/50">
+            <th className="text-left font-space py-4 px-4 sm:px-6 font-medium text-muted-foreground text-sm tracking-wide">
               SUBJECT
             </th>
-            <th className="text-left py-3 font-space px-8 font-medium text-muted-foreground text-[16px]">
+            <th className="text-left font-space py-4 px-4 sm:px-6 font-medium text-muted-foreground text-sm tracking-wide">
               TYPE
             </th>
-            <th className="text-left py-3 font-space px-8 font-medium text-muted-foreground text-[16px]">
+            <th className="text-left font-space py-4 px-4 sm:px-6 font-medium text-muted-foreground text-sm tracking-wide">
               REASON
             </th>
-            <th className="text-left py-3 px-5 font-space font-medium text-muted-foreground text-[16px]">
+            <th className="text-left font-space py-4 px-4 sm:px-6 font-medium text-muted-foreground text-sm tracking-wide">
               REPORTS
             </th>
-            <th className="w-48"></th>
+            <th className="text-right font-space py-4 px-4 sm:px-6 font-medium text-muted-foreground text-sm tracking-wide w-48">
+              ACTIONS
+            </th>
           </tr>
         </thead>
         <tbody>
-          {flags.map((flag) => {
+          {flags.map((flag, index) => {
             const reason = flag.flagReason ?? flag.latestReason ?? "—";
             const key = `${flag.targetType}-${flag.targetId}`;
 
             return (
-              <tr key={key} className="border-t-2 border-border last:border-b-0 cursor-pointer hover:bg-muted/40 transition-colors"
-              onClick={() => navigate(`/admin/reports/${flag.targetId}`)}>
-                <td className="py-6 px-4">
-                  <button
-                    className="flex items-center gap-2 font-semibold text-foreground text-[17px] text-left"
+              <tr
+                key={key}
+                onClick={() => navigate(`/admin/reports/${flag.targetId}`)}
+                className={`cursor-pointer hover:bg-muted/40 transition-colors ${
+                  index < flags.length - 1 ? "border-b-2 border-border" : ""
+                }`}
+              >
+                <td className="py-4 px-4 sm:px-6 max-w-[180px] sm:max-w-none">
+                  <span
+                    title={flag.title}
+                    className="font-bold text-foreground text-sm sm:text-base truncate block"
                   >
                     {flag.title}
-                  </button>
+                  </span>
                 </td>
-                <td className="px-5">
+                <td className="py-4 px-4 sm:px-6">
                   <Badge
                     className={
                       flag.targetType === "event"
-                        ? "bg-[#BBE0CF] dark:bg-[#0F6E56]/25 px-[10px] py-[12px] font-light text-[#0F6E56] dark:text-[#4ADE80] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/25 text-[16px]"
-                        : "bg-[#F4DFB6] dark:bg-[#C97A17]/25 px-[13px] py-[12px] font-light text-[#7A4E02] dark:text-[#FBBF24] text-[16px] hover:bg-[#F4DFB6] dark:hover:bg-[#C97A17]/25"
+                        ? "bg-[#BBE0CF] dark:bg-[#0F6E56]/25 px-2.5 py-1 font-medium text-[#0F6E56] dark:text-[#4ADE80] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/25 text-xs sm:text-sm whitespace-nowrap"
+                        : "bg-[#F4DFB6] dark:bg-[#C97A17]/25 px-3 py-1 font-medium text-[#7A4E02] dark:text-[#FBBF24] hover:bg-[#F4DFB6] dark:hover:bg-[#C97A17]/25 text-xs sm:text-sm whitespace-nowrap"
                     }
                   >
                     {flag.targetType === "event" ? "EVENT" : "ORGANIZER"}
                   </Badge>
                 </td>
-                <td className="px-4 text-foreground text-[16px]">{reason}</td>
-                <td className="text-[16px] text-foreground font-space font-bold px-8">
+                <td className="py-4 px-4 sm:px-6 max-w-[160px] ">
+                  <span
+                    title={reason}
+                    className="text-foreground text-xs sm:text-sm truncate block"
+                  >
+                    {reason}
+                  </span>
+                </td>
+                <td className="py-4 px-4 sm:px-6 text-xs sm:text-sm text-foreground font-space font-bold whitespace-nowrap">
                   {flag.hasReports ? flag.reportsCount : "—"}
                 </td>
-                <td className="px-4">
-                  <div className="flex gap-2 justify-end " onClick={(e) => e.stopPropagation()}>
+                <td className="py-4 px-4 sm:px-6">
+                  <div className="flex gap-2 justify-end items-center" onClick={(e) => e.stopPropagation()}>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border px-[15px] py-[18px] font-bold hover:bg-[#0F6E56] hover:text-white border-[#0F6E56] dark:border-[#4ADE80] bg-white dark:bg-transparent text-[#0F6E56] dark:text-[#4ADE80] dark:hover:bg-[#0F6E56]"
+                      className="border font-bold hover:bg-[#0F6E56] hover:text-white border-[#0F6E56] dark:border-[#4ADE80] bg-white dark:bg-transparent text-[#0F6E56] dark:text-[#4ADE80] dark:hover:bg-[#0F6E56] text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 h-auto shrink-0"
                       onClick={() => onDismiss(flag)}
                     >
                       Dismiss
                     </Button>
                     <Button
                       size="sm"
-                      className="hover:text-white font-bold px-[15px] py-[18px] bg-white dark:bg-transparent hover:bg-[#BE2525] dark:hover:bg-[#BE2525] border-[#FFC4C4] dark:border-[#DC2626] text-[#BE2525] dark:text-[#F87171] whitespace-nowrap"
+                      className="font-bold border hover:text-white bg-white dark:bg-transparent hover:bg-[#BE2525] dark:hover:bg-[#BE2525] border-[#FFC4C4] dark:border-[#DC2626] text-[#BE2525] dark:text-[#F87171] text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 h-auto shrink-0 whitespace-nowrap"
                       onClick={() => onSuspend(flag)}
                     >
                       {flag.targetType === "event" ? "Remove event" : "Suspend"}

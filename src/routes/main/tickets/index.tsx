@@ -104,7 +104,7 @@ export default function Tickets() {
     }
 
     return (
-        <PageWrapper className="p-[20px]" >
+        <PageWrapper className="p-[20px] min-h-screen " >
             <header className="flex items-center   mt-5">
                 <div className="mb-5 flex items-center gap-2">
                     <span className="h-[1px] w-[12px] bg-[#F5A524]" />

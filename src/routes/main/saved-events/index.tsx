@@ -29,7 +29,7 @@ export default function SavedEvent() {
         return null;
     }
     return (
-        <PageWrapper className="py-8  px-[20px]" >
+        <PageWrapper className="py-8  px-[20px] min-h-screen " >
             <header className="flex items-center   mt-5">
                 <div className="mb-5 flex items-center gap-2">
                     <span className="h-0.5 w-6 bg-[#F5A524]" />

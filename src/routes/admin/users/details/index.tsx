@@ -89,7 +89,7 @@ export default function AdminUserDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 max-w-5xl">
+      <PageWrapper className="space-y-6 p-[20px]">
         <Skeleton className="h-5 w-24" />
         <Skeleton className="h-20 w-full rounded-xl" />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -98,7 +98,7 @@ export default function AdminUserDetailPage() {
           ))}
         </div>
         <Skeleton className="h-64 w-full rounded-lg" />
-      </div>
+      </PageWrapper>
     );
   }
 

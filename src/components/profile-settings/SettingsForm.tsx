@@ -55,9 +55,9 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ user, onSave }) => {
   }, [user.fullName, user.phone, user.email, user.city, reset]);
 
   return (
-    <div className="border border-border rounded-[20px] py-10 px-14  mb-18">
+    <div className="border border-border rounded-[20px] py-10 md:px-14 px-4 mb-18">
       <h2 className="font-grotesk
-      font-semibold text-foreground text-[34px] leading-10 md:leading-1 tracking-[-2%] pb-6">
+      font-semibold text-foreground text-[30px] md:text-[34px] leading-10 md:leading-1 tracking-[-2%] pb-6">
         Personal Information
       </h2>
 

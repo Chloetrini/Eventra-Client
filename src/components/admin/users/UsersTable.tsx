@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router";
-import { Badge } from "@/components/ui/badge";
 import { UserAvatar } from "@/components/ui/user-avatar";
-import { formatDateTime, formatNaira } from "@/lib/utils";
+import { formatDateTime, formatCompactNaira } from "@/lib/utils";
 import type { AdminUserListItem } from "@/types/admin-users";
 
 interface UsersTableProps {
@@ -9,91 +8,122 @@ interface UsersTableProps {
   currency?: string;
 }
 
-// Same table anatomy as AttendeeList (organizer dashboard's Attendees
-// page) — border/rounded shell, font-space uppercase header row, avatar +
-// name/email stacked cell, status pill on the right — so the admin
-// console's Users table reads as the same product rather than a
-// differently-styled screen bolted on.
+export function UserStatusBadge({
+  isDeleted,
+  isSuspended,
+}: {
+  isDeleted?: boolean;
+  isSuspended?: boolean;
+}) {
+  if (isDeleted) {
+    return (
+      <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+        DELETED
+      </span>
+    );
+  }
+
+  if (isSuspended) {
+    return (
+      <span className="inline-flex items-center rounded-full bg-[#FFC4C4] dark:bg-[#DC2626]/25 px-3.5 py-1 text-[11px] font-bold text-[#BE2525] dark:text-[#F87171] uppercase tracking-wide">
+        SUSPENDED
+      </span>
+    );
+  }
+
+  return (
+    <span className="inline-flex items-center rounded-full bg-[#EBF8F1] dark:bg-[#0F6E56]/25 px-3 py-1 text-[11px] font-bold text-[#0F6E56] dark:text-[#4ADE80] uppercase tracking-wide">
+      ACTIVE
+    </span>
+  );
+}
+
 export function UsersTable({ users, currency }: UsersTableProps) {
   const navigate = useNavigate();
 
   if (users.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center border border-border rounded-lg">
-        <p className="text-base text-[20px] font-bold text-foreground">No users found</p>
-        <p className="font-medium text-muted-foreground mt-1">
-          Nothing matches this search or filter yet.
+      <div className="rounded-2xl border border-border bg-card p-12 text-center">
+        <p className="text-sm text-muted-foreground">
+          No users match your search or filter.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="border border-border rounded-lg overflow-x-auto">
-      <table className="w-full min-w-[760px] text-sm">
-        <thead>
-          <tr className="border-b border-border font-space">
-            <th className="text-left py-3 px-4 font-medium text-muted-foreground text-[16px]">
-              USER
-            </th>
-            <th className="text-left py-3 px-4 font-medium text-muted-foreground text-[16px]">
-              EMAIL
-            </th>
-            <th className="text-left py-3 px-4 font-medium text-muted-foreground text-[16px]">
-              ORDERS
-            </th>
-            <th className="text-left py-3 px-4 font-medium text-muted-foreground text-[16px]">
-              SPENT
-            </th>
-            <th className="text-left py-3 px-4 font-medium text-muted-foreground text-[16px]">
-              JOINED
-            </th>
-            <th className="text-left py-3 px-4 font-medium text-muted-foreground text-[16px]">
-              STATUS
-            </th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {users.map((user) => (
-            <tr
-              key={user._id}
-              onClick={() => navigate(`/admin/users/${user._id}`)}
-              className="border-border last:border-b-0 cursor-pointer hover:bg-muted/50 transition-colors"
-            >
-              <td className="py-5 px-4">
-                <div className="flex items-center gap-3">
-                  <UserAvatar
-                    avatarUrl={user.avatarUrl}
-                    name={user.fullname}
-                    className="w-[50px] h-[50px] text-[18px] font-bold"
-                  />
-                  <p className="text-foreground font-semibold text-[17px]">{user.fullname}</p>
-                </div>
-              </td>
-              <td className="px-4 text-[16px] font-medium text-muted-foreground">{user.email}</td>
-              <td className="px-4 text-foreground text-[16px]">{user.ordersCount}</td>
-              <td className="px-4 text-foreground text-[16px]">{formatNaira(user.totalSpent, currency)}</td>
-              <td className="px-4 text-foreground text-[16px]">
-                {formatDateTime(user.createdAt, "MMM d, yyyy")}
-              </td>
-              <td className="px-4">
-                <Badge
-                  className={
-                    user.isDeleted
-                      ? "bg-muted text-muted-foreground hover:bg-muted rounded-[15px] w-[110px] h-[36px] font-semibold text-[13px]"
-                      : user.isSuspended
-                      ? "bg-destructive/10 dark:bg-destructive/20 text-destructive hover:bg-destructive/10 rounded-[15px] w-[110px] h-[36px] font-semibold text-[13px]"
-                      : "bg-[#E4F1EB] dark:bg-[#0F6E56]/15 text-[#0F6E56] dark:text-[#4ADE80] hover:bg-[#E4F1EB] dark:hover:bg-[#0F6E56]/15 rounded-[15px] w-[110px] h-[36px] font-semibold text-[13px]"
-                  }
-                >
-                  {user.isDeleted ? "DELETED" : user.isSuspended ? "SUSPENDED" : "ACTIVE"}
-                </Badge>
-              </td>
+    <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <thead>
+            <tr className="border-b border-border bg-card/50 text-[16px] font-space font-[400] uppercase tracking-wider text-muted-foreground md:text-[16px]">
+              <th className="px-3 py-4 md:px-6">USER</th>
+              <th className="px-3 py-4 md:px-6 max-w-[180px]">EMAIL</th>
+              <th className="px-3 py-4 text-center md:px-6">ORDERS</th>
+              <th className="px-3 py-4 md:px-6">SPENT</th>
+              <th className="px-3 py-4 md:px-6">JOINED</th>
+              <th className="px-3 py-4 md:px-6">STATUS</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {users.map((user) => (
+              <tr
+                key={user._id}
+                onClick={() => navigate(`/admin/users/${user._id}`)}
+                className="group cursor-pointer transition-colors hover:bg-accent/50"
+              >
+                <td className="px-3 py-4 align-middle md:px-6">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <UserAvatar
+                      avatarUrl={user.avatarUrl}
+                      name={user.fullname}
+                      className="h-10 w-10 shrink-0 bg-black text-[15px] font-bold text-white"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <span className="block text-[15px] font-[600] text-foreground transition-colors group-hover:text-primary max-sm:truncate sm:break-words md:text-[17px]">
+                        {user.fullname}
+                      </span>
+                    </div>
+                  </div>
+                </td>
+
+                <td className="px-3 py-4 align-middle md:px-6">
+                  <div className="font-[400] max-w-[180px] truncate whitespace-nowrap font-geist text-[14px] text-muted-foreground max-sm:max-w-[180px] max-sm:truncate sm:break-words md:text-[16px] lg:max-w-[320px]">
+                    {user.email}
+                  </div>
+                </td>
+
+                <td className="px-3 py-4 text-center align-middle text-[16px] font-[700] font-space text-foreground md:px-6 md:text-[20px]">
+                  {user.ordersCount}
+                </td>
+
+                <td className="px-3 py-4 align-middle font-geist text-[14px] font-[400] text-foreground md:px-6 md:text-[16px]">
+                  <span className="block max-sm:truncate sm:break-words">
+                    {user.totalSpent
+                      ? formatCompactNaira(user.totalSpent, currency)
+                      : "—"}
+                  </span>
+                </td>
+
+                <td className="px-3 py-4 align-middle font-[400] text-muted-foreground md:px-6 text-[14px] md:text-[16px] font-geist">
+                  <span className="block max-sm:truncate sm:break-words">
+                    {formatDateTime(user.createdAt, "MMM yyyy")}
+                  </span>
+                </td>
+
+                <td className="px-3 py-4 align-middle md:px-6">
+                  <div className="flex justify-start">
+                    <UserStatusBadge
+                      isDeleted={user.isDeleted}
+                      isSuspended={user.isSuspended}
+                    />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

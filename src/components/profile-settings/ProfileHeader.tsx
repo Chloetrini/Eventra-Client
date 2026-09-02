@@ -39,10 +39,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, onAvatarSelect, isU
 
             {/* Title & description */}
             <div className="flex flex-col justify-center items-start gap-6 mt-4">
-                <h1 className="font-grotesk font-[700] text-[40px] md:text-[64px] text-foreground leading-7.5 tracking-[-6%]">
+                <h1 className="font-grotesk font-[700] text-[30px] md:text-[64px] text-foreground leading-7.5 tracking-[-6%]">
                     Profile & Settings
                 </h1>
-                <p className="font-sans font-[700] text-muted-foreground text-[18px] leading-7.25 tracking-[-3%]">
+                <p className="font-sans font-[700] text-muted-foreground  md:text-[18px] leading-7.25 tracking-[-3%]">
                     Update Your details, passwords, and how we reach you.
                 </p>
             </div>
@@ -81,7 +81,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, onAvatarSelect, isU
                     </div>
 
                     <div className='flex flex-col gap-4 mt-4                            '>
-                        <p className="font-grotesk font-[600] text-[24px] md:text-[34px] text-foreground leading-1 tracking-[-2%]">
+                        <p className="font-grotesk font-[600] text-[20px] md:text-[34px] text-foreground leading-1 tracking-[-2%]">
                             {user.fullName}
                         </p>
                         <p className="font-sans text-muted-foreground text-sm  font-[700] md:text-[18px]">
@@ -92,7 +92,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, onAvatarSelect, isU
                 </div>
 
 
-                <p className="font-grotesk font-[500] text-muted-foreground uppercase text-sm md:text-[20px] mt-1 md:mt-0 md:ml-auto">
+                <p className="font-grotesk font-[500] text-muted-foreground uppercase text-[14px] md:text-[20px] mt-1 md:mt-0 md:ml-auto">
                     Member since {user.memberSince}
                 </p>
             </div>

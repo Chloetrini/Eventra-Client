@@ -9,7 +9,7 @@ import { VibeGridSkeleton } from "@/components/skeletons/vibe-grid-skeleton";
 import { UI_ASSETS } from "@/lib/assets";
 
 const CATEGORY_IMAGE_MAP: Record<string, string> = {
-  "Music & Concerts": UI_ASSETS.concert,
+  "Music": UI_ASSETS.concert,
   "Parties": UI_ASSETS.party,
   "Conference": UI_ASSETS.conference,
   "Comedy": UI_ASSETS.comedy,
@@ -17,6 +17,8 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   "Arts & Theatre": UI_ASSETS.arts,
   "Food & Drink": UI_ASSETS.food,
   "Tech & Startups": UI_ASSETS.tech,
+  "Networking": UI_ASSETS.networking,
+  "Religious": UI_ASSETS.religious,
 };
 
 const FALLBACK_IMAGE = UI_ASSETS.tech; // pick any sensible default

@@ -70,12 +70,11 @@ export function useRejectOrganizer() {
   });
 }
 
-// Hook: Toggle suspend/unsuspend account access based on current suspension state
 export function useToggleSuspendOrganizer() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, isSuspended }: { id: string; isSuspended: boolean }) =>
-      isSuspended ? unsuspendOrganizer(id) : suspendOrganizer(id),
+    mutationFn: ({ id, isSuspended, reason }: { id: string; isSuspended: boolean; reason?: string }) =>
+      isSuspended ? unsuspendOrganizer(id) : suspendOrganizer({ id, reason }),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: adminOrganizerKeys.detail(variables.id) });
       queryClient.invalidateQueries({ queryKey: adminOrganizerKeys.lists() });

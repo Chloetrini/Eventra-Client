@@ -181,3 +181,10 @@ export async function approveEvent(id: string): Promise<void> {
 export async function rejectEvent(id: string, reason?: string): Promise<void> {
   await api.patch(`/admin/events/${id}/reject`, { reason });
 }
+export async function suspendEvent(id: string, reason?: string): Promise<void> {
+  await api.patch(`/admin/events/${id}/suspend`, { reason });
+}
+
+export async function unsuspendEvent(id: string): Promise<void> {
+  await api.patch(`/admin/events/${id}/unsuspend`, {});
+}

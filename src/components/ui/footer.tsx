@@ -15,7 +15,7 @@ const DISCOVER_LINKS = [
 
 const ORGANIZER_LINKS = [
     { to: "/organizers", label: "Sell tickets" },
-    { to: "/organizer/dashboard", label: "Dashboard" },
+    { to: "/dashboard", label: "Dashboard" },
 ] as const
 
 const COMPANY_LINKS = [

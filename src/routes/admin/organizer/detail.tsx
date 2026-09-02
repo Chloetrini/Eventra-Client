@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router"
-import { ArrowLeft, Check, X } from "lucide-react"
+import { ArrowLeft, Check } from "lucide-react"
 import ActionBtn from "@/components/ui/action-btn"
 import PaymentBtn from "@/components/ui/pay-method-btn"
 import { Separator } from "@/components/ui/separator"
@@ -12,6 +12,7 @@ import OrganizerApprovalDetails from "@/components/admin/organizer/Admin-organiz
 import { toast } from "react-toastify"
 import PageWrapper from "@/components/page-wrapper"
 import { Skeleton } from "@/components/ui/skeleton"
+import type { AdminOrganizerStatus } from "@/types/admin-organizer"
 
 function OrganizerApprovalDetailSkeleton() {
   return (
@@ -30,6 +31,21 @@ function OrganizerApprovalDetailSkeleton() {
       </div>
     </PageWrapper>
   )
+}
+
+function getStatusBadgeStyles(status: AdminOrganizerStatus) {
+  switch (status) {
+    case "PENDING":
+      return "bg-[#F4DFB6] text-[#7A4E02]"
+    case "VERIFIED":
+      return "bg-[#E6F4EA] text-[#0F6E56] dark:bg-[#0F6E56]/20 dark:text-[#4ADE80]"
+    case "REJECTED":
+      return "bg-[#FCE8E6] text-[#BE2525] dark:bg-[#BE2525]/20 dark:text-[#EF4444]"
+    case "SUSPENDED":
+      return "bg-[#E2E8F0] text-[#475569] dark:bg-[#334155] dark:text-[#94A3B8]"
+    default:
+      return "bg-muted text-muted-foreground"
+  }
 }
 
 const OrganizerApprovalDetailPage = () => {
@@ -79,7 +95,7 @@ const OrganizerApprovalDetailPage = () => {
         <div>
           <button
             type="button"
-            onClick={() => navigate("/admin/organizers")}
+            onClick={() => navigate(-1)}
             className="flex items-center gap-2 font-space text-[13px] text-[#0F6E56] dark:text-[#4ADE80] mb-2 hover:underline"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -87,7 +103,11 @@ const OrganizerApprovalDetailPage = () => {
           </button>
           <div className="flex items-center gap-3">
             <h1 className="text-[28px] font-bold font-grotesk">{organizer.name}</h1>
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#F4DFB6] text-[#7A4E02] tracking-wide uppercase">
+            <span
+              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase ${getStatusBadgeStyles(
+                organizer.status
+              )}`}
+            >
               {organizer.status === "PENDING" ? "PENDING VERIFICATION" : organizer.status}
             </span>
           </div>

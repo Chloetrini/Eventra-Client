@@ -7,11 +7,6 @@ interface AuditLogTableProps {
   isLoading: boolean;
 }
 
-// These action types have no real event/organizer behind them (the
-// backend sends target: "—" for all three), so the TARGET column shows
-// the full message instead — e.g. "Converted all platform amounts from
-// Naira to Dollar (rate: 0.00074)" instead of a dash. Every other action
-// type keeps showing its actual target (event/organizer name) as before.
 const MESSAGE_IN_TARGET_TYPES = new Set([
   "currency_converted",
   "admin_invited",
@@ -49,41 +44,74 @@ export default function AuditLogTable({
   }
 
   return (
-    <div className="border border-border rounded-lg overflow-x-auto min-w-0">
-      <table className="w-full min-w-[600px] text-sm">
+    <div className="w-full overflow-x-auto rounded-[10px] border-2 border-border bg-card">
+      <table className="w-full min-w-[750px] text-sm border-collapse">
         <thead>
-          <tr className="border-[2px] border-border">
-            <th className="text-left py-3 px-8 font-space font-medium text-muted-foreground text-[16px]">
+          <tr className="border-b-2 border-border bg-card/50">
+            <th className="text-left font-space py-4 px-4 sm:px-6 font-medium text-muted-foreground text-xs sm:text-sm tracking-wide">
               ACTION
             </th>
-            <th className="text-left py-3 font-space px-4 font-medium text-muted-foreground text-[16px]">
+            <th className="text-left font-space max-w-[200px] py-4 px-4 sm:px-6 font-medium text-muted-foreground text-xs sm:text-sm tracking-wide">
               TARGET
             </th>
-            <th className="text-left py-3 px-4 font-space font-medium text-muted-foreground text-[16px]">
+            <th className="text-left font-space py-4 px-4 sm:px-6 font-medium text-muted-foreground text-xs sm:text-sm tracking-wide">
               ADMIN
             </th>
-            <th className="text-left py-3 px-4 font-space font-medium text-muted-foreground text-[16px]">
+            <th className="text-left font-space py-4 px-4 sm:px-6 font-medium text-muted-foreground text-xs sm:text-sm tracking-wide">
               WHEN
             </th>
           </tr>
         </thead>
 
         <tbody>
-          {entries.map((entry) => (
-            <tr key={entry.id} className="border-[2px] border-border last:border-b-[2px]">
-              <td className="py-4 px-8 font-semibold text-foreground text-[17px]">
-                {entry.action}{" "}
-                {entry.amount && <span className="font-space">{entry.amount}</span>}
-              </td>
-              <td className="px-4 text-foreground text-[16px]">
-                {MESSAGE_IN_TARGET_TYPES.has(entry.type) ? entry.message : entry.target}
-              </td>
-              <td className="px-4 text-[16px] text-foreground">{entry.actorName}</td>
-              <td className="px-4 text-[16px] text-muted-foreground">
-                {formatRequestedAgo(entry.createdAt)}
-              </td>
-            </tr>
-          ))}
+          {entries.map((entry, index) => {
+            const targetContent = MESSAGE_IN_TARGET_TYPES.has(entry.type)
+              ? entry.message
+              : entry.target;
+
+            return (
+              <tr
+                key={entry.id}
+                className={`hover:bg-muted/40 transition-colors ${
+                  index < entries.length - 1 ? "border-b-2 border-border" : ""
+                }`}
+              >
+                <td className="py-4 px-4 sm:px-6 max-w-[200px] sm:max-w-none">
+                  <span
+                    title={`${entry.action} ${entry.amount ?? ""}`}
+                    className="font-bold text-foreground text-xs sm:text-sm truncate block"
+                  >
+                    {entry.action}{" "}
+                    {entry.amount && (
+                      <span className="font-space font-semibold">{entry.amount}</span>
+                    )}
+                  </span>
+                </td>
+
+                <td className="py-4 px-4 sm:px-6 max-w-[220px]">
+                  <span
+                    title={targetContent}
+                    className="text-foreground text-xs sm:text-sm truncate block max"
+                  >
+                    {targetContent}
+                  </span>
+                </td>
+
+                <td className="py-4 px-4 sm:px-6 max-w-[150px] sm:max-w-none">
+                  <span
+                    title={entry.actorName}
+                    className="text-foreground text-xs sm:text-sm truncate block"
+                  >
+                    {entry.actorName}
+                  </span>
+                </td>
+
+                <td className="py-4 px-4 sm:px-6 text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                  {formatRequestedAgo(entry.createdAt)}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

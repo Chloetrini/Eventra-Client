@@ -1,8 +1,6 @@
 import UserReportDetails from "@/components/admin/reports/user-report-details"
 import PageWrapper from "@/components/page-wrapper"
-import ActionBtn from "@/components/ui/action-btn"
-import PaymentBtn from "@/components/ui/pay-method-btn"
-import { Separator } from "@/components/ui/separator"
+
 import type { UserReportPopulated } from "@/types/report"
 import { ArrowLeft, Check } from "lucide-react"
 import { useEffect } from "react"

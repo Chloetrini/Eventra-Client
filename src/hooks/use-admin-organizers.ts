@@ -33,11 +33,22 @@ export const adminOrganizerKeys = {
 
 // Hook: Fetch paginated & filtered list of organizers for Admin Console
 export function useAdminOrganizers(params: FetchAdminOrganizersParams = {}) {
-  const { tab = "all", q = "", page = 1, limit = 20 } = params;
+  // The admin organizer page (routes/admin/organizer/index.tsx) passes the
+  // selected filter pill as `status`, but this hook was only ever reading
+  // `tab` — so `status` was silently dropped, `tab` always fell back to
+  // "all", and clicking Pending/Verified/Suspended/Rejected re-fetched the
+  // exact same "all organizers" list every time (same query key too, so it
+  // wasn't even hitting the network on a switch — just re-showing the
+  // cached "all" result). Reading `status` first (falling back to `tab` for
+  // any other caller still using that name) and keying/fetching on the
+  // resolved value fixes both the wiring and the stale cache key.
+  const { status, tab = "all", q = "", page = 1, limit = 20 } = params;
+  const activeStatus = status ?? tab;
 
   return useQuery({
-    queryKey: adminOrganizerKeys.list({ tab, q, page, limit }),
-    queryFn: () => fetchAdminOrganizers({ tab, q: q || undefined, page, limit }),
+    queryKey: adminOrganizerKeys.list({ status: activeStatus, q, page, limit }),
+    queryFn: () =>
+      fetchAdminOrganizers({ status: activeStatus, q: q || undefined, page, limit }),
   });
 }
 

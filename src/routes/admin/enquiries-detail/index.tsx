@@ -10,7 +10,7 @@ import { Format } from "@/lib/utils";
 function EnquiryDetailSkeleton() {
   return (
     <PageWrapper className="flex flex-col items-center p-4 sm:p-6">
-      <div className="w-full max-w-2xl flex flex-col gap-5 sm:gap-6">
+      <div className="w-full  flex flex-col gap-5 sm:gap-6">
         <Skeleton className="h-4 w-20" />
         <div className="rounded-[10px] border-2 border-border bg-card p-6 sm:p-8">
           <Skeleton className="h-6 w-2/3 mb-3" />
@@ -36,7 +36,7 @@ export default function EnquiryDetailPage() {
   if (isError || !enquiry) {
     return (
       <PageWrapper className="flex flex-col items-center p-4 sm:p-6">
-        <div className="w-full max-w-2xl rounded-[10px] border-2 border-border bg-card p-12 text-center">
+        <div className="w-full max-w-3xl rounded-[10px] border-2 border-border bg-card p-12 text-center">
           <p className="text-sm text-muted-foreground">This enquiry no longer exists.</p>
         </div>
       </PageWrapper>
@@ -45,7 +45,7 @@ export default function EnquiryDetailPage() {
 
   return (
     <PageWrapper className="flex flex-col  p-4 sm:p-6">
-      <div className="w-full max-w-2xl flex flex-col gap-5 sm:gap-6">
+      <div className="w-full flex flex-col gap-5 sm:gap-6">
         <div>
           <button
             type="button"

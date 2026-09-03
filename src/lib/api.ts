@@ -69,7 +69,9 @@ export const api = {
   get: (path: string) => request('GET', path),
   post: (path: string, body: unknown) => request('POST', path, body),
   patch: (path: string, body: unknown) => request('PATCH', path, body),
-  delete: (path: string) => request('DELETE', path),
+  // Optional body — every existing caller passes none (a plain path
+  // delete-by-url), but a bulk delete needs a JSON body (e.g. { ids: [...] })
+  // on the same DELETE verb.
+  delete: (path: string, body?: unknown) => request('DELETE', path, body),
   upload,
 }
-

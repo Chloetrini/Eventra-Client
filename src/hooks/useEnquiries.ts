@@ -3,6 +3,8 @@ import {
   submitEnquiry,
   getEnquiries,
   getEnquiryById,
+  markAllEnquiriesRead,
+  deleteEnquiries,
   type ContactFormValues,
 } from '../lib/enquiryService'
 import { useEffect } from 'react'
@@ -58,4 +60,34 @@ export const useEnquiry = (id: string | undefined) => {
   }, [query.isSuccess, queryClient])
 
   return query
+}
+
+/**
+ * "Mark all as read" — bulk-marks every unread enquiry read in one call,
+ * then invalidates the list so the page refetches with everything showing
+ * as read (and the unread badge count drops to 0) without a manual reload.
+ */
+export const useMarkAllEnquiriesRead = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: markAllEnquiriesRead,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: enquiryKeys.all })
+    },
+  })
+}
+
+/**
+ * Bulk delete for the admin list's checkbox-select + delete action.
+ * Invalidates the list on success so deleted rows disappear and the
+ * pagination meta (total count, hasMore) is recomputed server-side.
+ */
+export const useDeleteEnquiries = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (ids: string[]) => deleteEnquiries(ids),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: enquiryKeys.all })
+    },
+  })
 }

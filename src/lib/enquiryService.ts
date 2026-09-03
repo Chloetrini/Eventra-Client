@@ -39,6 +39,18 @@ export interface EnquiryDetailResponse {
   body: Enquiry
 }
 
+export interface MarkAllEnquiriesReadResponse {
+  success: boolean
+  message: string
+  body: { modifiedCount: number }
+}
+
+export interface DeleteEnquiriesResponse {
+  success: boolean
+  message: string
+  body: { deletedCount: number }
+}
+
 export const submitEnquiry = (data: ContactFormValues) =>
   api.post('/enquiries', data)
 
@@ -47,3 +59,9 @@ export const getEnquiries = (page = 1, limit = 10) =>
 
 export const getEnquiryById = (id: string) =>
   api.get(`/enquiries/${id}`) as Promise<EnquiryDetailResponse>
+
+export const markAllEnquiriesRead = () =>
+  api.patch('/enquiries/read-all', {}) as Promise<MarkAllEnquiriesReadResponse>
+
+export const deleteEnquiries = (ids: string[]) =>
+  api.delete('/enquiries', { ids }) as Promise<DeleteEnquiriesResponse>

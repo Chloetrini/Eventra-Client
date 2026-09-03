@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, Star, ArrowUpRight } from "lucide-react";
 import { SiInstagram, SiFacebook, SiX } from "react-icons/si";
@@ -14,6 +14,8 @@ import { z } from "zod";
 import PageWrapper from "@/components/page-wrapper";
 import LocationMap from "@/components/dashboard-create-event/location-map";
 import { Reveal } from "@/components/ui/Reveal";
+import { useSubmitEnquiry } from "@/hooks/useEnquiries";
+import { toast } from "react-toastify";
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
@@ -23,6 +25,19 @@ const DEFAULT_FORM_VALUES: ContactFormValues = {
   subject: "",
   message: "",
 };
+
+const SESSION_STORAGE_KEY = "eventra-contact-form-draft";
+
+function loadDraft(): ContactFormValues {
+  if (typeof window === "undefined") return DEFAULT_FORM_VALUES;
+  try {
+    const raw = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
+    if (!raw) return DEFAULT_FORM_VALUES;
+    return { ...DEFAULT_FORM_VALUES, ...JSON.parse(raw) };
+  } catch {
+    return DEFAULT_FORM_VALUES;
+  }
+}
 
 const MAP_LINK = "https://www.google.com/maps/search/?api=1&query=Yaba,Lagos,Nigeria";
 
@@ -34,29 +49,45 @@ const SOCIALS = [
 ];
 
 export default function ContactPage() {
-  const [status, setStatus] = useState<"idle" | "submitting" | "sent">("idle");
+  const [status, setStatus] = useState<"idle" | "sent">("idle");
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
-    defaultValues: DEFAULT_FORM_VALUES,
+    defaultValues: loadDraft(),
     mode: "onBlur",
   });
 
-  const onSubmit = async (_data: ContactFormValues) => {
-    setStatus("submitting");
-    await new Promise((resolve) => setTimeout(resolve, 900));
-    setStatus("sent");
-    reset(DEFAULT_FORM_VALUES);
+  useEffect(() => {
+    const subscription = watch((values) => {
+      window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(values));
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  const { mutateAsync: submitEnquiry, isPending } = useSubmitEnquiry();
+
+  const onSubmit = async (data: ContactFormValues) => {
+    try {
+      await submitEnquiry(data);
+      setStatus("sent");
+      reset(DEFAULT_FORM_VALUES);
+      window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
+      toast.success("Message sent — we'll get back to you soon.");
+      setTimeout(() => setStatus("idle"), 5000);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not send your message. Please try again.");
+    }
   };
 
   return (
     <div className="relative bg-gradient-to-r from-emerald-50 via-emerald-50/50 to-white dark:from-background dark:via-background dark:to-background">
-     <PageWrapper className="p-[20px]">
+      <PageWrapper className="p-[20px]">
 
         <div className="flex flex-col gap-10 lg:flex-row lg:items-stretch xl:gap-14">
           <Reveal className="flex flex-1 flex-col lg:max-w-[46%]">
@@ -99,7 +130,7 @@ export default function ContactPage() {
             <h2 className="mt-4 text-xl font-bold text-foreground sm:text-2xl">How can we help?</h2>
             <p className="mt-1 text-sm text-muted-foreground">Tell us a little about you and what you&rsquo;re working on.</p>
 
-     
+
             <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5">
               <FormBox
                 label="Full name"
@@ -147,8 +178,8 @@ export default function ContactPage() {
                 inputType="textarea"
               />
 
-              <Button type="submit" disabled={status === "submitting"} className="w-full bg-emerald-800 text-white hover:bg-emerald-900">
-                {status === "submitting" ? "Sending..." : status === "sent" ? "Message sent" : "Send message"}
+              <Button type="submit" disabled={isPending} className="w-full bg-emerald-800 text-white hover:bg-emerald-900">
+                {isPending ? "Sending..." : status === "sent" ? "Message sent" : "Send message"}
               </Button>
             </form>
 
@@ -188,13 +219,6 @@ export default function ContactPage() {
             </a>
           </div>
 
-          {/* Was react-leaflet + OpenStreetMap tiles — its own separate map
-              tech from the rest of the app. Now the same LocationMap
-              component Create Event and Event Details use, so there's one
-              map implementation everywhere instead of three. LocationMap's
-              built-in overlay card keeps the "here's what this place is"
-              popup info (name, address, hours, open link) that the old
-              Leaflet marker popup used to show. */}
           <LocationMap
             name="Eventra HQ"
             address="Yaba, Lagos, Nigeria"
@@ -207,8 +231,8 @@ export default function ContactPage() {
           />
         </Reveal>
 
-     </PageWrapper>
-      
+      </PageWrapper>
+
     </div>
   );
 }

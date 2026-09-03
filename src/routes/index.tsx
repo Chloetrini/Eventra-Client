@@ -854,7 +854,40 @@ const routes = [
                   },
                 ],
               },
-
+              {
+                path: "enquiries",
+                children: [
+                  {
+                    index: true,
+                    handle: {
+                      seo: {
+                        title: "Enquiries",
+                        description:
+                          "Customer enquiries and support requests.",
+                      },
+                    },
+                    lazy: async () => {
+                      const { default: Component } =
+                        await import("@/routes/admin/enquiries/index");
+                      return { Component };
+                    },
+                  },
+                  {
+                    path: ":enquiryId",
+                    handle: {
+                      seo: {
+                        title: "Enquiry Details",
+                        description: "Review a customer enquiry or support request.",
+                      },
+                    },
+                    lazy: async () => {
+                      const { default: Component } =
+                        await import("@/routes/admin/enquiries-detail/index");
+                      return { Component };
+                    },
+                  },
+                ],
+              },
               {
                 path: "users",
                 children: [

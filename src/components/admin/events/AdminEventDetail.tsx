@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Flag, ArrowRight, ArrowLeft, Trash2 } from "lucide-react";
 import type { AdminEvent } from "@/types/admin-event";
+import { CURRENCY_SYMBOLS } from "@/lib/utils";
 import { StatusBadge } from "./AdminEventsTable";
 import {
   Dialog,
@@ -227,10 +228,15 @@ export default function AdminEventDetail({
                       <td className="py-3.5 font-bold text-foreground">
                         {tier.name}
                       </td>
+                      {/* Was rendering the raw number with no currency
+                          symbol at all — this is already converted into
+                          the admin's own viewer currency
+                          (event.details.currency, from
+                          getEventDetailForAdmin), it just wasn't shown. */}
                       <td className="py-3.5 font-space font-bold text-foreground">
                         {tier.price === 0
                           ? "FREE"
-                          : tier.price.toLocaleString()}
+                          : `${CURRENCY_SYMBOLS[event.details?.currency ?? "Naira"] ?? "₦"}${tier.price.toLocaleString()}`}
                       </td>
                       <td className="py-3.5 font-space font-bold text-foreground text-right">
                         {tier.quantity}

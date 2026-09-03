@@ -46,11 +46,21 @@ const TicketConfirmation = () => {
         };
         buyer?: { firstName: string; lastName: string; email: string; phoneNumber: string };
         type?: 'free' | 'paid';
+        // Set by checkout-callback from getOrderByReference's response —
+        // every ticket price above is already converted into this
+        // currency. Absent on the free-RSVP path, which is fine: a free
+        // ticket is always ₦0/$0 regardless of currency.
+        currency?: string;
+        // The real, already-converted order total from the same response
+        // — see the comment in checkout-callback/index.tsx. Absent on the
+        // free-RSVP path, where the total is always 0 anyway.
+        amountPaid?: number;
     } | null
 
     const tickets = state?.tickets ?? []
     const eventInfo = state?.event
     const recipientEmail = state?.buyer?.email ?? "your email"
+    const currency = state?.currency ?? "Naira"
 
     if (!state || tickets.length === 0 || !eventInfo) {
         return (
@@ -87,6 +97,8 @@ const TicketConfirmation = () => {
                         quantity: admitsCount,
                     }]}
                     slug={eventInfo.slug}
+                    currency={currency}
+                    amountPaid={state?.amountPaid}
                 />
                 
             </div>

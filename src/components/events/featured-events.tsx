@@ -37,13 +37,13 @@ export const FeaturedEvents: React.FC<FeaturedEventsProps> = ({
               {eyebrow}
             </span>
           </div>
-          <h2 className="font-geist font-bold text-2xl tracking-[-2%] text-foreground md:text-[34px]">
+          <h2 className="font-geist font-bold text-[16px] tracking-[-2%] text-foreground md:text-[34px]">
             {title}
           </h2>
         </div>
 
         <Link to={viewAllTo} className="flex flex-row items-center gap-1 hover:bg-[#0F6E56]/10 rounded-2xl px-2.5 py-1.25 transition-colors duration-300 cursor-pointer">
-          <h5 className="font-geist font-regular text-[#0F6E56] dark:text-[#4ADE80]">View All</h5>
+          <h5 className="font-geist font-regular text-[14px] md:text-[16px] text-[#0F6E56] dark:text-[#4ADE80]">View All</h5>
           <span><ArrowRight className="w-4 h-4" /></span>
         </Link>
       </div>

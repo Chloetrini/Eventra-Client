@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import shieldTick from "@/assets/shieldTick.png";
 
 const TierRow = ({
   tier,
@@ -150,6 +151,20 @@ export const PaidEventTicket = ({
   // 4. Safe check for scarce availability
   const isSelling = ticketTiers.some((t) => t.availability === "scarce");
 
+  // Refund policy, shown before checkout — not just after purchase (My
+  // Tickets' ticket-card.tsx already showed this, but only once someone
+  // already had a ticket in hand). Undefined means the organizer never
+  // set a policy on this event; there's nothing honest to claim either
+  // way, so this stays hidden rather than guessing.
+  const refundNote =
+    event.refundPolicy?.type === "refund-until-days-before"
+      ? event.refundPolicy.daysBefore != null
+        ? `Refundable up to ${event.refundPolicy.daysBefore} day${event.refundPolicy.daysBefore === 1 ? "" : "s"} before the event`
+        : "Refundable"
+      : event.refundPolicy?.type === "no-refunds"
+        ? "Non-refundable"
+        : null;
+
   const increment = (tierKey: string | number, tier: TicketTier) => {
     setQuantities((prev) => {
       const current = prev[tierKey] ?? 0;
@@ -211,6 +226,12 @@ export const PaidEventTicket = ({
           </Badge>
         )}
       </div>
+      {refundNote && (
+        <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <img src={shieldTick} alt="" className="size-3.5 shrink-0" />
+          {refundNote}
+        </p>
+      )}
       <div className="mt-6 space-y-5">
         {ticketTiers.map((tier, idx) => {
           const key = getTierId(tier, idx);

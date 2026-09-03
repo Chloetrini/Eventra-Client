@@ -15,6 +15,7 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Memoize DISPLAY_EVENTS to preserve array identity across renders
   const DISPLAY_EVENTS = useMemo(() => events.slice(0, 3), [events]);
@@ -26,14 +27,14 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
 
   // Infinite timer loop setup
   useEffect(() => {
-    if (total <= 1 || isHovered) return;
+    if (total <= 1 || isHovered || isDragging) return;
 
     const interval = setInterval(() => {
       handleNext();
     }, 3500);
 
     return () => clearInterval(interval);
-  }, [total, isHovered, handleNext]);
+  }, [total, isHovered, isDragging, handleNext]);
 
   if (total === 0) return null;
 
@@ -51,8 +52,16 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
   return (
     <div
       className="relative w-full h-[380px] select-none"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      // Pausing on hover only makes sense for an actual mouse — on a
+      // touchscreen (tablets/laptops at >=lg width, which is where this
+      // carousel shows — see the `hidden lg:flex` wrapper in home/index.tsx),
+      // a tap fires a synthetic mouseenter with no matching mouseleave until
+      // the user taps elsewhere, so isHovered got stuck `true` forever and
+      // the carousel looked completely static/frozen ("not moving") on any
+      // touch-capable screen. Gating on e.pointerType === "mouse" means only
+      // a real mouse can pause it; a tap/touch never sets isHovered at all.
+      onPointerEnter={(e) => { if (e.pointerType === "mouse") setIsHovered(true); }}
+      onPointerLeave={(e) => { if (e.pointerType === "mouse") setIsHovered(false); }}
     >
       {/* Back Card */}
       {backEvent && (
@@ -100,7 +109,11 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.15}
-          onDragEnd={handleDragEnd}
+          onDragStart={() => setIsDragging(true)}
+          onDragEnd={(...args) => {
+            setIsDragging(false);
+            handleDragEnd(...args);
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();

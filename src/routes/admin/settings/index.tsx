@@ -440,6 +440,30 @@ export default function PlatformSettings() {
     )
   }
 
+  // Admin in-app bell notifications for approvals/refunds/reports were
+  // always on with no way to turn any of them off — the account already
+  // stores a preference per category (adminNotificationPreferences) and
+  // the backend already accepts updates to it on this same profile
+  // endpoint (see updateProfile, user.controller.ts), but nothing on this
+  // page ever rendered a control for it. These three toggles are that
+  // missing control, following the same currency-toggle pattern above:
+  // save through updateProfileMutation, then push the fresh user back
+  // into auth context so the toggle reflects the saved state immediately.
+  const onAdminNotificationToggle = async (
+    key: "approvals" | "refunds" | "reports",
+    checked: boolean
+  ) => {
+    if (updateProfileMutation.isPending) return
+    try {
+      const updatedUser = await updateProfileMutation.mutateAsync({
+        adminNotificationPreferences: { [key]: checked },
+      })
+      setUser(updatedUser as User)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not update notification setting")
+    }
+  }
+
   if (!isOwner) {
     return (
       <PageWrapper className="flex flex-col gap-6 p-[20px]">
@@ -567,6 +591,58 @@ export default function PlatformSettings() {
               </p>
             </div>
             <ToggleSwitch checked={settings?.maintenanceMode ?? false} onCheckedChange={onMaintenanceModeChange} />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Notifications — the bell-icon in-app notifications you personally
+          get as an admin for approvals/refunds/reports. Admins don't get
+          emails for these (in-app only, by design), and every other admin
+          account on the team sets these independently for themselves —
+          this only ever changes your own account's preferences. */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Notifications</CardTitle>
+        </CardHeader>
+        <div className="border mx-4"/>
+        <CardContent className="flex flex-col gap-4 sm:grid-cols-2">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-foreground">Approvals</p>
+              <p className="text-xs text-muted-foreground">
+                New organizer, event and promotion approvals waiting on you
+              </p>
+            </div>
+            <ToggleSwitch
+              checked={user?.adminNotificationPreferences?.approvals ?? true}
+              onCheckedChange={(checked) => onAdminNotificationToggle("approvals", checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-foreground">Refunds</p>
+              <p className="text-xs text-muted-foreground">
+                New refund requests waiting on your review
+              </p>
+            </div>
+            <ToggleSwitch
+              checked={user?.adminNotificationPreferences?.refunds ?? true}
+              onCheckedChange={(checked) => onAdminNotificationToggle("refunds", checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-foreground">Reports</p>
+              <p className="text-xs text-muted-foreground">
+                Events or organizers flagged/reported by attendees
+              </p>
+            </div>
+            <ToggleSwitch
+              checked={user?.adminNotificationPreferences?.reports ?? true}
+              onCheckedChange={(checked) => onAdminNotificationToggle("reports", checked)}
+            />
           </div>
         </CardContent>
       </Card>

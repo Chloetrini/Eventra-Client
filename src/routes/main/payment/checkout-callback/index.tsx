@@ -75,6 +75,21 @@ const CheckoutCallback = () => {
                 // generic "Paid" label.
                 ticketType: t.ticketType ?? null,
               })),
+              // getOrderByReference already converts every amount on this
+              // order (including each ticket's price) into the viewer's
+              // own currency and tells us which one via `order.currency` —
+              // this just wasn't being read here, so the confirmation
+              // screen always fell back to formatting whatever number it
+              // got as if it were Naira, even when it was actually a small
+              // Dollar/Cedis/Pound figure. See confirmatory-message.tsx.
+              currency: order.currency,
+              // The real, settled total for this order (already converted
+              // into `currency` above) — used instead of having the
+              // confirmation screen try to reconstruct a total from
+              // per-ticket prices, which for a multi-ticket order was
+              // multiplying an already-summed figure by the ticket count
+              // again (see ConfirmatoryMessage).
+              amountPaid: order.total,
               event: {
                 eventId: order.event?._id,
                 eventName: order.event?.title,

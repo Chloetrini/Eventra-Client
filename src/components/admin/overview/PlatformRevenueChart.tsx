@@ -84,7 +84,13 @@ export default function PlatformRevenueChart() {
           </>
         )}
       </div>
-      <p className="mt-1 text-xs text-muted-foreground">Commission (5%) + promotion fees</p>
+      <p className="mt-1 text-xs text-muted-foreground">
+        {/* Was a hardcoded "Commission (5%)" regardless of the actual
+            rate in Settings — now reads the live commissionRatePct from
+            the same overview fetch this card already makes, so it stays
+            correct the moment an admin changes the commission rate. */}
+        Commission ({isLoading || !data ? "…" : data.commissionRatePct}%) + promotion fees
+      </p>
 
       <div
         className="mt-4 h-55"

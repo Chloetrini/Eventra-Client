@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { z } from "zod";
+import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,6 +60,20 @@ export default function ForgotPassword() {
 
   return (
     <div className="flex flex-col">
+      {/* Reaching this page always means you came from somewhere (login,
+          most often) — a plain browser-history back, not a fixed
+          destination like the "Back to Sign in" link further down, which
+          always goes to login specifically even if that's not actually
+          where you came from. */}
+      <button
+        type="button"
+        onClick={() => navigate(-1)}
+        aria-label="Go back"
+        className="mb-6 flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back
+      </button>
       <Link to="/" className="flex items-center gap-2 mb-12 w-fit">
         <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
         <span className="text-[22.8px] font-extrabold tracking-[-0.02em] text-foreground">

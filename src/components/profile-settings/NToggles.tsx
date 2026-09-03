@@ -110,7 +110,14 @@ const updateProfileMutation = useUpdateProfile();
                 checked: toggles[item.id],
                 onCheckedChange: (checked: boolean) => handleToggle(item.id, checked),
               } as any)}
-              className="h-10 w-14.5 data-[state=checked]:bg-[#0F6E56] data-[state=unchecked]:bg-gray-200 dark:data-[state=unchecked]:bg-white/10 [&>span]:h-10 [&>span]:w-10 [&>span]:data-[state=checked]:translate-x-[calc(100%-4px)] [&>span]:data-[state=unchecked]:translate-x-0.5 shrink-0"
+              // The Switch primitive (ui/switch.tsx) is base-ui, which
+              // stamps data-checked/data-unchecked on the root — not
+              // data-state="checked"/"unchecked" (that's Radix's
+              // convention this was written for). Since it never matched,
+              // every toggle fell through to the component's own default
+              // checked color (--primary, a dark neutral, not green)
+              // regardless of what this override intended.
+              className="h-10 w-14.5 data-checked:bg-[#0F6E56] data-unchecked:bg-gray-200 dark:data-unchecked:bg-white/10 [&>span]:h-10 [&>span]:w-10 [&>span]:data-checked:translate-x-[calc(100%-4px)] [&>span]:data-unchecked:translate-x-0.5 shrink-0"
             />
           </div>
         ))}

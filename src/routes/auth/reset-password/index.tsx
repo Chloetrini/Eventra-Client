@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -148,6 +148,19 @@ export default function ResetPassword() {
 
   return (
     <div className="flex flex-col">
+      {/* Same page-level history-back as forgot-password/check-email —
+          distinct from the "Need to re-enter the code? Go back" button
+          further down, which only steps between this page's own otp/
+          password sub-steps rather than leaving the page. */}
+      <button
+        type="button"
+        onClick={() => navigate(-1)}
+        aria-label="Go back"
+        className="mb-6 flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back
+      </button>
       <Link to="/" className="flex items-center gap-2 mb-[53px] w-fit">
         <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
         <span className="text-[22.8px] font-extrabold text-foreground tracking-[-0.02em]">

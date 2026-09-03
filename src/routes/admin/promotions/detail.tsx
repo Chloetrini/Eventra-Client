@@ -6,7 +6,7 @@ import PaymentBtn from "@/components/ui/pay-method-btn"
 import { Separator } from "@/components/ui/separator"
 import PageWrapper from "@/components/page-wrapper"
 import { Skeleton } from "@/components/ui/skeleton"
-import { formatNaira, formatDate } from "@/lib/utils"
+import { formatNaira, formatDate, formatPromoReference } from "@/lib/utils"
 import {
   useAdminPromotionDetail,
   useApproveEventPromotion,
@@ -178,8 +178,15 @@ const AdminPromotionDetailPage = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Paystack reference</span>
-                <span className="font-bold text-right break-all">
-                  {promotion.paystackReference ?? "—"}
+                {/* Full reference kept in the title tooltip (and still
+                    copyable from there) — shortened here to "PROMO-<last
+                    8 chars>" since the raw value is a long opaque id that
+                    just wrapped/cluttered this row. */}
+                <span
+                  className="font-bold text-right break-all"
+                  title={promotion.paystackReference ?? undefined}
+                >
+                  {formatPromoReference(promotion.paystackReference)}
                 </span>
               </div>
               {(promotion.status === "approved" || promotion.status === "expired") && (

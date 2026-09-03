@@ -13,6 +13,7 @@ import { contactSchema } from "@/lib/schema";
 import { z } from "zod";
 import PageWrapper from "@/components/page-wrapper";
 import LocationMap from "@/components/dashboard-create-event/location-map";
+import { Reveal } from "@/components/ui/Reveal";
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
@@ -58,7 +59,7 @@ export default function ContactPage() {
      <PageWrapper className="p-[20px]">
 
         <div className="flex flex-col gap-10 lg:flex-row lg:items-stretch xl:gap-14">
-          <div className="flex flex-1 flex-col lg:max-w-[46%]">
+          <Reveal className="flex flex-1 flex-col lg:max-w-[46%]">
             <div className="mb-5 flex items-center gap-2">
               <span className="h-0.5 w-6 bg-amber-400" />
               <span className="text-xs font-semibold tracking-widest text-emerald-700 dark:text-emerald-400">CONTACT</span>
@@ -90,9 +91,9 @@ export default function ContactPage() {
                 <p className="text-xl font-bold text-white sm:text-2xl">6,214 events &middot; 42 cities</p>
               </div>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="flex flex-1 flex-col rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8 lg:p-10">
+          <Reveal delayMs={100} className="flex flex-1 flex-col rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8 lg:p-10">
             <span className="inline-flex w-fit items-center rounded-full bg-emerald-50 dark:bg-emerald-500/15 px-3 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">&middot; Send a message</span>
 
             <h2 className="mt-4 text-xl font-bold text-foreground sm:text-2xl">How can we help?</h2>
@@ -169,10 +170,10 @@ export default function ContactPage() {
               <ContactRow icon={<Phone className="h-4 w-4" />} label="PHONE" value="+234 800 000 0000" href="tel:+2348000000000" />
               <ContactRow icon={<MapPin className="h-4 w-4" />} label="OFFICE" value="Yaba, Lagos, Nigeria" href={MAP_LINK} />
             </div>
-          </div>
+          </Reveal>
         </div>
 
-        <div className="mt-20 sm:mt-24">
+        <Reveal className="mt-20 sm:mt-24">
           <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
             <div>
               <div className="mb-4 flex items-center gap-2">
@@ -204,8 +205,8 @@ export default function ContactPage() {
             openLabel="Open now"
             className="rounded-3xl shadow-sm"
           />
-        </div>
-        
+        </Reveal>
+
      </PageWrapper>
       
     </div>

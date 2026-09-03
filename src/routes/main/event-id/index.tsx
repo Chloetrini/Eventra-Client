@@ -23,6 +23,7 @@ import { useAuth } from "@/context/auth.context";
 import { getExploreUrl } from "@/lib/explore-history";
 import { useEvent, useEventTickets } from "@/hooks/use-event";
 import { EventDetailsSkeleton } from "@/components/skeletons/event-details-skeleton";
+import { Reveal } from "@/components/ui/Reveal";
 
 const EventDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -76,28 +77,45 @@ const EventDetailPage = () => {
 
       <div className="mt-8 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-12">
         <div className="flex-1 space-y-8">
-          <EventInfo event={event} />
-          <AboutEvent event={event} />
+          {/* EventHero above and the sticky ticket widget on the right stay
+              un-animated — they carry the buy/RSVP action, so they should
+              never be waiting on a scroll-triggered fade to become
+              visible/usable. Everything below is informational, so it
+              fades in as you scroll to it like the rest of the site. */}
+          <Reveal>
+            <EventInfo event={event} />
+          </Reveal>
+          <Reveal>
+            <AboutEvent event={event} />
+          </Reveal>
           <Separator />
 
           {event.lineup && event.lineup.length > 0 && (
             <>
-              <EventLineUp event={event} />
+              <Reveal>
+                <EventLineUp event={event} />
+              </Reveal>
               <Separator />
             </>
           )}
 
-          <EventMap location={event.venue} />
+          <Reveal>
+            <EventMap location={event.venue} />
+          </Reveal>
 
           {event.organizer && (
             <>
               <Separator />
-              <EventOrganizer event={event} />
+              <Reveal>
+                <EventOrganizer event={event} />
+              </Reveal>
             </>
           )}
 
           {event.goodToKnow && event.goodToKnow.length > 0 && (
-            <GoodToKnow items={event.goodToKnow} />
+            <Reveal>
+              <GoodToKnow items={event.goodToKnow} />
+            </Reveal>
           )}
         </div>
 
@@ -133,7 +151,11 @@ const EventDetailPage = () => {
         </div>
       </div>
 
-      {relatedEvents.length > 0 && <RelatedEvents events={relatedEvents} />}
+      {relatedEvents.length > 0 && (
+        <Reveal>
+          <RelatedEvents events={relatedEvents} />
+        </Reveal>
+      )}
     </PageWrapper>
   );
 };

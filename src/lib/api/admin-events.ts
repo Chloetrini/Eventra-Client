@@ -36,6 +36,10 @@ interface RawAdminEventDetail extends RawAdminEventListItem {
   flagReason?: string;
   category?: { _id: string; name: string };
   ticketTypes: { _id: string; name: string; price: number; quantity: number }[];
+  // getEventDetailForAdmin already converts every price on this response
+  // (event.minPrice, each ticketType.price) into the admin's own viewer
+  // currency and returns it here — was never read on this side.
+  currency?: string;
 }
 
 export interface FetchAdminEventsParams {
@@ -144,6 +148,7 @@ function mapDetail(raw: RawAdminEventDetail): AdminEvent {
       verified: raw.organizer?.organizerProfile?.approvalStatus === "approved",
     },
     ticketTypes: raw.ticketTypes.map(t => ({ id: t._id, name: t.name, price: t.price, quantity: t.quantity })),
+    currency: raw.currency,
   };
 
   return { ...base, details };

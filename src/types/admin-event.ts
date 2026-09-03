@@ -37,6 +37,12 @@ export interface AdminEventDetailsData {
   ticketTypes: AdminEventTicketType[];
   organizer: AdminEventOrganizer;
   bannerImage?: string;
+  // Admin's own viewer currency (from the backend's `currency` field on
+  // this response) — every ticketType price above is already converted
+  // into it. Was being fetched but silently dropped before reaching this
+  // type, so the ticket price table had no way to show which currency
+  // symbol applied.
+  currency?: string;
 }
 
 export interface AdminEvent {

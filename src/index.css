@@ -211,3 +211,45 @@
     90%,
     100% {transform:scale(var(--s,1)) translate(10px,-10px) rotate(-90deg)}
 }
+
+/* Home hero "POPULAR" categories row (PopularCategoriesMarquee.tsx) — an
+   infinite-loop marquee. The track is two identical copies of the
+   category list back to back, so translating exactly -50% and jumping
+   back to 0% is invisible. */
+@keyframes popular-categories-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-popular-categories-scroll {
+  animation: popular-categories-scroll 22s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-popular-categories-scroll {
+    animation: none;
+  }
+}
+
+/* Scroll-reveal (components/ui/Reveal.tsx) — used across the home page so
+   sections fade + slide up into place as you scroll to them, instead of
+   just being fully rendered from first paint. The component toggles
+   .reveal-on-scroll-visible via an IntersectionObserver; this is just the
+   two CSS states plus the reduced-motion override (shows everything at
+   full opacity/position immediately, no animation, for a viewer who's
+   asked for reduced motion). */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.reveal-on-scroll-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on-scroll {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

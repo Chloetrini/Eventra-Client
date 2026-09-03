@@ -22,6 +22,17 @@ import { AddBankAccountDialog } from "@/components/add-bank-account";
 import { Switch } from "@/components/ui/switch";
 import { CurrencyPreference } from "@/components/profile-settings/CurrencyPreference";
 
+// The Switch primitive (ui/switch.tsx) defaults its checked color to
+// --primary (a dark neutral, not brand green) since that token is shared
+// with buttons/etc. site-wide — these notification toggles had no
+// override at all, so every one of them read as "on = black" instead of
+// the brand green used for "on"/positive state elsewhere. base-ui (what
+// Switch wraps) stamps data-checked/data-unchecked, not Radix's
+// data-state="checked" — same fix as the attendee notification toggles
+// (NToggles.tsx) needed.
+const GREEN_SWITCH_CLASSNAME =
+  "data-checked:bg-[#0F6E56] dark:data-checked:bg-[#4ADE80] data-unchecked:bg-gray-200 dark:data-unchecked:bg-white/10";
+
 export default function Settings() {
   const queryClient = useQueryClient();
   const { status: organizerStatus, isLoading: statusLoading } = useOrganizerStatus();
@@ -413,6 +424,7 @@ export default function Settings() {
             <Switch
               checked={formData.notifications.newTicketSales}
               onCheckedChange={() => handleToggleNotification("newTicketSales")}
+              className={GREEN_SWITCH_CLASSNAME}
             />
           </div>
 
@@ -430,6 +442,7 @@ export default function Settings() {
               onCheckedChange={() =>
                 handleToggleNotification("dailySalesSummary")
               }
+              className={GREEN_SWITCH_CLASSNAME}
             />
           </div>
 
@@ -447,6 +460,7 @@ export default function Settings() {
               onCheckedChange={() =>
                 handleToggleNotification("payoutConfirmations")
               }
+              className={GREEN_SWITCH_CLASSNAME}
             />
           </div>
 
@@ -463,6 +477,7 @@ export default function Settings() {
             <Switch
               checked={formData.notifications.eventApprovals}
               onCheckedChange={() => handleToggleNotification("eventApprovals")}
+              className={GREEN_SWITCH_CLASSNAME}
             />
           </div>
         </div>

@@ -46,6 +46,9 @@ interface RawAdminOverview {
     heldInEscrow: number;
     activeEventsCount: number;
     activeOrganizersCount: number;
+    // Live commission % from PlatformSettings — see getAdminOverview's
+    // comment on this field, admin.controller.ts.
+    commissionRatePct: number;
   };
   revenueSeries: { label: string; amount: number }[];
   trustAndSafety: {
@@ -315,6 +318,7 @@ export async function getPlatformRevenue(range: RevenueRange): Promise<PlatformR
     // own axis/tooltip formatting — which format raw numbers, not the
     // pre-formatted string above — can use the same currency.
     currency: raw.currency,
+    commissionRatePct: raw.stats.commissionRatePct,
   };
 }
 

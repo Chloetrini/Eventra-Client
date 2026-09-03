@@ -108,7 +108,7 @@ const SideBar: React.FC<SideBarProps> = ({ organization, isOpen = false, onClose
           that width, so they were overlapping. flex-wrap lets the badge
           drop to its own line instead of overlapping the close button,
           and the tightened gaps/padding buy back a bit more room besides. */}
-      <div className="flex items-start justify-between gap-2 px-4 sm:px-6 pt-6 pb-4">
+      <div className="flex items-start justify-between gap-2 px-4 sm:px-3 pt-6 pb-4">
         <div className="flex items-center gap-2 min-w-0 flex-wrap">
           <div className='flex flex-row items-center gap-1 shrink-0'>
             <Link

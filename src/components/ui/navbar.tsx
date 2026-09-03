@@ -286,16 +286,22 @@ function Navbar() {
               )}
             </div>
 
-            {/* Mobile toggle */}
-            <button
-              type="button"
-              className="ml-auto inline-flex size-9 items-center justify-center rounded-md text-[#1A1523] dark:text-white lg:hidden"
-              aria-label={open ? "Close menu" : "Open menu"}
-              aria-expanded={open}
-              onClick={() => setOpen((v) => !v)}
-            >
-              {open ? <X className="size-5" /> : <Menu className="size-5" />}
-            </button>
+            {/* Mobile-only: the notification bell sits beside the hamburger,
+                always visible, rather than buried inside the drawer it
+                opens (which is where it used to live, under a
+                "Notifications" row you had to open the menu to reach). */}
+            <div className="ml-auto flex items-center gap-2 lg:hidden">
+              {user && <NotificationBell />}
+              <button
+                type="button"
+                className="inline-flex size-9 items-center justify-center rounded-md text-[#1A1523] dark:text-white"
+                aria-label={open ? "Close menu" : "Open menu"}
+                aria-expanded={open}
+                onClick={() => setOpen((v) => !v)}
+              >
+                {open ? <X className="size-5" /> : <Menu className="size-5" />}
+              </button>
+            </div>
           </div>
 
           {/* Mobile nav */}
@@ -311,15 +317,6 @@ function Navbar() {
                 </span>
                 {ThemeToggleButton}
               </div>
-
-              {user && (
-                <div className="flex items-center justify-between py-2 border-t border-[#E8E6E0] dark:border-white/10">
-                  <span className="text-sm font-semibold text-[#1A1523] dark:text-white">
-                    Notifications
-                  </span>
-                  <NotificationBell />
-                </div>
-              )}
 
               <div className="mt-2 flex flex-col gap-2">
                 {user ? (

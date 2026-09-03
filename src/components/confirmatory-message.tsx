@@ -52,6 +52,9 @@ const ConfirmatoryMessage = ({
             <div className='text-center text-muted-foreground'>
                 <p>Your {totalTickets}  <span>{totalTickets === 1 ? "ticket" : "tickets"}</span> to <span className='font-semibold hover:underline'><a href={`/events/${slug}`}>{eventName}</a></span> are confirmed.</p>
                 <p>ORDER.{orderID} - {isFree ? "" : formatNaira(total)} {isFree ? "FREE" : "PAID"}</p>
+                {amountPaid !== undefined && (
+                    <p className='font-bold'>Total Paid: {currency} {amountPaid}</p>
+                )}
             </div>
         </div>
     )

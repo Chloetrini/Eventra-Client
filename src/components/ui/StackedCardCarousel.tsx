@@ -3,7 +3,12 @@ import { UI_ASSETS } from "@/lib/assets";
 import { Format, shortEventNo } from "@/lib/utils";
 import { Link, useNavigate } from "react-router";
 import type { Event } from "@/types/event-types";
-import { motion, AnimatePresence, type PanInfo } from "framer-motion";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 
 interface StackedCardCarouselProps {
   events: Event[];
@@ -13,55 +18,65 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
   events,
 }) => {
   const navigate = useNavigate();
+  const [api, setApi] = useState<CarouselApi>();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
 
-  // Memoize DISPLAY_EVENTS to preserve array identity across renders
+  // Memoize DISPLAY_EVENTS to preserve array identity
   const DISPLAY_EVENTS = useMemo(() => events.slice(0, 3), [events]);
   const total = DISPLAY_EVENTS.length;
 
-  const handleNext = useCallback(() => {
-    setActiveIndex((prev) => (prev + 1) % total);
-  }, [total]);
-
-  // Infinite timer loop setup
+  // Infinite timer loop setup - works for both desktop hover & mobile touch
   useEffect(() => {
-    if (total <= 1 || isHovered || isDragging) return;
+    if (!api || total <= 1 || isHovered) return;
 
     const interval = setInterval(() => {
-      handleNext();
+      if (api.canScrollNext()) {
+        api.scrollNext();
+      } else {
+        api.scrollTo(0);
+      }
     }, 3500);
 
     return () => clearInterval(interval);
-  }, [total, isHovered, isDragging, handleNext]);
+  }, [api, total, isHovered]);
+
+  // Keep decorative back/middle cards in sync with active index
+  useEffect(() => {
+    if (!api) return;
+
+    const onSelect = () => {
+      setActiveIndex(api.selectedScrollSnap());
+    };
+
+    setActiveIndex(api.selectedScrollSnap());
+    api.on("select", onSelect);
+    api.on("reInit", onSelect);
+
+    return () => {
+      api.off("select", onSelect);
+      api.off("reInit", onSelect);
+    };
+  }, [api]);
+
+  const goToEvent = useCallback(
+    (slug: string) => navigate(`/events/${slug}`),
+    [navigate]
+  );
 
   if (total === 0) return null;
 
-  const handleDragEnd = (_: unknown, info: PanInfo) => {
-    if (info.offset.x < -40 || info.offset.x > 40) {
-      handleNext();
-    }
-  };
-
-  // Compute card positions safely based on current activeIndex
-  const frontEvent = DISPLAY_EVENTS[activeIndex % total];
+  // Compute decorative card positions
   const middleEvent = total > 1 ? DISPLAY_EVENTS[(activeIndex + 1) % total] : null;
   const backEvent = total > 2 ? DISPLAY_EVENTS[(activeIndex + 2) % total] : null;
 
   return (
     <div
-      className="relative w-full h-[380px] select-none"
-      // Pausing on hover only makes sense for an actual mouse — on a
-      // touchscreen (tablets/laptops at >=lg width, which is where this
-      // carousel shows — see the `hidden lg:flex` wrapper in home/index.tsx),
-      // a tap fires a synthetic mouseenter with no matching mouseleave until
-      // the user taps elsewhere, so isHovered got stuck `true` forever and
-      // the carousel looked completely static/frozen ("not moving") on any
-      // touch-capable screen. Gating on e.pointerType === "mouse" means only
-      // a real mouse can pause it; a tap/touch never sets isHovered at all.
-      onPointerEnter={(e) => { if (e.pointerType === "mouse") setIsHovered(true); }}
-      onPointerLeave={(e) => { if (e.pointerType === "mouse") setIsHovered(false); }}
+      className="relative w-full h-[380px] select-none touch-pan-y"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={() => setIsHovered(true)}
+      onTouchEnd={() => setIsHovered(false)}
     >
       {/* Back Card */}
       {backEvent && (
@@ -99,37 +114,43 @@ export const StackedCardCarousel: React.FC<StackedCardCarouselProps> = ({
         </div>
       )}
 
-      {/* Front Active Card (Slide Transition) */}
-      <AnimatePresence mode="popLayout" initial={false}>
-        <motion.div
-          key={frontEvent.slug}
-          onClick={() => navigate(`/events/${frontEvent.slug}`)}
-          role="button"
-          tabIndex={0}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.15}
-          onDragStart={() => setIsDragging(true)}
-          onDragEnd={(...args) => {
-            setIsDragging(false);
-            handleDragEnd(...args);
+      {/* Front Active Card - Embla Carousel */}
+      <div
+        className="absolute w-full bg-white dark:bg-card border border-border rounded-2xl overflow-hidden shadow-2xl cursor-grab active:cursor-grabbing touch-pan-y"
+        style={{ zIndex: 30, top: 0, right: 0 }}
+      >
+        <Carousel
+          setApi={setApi}
+          opts={{
+            loop: true,
+            watchDrag: total > 1,
+            dragFree: false,
+            skipSnaps: false,
           }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              navigate(`/events/${frontEvent.slug}`);
-            }
-          }}
-          className="absolute w-full bg-white dark:bg-card border border-border rounded-2xl overflow-hidden shadow-2xl cursor-grab active:cursor-grabbing"
-          style={{ zIndex: 30, top: 0, right: 0 }}
-          initial={{ x: "100%", opacity: 0, scale: 0.96 }}
-          animate={{ x: 0, opacity: 1, scale: 1 }}
-          exit={{ x: "-100%", opacity: 0, scale: 0.96 }}
-          transition={{ duration: 0.55, ease: [0.32, 0.72, 0, 1] }}
+          className="w-full"
         >
-          <CardContent event={frontEvent} />
-        </motion.div>
-      </AnimatePresence>
+          <CarouselContent className="-ml-0">
+            {DISPLAY_EVENTS.map((event) => (
+              <CarouselItem key={event.slug} className="pl-0 basis-full">
+                <div
+                  onClick={() => goToEvent(event.slug)}
+                  role="button"
+                  tabIndex={0}
+                  className="w-full h-full block"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      goToEvent(event.slug);
+                    }
+                  }}
+                >
+                  <CardContent event={event} />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      </div>
     </div>
   );
 };
@@ -140,13 +161,14 @@ const CardContent: React.FC<{ event: Event }> = ({ event }) => (
       <img
         src={event.coverImage}
         alt={event.title}
-        className="w-full h-full object-cover pointer-events-none"
+        className="w-full h-full object-cover pointer-events-none select-none"
+        draggable={false}
       />
-      <span className="absolute top-3 left-3 bg-[#F5A524] text-black text-[12px] font-medium font-geist px-3 py-1 rounded-full flex items-center gap-1 shadow-xs">
+      <span className="absolute top-3 left-3 bg-[#F5A524] text-black text-[12px] font-medium font-geist px-3 py-1 rounded-full flex items-center gap-1 shadow-xs pointer-events-none">
         <img className="h-3 w-3" src={UI_ASSETS.star} alt="star" />
         Featured
       </span>
-      <span className="absolute top-3 right-3 text-white font-bold text-[12px] font-space tracking-widest drop-shadow-md">
+      <span className="absolute top-3 right-3 text-white font-bold text-[12px] font-space tracking-widest drop-shadow-md pointer-events-none">
         № {shortEventNo(event)}
       </span>
     </div>

@@ -12,13 +12,17 @@ type ConfirmatoryMessageProps = {
         quantity: number
     }[]
     slug?: string
+    currency?: string
+    amountPaid?: number
 }
 
 const ConfirmatoryMessage = ({
     eventName,
     orderID,
     ticketDetails,
-    slug
+    slug,
+    currency,
+    amountPaid
 }: ConfirmatoryMessageProps) => {
 
     const totalTickets = ticketDetails.reduce(

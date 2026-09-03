@@ -18,7 +18,9 @@ import {
   Settings,
   Home,
   X,
+  Mail,
 } from 'lucide-react';
+
 
 // The single top-level item — sits above the sectioned nav, no header
 // label above it (matches the Figma: "Overview" is its own row, not
@@ -36,6 +38,7 @@ const needsActionItems = [
   { icon: ClipboardCheck, label: 'Approvals', path: '/admin/approvals', countKey: 'pendingApprovals' as const },
   { icon: Undo2, label: 'Refunds', path: '/admin/refunds', countKey: 'pendingRefunds' as const },
   { icon: FileWarning, label: 'Reports', path: '/admin/reports', countKey: 'flaggedReports' as const, urgent: true },
+  { icon: Mail, label: 'Enquiries', path: '/admin/enquiries', countKey: 'unreadEnquiries' as const },
 ];
 
 const manageItems = [
@@ -102,7 +105,7 @@ const SideBar: React.FC<AdminSideBarProps> = ({ isOpen = false, onClose }) => {
     icon: React.ComponentType<{ className?: string }>;
     label: string;
     path: string;
-    countKey?: 'pendingApprovals' | 'pendingRefunds' | 'flaggedReports';
+    countKey?: 'pendingApprovals' | 'pendingRefunds' | 'flaggedReports' | 'unreadEnquiries';
     urgent?: boolean;
   }) => {
     const active = isActive(item.path);

@@ -449,20 +449,20 @@ export default function PlatformSettings() {
   // missing control, following the same currency-toggle pattern above:
   // save through updateProfileMutation, then push the fresh user back
   // into auth context so the toggle reflects the saved state immediately.
-  const onAdminNotificationToggle = async (
-    key: "approvals" | "refunds" | "reports",
-    checked: boolean
-  ) => {
-    if (updateProfileMutation.isPending) return
-    try {
-      const updatedUser = await updateProfileMutation.mutateAsync({
-        adminNotificationPreferences: { [key]: checked },
-      })
-      setUser(updatedUser as User)
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not update notification setting")
-    }
+const onAdminNotificationToggle = async (
+  key: "approvals" | "refunds" | "reports" | "enquiries",
+  checked: boolean
+) => {
+  if (updateProfileMutation.isPending) return
+  try {
+    const updatedUser = await updateProfileMutation.mutateAsync({
+      adminNotificationPreferences: { [key]: checked },
+    })
+    setUser(updatedUser as User)
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : "Could not update notification setting")
   }
+}
 
   if (!isOwner) {
     return (
@@ -642,6 +642,19 @@ export default function PlatformSettings() {
             <ToggleSwitch
               checked={user?.adminNotificationPreferences?.reports ?? true}
               onCheckedChange={(checked) => onAdminNotificationToggle("reports", checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-foreground">Enquiries</p>
+              <p className="text-xs text-muted-foreground">
+                New messages submitted through the contact form
+              </p>
+            </div>
+            <ToggleSwitch
+              checked={user?.adminNotificationPreferences?.enquiries ?? true}
+              onCheckedChange={(checked) => onAdminNotificationToggle("enquiries", checked)}
             />
           </div>
         </CardContent>

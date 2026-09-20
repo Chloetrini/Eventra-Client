@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
-import AdminEventsHeader from "@/components/admin/events/AdminEventsHeader";
+import AdminEventsHeader from "@/components/admin/events/admin-events-header";
 import AdminEventsFilterBar, {
   type StatusFilterOption,
-} from "@/components/admin/events/AdminEventsFilterBar";
-import AdminEventsTable from "@/components/admin/events/AdminEventsTable";
+} from "@/components/admin/events/admin-events-filter-bar";
+import AdminEventsTable from "@/components/admin/events/admin-events-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { useAdminEvents } from "@/hooks/use-admin-events";
+import { useAdminEvents } from "@/hooks/admin/use-admin-events";
 import type { AdminEvent } from "@/types/admin-event";
-import PageWrapper from "@/components/page-wrapper";
+import PageWrapper from "@/components/layout/page-wrapper";
 
 const PAGE_SIZE = 20;
 

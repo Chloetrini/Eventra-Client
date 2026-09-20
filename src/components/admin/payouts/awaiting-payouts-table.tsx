@@ -1,6 +1,6 @@
-import ActionBtn from "@/components/ui/action-btn"
-import type { AwaitingPayoutItem } from "@/lib/api/admin-payouts"
-import { useReleasePayout } from "@/hooks/use-admin-payouts"
+import ActionBtn from "@/components/shared/action-btn"
+import type { AwaitingPayoutItem } from "@/api/admin-payouts"
+import { useReleasePayout } from "@/hooks/admin/use-admin-payouts"
 import { CURRENCY_SYMBOLS } from "@/lib/utils"
 
 // Was hardcoded to ₦ regardless of the admin's currency preference.

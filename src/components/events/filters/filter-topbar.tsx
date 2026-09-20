@@ -9,7 +9,7 @@ import {
 import { STATES, type State } from "@/types/event-types";
 import { DATE_WINDOWS, type DateWindow } from "@/types/event-types"
 import { SORT_OPTIONS, type SortOption, ACCESS_OPTIONS } from "@/types/event-types";
-import { useEventSearchSuggestions } from "@/hooks/use-event-search-suggestions";
+import { useEventSearchSuggestions } from "@/hooks/events/use-event-search-suggestions";
 import { EventSearchSuggestions } from "@/components/search/event-search-suggestions";
 type TopBarProps = {
     searchValue: string;

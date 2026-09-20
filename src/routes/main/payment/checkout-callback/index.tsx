@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router";
-import { getOrderByReference } from "@/lib/tickets-api";
-import { useAuth } from "@/context/auth.context";
-import PageWrapper from "@/components/page-wrapper";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { getOrderByReference } from "@/api/tickets";
+import { useAuth } from "@/context/auth-context";
+import PageWrapper from "@/components/layout/page-wrapper";
+import { LoadingSpinner } from "@/components/shared/loading-spinner";
 import { AlertCircle } from "lucide-react";
 
 // This is the page Paystack sends a paying customer's browser BACK to after

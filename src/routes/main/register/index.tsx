@@ -1,12 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import ActionBtn from "@/components/ui/action-btn"
+import ActionBtn from "@/components/shared/action-btn"
 import { registerSchema } from "@/lib/schema"
 import { z } from "zod"
 import { useState } from "react"
-import { api } from "@/lib/api"
+import { api } from "@/api/client"
 import { useMutation } from "@tanstack/react-query"
-import { FormBox } from "@/components/ui/form-box"
+import { FormBox } from "@/components/form/form-box"
 import { toast } from "react-hot-toast"
 
 type registerSchemaType = z.infer<typeof registerSchema>

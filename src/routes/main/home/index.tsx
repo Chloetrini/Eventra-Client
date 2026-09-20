@@ -6,34 +6,34 @@ import { STATES } from "@/types/event-types";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import gpsUrl from "@/assets/gps.svg";
+import gpsUrl from "@/assets/icons/gps.svg";
 import { UI_ASSETS } from "@/lib/assets";
-import PageWrapper from "@/components/page-wrapper";
+import PageWrapper from "@/components/layout/page-wrapper";
 import { VibeGrid } from "@/components/events/vibe-grid";
 import { FeaturedEvents } from "@/components/events/featured-events";
-import { CtaBanner } from "@/components/ui/ctaBanner";
-import { StackedCardCarousel } from "@/components/ui/StackedCardCarousel";
-import { PopularCategoriesMarquee } from "@/components/events/PopularCategoriesMarquee";
-import { Reveal } from "@/components/ui/Reveal";
+import { CtaBanner } from "@/components/shared/cta-banner";
+import { StackedCardCarousel } from "@/components/shared/stacked-card-carousel";
+import { PopularCategoriesMarquee } from "@/components/events/popular-categories-marquee";
+import { Reveal } from "@/components/shared/reveal";
 
 import {
   STATS,
   FAQ_ITEMS,
   TESTIMONIALS,
-} from "@/lib/home-constants";
-import { fetchEvents, fetchThisWeekEvents } from "@/lib/events-api";
-import { useSpotlightEvents } from "@/hooks/use-event";
+} from "@/constants/home";
+import { fetchEvents, fetchThisWeekEvents } from "@/api/events";
+import { useSpotlightEvents } from "@/hooks/events/use-event";
 import { DEFAULT_FILTERS } from "@/types/event-types";
-import HowItWorks from "@/components/events/HowItWorks";
-import { OrganizersCta } from "@/components/events/OrganizersCta";
+import HowItWorks from "@/components/events/how-it-works";
+import { OrganizersCta } from "@/components/events/organizers-cta";
 import {
   HomeEventCountSkeleton,
   HomeHeroCardSkeleton,
   FeaturedEventsSkeleton,
 } from "@/components/skeletons/home-skeleton";
-import { useEventSearchSuggestions } from "@/hooks/use-event-search-suggestions";
+import { useEventSearchSuggestions } from "@/hooks/events/use-event-search-suggestions";
 import { EventSearchSuggestions } from "@/components/search/event-search-suggestions";
-import { useViewerCity } from "@/hooks/use-viewer-city";
+import { useViewerCity } from "@/hooks/events/use-viewer-city";
 
 const Home: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);

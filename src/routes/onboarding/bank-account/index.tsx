@@ -3,10 +3,10 @@ import { useNavigate } from "react-router"
 import BankDetailsForm from "@/components/onboarding/bank-details-form"
 import PageSwitcher from "@/components/onboarding/page-switcher"
 import { BANK_FIELDS, type OnboardingValues } from "@/lib/schema"
-import PageWrapper from "@/components/page-wrapper"
-import shieldPay from '@/assets/shieldPaywhite.png'
+import PageWrapper from "@/components/layout/page-wrapper"
+import shieldPay from '@/assets/icons/shield-paywhite.png'
 import { toast } from "react-toastify"
-import { useSaveOrganizerProfile, useListBanks } from "@/hooks/use-onboarding"
+import { useSaveOrganizerProfile, useListBanks } from "@/hooks/organizer/use-onboarding"
 
 const BankAccountPage = () => {
     const navigate = useNavigate()

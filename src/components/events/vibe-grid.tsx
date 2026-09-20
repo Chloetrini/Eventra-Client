@@ -1,5 +1,5 @@
 import React from "react";
-import { useCategories } from "@/hooks/use-event";
+import { useCategories } from "@/hooks/events/use-event";
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
 import { VibeGridSkeleton } from "@/components/skeletons/vibe-grid-skeleton";

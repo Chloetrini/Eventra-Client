@@ -1,12 +1,12 @@
-import LocationForm from '@/components/dashboard-create-event/location-form'
-import LocationSelector from '@/components/dashboard-create-event/location-selector'
-import MapPreview from '@/components/dashboard-create-event/map-preview'
+import LocationForm from '@/components/create-event/location-form'
+import LocationSelector from '@/components/create-event/location-selector'
+import MapPreview from '@/components/create-event/map-preview'
 import PageSwitcher from '@/components/onboarding/page-switcher'
-import PageWrapper from '@/components/page-wrapper'
+import PageWrapper from '@/components/layout/page-wrapper'
 import { useFormContext } from 'react-hook-form'
 import { LOCATION_FIELDS, type EventFormValues } from '@/lib/schema'
 import { useNavigate } from 'react-router'
-import { useCreateEventStep } from '@/components/dashboard-create-event/create-event-sidebar'
+import { useCreateEventStep } from '@/components/create-event/create-event-sidebar'
 
 const Location = () => {
     const { currentStep, totalSteps } = useCreateEventStep()

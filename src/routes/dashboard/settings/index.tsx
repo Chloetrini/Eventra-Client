@@ -6,21 +6,21 @@ import {
   updateBankAccount,
   updateNotificationPreferences,
   updateOrganizationProfile,
-} from "@/lib/settings";
-import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
-import { useAuth, type User } from "@/context/auth.context";
-import { useUploadAvatar } from "@/hooks/use-profile";
-import { UserAvatar } from "@/components/ui/user-avatar";
-import { AccountReviewBanner } from "@/components/account-review-banner";
+} from "@/api/organizer-settings";
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/api/organizer";
+import { useAuth, type User } from "@/context/auth-context";
+import { useUploadAvatar } from "@/hooks/shared/use-profile";
+import { UserAvatar } from "@/components/shared/user-avatar";
+import { AccountReviewBanner } from "@/components/organizer-dashboard/account-review-banner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Camera, Clock, Landmark, CheckCircle2, Loader2 } from "lucide-react";
 import type { BankAccount, OrganizationSettings } from "@/types/settings";
 import { Badge } from "@/components/ui/badge";
-import { AddBankAccountDialog } from "@/components/add-bank-account";
+import { AddBankAccountDialog } from "@/components/payouts/add-bank-account";
 import { Switch } from "@/components/ui/switch";
-import { CurrencyPreference } from "@/components/profile-settings/CurrencyPreference";
+import { CurrencyPreference } from "@/components/profile-settings/currency-preference";
 
 // The Switch primitive (ui/switch.tsx) defaults its checked color to
 // --primary (a dark neutral, not brand green) since that token is shared

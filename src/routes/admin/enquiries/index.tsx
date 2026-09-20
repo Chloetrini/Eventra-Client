@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { CheckCheck, Trash2 } from "lucide-react";
-import { useEnquiries, useMarkAllEnquiriesRead, useDeleteEnquiries } from "@/hooks/useEnquiries";
-import EnquiriesTable from "@/components/admin/enquiries/EnquiriesTable";
-import PageWrapper from "@/components/page-wrapper";
+import { useEnquiries, useMarkAllEnquiriesRead, useDeleteEnquiries } from "@/hooks/shared/use-enquiries";
+import EnquiriesTable from "@/components/admin/enquiries/enquiries-table";
+import PageWrapper from "@/components/layout/page-wrapper";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
-import ActionBtn from "@/components/ui/action-btn";
+import ActionBtn from "@/components/shared/action-btn";
 import {
   Dialog,
   DialogContent,

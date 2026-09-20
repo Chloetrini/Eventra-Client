@@ -3,9 +3,9 @@ import { useNavigate } from "react-router"
 import OrganisationForm from "@/components/onboarding/organisation-form"
 import PageSwitcher from "@/components/onboarding/page-switcher"
 import { ORGANISATION_FIELDS, type OnboardingValues } from "@/lib/schema"
-import PageWrapper from "@/components/page-wrapper"
+import PageWrapper from "@/components/layout/page-wrapper"
 import { toast } from "react-toastify"
-import { useSaveOrganizerProfile } from "@/hooks/use-onboarding"
+import { useSaveOrganizerProfile } from "@/hooks/organizer/use-onboarding"
 
 const OrganisationPage = () => {
     const navigate = useNavigate()

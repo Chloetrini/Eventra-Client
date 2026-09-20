@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import PageWrapper from "@/components/page-wrapper";
+import PageWrapper from "@/components/layout/page-wrapper";
 import { Skeleton } from "@/components/ui/skeleton";
 import AdminPromotionsFilterBar, {
   type PromotionStatusFilterOption,
-} from "@/components/admin/promotions/AdminPromotionsFilterBar";
-import AdminPromotionsTable from "@/components/admin/promotions/AdminPromotionsTable";
-import { useAdminPromotions } from "@/hooks/use-admin-promotions";
+} from "@/components/admin/promotions/admin-promotions-filter-bar";
+import AdminPromotionsTable from "@/components/admin/promotions/admin-promotions-table";
+import { useAdminPromotions } from "@/hooks/admin/use-admin-promotions";
 import type { AdminPromotion } from "@/types/admin-promotion";
 
 // Mirrors AdminEventsPage (routes/admin/events) — same header/filter/table

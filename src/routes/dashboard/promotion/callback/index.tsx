@@ -3,9 +3,9 @@ import { useNavigate, useSearchParams, Link } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { AlertCircle } from "lucide-react";
-import PageWrapper from "@/components/page-wrapper";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { fetchMyPromotions } from "@/lib/promotion-api";
+import PageWrapper from "@/components/layout/page-wrapper";
+import { LoadingSpinner } from "@/components/shared/loading-spinner";
+import { fetchMyPromotions } from "@/api/promotions";
 
 // This is the page Paystack sends an organizer's browser BACK to after they
 // pay to promote an event (the backend sets this as the callback_url when

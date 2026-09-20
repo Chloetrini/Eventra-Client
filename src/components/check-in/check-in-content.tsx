@@ -1,0 +1,198 @@
+import React, { useState, useCallback } from 'react';
+import { useSearchParams } from 'react-router';
+import { useQuery } from '@tanstack/react-query';
+import { fetchMyEvents } from '@/api/events';
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from '@/api/organizer';
+import { useCheckIn } from '@/hooks/organizer/use-check-in';
+import { AccountReviewBanner } from '@/components/organizer-dashboard/account-review-banner';
+import CheckInGateSection from '@/components/check-in/check-in-gate-section';
+import CheckInManualLookup from '@/components/check-in/check-in-manual-lookup';
+import QRScannerModal from '@/components/check-in/qr-scanner-modal';
+import CheckInSkeleton from '@/components/check-in/check-in-skeleton';
+import ScanCard from '@/components/check-in/scan-card';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { QrCode, Loader2 } from 'lucide-react';
+import { DottedGlowBackgroundDemo } from '@/components/organizer-dashboard/scan-animation';
+
+export default function CheckInContent() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { status } = useOrganizerStatus();
+  const { bankStatus } = useOrganizerBankStatus();
+  const { isProfileComplete } = useOrganizerProfileComplete();
+
+  // Every event that links here (QuickActionsCard, EventActionsMenu, the
+  // single-event details page) passes ?event=<id> — this was previously
+  // read from a route param that the route never actually declared, so
+  // it silently always fell back to a hardcoded '1'. Falls back to the
+  // organizer's first event when opened from the sidebar with no event
+  // pre-selected.
+  const { data: events = [], isLoading: eventsLoading } = useQuery({
+    queryKey: ['my-events'],
+    queryFn: fetchMyEvents,
+  });
+  const eventId = searchParams.get('event') ?? events[0]?._id ?? '';
+
+  const handleEventChange = useCallback((id: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('event', id);
+    setSearchParams(params);
+  }, [searchParams, setSearchParams]);
+
+  // ─── MODAL STATE ──────────────────────────────────────────────
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
+
+  // ─── ACTIVE MODE (online/offline) STATE ─────────────────────
+  const [isOnline, setIsOnline] = useState(true);
+
+  const {
+    filteredAttendees,
+    stats,
+    recentScan,
+    isLoading,
+    isError,
+    isCheckingIn,
+    isScanning,
+    error,
+    searchQuery,
+    setSearchQuery,
+    handleCheckIn,
+    handleQRCheckIn,
+    eventName,
+    eventImage,
+    refetch,
+  } = useCheckIn(eventId);
+
+  const onQRScan = useCallback(
+    async (ticketReference: string) => {
+      const success = await handleQRCheckIn(ticketReference);
+      if (success) {
+        setIsScannerOpen(false);
+      }
+      // On failure, the modal stays open and the camera keeps running —
+      // the organizer sees the error toast and can immediately try the
+      // next attendee's ticket without having to re-tap "Tap to start
+      // scan" each time. See handleQRCheckIn in useCheckIn.ts.
+    },
+    [handleQRCheckIn]
+  );
+
+  if (eventsLoading || (eventId && isLoading)) {
+    return <CheckInSkeleton />;
+  }
+
+  if (!eventsLoading && events.length === 0) {
+    return (
+      <div className="space-y-6">
+        <AccountReviewBanner
+          status={status}
+          bankStatus={bankStatus}
+          isProfileComplete={isProfileComplete} />
+        <p className="text-sm text-muted-foreground text-center py-12">
+          You don't have any events to check guests in for yet.
+        </p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center space-y-4">
+          <p className="text-destructive font-medium">Failed to load check-in data</p>
+          <p className="text-sm text-muted-foreground">
+            {error instanceof Error ? error.message : 'Please try again'}
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="px-4 py-2 bg-[#0F6E56] text-white rounded-lg hover:bg-[#0A5240] transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 pb-8 relative">
+      {/* Status Banner */}
+      <AccountReviewBanner
+        status={status}
+        bankStatus={bankStatus}
+        isProfileComplete={isProfileComplete} />
+
+      {/* TOP HEADER */}
+      <div className="relative mt-8 mb-2 flex flex-col sm:flex-row items-start sm:items-center justify-between">
+        <div className="space-y-1">
+          <span className="font-sans text-[#0F6E56] dark:text-[#4ADE80] font-medium text-sm md:text-[17px] leading-6 tracking-normal">At the Gate</span>
+          <h1 className="text-3xl font-grotesk font-bold text-foreground">Check-in</h1>
+          <p className="text-muted-foreground text-sm">scan tickets at the door, fast, even offline</p>
+        </div>
+
+        {/* ACTIVE MODE TOGGLE */}
+        <div className=" flex flex-col items-start sm:items-end gap-1.5 mt-4 sm:mt-0 shrink-0">
+          <span className="font-sans font-normal text-xs md:text-[16px] text-foreground leading-6.5 tracking-normal">Active mode</span>
+          <div className="flex items-center gap-2">
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-[#0F6E56] dark:bg-[#4ADE80]' : 'bg-gray-300 dark:bg-zinc-600'
+                }`}
+            />
+            <span className="font-sans font-light text-sm md:text-[14px] text-[#0F6E56] dark:text-[#4ADE80] leading-5.25 tracking-normal ">
+              {isOnline ? 'online' : 'offline'}
+            </span>
+            <Switch
+              checked={isOnline}
+              onCheckedChange={setIsOnline}
+              className="data-checked:bg-[#0F6E56]"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* MIDDLE ROW: DROPDOWN + PROGRESS */}
+      <div className="mb-14">
+        <CheckInGateSection
+          events={events}
+          selectedEventId={eventId}
+          onEventChange={handleEventChange}
+          eventsLoading={eventsLoading}
+          eventName={eventName || 'Event'}
+          eventImage={eventImage}
+          checkedInCount={stats.checkedIn}
+          totalAttendees={stats.totalAttendees}
+        />
+      </div>
+      {/* 2-COLUMN GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <DottedGlowBackgroundDemo
+          onClick={() => setIsScannerOpen(true)}
+          text={isScanning ? 'Verifying...' : 'Tap to start scan'}
+          disabled={isScanning || !eventId}
+        />
+        {recentScan && <ScanCard attendee={recentScan} />}
+
+        {/* RIGHT COLUMN */}
+        <div className="space-y-6">
+          <CheckInManualLookup
+            attendees={filteredAttendees}
+            searchQuery={searchQuery}
+            onSearch={setSearchQuery}
+            onAttendeeSelect={handleCheckIn}
+            isProcessing={isCheckingIn}
+          />
+        </div>
+      </div>
+
+      {/* MODAL OPENS HERE */}
+      <QRScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScan={onQRScan}
+        isScanning={isScanning}
+      />
+    </div>
+  );
+}
+
+export { default as CheckInContent } from '@/components/check-in/check-in-content';

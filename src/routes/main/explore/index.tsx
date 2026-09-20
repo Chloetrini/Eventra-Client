@@ -1,6 +1,6 @@
-import PageWrapper from "@/components/page-wrapper";
-import { useEventFilters } from "@/hooks/use-event-filters";
-import { useEvents, useCategories, useSpotlightEvents } from "@/hooks/use-event";
+import PageWrapper from "@/components/layout/page-wrapper";
+import { useEventFilters } from "@/hooks/events/use-event-filters";
+import { useEvents, useCategories, useSpotlightEvents } from "@/hooks/events/use-event";
 import { EventGrid } from "@/components/events/event-grid";
 import { FeaturedEventsCarousel } from "@/components/events/featured-event-carousel";
 import { FilterSidebar } from "@/components/events/filters/filter-sidebar";
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { TopBarFilter } from "@/components/events/filters/filter-topbar";
 import { useEffect } from "react";
 import { ArrowRight } from "lucide-react";
-import { useSavedEvents } from "@/hooks/use-saved-events";
+import { useSavedEvents } from "@/hooks/events/use-saved-events";
 import { useNavigate, useLocation } from "react-router";
 import { saveExploreUrl } from "@/lib/explore-history";
 

@@ -1,4 +1,4 @@
-import CreateEventSidebar from '@/components/dashboard-create-event/create-event-sidebar'
+import CreateEventSidebar from '@/components/create-event/create-event-sidebar'
 import { Outlet, useNavigate, useLocation } from 'react-router'
 import { FormProvider, useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -6,9 +6,9 @@ import { eventFormSchema, type EventFormValues } from '@/lib/schema'
 import { useSearchParams } from "react-router";
 import { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
-import { getEvent, getCreatedEventId, setCreatedEventId, clearCreatedEventId } from "@/lib/create-event-api";
-import { useDraftEvent, useDraftEventTicketTypes, } from "@/hooks/use-create-event";
-import { useCategories } from '@/hooks/use-event'
+import { getEvent, getCreatedEventId, setCreatedEventId, clearCreatedEventId } from "@/api/create-event";
+import { useDraftEvent, useDraftEventTicketTypes, } from "@/hooks/organizer/use-create-event";
+import { useCategories } from '@/hooks/events/use-event'
 export const CREATE_EVENT_STORAGE_KEY = 'eventra-create-event'
 
 const emptyValues: EventFormValues = {

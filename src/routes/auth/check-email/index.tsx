@@ -5,9 +5,9 @@ import { toast } from "react-toastify";
 import { ArrowLeft, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import EventraLogo from "@/assets/Eventra-logo.png";
+import EventraLogo from "@/assets/brand/eventra-logo.png";
 import { authPath } from "@/lib/auth-path";
-import { useAuth } from "@/context/auth.context";
+import { useAuth } from "@/context/auth-context";
 
 export default function CheckEmail() {
   const navigate = useNavigate();

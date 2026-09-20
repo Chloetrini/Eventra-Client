@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import PageWrapper from "../page-wrapper";
+import PageWrapper from "@/components/layout/page-wrapper";
 
 /** Matches the event details page's real layout — breadcrumb, hero image,
  * two-column info/ticket sidebar — instead of one generic gray block, so

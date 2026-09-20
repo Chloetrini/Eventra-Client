@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useDashboard } from "@/hooks/useDashboard";
-import StatsCards from "@/components/organizer-dashboard/StatsCards";
-import RecentEventsTable from "@/components/organizer-dashboard/RecentEventsTable";
-import RevenueChart from "@/components/organizer-dashboard/RevenueChart";
-import TicketsByTypeChart from "@/components/organizer-dashboard/TicketsByTypeChart";
-import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
-import { AccountReviewBanner } from "@/components/account-review-banner";
+import { useDashboard } from "@/hooks/organizer/use-dashboard";
+import StatsCards from "@/components/organizer-dashboard/stats-cards";
+import RecentEventsTable from "@/components/organizer-dashboard/recent-events-table";
+import RevenueChart from "@/components/organizer-dashboard/revenue-chart";
+import TicketsByTypeChart from "@/components/organizer-dashboard/tickets-by-type-chart";
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/api/organizer";
+import { AccountReviewBanner } from "@/components/organizer-dashboard/account-review-banner";
 import type { RevenuePeriod } from "@/types/dashboard";
 
 import { useNavigate } from "react-router";

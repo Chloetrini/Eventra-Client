@@ -1,5 +1,5 @@
 import React from 'react'
-import PaymentBtn from '../ui/pay-method-btn'
+import PaymentBtn from '@/components/shared/pay-method-btn'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 
 type PageSwitcherProps = {

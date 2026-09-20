@@ -1,11 +1,11 @@
 import { useNavigate, useSearchParams } from "react-router";
 import { TicketCard } from "@/components/tickets/ticket-card";
 import { cn } from "@/lib/utils";
-import PageWrapper from "@/components/page-wrapper";
+import PageWrapper from "@/components/layout/page-wrapper";
 import { useEffect } from "react";
-import { useAuth } from "@/context/auth.context";
-import { useAuthGate } from "@/context/auth.gate";
-import { useMyTickets } from "@/hooks/use-event";
+import { useAuth } from "@/context/auth-context";
+import { useAuthGate } from "@/context/auth-gate";
+import { useMyTickets } from "@/hooks/events/use-event";
 import { TicketsSkeleton } from "@/components/skeletons/tickets-skeleton";
 
 const TABS = [

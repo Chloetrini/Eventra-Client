@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router"
 import { Menu, X } from "lucide-react"
-import { stepsFlow } from "./sidebar"
-import { useStepGuard } from "@/lib/use-step-guard"
+import { stepsFlow } from "@/components/onboarding/sidebar"
+import { useStepGuard } from "@/hooks/organizer/use-step-guard"
 
 const OnboardingDrawer = () => {
     const navigate = useNavigate()

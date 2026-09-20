@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router";
 import { Search } from "lucide-react";
-import { fetchEventAttendees, fetchMyEvents } from "@/lib/events-api";
+import { fetchEventAttendees, fetchMyEvents } from "@/api/events";
 import {
   Select,
   SelectContent,
@@ -10,10 +10,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { AccountReviewBanner } from "@/components/account-review-banner";
-import { AttendeeList } from "@/components/attendee-list";
+import { AccountReviewBanner } from "@/components/organizer-dashboard/account-review-banner";
+import { AttendeeList } from "@/components/organizer-dashboard/attendee-list";
 import { AttendeesSkeleton } from "@/components/skeletons/attendees-skeleton";
-import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/api/organizer";
 
 const FILTERS = [
   { value: "all", label: "All" },

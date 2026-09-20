@@ -3,7 +3,7 @@ import { Heart, ArrowUpRight, Star } from "lucide-react";
 import { cn, shortEventNo } from "@/lib/utils";
 import type { Event } from "@/types/event-types";
 import { formatNaira } from "@/lib/utils"
-import { useAuthGate } from "@/context/auth.gate";
+import { useAuthGate } from "@/context/auth-gate";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 type EventCardProps = {

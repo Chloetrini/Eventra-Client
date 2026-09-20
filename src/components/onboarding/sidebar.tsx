@@ -1,10 +1,10 @@
 import React from 'react'
 import { useLocation, useNavigate } from 'react-router'
-import onboardingSidebarImage from '@/assets/onboarding sidebar image.png'
-import sidebarBankImg from '@/assets/sidebarBankImg.png'
-import verifiedImg from '@/assets/Verified.png'
-import onboardingReviewimg from '@/assets/onboardingReviewimg.png'
-import { useStepGuard } from '@/lib/use-step-guard'
+import onboardingSidebarImage from '@/assets/images/onboarding-sidebar-image.png'
+import sidebarBankImg from '@/assets/images/sidebar-bank-img.png'
+import verifiedImg from '@/assets/icons/verified.png'
+import onboardingReviewimg from '@/assets/images/onboarding-reviewimg.png'
+import { useStepGuard } from '@/hooks/organizer/use-step-guard'
 
 export const stepsFlow = [
   {

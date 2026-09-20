@@ -1,11 +1,11 @@
-import PageWrapper from "@/components/page-wrapper";
+import PageWrapper from "@/components/layout/page-wrapper";
 import { EventGrid } from "@/components/events/event-grid"; // adjust path if different
-import { useEvents } from "@/hooks/use-event";
-import { useSavedEvents } from "@/hooks/use-saved-events";
+import { useEvents } from "@/hooks/events/use-event";
+import { useSavedEvents } from "@/hooks/events/use-saved-events";
 import { DEFAULT_FILTERS } from "@/types/event-types";
 import { useEffect } from "react";
-import { useAuth } from "@/context/auth.context";
-import { useAuthGate } from "@/context/auth.gate";
+import { useAuth } from "@/context/auth-context";
+import { useAuthGate } from "@/context/auth-gate";
 import { useNavigate } from "react-router";
 
 export default function SavedEvent() {

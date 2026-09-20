@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { setPasswordSchema } from "@/lib/schema";
-import { useAuth } from "@/context/auth.context";
+import { useAuth } from "@/context/auth-context";
 
 // Lands here right after verify-otp for an account inviteAdmin created
 // (admin.controller.ts) — that account's password is a random string

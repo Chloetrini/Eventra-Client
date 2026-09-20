@@ -1,19 +1,19 @@
 import PageSwitcher from '@/components/onboarding/page-switcher'
-import PageWrapper from '@/components/page-wrapper'
+import PageWrapper from '@/components/layout/page-wrapper'
 import type { EventFormValues } from '@/lib/schema'
 import React, { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useNavigate, useSearchParams } from 'react-router'
 import { toast } from 'react-toastify'
-import { CREATE_EVENT_STORAGE_KEY } from '../layout'
-import EventReview from '@/components/dashboard-create-event/event-review'
-import { useCreateEventStep } from '@/components/dashboard-create-event/create-event-sidebar'
+import { CREATE_EVENT_STORAGE_KEY } from '@/routes/dashboard/create-event/layout'
+import EventReview from '@/components/create-event/event-review'
+import { useCreateEventStep } from '@/components/create-event/create-event-sidebar'
 import {
   getCreatedEventId,
   clearCreatedEventId,
   fetchTicketTypesForEvent,
   isLiveEditableEvent,
-} from '@/lib/create-event-api'
+} from '@/api/create-event'
 import {
   useCreateEvent,
   useUpdateEvent,
@@ -22,8 +22,8 @@ import {
   useUpdateTicketType,
   useDeleteTicketType,
   useDraftEvent,
-} from '@/hooks/use-create-event'
-import { useCategories } from '@/hooks/use-event'
+} from '@/hooks/organizer/use-create-event'
+import { useCategories } from '@/hooks/events/use-event'
 // date/startTime/endTime are each their own field, but only carry one
 // meaningful piece each: `date`'s time-of-day is arbitrary (whatever the
 // calendar/typed value happened to produce), and startTime/endTime's date

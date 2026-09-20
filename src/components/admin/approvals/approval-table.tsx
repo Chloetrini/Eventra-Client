@@ -1,13 +1,13 @@
 import { useState } from "react"
-import ActionBtn from "@/components/ui/action-btn"
+import ActionBtn from "@/components/shared/action-btn"
 import { formatRequestedAgo } from "@/lib/utils"
 import { useNavigate } from "react-router"
 import { toast } from "react-toastify"
 import type { AdminOrganizer } from "@/types/admin-organizer"
 import type { AdminEvent } from "@/types/admin-event"
 import type { AdminPromotionListItem } from "@/types/admin-promotion"
-import { useApproveEvent, useRejectEvent } from "@/hooks/use-admin-events"
-import { useApproveOrganizer, useRejectOrganizer } from "@/hooks/use-admin-organizers"
+import { useApproveEvent, useRejectEvent } from "@/hooks/admin/use-admin-events"
+import { useApproveOrganizer, useRejectOrganizer } from "@/hooks/admin/use-admin-organizers"
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { useApproveEventPromotion, useRejectEventPromotion } from "@/hooks/use-admin-promotions"
+import { useApproveEventPromotion, useRejectEventPromotion } from "@/hooks/admin/use-admin-promotions"
 
 const EVENT_GRID_COLS = "grid grid-cols-[220px_160px_90px_120px_180px] sm:grid-cols-[2fr_1.5fr_1fr_1fr_200px] gap-4 sm:gap-8 px-4 sm:px-6"
 const ORGANIZER_GRID_COLS = "grid grid-cols-[200px_180px_150px_120px_180px] sm:grid-cols-[2fr_2fr_1.5fr_1fr_200px] gap-4 px-4 sm:px-6"

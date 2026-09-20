@@ -1,9 +1,9 @@
 import React from 'react'
 import { formatDateTime, formatNaira } from '@/lib/utils'
 import { CalendarDays, MapPin } from 'lucide-react'
-import PaymentBtn from '../ui/pay-method-btn'
-import lock from '@/assets/lock.png'
-import yellowLock from '@/assets/yellow lock.png'
+import PaymentBtn from '@/components/shared/pay-method-btn'
+import lock from '@/assets/icons/lock.png'
+import yellowLock from '@/assets/icons/yellow-lock.png'
 
 
 

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router";
-import Sidebar from "@/components/organizer-dashboard/SideBar";
-import TopBar from "@/components/organizer-dashboard/TopBar";
-import { useDashboard } from "@/hooks/useDashboard";
-import { clearCreatedEventId } from "@/lib/create-event-api";
+import Sidebar from "@/components/organizer-dashboard/layout/sidebar";
+import TopBar from "@/components/organizer-dashboard/layout/topbar";
+import { useDashboard } from "@/hooks/organizer/use-dashboard";
+import { clearCreatedEventId } from "@/api/create-event";
 import { CREATE_EVENT_STORAGE_KEY } from "@/routes/dashboard/create-event/layout";
 
 const PAGE_TITLES: Record<string, string> = {

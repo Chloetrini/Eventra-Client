@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAdminUsers } from "@/hooks/use-admin-users";
-import { UsersTable } from "@/components/admin/users/UsersTable";
+import { useAdminUsers } from "@/hooks/admin/use-admin-users";
+import { UsersTable } from "@/components/admin/users/users-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import type { AdminUserStatusFilter } from "@/types/admin-users";
-import PageWrapper from "@/components/page-wrapper";
+import PageWrapper from "@/components/layout/page-wrapper";
 
 const FILTERS: { value: AdminUserStatusFilter; label: string }[] = [
   { value: "all", label: "All" },

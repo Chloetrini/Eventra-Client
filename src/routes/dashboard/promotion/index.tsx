@@ -17,15 +17,15 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { cn, formatDate, formatNaira } from "@/lib/utils"
-import { fetchMyEvents } from "@/lib/events-api"
-import { useOrganizerStatus } from "@/lib/organizer-api"
+import { fetchMyEvents } from "@/api/events"
+import { useOrganizerStatus } from "@/api/organizer"
 import {
   fetchPromotionPackages,  
   fetchMyPromotions,
   requestPromotion,
   type PromotionPackageId,
   type PromotionStatus,
-} from "@/lib/promotion-api"
+} from "@/api/promotions"
 import { PromotionSkeleton } from "@/components/skeletons/promotion-skeleton"
 
 const wherePromotedEventsAppear = [

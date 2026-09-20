@@ -1,10 +1,10 @@
-import ConfirmatoryMessage from "@/components/confirmatory-message"
+import ConfirmatoryMessage from "@/components/tickets/confirmatory-message"
 import { TicketCard } from "@/components/tickets/ticket-card"
 import { useLocation, useNavigate } from "react-router"
-import PaymentBtn from "@/components/ui/pay-method-btn"
-import calendar from "@/assets/calendar.png";
+import PaymentBtn from "@/components/shared/pay-method-btn"
+import calendar from "@/assets/icons/calendar.png";
 import { downloadEventIcs } from "@/lib/calendar";
-import PageWrapper from "@/components/page-wrapper";
+import PageWrapper from "@/components/layout/page-wrapper";
 
 // Real tier name when we have one (e.g. "VIP"), else "Free" for a free
 // RSVP, else a plain "Paid" fallback for the rare case a paid ticket's

@@ -1,4 +1,4 @@
-import type { PayoutHistoryItem } from "@/lib/api/admin-payouts"
+import type { PayoutHistoryItem } from "@/api/admin-payouts"
 import { CURRENCY_SYMBOLS } from "@/lib/utils"
 
 // Was hardcoded to ₦ regardless of the admin's currency preference.

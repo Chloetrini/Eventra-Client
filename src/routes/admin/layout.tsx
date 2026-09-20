@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router";
-import SideBar from "@/components/admin/SideBar";
-import TopBar from "@/components/admin/TopBar";
+import SideBar from "@/components/admin/layout/sidebar";
+import TopBar from "@/components/admin/layout/topbar";
 
 // Previously this never wired up SideBar's isOpen/onClose or TopBar's
 // onMenuClick — both components already support the mobile drawer, but

@@ -1,8 +1,8 @@
 import { useParams, useNavigate } from "react-router";
-import AdminEventDetail from "@/components/admin/events/AdminEventDetail";
+import AdminEventDetail from "@/components/admin/events/admin-event-detail";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { useAdminEventDetail, useToggleFlagAdminEvent, useRemoveAdminEvent } from "@/hooks/use-admin-events";
+import { useAdminEventDetail, useToggleFlagAdminEvent, useRemoveAdminEvent } from "@/hooks/admin/use-admin-events";
 
 export default function AdminEventDetailPage() {
   const { eventId } = useParams();

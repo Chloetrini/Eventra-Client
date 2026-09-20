@@ -1,11 +1,11 @@
-import Header from "@/components/admin/overview/Header";
-import NeedsActionRow from "@/components/admin/overview/NeedsActionRow";
-import StatsRow from "@/components/admin/overview/StatsRow";
-import PlatformRevenueChart from "@/components/admin/overview/PlatformRevenueChart";
-import TrustSafetyCard from "@/components/admin/overview/TrustSafetyCard";
-import RecentActivityCard from "@/components/admin/overview/RecentActivityCard";
-import TopOrganizersCard from "@/components/admin/overview/TopOrganizersCard";
-import { useOverviewSummary } from "@/hooks/use-overview-summary";
+import Header from "@/components/admin/overview/header";
+import NeedsActionRow from "@/components/admin/overview/needs-action-row";
+import StatsRow from "@/components/admin/overview/stats-row";
+import PlatformRevenueChart from "@/components/admin/overview/platform-revenue-chart";
+import TrustSafetyCard from "@/components/admin/overview/trust-safety-card";
+import RecentActivityCard from "@/components/admin/overview/recent-activity-card";
+import TopOrganizersCard from "@/components/admin/overview/top-organizers-card";
+import { useOverviewSummary } from "@/hooks/admin/use-overview-summary";
 
 export default function AdminOverviewPage() {
   const { data, isLoading } = useOverviewSummary();

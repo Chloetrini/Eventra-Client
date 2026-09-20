@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AccountReviewBanner } from "@/components/account-review-banner";
-import { PayoutSetupBanner } from "./PayoutSetupBanner";
-import { HowPayoutsWork } from "../../../components/payout/HowPayoutsWork";
-import { EarningsByEvent } from "../../../components/payout/EarningsByEvent";
-import { PayoutHistory } from "../../../components/payout/PayoutHistory";
-import { StatCards } from "./StatCards";
+import { AccountReviewBanner } from "@/components/organizer-dashboard/account-review-banner";
+import { PayoutSetupBanner } from "@/components/payouts/payout-setup-banner";
+import { HowPayoutsWork } from "@/components/payouts/how-payouts-work";
+import { EarningsByEvent } from "@/components/payouts/earnings-by-event";
+import { PayoutHistory } from "@/components/payouts/payout-history";
+import { StatCards } from "@/components/payouts/stat-cards";
 import { PayoutsSkeleton } from "@/components/skeletons/payouts-skeleton";
-import { fetchPayouts } from "@/lib/payouts-api";
-import { useOrganizerBankStatus, useOrganizerProfile, useOrganizerProfileComplete } from "@/lib/organizer-api";
+import { fetchPayouts } from "@/api/payouts";
+import { useOrganizerBankStatus, useOrganizerProfile, useOrganizerProfileComplete } from "@/api/organizer";
 
 export default function Payouts() {
   const [showSetupBanner, setShowSetupBanner] = useState(true);

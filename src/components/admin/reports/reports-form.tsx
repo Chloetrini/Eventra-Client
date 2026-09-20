@@ -1,8 +1,8 @@
 import { useEffect } from "react"
 import type { ReportValues } from "@/lib/schema"
 import { useFormContext, useFieldArray, useFormState } from "react-hook-form"
-import { FormBox } from '@/components/ui/form-box'
-import ActionBtn from "@/components/ui/action-btn"
+import { FormBox } from '@/components/form/form-box'
+import ActionBtn from "@/components/shared/action-btn"
 import { CircleX } from "lucide-react"
 
 type ReportFormProps = {

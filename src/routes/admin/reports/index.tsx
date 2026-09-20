@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useFlags, useAuditLog, useDismissFlag, useActionFlag } from "@/hooks/use-reports";
-import FlagsTable from "@/components/admin/reports/FlagsTable";
-import AuditLogTable from "@/components/admin/reports/AuditLogTable";
+import { useFlags, useAuditLog, useDismissFlag, useActionFlag } from "@/hooks/admin/use-reports";
+import FlagsTable from "@/components/admin/reports/flags-table";
+import AuditLogTable from "@/components/admin/reports/audit-log-table";
 import { cn } from "@/lib/utils";
 import type { Flag } from "@/types/report";
-import PageWrapper from "@/components/page-wrapper";
+import PageWrapper from "@/components/layout/page-wrapper";
 import { Skeleton } from "@/components/ui/skeleton";
 
 function FullAdminReportsSkeleton({ activeTab }: { activeTab: "flags" | "audit" }) {

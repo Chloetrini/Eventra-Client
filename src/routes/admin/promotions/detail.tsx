@@ -1,17 +1,17 @@
 import { useNavigate, useParams } from "react-router"
 import { ArrowLeft, Check } from "lucide-react"
 import { toast } from "react-toastify"
-import ActionBtn from "@/components/ui/action-btn"
-import PaymentBtn from "@/components/ui/pay-method-btn"
+import ActionBtn from "@/components/shared/action-btn"
+import PaymentBtn from "@/components/shared/pay-method-btn"
 import { Separator } from "@/components/ui/separator"
-import PageWrapper from "@/components/page-wrapper"
+import PageWrapper from "@/components/layout/page-wrapper"
 import { Skeleton } from "@/components/ui/skeleton"
 import { formatNaira, formatDate, formatPromoReference } from "@/lib/utils"
 import {
   useAdminPromotionDetail,
   useApproveEventPromotion,
   useRejectEventPromotion,
-} from "@/hooks/use-admin-promotions"
+} from "@/hooks/admin/use-admin-promotions"
 
 function PromotionDetailSkeleton() {
   return (

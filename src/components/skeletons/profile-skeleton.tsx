@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import PageWrapper from "@/components/page-wrapper";
+import PageWrapper from "@/components/layout/page-wrapper";
 
 /** Was `profile-settings/ProfileSettingsSkeleton.tsx`, built from raw
  * `bg-gray-200 dark:bg-white/10` divs — moved into the shared skeletons

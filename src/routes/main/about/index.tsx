@@ -1,5 +1,5 @@
 import React from "react";
-import PartyHandsUp from "@/assets/party handsup.png";
+import PartyHandsUp from "@/assets/images/party-handsup.png";
 import { FaShield } from "react-icons/fa6";
 import { FaStar } from "react-icons/fa";
 import { BsLightningChargeFill } from "react-icons/bs";
@@ -7,9 +7,9 @@ import { HiOutlineTag } from "react-icons/hi";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { TbScan } from "react-icons/tb";
 import { HiOutlineLocationMarker } from "react-icons/hi";
-import Combined from "@/assets/Combined.png";
-import PageWrapper from "@/components/page-wrapper";
-import { CtaBanner } from "@/components/ui/ctaBanner";
+import Combined from "@/assets/images/combined.png";
+import PageWrapper from "@/components/layout/page-wrapper";
+import { CtaBanner } from "@/components/shared/cta-banner";
 import { UI_ASSETS } from "@/lib/assets";
 import { useNavigate } from "react-router";
 

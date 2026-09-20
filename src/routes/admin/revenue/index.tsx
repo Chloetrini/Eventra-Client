@@ -1,11 +1,11 @@
-import { useRevenue } from "@/hooks/use-revenue";
+import { useRevenue } from "@/hooks/admin/use-revenue";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Download } from "lucide-react";
 import { formatCompactNaira } from "@/lib/utils";
-import RevenueBySourceChart from "@/components/admin/revenue/RevenueBySourceChart";
-import TopEarningEventsTable from "@/components/admin/revenue/TopEarningEventsTable";
-import MonthlyBreakdownTable from "@/components/admin/revenue/MonthlyBreakdownTable";
+import RevenueBySourceChart from "@/components/admin/revenue/revenue-by-source-chart";
+import TopEarningEventsTable from "@/components/admin/revenue/top-earning-events-table";
+import MonthlyBreakdownTable from "@/components/admin/revenue/monthly-breakdown-table";
 import { exportRevenueCsv } from "@/lib/export-revenue-csv";
 
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import { Plus, DotIcon, Trash2, ShieldAlert } from "lucide-react"
 import { toast } from "react-toastify"
 import { Button } from "@/components/ui/button"
@@ -16,13 +17,16 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
-import PageWrapper from "@/components/page-wrapper"
-import { useAuth } from "@/context/auth.context"
-import { useAdminTeam, useDeleteAdmin, useInviteAdmin, useUpdateAdminRole } from "@/hooks/use-admin-team"
-import { usePlatformSettings, useUpdatePlatformSettings } from "@/hooks/use-platform-settings"
+import PageWrapper from "@/components/layout/page-wrapper"
+import { useAuth } from "@/context/auth-context"
+import { useAdminTeam, useDeleteAdmin, useInviteAdmin, useUpdateAdminRole } from "@/hooks/admin/use-admin-team"
+import { usePlatformSettings, useUpdatePlatformSettings } from "@/hooks/admin/use-platform-settings"
 import type { AdminTier } from "@/types/admin-settings"
-import { CurrencyPreference } from "@/components/profile-settings/CurrencyPreference"
+import { useUpdateProfile } from "@/hooks/shared/use-profile"
+import type { User } from "@/context/auth-context"
+import type { CurrencyPreference as CurrencyPreferenceValue } from "@/api/user"
 
 interface ToggleSwitchProps {
   checked: boolean
@@ -44,14 +48,13 @@ function ToggleSwitch({ checked, onCheckedChange }: Omit<ToggleSwitchProps, "lab
     >
       <span
         className={cn(
-          "absolute top-0.5  right-6 size-5 rounded-full bg-white shadow transition-transform",
+          "absolute top-0.5 right-6 size-5 rounded-full bg-white shadow transition-transform",
           checked ? "translate-x-5.5" : "translate-x-0.5"
         )}
       />
     </button>
   )
 }
-
 
 interface NumberStepperProps {
   value: number
@@ -244,32 +247,144 @@ function DeleteAdminDialog({ id, name }: { id: string; name: string }) {
   )
 }
 
+function PlatformSettingsSkeleton() {
+  return (
+    <PageWrapper className="flex flex-col gap-6 p-[20px]">
+      <div className="flex flex-col gap-2">
+        <Skeleton className="h-3 w-16" />
+        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-4 w-64" />
+      </div>
+
+      {/* Commission Rate Skeleton */}
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-5 w-36" />
+        </CardHeader>
+        <div className="border mx-4" />
+        <CardContent className="flex flex-col gap-2 pt-4">
+          <Skeleton className="h-3 w-28" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-9 w-24" />
+            <Skeleton className="h-9 w-16" />
+          </div>
+          <Skeleton className="h-3 w-80" />
+        </CardContent>
+      </Card>
+
+      {/* Platform Configuration Skeleton */}
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-5 w-44" />
+        </CardHeader>
+        <div className="border mx-4" />
+        <CardContent className="flex flex-col gap-6 pt-4">
+          <div className="flex flex-col gap-1.5">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-9 w-49.75" />
+            <Skeleton className="h-3 w-96" />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Skeleton className="h-3 w-40" />
+            <Skeleton className="h-9 w-49.75" />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <Skeleton className="h-4 w-36" />
+              <Skeleton className="h-3 w-64" />
+            </div>
+            <Skeleton className="h-6 w-11 rounded-full" />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-3 w-56" />
+            </div>
+            <Skeleton className="h-6 w-11 rounded-full" />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-48" />
+            </div>
+            <Skeleton className="h-6 w-11 rounded-full" />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Admin, Teams & Roles Skeleton */}
+      <Card size="sm">
+        <CardHeader className="flex items-center justify-between">
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-8 w-28" />
+        </CardHeader>
+        <CardContent className="overflow-x-auto p-0 mx-4">
+          <table className="w-full table-fixed">
+            <colgroup>
+              <col className="w-2/5" />
+              <col className="w-2/5" />
+              <col className="w-1/6" />
+              <col className="w-10" />
+            </colgroup>
+            <thead>
+              <tr className="border-t">
+                <th className="px-4 py-2"><Skeleton className="h-3 w-12" /></th>
+                <th className="px-4 py-2"><Skeleton className="h-3 w-12" /></th>
+                <th className="px-4 py-2"><Skeleton className="h-3 w-10" /></th>
+                <th className="px-4 py-2" />
+              </tr>
+            </thead>
+            <tbody>
+              {[1, 2, 3].map(i => (
+                <tr key={i} className="border-t border-border/50">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2.5">
+                      <Skeleton className="size-8 rounded-full" />
+                      <Skeleton className="h-4 w-28" />
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <Skeleton className="h-4 w-40" />
+                  </td>
+                  <td className="px-4 py-3">
+                    <Skeleton className="h-8 w-22" />
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <Skeleton className="size-6 ml-auto" />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
+    </PageWrapper>
+  )
+}
+
 export default function PlatformSettings() {
-  const { user } = useAuth()
-  // Owner-tier only — mirrors requireAdminTier('owner') on every
-  // /admin/settings/* route on the backend (see admin.routes.ts). A
-  // missing adminRole is treated as owner, same default the backend uses
-  // for admin accounts that predate this field.
+  const { user, setUser } = useAuth()
   const isOwner = user?.role === "admin" && (user.adminRole ?? "owner") === "owner"
 
-  const { data: settings } = usePlatformSettings()
-  const { mutate: updateSettings, isPending: isSavingSettings } = useUpdatePlatformSettings()
+  const { data: settings, isLoading: isSettingsLoading } = usePlatformSettings()
+  const { mutate: updateSettings } = useUpdatePlatformSettings()
+  const updateProfileMutation = useUpdateProfile()
+  const queryClient = useQueryClient()
 
   const [platformFee, setPlatformFee] = useState(3)
-  const [currency, setCurrency] = useState("")
   const [payoutHold, setPayoutHold] = useState("")
 
-  // The fetched row is the source of truth; local state only tracks
-  // in-progress edits (the fee stepper + its own Save button) so a save
-  // elsewhere on the page can't clobber what the admin is mid-typing.
   useEffect(() => {
     if (!settings) return
     setPlatformFee(settings.platformFeePercent)
-    setCurrency(settings.currency)
     setPayoutHold(settings.payoutHold)
   }, [settings])
 
-  const { data: admins = [] } = useAdminTeam()
+  const { data: admins = [], isLoading: isAdminsLoading } = useAdminTeam()
   const { mutate: updateRole } = useUpdateAdminRole()
 
   const saveFee = () => {
@@ -282,30 +397,18 @@ export default function PlatformSettings() {
     )
   }
 
-  // NOTE: this is display-only, and safe to fire freely. It used to
-  // re-convert every stored money field platform-wide on every change
-  // (see updatePlatformSettings on the backend for how that mechanism
-  // caused a real currency-corruption incident) — that's retired now.
-  // Changing this only changes the sitewide DEFAULT a viewer sees when
-  // they haven't set their own currencyPreference; nothing stored ever
-  // moves. The `disabled={isSavingSettings}` on the Select below just
-  // avoids two in-flight saves stepping on each other's toast/rollback,
-  // not a data-safety guard.
-  const onCurrencyChange = (val: string) => {
-    if (isSavingSettings) return
-    setCurrency(val)
-    updateSettings(
-      { currency: val as "Naira" | "Dollar" | "Cedis" | "Pound" },
-      {
-        onError: (err: Error) => {
-          toast.error(err.message || "Could not save currency.")
-          // Roll the dropdown back to whatever's actually saved — leaving
-          // it on the failed target would show a currency the backend
-          // never actually switched to.
-          setCurrency(settings?.currency ?? "")
-        },
-      }
-    )
+  const onCurrencyChange = async (val: string) => {
+    if (!val || updateProfileMutation.isPending) return
+    try {
+      const updatedUser = await updateProfileMutation.mutateAsync({
+        currencyPreference: val as CurrencyPreferenceValue,
+      })
+      setUser(updatedUser as User)
+      queryClient.invalidateQueries()
+      toast.success("Currency updated")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not update currency")
+    }
   }
 
   const onPayoutHoldChange = (val: string) => {
@@ -337,6 +440,30 @@ export default function PlatformSettings() {
     )
   }
 
+  // Admin in-app bell notifications for approvals/refunds/reports were
+  // always on with no way to turn any of them off — the account already
+  // stores a preference per category (adminNotificationPreferences) and
+  // the backend already accepts updates to it on this same profile
+  // endpoint (see updateProfile, user.controller.ts), but nothing on this
+  // page ever rendered a control for it. These three toggles are that
+  // missing control, following the same currency-toggle pattern above:
+  // save through updateProfileMutation, then push the fresh user back
+  // into auth context so the toggle reflects the saved state immediately.
+const onAdminNotificationToggle = async (
+  key: "approvals" | "refunds" | "reports" | "enquiries",
+  checked: boolean
+) => {
+  if (updateProfileMutation.isPending) return
+  try {
+    const updatedUser = await updateProfileMutation.mutateAsync({
+      adminNotificationPreferences: { [key]: checked },
+    })
+    setUser(updatedUser as User)
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : "Could not update notification setting")
+  }
+}
+
   if (!isOwner) {
     return (
       <PageWrapper className="flex flex-col gap-6 p-[20px]">
@@ -351,6 +478,10 @@ export default function PlatformSettings() {
     )
   }
 
+  if (isSettingsLoading || isAdminsLoading) {
+    return <PlatformSettingsSkeleton />
+  }
+
   return (
     <PageWrapper className="flex flex-col gap-6 p-[20px]">
       {/* Page heading */}
@@ -361,23 +492,6 @@ export default function PlatformSettings() {
           Commission, platform rules, and admin team.
         </p>
       </div>
-
-      {/* My display currency — a personal preference (this admin account
-          only), separate from "Platform Configuration" below which sets
-          the sitewide DEFAULT every viewer without their own preference
-          falls back to. Both use the same four currencies. */}
-      <Card>
-        <CardHeader>
-          <CardTitle>My display currency</CardTitle>
-        </CardHeader>
-        <div className="border mx-4"/>
-        <CardContent className="flex flex-col gap-2">
-          <CurrencyPreference
-            title="Currency"
-            description="Changes how prices show on your own dashboard — Overview, Revenue, Payouts, Refunds. Doesn't affect what other admins or organizers see."
-          />
-        </CardContent>
-      </Card>
 
       {/* Commission rate */}
       <Card>
@@ -401,8 +515,7 @@ export default function PlatformSettings() {
         </CardContent>
       </Card>
 
-
-{/* // Platform configuration — currency & payout defaults  */}
+      {/* Platform configuration — currency & payout defaults */}
       <Card>
         <CardHeader>
           <CardTitle>Platform Configuration</CardTitle>
@@ -411,7 +524,11 @@ export default function PlatformSettings() {
         <CardContent className="flex flex-col gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">CURRENCY</label>
-            <Select value={currency} onValueChange={(val) => onCurrencyChange(val ?? '')} disabled={isSavingSettings}>
+            <Select
+              value={user?.currencyPreference ?? ""}
+              onValueChange={(val) => onCurrencyChange(val ?? '')}
+              disabled={updateProfileMutation.isPending}
+            >
               <SelectTrigger className="w-49.75">
                 <SelectValue placeholder="Choose your currency"/>
               </SelectTrigger>
@@ -422,7 +539,10 @@ export default function PlatformSettings() {
                 <SelectItem value="Pound">Pound (£)</SelectItem>
               </SelectContent>
             </Select>
-            {isSavingSettings && (
+            <p className="text-xs text-muted-foreground">
+              Changes how prices show on your own dashboard only — not what other admins or organizers see.
+            </p>
+            {updateProfileMutation.isPending && (
               <p className="text-xs text-muted-foreground">Saving…</p>
             )}
           </div>
@@ -443,7 +563,6 @@ export default function PlatformSettings() {
             </Select>
           </div>
 
-
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm font-bold text-foreground">Auto-approve events</p>
@@ -451,7 +570,7 @@ export default function PlatformSettings() {
                 Skip manual review and publish events instantly
               </p>
             </div>
-            <ToggleSwitch checked={settings?.autoApproveEvents ?? false} onCheckedChange={onAutoApproveEventsChange}  />
+            <ToggleSwitch checked={settings?.autoApproveEvents ?? false} onCheckedChange={onAutoApproveEventsChange} />
           </div>
 
           <div className="flex items-center justify-between gap-4">
@@ -472,6 +591,71 @@ export default function PlatformSettings() {
               </p>
             </div>
             <ToggleSwitch checked={settings?.maintenanceMode ?? false} onCheckedChange={onMaintenanceModeChange} />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Notifications — the bell-icon in-app notifications you personally
+          get as an admin for approvals/refunds/reports. Admins don't get
+          emails for these (in-app only, by design), and every other admin
+          account on the team sets these independently for themselves —
+          this only ever changes your own account's preferences. */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Notifications</CardTitle>
+        </CardHeader>
+        <div className="border mx-4"/>
+        <CardContent className="flex flex-col gap-4 sm:grid-cols-2">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-foreground">Approvals</p>
+              <p className="text-xs text-muted-foreground">
+                New organizer, event and promotion approvals waiting on you
+              </p>
+            </div>
+            <ToggleSwitch
+              checked={user?.adminNotificationPreferences?.approvals ?? true}
+              onCheckedChange={(checked) => onAdminNotificationToggle("approvals", checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-foreground">Refunds</p>
+              <p className="text-xs text-muted-foreground">
+                New refund requests waiting on your review
+              </p>
+            </div>
+            <ToggleSwitch
+              checked={user?.adminNotificationPreferences?.refunds ?? true}
+              onCheckedChange={(checked) => onAdminNotificationToggle("refunds", checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-foreground">Reports</p>
+              <p className="text-xs text-muted-foreground">
+                Events or organizers flagged/reported by attendees
+              </p>
+            </div>
+            <ToggleSwitch
+              checked={user?.adminNotificationPreferences?.reports ?? true}
+              onCheckedChange={(checked) => onAdminNotificationToggle("reports", checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-foreground">Enquiries</p>
+              <p className="text-xs text-muted-foreground">
+                New messages submitted through the contact form
+              </p>
+            </div>
+            <ToggleSwitch
+              checked={user?.adminNotificationPreferences?.enquiries ?? true}
+              onCheckedChange={(checked) => onAdminNotificationToggle("enquiries", checked)}
+            />
           </div>
         </CardContent>
       </Card>
@@ -517,7 +701,7 @@ export default function PlatformSettings() {
                   <td className="px-(--card-spacing) py-3">
                     {admin.role === "owner" ? (
                       <Badge className="w-22 items-center justify-center gap-1 border-transparent bg-[#E4F1EB] dark:bg-[#0F6E56]/15 text-[#0F6E56] dark:text-[#4ADE80]">
-                       <DotIcon className="stroke-9" />
+                        <DotIcon className="stroke-9" />
                         OWNER
                       </Badge>
                     ) : (

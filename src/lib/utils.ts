@@ -121,6 +121,20 @@ export function shortEventNo(event: { no?: string; _id: string }): string {
   return raw.slice(-4).padStart(4, "0").toUpperCase();
 }
 
+// The "Paystack reference" row on the admin promotion detail page — the
+// raw value is a long opaque Paystack transaction reference that just
+// wrapped/cluttered that row. Shows a fixed "PROMO-" prefix (so it reads
+// as a promotion reference at a glance, not a raw copy-pasted id) plus
+// the last few characters, which is still enough to spot-check against
+// Paystack's own dashboard (search there matches on any substring).
+// Returns "—" unchanged so an already-missing reference still shows its
+// placeholder instead of "PROMO-—".
+export function formatPromoReference(value: string | null | undefined, length = 8): string {
+  if (!value) return "—";
+  const tail = value.length <= length ? value : value.slice(-length);
+  return `PROMO-${tail}`;
+}
+
 export const Format = {
   /**
    * Formats a price into the given currency's symbol + number.

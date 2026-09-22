@@ -94,4 +94,8 @@ export interface PlatformRevenueData {
   // The viewer's resolved display currency — `series` holds raw numbers
   // (for the chart's axis/tooltip), so this travels alongside them.
   currency: string;
+  // Live commission rate from PlatformSettings — powers the "Commission
+  // (N%) + promotion fees" caption under the chart, which used to hardcode
+  // "5%" as static text regardless of what was actually set.
+  commissionRatePct: number;
 }

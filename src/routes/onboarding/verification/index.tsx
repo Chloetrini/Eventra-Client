@@ -3,11 +3,11 @@ import { useNavigate } from "react-router"
 import DocumentUploader from "@/components/onboarding/document-uploader"
 import PageSwitcher from "@/components/onboarding/page-switcher"
 import { VERIFICATION_FIELDS, type OnboardingValues } from "@/lib/schema"
-import PageWrapper from "@/components/page-wrapper"
+import PageWrapper from "@/components/layout/page-wrapper"
 import { toast } from "react-toastify"
-import { useSaveOrganizerProfile } from "@/hooks/use-onboarding"
-import { useUploadVerificationDocument } from "@/hooks/use-upload"
-import type { VerificationDocumentType } from "@/lib/upload-api"
+import { useSaveOrganizerProfile } from "@/hooks/organizer/use-onboarding"
+import { useUploadVerificationDocument } from "@/hooks/shared/use-upload"
+import type { VerificationDocumentType } from "@/api/upload"
 
 // One row per document — url/publicId field names on OnboardingValues, plus
 // the documentType the upload endpoint needs to file it into the right

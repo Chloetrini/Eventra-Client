@@ -1,8 +1,8 @@
 import { useParams, useNavigate } from "react-router";
-import AdminEventDetail from "@/components/admin/events/AdminEventDetail";
+import AdminEventDetail from "@/components/admin/events/admin-event-detail";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { useAdminEventDetail, useToggleFlagAdminEvent, useRemoveAdminEvent } from "@/hooks/use-admin-events";
+import { useAdminEventDetail, useToggleFlagAdminEvent, useRemoveAdminEvent } from "@/hooks/admin/use-admin-events";
 
 export default function AdminEventDetailPage() {
   const { eventId } = useParams();
@@ -40,15 +40,13 @@ export default function AdminEventDetailPage() {
   return (
     <AdminEventDetail
       event={event}
-      onBack={() => navigate("/admin/events")}
+      onBack={() => navigate(-1)}
       onFlag={id => {
         toggleFlag.mutate({ id, flagged: event.status === "FLAGGED" });
       }}
-      onRemove={id => {
-        removeEvent.mutate(id, {
-          onSuccess: () => navigate("/admin/events"),
-        });
-      }}
+     
     />
+
+    
   );
 }

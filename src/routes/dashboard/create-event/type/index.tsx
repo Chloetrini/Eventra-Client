@@ -1,15 +1,15 @@
-import EventTypeSelector from '@/components/dashboard-create-event/event-type-selector'
+import EventTypeSelector from '@/components/create-event/event-type-selector'
 import PageSwitcher from '@/components/onboarding/page-switcher'
-import PageWrapper from '@/components/page-wrapper'
+import PageWrapper from '@/components/layout/page-wrapper'
 import { TYPE_FIELDS, type EventFormValues } from '@/lib/schema'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { useNavigate } from 'react-router'
-import { useCreateEventStep } from "@/components/dashboard-create-event/create-event-sidebar"
+import { useCreateEventStep } from "@/components/create-event/create-event-sidebar"
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import { useOrganizerStatus } from '@/lib/organizer-api'
-import { getCreatedEventId, setCreatedEventId } from '@/lib/create-event-api'
-import { useCreateEvent } from '@/hooks/use-create-event'
+import { useOrganizerStatus } from '@/api/organizer'
+import { getCreatedEventId, setCreatedEventId } from '@/api/create-event'
+import { useCreateEvent } from '@/hooks/organizer/use-create-event'
 
 const EventType = () => {
   const { currentStep, totalSteps } = useCreateEventStep()

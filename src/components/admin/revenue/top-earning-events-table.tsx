@@ -1,0 +1,41 @@
+import { formatNaira } from "@/lib/utils";
+import type { TopEarningEvent } from "@/types/revenue";
+
+
+interface TopEarningEventsTableProps {
+    events: TopEarningEvent[];
+    // Already converted server-side into the viewer's currency (see
+    // RevenuePageData.currency) — optional so an older cached response
+    // without it still falls back to Naira.
+    currency?: string;
+}
+
+export default function TopEarningEventsTable({events, currency} : TopEarningEventsTableProps) {
+    return (
+        <div className="border border-border rounded-lg overflow-x-auto min-w-0 h-full">
+            <div className="px-4 min-[400px]:px-6 py-3 min-[400px]:py-4 border-b border-border">
+                <h2 className="text-base min-[400px]:text-[18px] font-bold text-foreground">
+                  Top earning events
+                </h2>
+            </div>
+            <table className="w-full min-w-[420px]">
+                <thead>
+                    <tr>
+                        <th className="text-left py-3 px-4 min-[400px]:px-6 font-bold font-space text-muted-foreground text-xs min-[400px]:text-[20px] uppercase">Event</th>
+                        <th className="text-left py-3 px-4 min-[400px]:px-6 font-bold font-space text-muted-foreground text-xs min-[400px]:text-[20px] uppercase">Organizer</th>
+                        <th className="text-left py-3 px-4 min-[400px]:px-6 font-bold font-space text-muted-foreground text-xs min-[400px]:text-[20px] uppercase">Commission</th>
+                    </tr>
+                </thead>
+                <tbody className="border-t border-border">
+                    {events.map((event) => (
+                       <tr key={event.id} className="border-b border-border last:border-b-0">
+                         <td className="py-3 px-4 min-[400px]:px-6 text-xs min-[400px]:text-[16px] font-semibold text-muted-foreground">{event.eventTitle}</td>
+                        <td className="px-4 min-[400px]:px-6 text-xs min-[400px]:text-[16px] text-muted-foreground font-semibold">{event.organizer}</td>
+                        <td className="px-4 min-[400px]:px-6 font-bold text-xs min-[400px]:text-[20px] text-foreground font-space">{formatNaira(event.commission, currency)}</td>
+                       </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    )
+}

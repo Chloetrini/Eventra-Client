@@ -1,21 +1,21 @@
 import React from 'react'
-import bag from '@/assets/bag.png'
-import paystackLogo from '@/assets/paystackLogo.png'
-import { FormBox } from '@/components/ui/form-box'
+import bag from '@/assets/icons/bag.png'
+import paystackLogo from '@/assets/brand/paystack-logo.png'
+import { FormBox } from '@/components/form/form-box'
 import { useForm } from 'react-hook-form'
 import { checkoutSchema, type CheckoutFormValues } from '@/lib/schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Check, ChevronRight } from 'lucide-react'
-import PaymentBtn from '@/components/ui/pay-method-btn'
-import card from '@/assets/card.png'
-import bank from '@/assets/bank.png'
-import hashTag from '@/assets/hash.png'
-import qrcode from '@/assets/qrcode2.png'
+import PaymentBtn from '@/components/shared/pay-method-btn'
+import card from '@/assets/icons/card.png'
+import bank from '@/assets/icons/bank.png'
+import hashTag from '@/assets/icons/hash.png'
+import qrcode from '@/assets/images/qrcode2.png'
 import TicketPreview from '@/components/tickets/ticket-preview'
 import { useLocation, useNavigate, Link } from 'react-router'
-import PageWrapper from '@/components/page-wrapper'
+import PageWrapper from '@/components/layout/page-wrapper'
 import { toast } from 'react-toastify'
-import { useRsvpFreeEvent, useInitializeCheckout } from '@/hooks/use-ticket-actions'
+import { useRsvpFreeEvent, useInitializeCheckout } from '@/hooks/events/use-ticket-actions'
 import { getExploreUrl } from '@/lib/explore-history'
 
 const Checkout = () => {
@@ -38,6 +38,11 @@ const Checkout = () => {
         total: number
         slug: string
         guests?: number
+        // Set by PaidEventTicket (from event.currency — already the
+        // viewer's own currency, converted server-side). Absent from the
+        // free-RSVP flow's state, which is fine: TicketPreview only shows
+        // "Free" there regardless of currency.
+        currency?: string
     } | null
 
     const isFree = ticket?.type === 'free'
@@ -206,6 +211,7 @@ const Checkout = () => {
                     <div className='w-full max-w-md lg:max-w-none'>
                         <TicketPreview
                             ticketCheckout={ticket}
+                            currency={ticket.currency}
                             onPay={handleSubmitForm}
                             isSubmitting={isSubmitting}
 

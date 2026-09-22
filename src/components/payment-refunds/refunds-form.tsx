@@ -1,9 +1,9 @@
 import type { RefundsValues } from "@/lib/schema"
 import { useFormContext, useFieldArray, useFormState } from "react-hook-form"
-import { FormBox } from "../ui/form-box"
-import ActionBtn from "../ui/action-btn"
+import { FormBox } from "@/components/form/form-box"
+import ActionBtn from "@/components/shared/action-btn"
 import { CircleX } from "lucide-react"
-import { FieldError } from "../ui/field"
+import { FieldError } from "@/components/ui/field"
 
 const RefundsForm = () => {
     const { register, control } = useFormContext<RefundsValues>()

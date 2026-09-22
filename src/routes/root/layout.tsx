@@ -1,7 +1,7 @@
 import { Outlet, ScrollRestoration, useMatches, useNavigation } from "react-router";
 
-import { Seo, type SeoHandle } from "@/components/seo";
-import { AuthGateProvider } from "@/context/auth.gate";
+import { Seo, type SeoHandle } from "@/components/shared/seo";
+import { AuthGateProvider } from "@/context/auth-gate";
 
 const DEFAULT_SEO: SeoHandle = {
   seo: {

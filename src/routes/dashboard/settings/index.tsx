@@ -6,27 +6,38 @@ import {
   updateBankAccount,
   updateNotificationPreferences,
   updateOrganizationProfile,
-} from "@/lib/settings";
-import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
-import { useAuth, type User } from "@/context/auth.context";
-import { useUploadAvatar } from "@/hooks/use-profile";
-import { UserAvatar } from "@/components/ui/user-avatar";
-import { AccountReviewBanner } from "@/components/account-review-banner";
+} from "@/api/organizer-settings";
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/api/organizer";
+import { useAuth, type User } from "@/context/auth-context";
+import { useUploadAvatar } from "@/hooks/shared/use-profile";
+import { UserAvatar } from "@/components/shared/user-avatar";
+import { AccountReviewBanner } from "@/components/organizer-dashboard/account-review-banner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Camera, Clock, Landmark, CheckCircle2, Loader2 } from "lucide-react";
 import type { BankAccount, OrganizationSettings } from "@/types/settings";
 import { Badge } from "@/components/ui/badge";
-import { AddBankAccountDialog } from "@/components/add-bank-account";
+import { AddBankAccountDialog } from "@/components/payouts/add-bank-account";
 import { Switch } from "@/components/ui/switch";
-import { CurrencyPreference } from "@/components/profile-settings/CurrencyPreference";
+import { CurrencyPreference } from "@/components/profile-settings/currency-preference";
+
+// The Switch primitive (ui/switch.tsx) defaults its checked color to
+// --primary (a dark neutral, not brand green) since that token is shared
+// with buttons/etc. site-wide — these notification toggles had no
+// override at all, so every one of them read as "on = black" instead of
+// the brand green used for "on"/positive state elsewhere. base-ui (what
+// Switch wraps) stamps data-checked/data-unchecked, not Radix's
+// data-state="checked" — same fix as the attendee notification toggles
+// (NToggles.tsx) needed.
+const GREEN_SWITCH_CLASSNAME =
+  "data-checked:bg-[#0F6E56] dark:data-checked:bg-[#4ADE80] data-unchecked:bg-gray-200 dark:data-unchecked:bg-white/10";
 
 export default function Settings() {
   const queryClient = useQueryClient();
-  const { status: organizerStatus } = useOrganizerStatus();
-  const { bankStatus } = useOrganizerBankStatus();
-  const { isProfileComplete } = useOrganizerProfileComplete();
+  const { status: organizerStatus, isLoading: statusLoading } = useOrganizerStatus();
+  const { bankStatus, isLoading: bankStatusLoading } = useOrganizerBankStatus();
+  const { isProfileComplete, isLoading: profileCompleteLoading } = useOrganizerProfileComplete();
 
   const { user, setUser } = useAuth();
   const uploadAvatarMutation = useUploadAvatar();
@@ -155,9 +166,14 @@ export default function Settings() {
 
   return (
     <div className="space-y-6">
-      <AccountReviewBanner status={organizerStatus}
-        bankStatus={bankStatus}
-        isProfileComplete={isProfileComplete} />
+      {/* These three profile queries default to "not verified yet" while
+          in flight — see the same fix in dashboard/overview/index.tsx —
+          so this waits for all three before rendering the banner. */}
+      {!statusLoading && !bankStatusLoading && !profileCompleteLoading && (
+        <AccountReviewBanner status={organizerStatus}
+          bankStatus={bankStatus}
+          isProfileComplete={isProfileComplete} />
+      )}
 
       <div>
         <p className="text-[16px] font-medium font-space tracking-wide text-[#0F6E56] dark:text-[#4ADE80]">
@@ -408,6 +424,7 @@ export default function Settings() {
             <Switch
               checked={formData.notifications.newTicketSales}
               onCheckedChange={() => handleToggleNotification("newTicketSales")}
+              className={GREEN_SWITCH_CLASSNAME}
             />
           </div>
 
@@ -425,6 +442,7 @@ export default function Settings() {
               onCheckedChange={() =>
                 handleToggleNotification("dailySalesSummary")
               }
+              className={GREEN_SWITCH_CLASSNAME}
             />
           </div>
 
@@ -442,6 +460,7 @@ export default function Settings() {
               onCheckedChange={() =>
                 handleToggleNotification("payoutConfirmations")
               }
+              className={GREEN_SWITCH_CLASSNAME}
             />
           </div>
 
@@ -458,6 +477,7 @@ export default function Settings() {
             <Switch
               checked={formData.notifications.eventApprovals}
               onCheckedChange={() => handleToggleNotification("eventApprovals")}
+              className={GREEN_SWITCH_CLASSNAME}
             />
           </div>
         </div>

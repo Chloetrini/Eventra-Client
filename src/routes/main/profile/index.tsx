@@ -1,13 +1,13 @@
 
-import ProfileHeader from '@/components/profile-settings/ProfileHeader';
-import SettingsForm from "@/components/profile-settings/SettingsForm";
-import { CurrencyPreference } from '@/components/profile-settings/CurrencyPreference';
-import NToggles from '@/components/profile-settings/NToggles';
+import ProfileHeader from '@/components/profile-settings/profile-header';
+import SettingsForm from "@/components/profile-settings/settings-form";
+import { CurrencyPreference } from '@/components/profile-settings/currency-preference';
+import NToggles from '@/components/profile-settings/notification-toggles';
 import { ProfileSkeleton } from '@/components/skeletons/profile-skeleton';
-import { useAuth, type User } from '@/context/auth.context';
+import { useAuth, type User } from '@/context/auth-context';
 import { toast } from 'react-toastify';
-import PageWrapper from '@/components/page-wrapper';
-import { useUpdateProfile, useUploadAvatar } from '@/hooks/use-profile';
+import PageWrapper from '@/components/layout/page-wrapper';
+import { useUpdateProfile, useUploadAvatar } from '@/hooks/shared/use-profile';
 import { z } from 'zod';
 import { profileSchema } from '@/lib/schema';
 

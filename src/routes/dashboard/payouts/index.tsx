@@ -1,20 +1,20 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AccountReviewBanner } from "@/components/account-review-banner";
-import { PayoutSetupBanner } from "./PayoutSetupBanner";
-import { HowPayoutsWork } from "../../../components/payout/HowPayoutsWork";
-import { EarningsByEvent } from "../../../components/payout/EarningsByEvent";
-import { PayoutHistory } from "../../../components/payout/PayoutHistory";
-import { StatCards } from "./StatCards";
+import { AccountReviewBanner } from "@/components/organizer-dashboard/account-review-banner";
+import { PayoutSetupBanner } from "@/components/payouts/payout-setup-banner";
+import { HowPayoutsWork } from "@/components/payouts/how-payouts-work";
+import { EarningsByEvent } from "@/components/payouts/earnings-by-event";
+import { PayoutHistory } from "@/components/payouts/payout-history";
+import { StatCards } from "@/components/payouts/stat-cards";
 import { PayoutsSkeleton } from "@/components/skeletons/payouts-skeleton";
-import { fetchPayouts } from "@/lib/payouts-api";
-import { useOrganizerBankStatus, useOrganizerProfile, useOrganizerProfileComplete } from "@/lib/organizer-api";
+import { fetchPayouts } from "@/api/payouts";
+import { useOrganizerBankStatus, useOrganizerProfile, useOrganizerProfileComplete } from "@/api/organizer";
 
 export default function Payouts() {
   const [showSetupBanner, setShowSetupBanner] = useState(true);
   const { status: organizerStatus, isPayoutReady, isLoading: profileLoading } = useOrganizerProfile();
-  const { bankStatus } = useOrganizerBankStatus();
-  const { isProfileComplete } = useOrganizerProfileComplete();
+  const { bankStatus, isLoading: bankStatusLoading } = useOrganizerBankStatus();
+  const { isProfileComplete, isLoading: profileCompleteLoading } = useOrganizerProfileComplete();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["payouts"],
     queryFn: fetchPayouts,
@@ -32,13 +32,20 @@ export default function Payouts() {
     );
   }
 
-  const { earningsByEvent, payoutHistory } = data;
+  const { earningsByEvent, payoutHistory, currency } = data;
 
   return (
     <div className="space-y-6">
-      <AccountReviewBanner status={organizerStatus}
-        bankStatus={bankStatus}
-        isProfileComplete={isProfileComplete} />
+      {/* organizerStatus is already safe here (profileLoading gates the
+          whole page above), but bankStatus/isProfileComplete come from
+          their own separate queries and default to "not verified yet"
+          while in flight — see the same fix in dashboard/overview/index.tsx
+          — so this still waits on those two before rendering the banner. */}
+      {!bankStatusLoading && !profileCompleteLoading && (
+        <AccountReviewBanner status={organizerStatus}
+          bankStatus={bankStatus}
+          isProfileComplete={isProfileComplete} />
+      )}
 
       <div>
         <p className="text-[13px] font-medium tracking-wide uppercase text-[#0F6E56] dark:text-[#4ADE80] font-space">
@@ -60,11 +67,11 @@ export default function Payouts() {
         <PayoutSetupBanner onDismiss={() => setShowSetupBanner(false)} />
       )}
 
-      <StatCards earnings={earningsByEvent} history={payoutHistory} />
+      <StatCards earnings={earningsByEvent} history={payoutHistory} currency={currency} />
 
       <HowPayoutsWork />
-      <EarningsByEvent earnings={earningsByEvent} />
-      <PayoutHistory history={payoutHistory} />
+      <EarningsByEvent earnings={earningsByEvent} currency={currency} />
+      <PayoutHistory history={payoutHistory} currency={currency} />
     </div>
   );
 }

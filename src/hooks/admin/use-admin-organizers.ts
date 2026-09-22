@@ -1,0 +1,132 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  fetchAdminOrganizers,
+  fetchAdminOrganizerDetail,
+  approveOrganizer,
+  rejectOrganizer,
+  suspendOrganizer,
+  unsuspendOrganizer,
+  flagOrganizer,
+  unflagOrganizer,
+  dismissOrganizerFlag,
+  fetchPendingAdminOrganizers,
+} from "@/api/admin-organizers";
+import type { OrganizerStatusFilterOption } from "@/components/admin/organizers/admin-organizer-filter-bar";
+
+export interface FetchAdminOrganizersParams {
+  status?: OrganizerStatusFilterOption; // Add this line
+  tab?: OrganizerStatusFilterOption;
+  q?: string;
+  page?: number;
+  limit?: number;
+}
+
+// Scoped key factory for admin organizer management
+export const adminOrganizerKeys = {
+  all: ["admin", "organizers"] as const,
+  lists: () => [...adminOrganizerKeys.all, "list"] as const,
+  list: (params: FetchAdminOrganizersParams) =>
+    [...adminOrganizerKeys.lists(), params] as const,
+  details: () => [...adminOrganizerKeys.all, "detail"] as const,
+  detail: (id: string) => [...adminOrganizerKeys.details(), id] as const,
+};
+
+// Hook: Fetch paginated & filtered list of organizers for Admin Console
+export function useAdminOrganizers(params: FetchAdminOrganizersParams = {}) {
+  // The admin organizer page (routes/admin/organizer/index.tsx) passes the
+  // selected filter pill as `status`, but this hook was only ever reading
+  // `tab` — so `status` was silently dropped, `tab` always fell back to
+  // "all", and clicking Pending/Verified/Suspended/Rejected re-fetched the
+  // exact same "all organizers" list every time (same query key too, so it
+  // wasn't even hitting the network on a switch — just re-showing the
+  // cached "all" result). Reading `status` first (falling back to `tab` for
+  // any other caller still using that name) and keying/fetching on the
+  // resolved value fixes both the wiring and the stale cache key.
+  const { status, tab = "all", q = "", page = 1, limit = 20 } = params;
+  const activeStatus = status ?? tab;
+
+  return useQuery({
+    queryKey: adminOrganizerKeys.list({ status: activeStatus, q, page, limit }),
+    queryFn: () =>
+      fetchAdminOrganizers({ status: activeStatus, q: q || undefined, page, limit }),
+  });
+}
+
+export function usePendingAdminOrganizers() {
+  return useQuery({
+    queryKey: ["admin", "organizers", "pending"],
+    queryFn: fetchPendingAdminOrganizers,
+  });
+}
+
+// Hook: Fetch full details for a single organizer
+export function useAdminOrganizerDetail(id: string | undefined) {
+  return useQuery({
+    queryKey: adminOrganizerKeys.detail(id as string),
+    queryFn: () => fetchAdminOrganizerDetail(id as string),
+    enabled: !!id,
+  });
+}
+
+// Hook: Approve organizer KYC application
+export function useApproveOrganizer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => approveOrganizer(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: adminOrganizerKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: adminOrganizerKeys.lists() });
+    },
+  });
+}
+
+// Hook: Reject organizer application with optional reason
+export function useRejectOrganizer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
+      rejectOrganizer(id, reason),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: adminOrganizerKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: adminOrganizerKeys.lists() });
+    },
+  });
+}
+
+export function useToggleSuspendOrganizer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, isSuspended, reason }: { id: string; isSuspended: boolean; reason?: string }) =>
+      isSuspended ? unsuspendOrganizer(id) : suspendOrganizer({ id, reason }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: adminOrganizerKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: adminOrganizerKeys.lists() });
+    },
+  });
+}
+
+// Hook: Flag an organizer account
+export function useFlagOrganizer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
+      flagOrganizer(id, reason),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: adminOrganizerKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: adminOrganizerKeys.lists() });
+    },
+  });
+}
+
+// Hook: Unflag or dismiss an organizer account flag
+export function useUnflagOrganizer() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, dismissReport = false }: { id: string; dismissReport?: boolean }) =>
+      dismissReport ? dismissOrganizerFlag(id) : unflagOrganizer(id),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: adminOrganizerKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: adminOrganizerKeys.lists() });
+    },
+  });
+}

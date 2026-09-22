@@ -1,4 +1,14 @@
-export type AdminEventStatus = 'LIVE' | 'PENDING' | 'FLAGGED' | 'PAST' | 'REJECTED' | 'DRAFT' | 'CANCELLED';
+export type AdminEventStatus =
+  | 'LIVE'
+  | 'PENDING'
+  | 'APPROVED'
+  | 'SUSPENDED'
+  | 'FLAGGED'
+  | 'PAST'
+  | 'REJECTED'
+  | 'DRAFT'
+  | 'CANCELLED';
+
 export type AdminPaymentType = 'PAID' | 'FREE';
 
 export interface AdminEventTicketType {
@@ -27,13 +37,19 @@ export interface AdminEventDetailsData {
   ticketTypes: AdminEventTicketType[];
   organizer: AdminEventOrganizer;
   bannerImage?: string;
+  // Admin's own viewer currency (from the backend's `currency` field on
+  // this response) — every ticketType price above is already converted
+  // into it. Was being fetched but silently dropped before reaching this
+  // type, so the ticket price table had no way to show which currency
+  // symbol applied.
+  currency?: string;
 }
 
 export interface AdminEvent {
   _id: string;
   title: string;
   slug: string;
- createdAt: string
+  createdAt: string;
   organizerName: string;
   organizerInitials: string;
   type: AdminPaymentType;

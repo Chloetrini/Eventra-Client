@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { verifyEmailSchema } from "@/lib/schema";
-import EventraLogo from "@/assets/Eventra-logo.png";
+import EventraLogo from "@/assets/brand/eventra-logo.png";
 import { authPath } from "@/lib/auth-path";
-import { useAuth } from "@/context/auth.context";
+import { useAuth } from "@/context/auth-context";
 
 const OTP_LENGTH = 6;
 const RESEND_SECONDS = 60;
@@ -50,7 +51,11 @@ export default function VerifyOtp() {
       // login as before.
       const user = (data?.body as { mustSetPassword?: boolean } | undefined);
       if (user?.mustSetPassword) {
-        navigate("/auth/set-password");
+        // /auth/admin/set-password — the "/admin" segment is what makes
+        // AuthLayout render it in the same centered-card frame as admin
+        // login, instead of the attendee/organizer split-screen layout.
+        // See the doc comment on routes/auth/set-password/index.tsx.
+        navigate("/auth/admin/set-password");
         return;
       }
       navigate(authPath("login", isOrganizer));
@@ -159,6 +164,16 @@ export default function VerifyOtp() {
 
   return (
     <div className="flex flex-col">
+      {/* Same page-level history-back as the other auth sub-flow pages. */}
+      <button
+        type="button"
+        onClick={() => navigate(-1)}
+        aria-label="Go back"
+        className="mb-6 flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back
+      </button>
       <Link to="/" className="flex items-center gap-2 mb-8 w-fit">
         <img src={EventraLogo} className="h-6 w-auto" alt="Eventra" />
         <span className="text-[22.8px] font-extrabold tracking-[-0.02em] text-foreground">

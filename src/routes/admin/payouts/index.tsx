@@ -2,11 +2,11 @@ import {
   useAdminPayoutsOverview,
   useAwaitingPayouts,
   usePayoutHistory,
-} from "@/hooks/use-admin-payouts"
+} from "@/hooks/admin/use-admin-payouts"
 import { PayoutsOverviewCards } from "@/components/admin/payouts/payouts-overview-cards"
 import { AwaitingPayoutsTable } from "@/components/admin/payouts/awaiting-payouts-table"
 import { PayoutHistoryTable } from "@/components/admin/payouts/payouts-history-table"
-import PageWrapper from "@/components/page-wrapper"
+import PageWrapper from "@/components/layout/page-wrapper"
 
 export default function AdminPayoutsPage() {
   const { data: overview, isLoading: isOverviewLoading } = useAdminPayoutsOverview()
@@ -28,8 +28,8 @@ export default function AdminPayoutsPage() {
       <PayoutsOverviewCards overview={overview} isLoading={isOverviewLoading} />
 
       {/* Tables */}
-      <AwaitingPayoutsTable list={awaitingList?.payouts} isLoading={isAwaitingLoading} />
-      <PayoutHistoryTable history={historyData?.payouts} isLoading={isHistoryLoading} />
+      <AwaitingPayoutsTable list={awaitingList?.payouts} isLoading={isAwaitingLoading} currency={awaitingList?.currency} />
+      <PayoutHistoryTable history={historyData?.payouts} isLoading={isHistoryLoading} currency={historyData?.currency} />
     </PageWrapper>
   )
 }

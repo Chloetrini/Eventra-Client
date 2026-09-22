@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router";
-import { useAuth } from "@/context/auth.context";
+import { useAuth } from "@/context/auth-context";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,9 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loginSchema } from "@/lib/schema";
-import EventraLogo from "@/assets/Eventra-logo.png";
+import EventraLogo from "@/assets/brand/eventra-logo.png";
 import { authPath } from "@/lib/auth-path";
-import type { User } from "@/context/auth.context";
+import type { User } from "@/context/auth-context";
 
 const attendeeLoginSchema = loginSchema;
 

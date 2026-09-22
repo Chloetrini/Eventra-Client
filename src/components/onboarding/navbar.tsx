@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router"
 import { CloudUpload } from "lucide-react"
-import eventraLogo from "@/assets/Eventra-logo.png"
-import PaymentBtn from "../ui/pay-method-btn"
-import OnboardingDrawer from "./onboarding-drawer"
+import eventraLogo from "@/assets/brand/eventra-logo.png"
+import PaymentBtn from "@/components/shared/pay-method-btn"
+import OnboardingDrawer from "@/components/onboarding/onboarding-drawer"
 
 const OnboardingNavbar = () => {
   const navigate = useNavigate()

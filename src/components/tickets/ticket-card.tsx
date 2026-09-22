@@ -1,15 +1,15 @@
 import React from "react";
 import type { Ticket } from "@/types/ticket";
 import { CalendarDays, Clock, MapPinIcon, Music4 } from "lucide-react";
-import shieldTick from "@/assets/shieldTick.png";
+import shieldTick from "@/assets/icons/shield-tick.png";
 import { useNavigate } from "react-router";
-import calendar from "@/assets/calendar.png";
-import rightArrow from "@/assets/rightArrow.png";
-import backward from "@/assets/backward.png";
-import PaymentBtn from "@/components/ui/pay-method-btn";
+import calendar from "@/assets/icons/calendar.png";
+import rightArrow from "@/assets/icons/right-arrow.png";
+import backward from "@/assets/icons/backward.png";
+import PaymentBtn from "@/components/shared/pay-method-btn";
 import { formatDateTime } from "@/lib/utils";
 import { toast } from "react-toastify";
-import { useCancelReservation } from "@/hooks/use-ticket-actions";
+import { useCancelReservation } from "@/hooks/events/use-ticket-actions";
 import { downloadEventIcs } from "@/lib/calendar";
 interface TicketProps {
   ticket: Ticket;

@@ -1,11 +1,11 @@
-import PageWrapper from "@/components/page-wrapper";
+import PageWrapper from "@/components/layout/page-wrapper";
 import { EventGrid } from "@/components/events/event-grid"; // adjust path if different
-import { useEvents } from "@/hooks/use-event";
-import { useSavedEvents } from "@/hooks/use-saved-events";
+import { useEvents } from "@/hooks/events/use-event";
+import { useSavedEvents } from "@/hooks/events/use-saved-events";
 import { DEFAULT_FILTERS } from "@/types/event-types";
 import { useEffect } from "react";
-import { useAuth } from "@/context/auth.context";
-import { useAuthGate } from "@/context/auth.gate";
+import { useAuth } from "@/context/auth-context";
+import { useAuthGate } from "@/context/auth-gate";
 import { useNavigate } from "react-router";
 
 export default function SavedEvent() {
@@ -29,7 +29,7 @@ export default function SavedEvent() {
         return null;
     }
     return (
-        <PageWrapper className="py-8  px-[20px]" >
+        <PageWrapper className="py-8  px-[20px] min-h-screen " >
             <header className="flex items-center   mt-5">
                 <div className="mb-5 flex items-center gap-2">
                     <span className="h-0.5 w-6 bg-[#F5A524]" />

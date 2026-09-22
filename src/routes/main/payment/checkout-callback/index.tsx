@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router";
-import { getOrderByReference } from "@/lib/tickets-api";
-import { useAuth } from "@/context/auth.context";
-import PageWrapper from "@/components/page-wrapper";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { getOrderByReference } from "@/api/tickets";
+import { useAuth } from "@/context/auth-context";
+import PageWrapper from "@/components/layout/page-wrapper";
+import { LoadingSpinner } from "@/components/shared/loading-spinner";
 import { AlertCircle } from "lucide-react";
 
 // This is the page Paystack sends a paying customer's browser BACK to after
@@ -75,6 +75,21 @@ const CheckoutCallback = () => {
                 // generic "Paid" label.
                 ticketType: t.ticketType ?? null,
               })),
+              // getOrderByReference already converts every amount on this
+              // order (including each ticket's price) into the viewer's
+              // own currency and tells us which one via `order.currency` —
+              // this just wasn't being read here, so the confirmation
+              // screen always fell back to formatting whatever number it
+              // got as if it were Naira, even when it was actually a small
+              // Dollar/Cedis/Pound figure. See confirmatory-message.tsx.
+              currency: order.currency,
+              // The real, settled total for this order (already converted
+              // into `currency` above) — used instead of having the
+              // confirmation screen try to reconstruct a total from
+              // per-ticket prices, which for a multi-ticket order was
+              // multiplying an already-summed figure by the ticket count
+              // again (see ConfirmatoryMessage).
+              amountPaid: order.total,
               event: {
                 eventId: order.event?._id,
                 eventName: order.event?.title,
@@ -131,7 +146,7 @@ const CheckoutCallback = () => {
   }
 
   return (
-    <PageWrapper className="p-5">
+    <PageWrapper className="p-5 min-h-screen ">
       <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#FCEBC9] dark:bg-[#7A4E02]/20">
           <AlertCircle className="h-7 w-7 text-[#7A4E02] dark:text-[#F5C877]" />

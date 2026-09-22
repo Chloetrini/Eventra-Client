@@ -31,7 +31,8 @@ export interface AdminOrganizerDetailsData {
 export interface AdminOrganizer {
   _id: string;
   name: string;
-  email: string;
+  email: string;  
+  isSuspended: boolean;
   createdAt: string
   category?:string;
   initials: string;
@@ -40,5 +41,9 @@ export interface AdminOrganizer {
   eventCount: number;
   formattedRevenue: string;
   rawRevenue: number;
+  // The admin's own viewer currency — rawRevenue/formattedRevenue above
+  // are already converted into it server-side (see listOrganizersForAdmin
+  // / getOrganizerDetailForAdmin, admin.controller.ts).
+  currency?: string;
   details?: AdminOrganizerDetailsData;
 }

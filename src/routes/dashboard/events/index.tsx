@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { data, useSearchParams } from "react-router";
-import { fetchMyEvents } from "@/lib/events-api";
+import { fetchMyEvents } from "@/api/events";
 import type { Event } from "@/types/event";
-import { AccountReviewBanner } from "@/components/account-review-banner";
-import { EventsHeader } from "@/components/events-header";
-import { EventsFilterBar } from "@/components/events-filter-bar";
-import { EventsTable } from "@/components/events-table";
+import { AccountReviewBanner } from "@/components/organizer-dashboard/account-review-banner";
+import { EventsHeader } from "@/components/organizer-dashboard/events/events-header";
+import { EventsFilterBar } from "@/components/organizer-dashboard/events/events-filter-bar";
+import { EventsTable } from "@/components/organizer-dashboard/events/events-table";
 import { EventsSkeleton } from "@/components/skeletons/events-skeleton";
 import { useEffect, useState } from "react";
-import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/lib/organizer-api";
+import { useOrganizerBankStatus, useOrganizerProfileComplete, useOrganizerStatus } from "@/api/organizer";
 
 const STATUS_MAP: Record<string, Event["status"]> = {
   live: "Live",
@@ -30,9 +30,9 @@ export default function Events() {
     queryKey: ["events"],
     queryFn: fetchMyEvents,
   });
-  const { status } = useOrganizerStatus();
-  const { bankStatus } = useOrganizerBankStatus();
-  const { isProfileComplete } = useOrganizerProfileComplete();
+  const { status, isLoading: statusLoading } = useOrganizerStatus();
+  const { bankStatus, isLoading: bankStatusLoading } = useOrganizerBankStatus();
+  const { isProfileComplete, isLoading: profileCompleteLoading } = useOrganizerProfileComplete();
   const [events, setEvents] = useState<Event[]>([])
 
   useEffect(() => {
@@ -76,10 +76,15 @@ export default function Events() {
 
   return (
     <div className="space-y-6">
-      <AccountReviewBanner
-        status={status}
-        bankStatus={bankStatus}
-        isProfileComplete={isProfileComplete} />
+      {/* These three profile queries default to "not verified yet" while
+          in flight — see the same fix in dashboard/overview/index.tsx —
+          so this waits for all three before rendering the banner. */}
+      {!statusLoading && !bankStatusLoading && !profileCompleteLoading && (
+        <AccountReviewBanner
+          status={status}
+          bankStatus={bankStatus}
+          isProfileComplete={isProfileComplete} />
+      )}
       <EventsHeader />
       <EventsFilterBar />
       <EventsTable events={filteredEvents} onEventDeleted={handleEventDeleted} />

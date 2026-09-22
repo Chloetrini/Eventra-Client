@@ -149,6 +149,17 @@ export const eventTicketsSchema = z.object({
   tiers: z.array(ticketTypeSchema),
 });
 
+// The organizer-set refund policy as it actually comes back off the
+// event document (models/event.ts's IRefundPolicy) — distinct from
+// refundPolicySchema above, which is the *create-event wizard's own form
+// shape* (hasRefundPolicy/refundPolicyType/refundDaysBefore). Optional:
+// an event that predates this field, or whose organizer never set one,
+// simply has no refundPolicy at all.
+export const eventRefundPolicySchema = z.object({
+  type: z.enum(["no-refunds", "refund-until-days-before"]),
+  daysBefore: z.number().optional(),
+});
+
 export const eventSchema = z.object({
   // --- backend fields ---
   _id: z.string(),
@@ -185,6 +196,10 @@ export const eventSchema = z.object({
   ticketsSoldCount: z.number().optional().default(0),
   revenueTotal: z.number().optional().default(0),
   ticketTypes: z.array(ticketTypeSchema).optional().default([]),
+  // Shown pre-purchase on the ticket picker (PaidEventTicket) so a buyer
+  // knows whether their ticket is refundable before they pay, not just
+  // after (My Tickets already showed this via ticket-card.tsx).
+  refundPolicy: eventRefundPolicySchema.optional(),
   // --- frontend-only (kept until backend provides them) ---
   subcategory: z.string().optional(),
   no: z.string().optional(),

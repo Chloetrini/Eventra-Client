@@ -1,11 +1,11 @@
 import { useFormContext, useWatch } from "react-hook-form"
 import { useState, useEffect } from "react"
-import { FormBox } from "../ui/form-box"
+import { FormBox } from "@/components/form/form-box"
 import type { OnboardingValues } from "@/lib/schema"
-import user from "@/assets/user.png"
-import bankImg from "@/assets/onboarding-bank.png"
-import lock from "@/assets/onboarding-lock.png"
-import { useListBanks, useResolveBankAccount } from "@/hooks/use-onboarding"
+import user from "@/assets/icons/user.png"
+import bankImg from "@/assets/images/onboarding-bank.png"
+import lock from "@/assets/icons/onboarding-lock.png"
+import { useListBanks, useResolveBankAccount } from "@/hooks/organizer/use-onboarding"
 import { CheckCircle2, Loader2 } from "lucide-react"
 import { humanizeBankResolveError } from "@/lib/utils"
 
@@ -71,7 +71,7 @@ const BankDetailsForm = () => {
                 <img
                     src={user}
                     alt=""
-                    className={`w-6 h-6 absolute bottom-5 left-5${errors.accountHolderName ? "bottom-9 left-5" : ""} z-20`}
+                    className={`w-6 h-6 absolute bottom-5 left-5 ${errors.accountHolderName ? "bottom-9 left-5" : ""} z-20`}
                 />
                 <FormBox
                     inputType="input"
@@ -87,7 +87,7 @@ const BankDetailsForm = () => {
                     disabled={isVerifying}
                 />
             </span>
-            <div className="flex flex-col md:flex-row gap-[10px]">
+            <div className="flex flex-col md:flex-row gap-2.5">
                 <span className="h-full w-full relative">
                     <img
                         src={bankImg}

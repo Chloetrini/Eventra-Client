@@ -1,18 +1,21 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, Star, ArrowUpRight } from "lucide-react";
 import { SiInstagram, SiFacebook, SiX } from "react-icons/si";
 import { SlSocialLinkedin } from "react-icons/sl";
-import crowdImage from "@/assets/crowd.png";
+import crowdImage from "@/assets/images/crowd.png";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormBox } from "@/components/ui/form-box";
+import { FormBox } from "@/components/form/form-box";
 import { contactSchema } from "@/lib/schema";
 import { z } from "zod";
-import PageWrapper from "@/components/page-wrapper";
-import LocationMap from "@/components/dashboard-create-event/location-map";
+import PageWrapper from "@/components/layout/page-wrapper";
+import LocationMap from "@/components/create-event/location-map";
+import { Reveal } from "@/components/shared/reveal";
+import { useSubmitEnquiry } from "@/hooks/shared/use-enquiries";
+import { toast } from "react-toastify";
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
@@ -22,6 +25,19 @@ const DEFAULT_FORM_VALUES: ContactFormValues = {
   subject: "",
   message: "",
 };
+
+const SESSION_STORAGE_KEY = "eventra-contact-form-draft";
+
+function loadDraft(): ContactFormValues {
+  if (typeof window === "undefined") return DEFAULT_FORM_VALUES;
+  try {
+    const raw = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
+    if (!raw) return DEFAULT_FORM_VALUES;
+    return { ...DEFAULT_FORM_VALUES, ...JSON.parse(raw) };
+  } catch {
+    return DEFAULT_FORM_VALUES;
+  }
+}
 
 const MAP_LINK = "https://www.google.com/maps/search/?api=1&query=Yaba,Lagos,Nigeria";
 
@@ -33,32 +49,48 @@ const SOCIALS = [
 ];
 
 export default function ContactPage() {
-  const [status, setStatus] = useState<"idle" | "submitting" | "sent">("idle");
+  const [status, setStatus] = useState<"idle" | "sent">("idle");
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
-    defaultValues: DEFAULT_FORM_VALUES,
+    defaultValues: loadDraft(),
     mode: "onBlur",
   });
 
-  const onSubmit = async (_data: ContactFormValues) => {
-    setStatus("submitting");
-    await new Promise((resolve) => setTimeout(resolve, 900));
-    setStatus("sent");
-    reset(DEFAULT_FORM_VALUES);
+  useEffect(() => {
+    const subscription = watch((values) => {
+      window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(values));
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  const { mutateAsync: submitEnquiry, isPending } = useSubmitEnquiry();
+
+  const onSubmit = async (data: ContactFormValues) => {
+    try {
+      await submitEnquiry(data);
+      setStatus("sent");
+      reset(DEFAULT_FORM_VALUES);
+      window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
+      toast.success("Message sent — we'll get back to you soon.");
+      setTimeout(() => setStatus("idle"), 5000);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not send your message. Please try again.");
+    }
   };
 
   return (
     <div className="relative bg-gradient-to-r from-emerald-50 via-emerald-50/50 to-white dark:from-background dark:via-background dark:to-background">
-     <PageWrapper className="p-[20px]">
+      <PageWrapper className="p-[20px]">
 
         <div className="flex flex-col gap-10 lg:flex-row lg:items-stretch xl:gap-14">
-          <div className="flex flex-1 flex-col lg:max-w-[46%]">
+          <Reveal className="flex flex-1 flex-col lg:max-w-[46%]">
             <div className="mb-5 flex items-center gap-2">
               <span className="h-0.5 w-6 bg-amber-400" />
               <span className="text-xs font-semibold tracking-widest text-emerald-700 dark:text-emerald-400">CONTACT</span>
@@ -90,15 +122,15 @@ export default function ContactPage() {
                 <p className="text-xl font-bold text-white sm:text-2xl">6,214 events &middot; 42 cities</p>
               </div>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="flex flex-1 flex-col rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8 lg:p-10">
+          <Reveal delayMs={100} className="flex flex-1 flex-col rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8 lg:p-10">
             <span className="inline-flex w-fit items-center rounded-full bg-emerald-50 dark:bg-emerald-500/15 px-3 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">&middot; Send a message</span>
 
             <h2 className="mt-4 text-xl font-bold text-foreground sm:text-2xl">How can we help?</h2>
             <p className="mt-1 text-sm text-muted-foreground">Tell us a little about you and what you&rsquo;re working on.</p>
 
-     
+
             <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5">
               <FormBox
                 label="Full name"
@@ -146,8 +178,8 @@ export default function ContactPage() {
                 inputType="textarea"
               />
 
-              <Button type="submit" disabled={status === "submitting"} className="w-full bg-emerald-800 text-white hover:bg-emerald-900">
-                {status === "submitting" ? "Sending..." : status === "sent" ? "Message sent" : "Send message"}
+              <Button type="submit" disabled={isPending} className="w-full bg-emerald-800 text-white hover:bg-emerald-900">
+                {isPending ? "Sending..." : status === "sent" ? "Message sent" : "Send message"}
               </Button>
             </form>
 
@@ -169,10 +201,10 @@ export default function ContactPage() {
               <ContactRow icon={<Phone className="h-4 w-4" />} label="PHONE" value="+234 800 000 0000" href="tel:+2348000000000" />
               <ContactRow icon={<MapPin className="h-4 w-4" />} label="OFFICE" value="Yaba, Lagos, Nigeria" href={MAP_LINK} />
             </div>
-          </div>
+          </Reveal>
         </div>
 
-        <div className="mt-20 sm:mt-24">
+        <Reveal className="mt-20 sm:mt-24">
           <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
             <div>
               <div className="mb-4 flex items-center gap-2">
@@ -187,13 +219,6 @@ export default function ContactPage() {
             </a>
           </div>
 
-          {/* Was react-leaflet + OpenStreetMap tiles — its own separate map
-              tech from the rest of the app. Now the same LocationMap
-              component Create Event and Event Details use, so there's one
-              map implementation everywhere instead of three. LocationMap's
-              built-in overlay card keeps the "here's what this place is"
-              popup info (name, address, hours, open link) that the old
-              Leaflet marker popup used to show. */}
           <LocationMap
             name="Eventra HQ"
             address="Yaba, Lagos, Nigeria"
@@ -204,10 +229,10 @@ export default function ContactPage() {
             openLabel="Open now"
             className="rounded-3xl shadow-sm"
           />
-        </div>
-        
-     </PageWrapper>
-      
+        </Reveal>
+
+      </PageWrapper>
+
     </div>
   );
 }

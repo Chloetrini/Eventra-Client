@@ -1,9 +1,12 @@
-import ActionBtn from "@/components/ui/action-btn"
-import type { AwaitingPayoutItem } from "@/lib/api/admin-payouts"
-import { useReleasePayout } from "@/hooks/use-admin-payouts"
+import ActionBtn from "@/components/shared/action-btn"
+import type { AwaitingPayoutItem } from "@/api/admin-payouts"
+import { useReleasePayout } from "@/hooks/admin/use-admin-payouts"
+import { CURRENCY_SYMBOLS } from "@/lib/utils"
 
-function formatExactCurrency(amount: number): string {
-  return `₦${amount.toLocaleString("en-NG")}`
+// Was hardcoded to ₦ regardless of the admin's currency preference.
+function formatExactCurrency(amount: number, currency: string = "Naira"): string {
+  const symbol = CURRENCY_SYMBOLS[currency] ?? "₦"
+  return `${symbol}${amount.toLocaleString("en-NG")}`
 }
 
 function formatDate(dateStr: string | null): string {
@@ -18,9 +21,10 @@ function initialsFor(name: string): string {
 interface Props {
   list?: AwaitingPayoutItem[]
   isLoading: boolean
+  currency?: string
 }
 
-export function AwaitingPayoutsTable({ list, isLoading }: Props) {
+export function AwaitingPayoutsTable({ list, isLoading, currency }: Props) {
   const releaseMutation = useReleasePayout()
 
   return (
@@ -71,12 +75,12 @@ export function AwaitingPayoutsTable({ list, isLoading }: Props) {
                       <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs">
                         {initialsFor(item.organizerName)}
                       </div>
-                      <span className="font-[600] text-[17px] font-geist">{item.organizerName}</span>
+                      <span className="font-[600] truncate whitespace-nowrap text-[17px] font-geist">{item.organizerName}</span>
                     </div>
                   </td>
-                  <td className="py-4 px-6 text-muted-foreground text-[16px] font-geist font-[400]">{item.eventTitle}</td>
-                  <td className="py-4 px-6 font-space font-[700] text-[20px]">{formatExactCurrency(item.amount)}</td>
-                  <td className="py-4 px-6 text-muted-foreground font-geist text-[16px] font-[400]">{formatDate(item.releaseDate)}</td>
+                  <td className="py-4 px-6 text-muted-foreground max-w-[200px] truncate whitespace-nowrap text-[16px] font-geist font-[400]">{item.eventTitle}</td>
+                  <td className="py-4 px-6 font-space font-[700] text-[20px]">{formatExactCurrency(item.amount, currency)}</td>
+                  <td className="py-4 px-6 text-muted-foreground font-geist text-center text-[16px] font-[400]">{formatDate(item.releaseDate)}</td>
                   <td className="py-4 px-6">
                     {item.status === "ready" && (
                       <span className="inline-flex items-center gap-1.5 px-4 py-0.5 rounded-full text-[16px] font-[700] font-space bg-[#FCD98A] text-[#7A4E02] dark:bg-[#D97706]/20 dark:text-[#FBBF24]">

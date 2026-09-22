@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from "react-router";
-import authBg from "@/assets/auth-hero.png";
-import organizerBg from "@/assets/auth-organizer.png"
-import EventraLogo from "@/assets/Eventra-logo.png";
+import authBg from "@/assets/images/auth-hero.png";
+import organizerBg from "@/assets/images/auth-organizer.png"
+import EventraLogo from "@/assets/brand/eventra-logo.png";
 /**
  * Shared shell for every /auth/* route (register, login, forgot-password...).
  * Renders the logo + split-screen frame once; each route's own page

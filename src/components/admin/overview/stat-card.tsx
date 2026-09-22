@@ -3,13 +3,13 @@ import { cn } from "@/lib/utils";
 import { ICON_MAP } from "@/lib/icon-map";
 import type { StatCardData } from "@/types/overview";
 
-export default function StatCard({ stat, className }: { stat: StatCardData; className?: string }) {
+export default function StatCard({ stat, }: { stat: StatCardData; className?: string }) {
     const Icon = ICON_MAP[stat.icon];
 
   return (
     <div className="rounded-xl border border-border bg-card p-4">
       <div className="flex items-center justify-between">
-        <p className="text-[13px] md:text-[15px] font-[400] tracking-wide text-muted-foreground uppercase">
+        <p className="text-[13px] md:text-[15px] font-normal tracking-wide text-muted-foreground uppercase">
           {stat.label}
         </p>
         <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
@@ -17,7 +17,7 @@ export default function StatCard({ stat, className }: { stat: StatCardData; clas
         </span>
       </div>
 
-      <p className="mt-2 text-[20px] font-[700] md:text-[34px] font-space  text-foreground">{stat.value}</p>
+      <p className="mt-2 text-[20px] font-bold md:text-[34px] font-space  text-foreground">{stat.value}</p>
 
             {/* 
         Main Value: 

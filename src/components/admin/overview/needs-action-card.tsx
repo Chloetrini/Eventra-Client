@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import type { NeedsActionItem } from "@/types/overview";
 
-export default function NeedsActionCard({ item, className }: { item: NeedsActionItem; className?: string }) {
+export default function NeedsActionCard({ item, }: { item: NeedsActionItem; className?: string }) {
     const urgent = item.variant === "urgent";
 
   return (

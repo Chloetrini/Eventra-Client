@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Eventra",
-    "slug": "eventra",
+    "slug": "eventra-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -33,7 +33,7 @@
       "apiUrl": "https://eventra-backend-psi.vercel.app/api/v1",
       "router": {},
       "eas": {
-        "projectId": "5448fea2-4103-4ccc-ad7a-fbc1b83ab733"
+        "projectId": "656fa529-a8ae-4a4e-8a91-48c214e47c3c"
       }
     },
     "owner": "chloetrini"

@@ -306,7 +306,7 @@ function Navbar() {
 
           {/* Mobile nav */}
           {open && (
-            <div className="flex flex-col gap-3 border-t border-[#E8E6E0] dark:border-white/10 p-4 lg:hidden">
+            <div className="mt-3 flex flex-col gap-3 border-t border-[#E8E6E0] dark:border-white/10 p-4 lg:hidden">
               {NAV_LINKS.map((link) => (
                 <NavItem key={link.to} {...link} onClick={closeMenu} />
               ))}

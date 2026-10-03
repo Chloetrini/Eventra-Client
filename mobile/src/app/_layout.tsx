@@ -7,6 +7,7 @@ import { useCallback, useState } from 'react'
 import { View } from 'react-native'
 import { BrandIntro } from '@/components/brand-intro'
 import { AuthProvider, useAuth } from '@/lib/auth-context'
+import { RoleRedirect } from '@/lib/mode'
 import { font } from '@/lib/theme'
 import { ThemeProvider, useTheme } from '@/lib/theme-context'
 
@@ -54,12 +55,19 @@ function AppGate() {
         }}
       >
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="organizer" />
+        <Stack.Screen name="admin" />
+        <Stack.Screen name="manage/[id]" />
+        <Stack.Screen name="scan/[eventId]" />
+        <Stack.Screen name="create-event" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="admin-users" />
         <Stack.Screen name="event/[slug]" />
         <Stack.Screen name="ticket/[id]" options={{ headerShown: true, title: 'Your ticket' }} />
         <Stack.Screen name="auth/login" options={{ presentation: 'modal' }} />
         <Stack.Screen name="auth/register" options={{ presentation: 'modal' }} />
         <Stack.Screen name="auth/verify" options={{ presentation: 'modal' }} />
       </Stack>
+      <RoleRedirect enabled={!loading} />
       {introDone ? null : <BrandIntro ready={!loading} onDone={done} />}
     </View>
   )

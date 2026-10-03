@@ -11,3 +11,11 @@ createRoot(document.getElementById('root')!).render(
     </HelmetProvider>
   </StrictMode>
 )
+
+// Lets browsers offer "Install app" / "Add to Home Screen". Production only,
+// so the dev server never serves stale cached files.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {})
+  })
+}

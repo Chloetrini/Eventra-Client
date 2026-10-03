@@ -7,19 +7,37 @@
   "scripts": {
     "build:web": "npm --prefix .. run build",
     "start": "npm run build:web && electron .",
-    "dist": "npm run build:web && electron-builder"
+    "dist": "npm run build:web && electron-builder --publish never"
   },
   "build": {
     "appId": "com.eventra.desktop",
     "productName": "Eventra",
-    "files": ["main.js", "server.js", "../dist/**/*"],
-    "extraResources": [{ "from": "../dist", "to": "web" }],
-    "mac": { "category": "public.app-category.business" },
-    "win": { "target": "nsis" },
-    "linux": { "target": "AppImage" }
+    "files": [
+      "main.js",
+      "server.js",
+      "../dist/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../dist",
+        "to": "web"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.business"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "publish": null
   },
   "devDependencies": {
     "electron": "^33.0.0",
     "electron-builder": "^25.0.0"
-  }
+  },
+  "author": "Chloetrini <trinityegbukwu1@gmail.com>",
+  "homepage": "https://github.com/Chloetrini/Eventra-Client"
 }

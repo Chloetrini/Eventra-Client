@@ -16,3 +16,5 @@ export const formatTime = (iso: string) =>
 
 export const venueLabel = (e: Pick<EventSummary, 'venue' | 'isOnline'>) =>
   e.venue ? [e.venue.name, e.venue.city].filter(Boolean).join(', ') : e.isOnline ? 'Online' : 'Venue TBA'
+
+export const isUpcoming = (iso: string) => new Date(iso).getTime() > Date.now() - 12 * 60 * 60 * 1000

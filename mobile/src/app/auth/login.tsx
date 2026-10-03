@@ -1,11 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { router } from 'expo-router'
 import { useState } from 'react'
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text } from 'react-native'
+import { Alert } from 'react-native'
 import * as authApi from '@/api/auth'
+import { AuthShell, Link } from '@/components/auth-shell'
 import { Button, Field } from '@/components/ui'
 import { useAuth } from '@/lib/auth-context'
-import { colors } from '@/lib/theme'
 
 export default function Login() {
   const { setUser } = useAuth()
@@ -17,8 +17,7 @@ export default function Login() {
   async function submit() {
     setBusy(true)
     try {
-      const user = await authApi.login(email.trim().toLowerCase(), password)
-      setUser(user)
+      setUser(await authApi.login(email.trim().toLowerCase(), password))
       qc.invalidateQueries()
       router.back()
     } catch (e) {
@@ -34,16 +33,11 @@ export default function Login() {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView contentContainerStyle={{ padding: 24 }} keyboardShouldPersistTaps="handled">
-        <Field label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" autoComplete="email" />
-        <Field label="Password" value={password} onChangeText={setPassword} secureTextEntry autoComplete="password" />
-        <Button title="Log in" onPress={submit} loading={busy} disabled={!email || !password} />
-        <Text style={{ color: colors.primary, textAlign: 'center', marginTop: 20, fontWeight: '600' }}
-          onPress={() => router.replace('/auth/register')}>
-          New here? Create an account
-        </Text>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    <AuthShell title="Welcome back" sub="Log in to your Eventra account.">
+      <Field label="Email" icon="mail-outline" value={email} onChangeText={setEmail} keyboardType="email-address" autoComplete="email" placeholder="you@example.com" />
+      <Field label="Password" icon="lock-closed-outline" secure value={password} onChangeText={setPassword} autoComplete="password" placeholder="Your password" />
+      <Button title="Log in" onPress={submit} loading={busy} disabled={!email || !password} style={{ marginTop: 8 }} />
+      <Link prefix="New to Eventra?" label="Create an account" onPress={() => router.replace('/auth/register')} />
+    </AuthShell>
   )
 }

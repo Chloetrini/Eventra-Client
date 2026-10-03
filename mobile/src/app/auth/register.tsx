@@ -1,7 +1,8 @@
 import { router } from 'expo-router'
 import { useState } from 'react'
-import { Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
+import { Alert } from 'react-native'
 import * as authApi from '@/api/auth'
+import { AuthShell, Link } from '@/components/auth-shell'
 import { Button, Field } from '@/components/ui'
 
 export default function Register() {
@@ -25,14 +26,13 @@ export default function Register() {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView contentContainerStyle={{ padding: 24 }} keyboardShouldPersistTaps="handled">
-        <Field label="Full name" value={fullname} onChangeText={setFullname} autoCapitalize="words" />
-        <Field label="Email" value={email} onChangeText={setEmail} keyboardType="email-address" autoComplete="email" />
-        <Field label="Phone (optional)" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
-        <Field label="Password" value={password} onChangeText={setPassword} secureTextEntry />
-        <Button title="Create account" onPress={submit} loading={busy} disabled={!fullname || !email || password.length < 8} />
-      </ScrollView>
-    </KeyboardAvoidingView>
+    <AuthShell title="Create account" sub="Join Eventra to find events and get tickets.">
+      <Field label="Full name" icon="person-outline" value={fullname} onChangeText={setFullname} autoCapitalize="words" placeholder="Ada Okafor" />
+      <Field label="Email" icon="mail-outline" value={email} onChangeText={setEmail} keyboardType="email-address" autoComplete="email" placeholder="you@example.com" />
+      <Field label="Phone (optional)" icon="call-outline" value={phone} onChangeText={setPhone} keyboardType="phone-pad" placeholder="0801 234 5678" />
+      <Field label="Password" icon="lock-closed-outline" secure value={password} onChangeText={setPassword} placeholder="At least 8 characters" error={password && password.length < 8 ? 'Use at least 8 characters' : undefined} />
+      <Button title="Create account" onPress={submit} loading={busy} disabled={!fullname || !email || password.length < 8} style={{ marginTop: 8 }} />
+      <Link prefix="Already have an account?" label="Log in" onPress={() => router.replace('/auth/login')} />
+    </AuthShell>
   )
 }

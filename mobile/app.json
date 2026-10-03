@@ -42,6 +42,20 @@
             "backgroundColor": "#08100D"
           }
         }
+      ],
+      "@react-native-community/datetimepicker",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Eventra uses the camera to scan attendee tickets at the door.",
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Eventra needs your photos so you can add a cover image to your event."
+        }
       ]
     ],
     "extra": {

@@ -27,7 +27,20 @@ async function call<T>(method: string, url: string, data?: unknown): Promise<T> 
   }
 }
 
+async function upload<T>(url: string, form: FormData): Promise<T> {
+  try {
+    // Drop the JSON content-type so the platform sets the multipart boundary.
+    const res = await http.post<Envelope<T>>(url, form, { headers: { 'Content-Type': 'multipart/form-data' }, timeout: 60000 })
+    return res.data.body
+  } catch (e) {
+    if (axios.isAxiosError(e) && e.response) throw new Error(e.response.data?.message || 'Upload failed')
+    throw new Error('Network error. Check your connection.')
+  }
+}
+
 export const api = {
+  upload,
+  patch: <T>(url: string, data?: unknown) => call<T>('PATCH', url, data ?? {}),
   get: <T>(url: string) => call<T>('GET', url),
   post: <T>(url: string, data?: unknown) => call<T>('POST', url, data ?? {}),
   delete: <T>(url: string) => call<T>('DELETE', url),

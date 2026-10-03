@@ -29,3 +29,12 @@ backend changes were needed. Organizer and admin features stay on the web app.
 - Paystack redirects back to the web `CLIENT_URL/checkout/callback`; the app just closes the browser and polls the order. A deep link (`eventra://`) callback would need a backend change.
 - Google sign-in, forgot/reset password, guest checkout, refunds and notifications are not built yet.
 - Not yet run on a device or simulator; verified by typecheck and a production bundle only.
+
+## Organizer and admin
+
+Log in with an organizer or admin account and the app opens that dashboard (Profile → "Open dashboard" gets you back; More → "Browse events as an attendee" switches to the attendee view).
+
+- **Organizer:** overview and revenue, events list, create event (draft or submit), event management, QR check-in with guest list, payouts.
+- **Admin:** overview, approvals (events, organizers), refunds, payouts release, users (suspend / restore).
+
+Organizer onboarding (business profile, bank details, documents), promotions, disputes, reports and admin settings stay on the website for now.

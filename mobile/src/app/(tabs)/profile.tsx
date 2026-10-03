@@ -6,6 +6,7 @@ import { ScreenHeader } from '@/components/screen-header'
 import { Text } from '@/components/text'
 import { Button } from '@/components/ui'
 import { useAuth } from '@/lib/auth-context'
+import { openDashboard } from '@/lib/mode'
 import { cardShadow, radius } from '@/lib/theme'
 import { useTheme, type ThemePref } from '@/lib/theme-context'
 
@@ -41,6 +42,10 @@ export default function Profile() {
             <Button title="Create account" variant="secondary" onPress={() => router.push('/auth/register')} />
           </View>
         )}
+
+        {user && user.role !== 'attendee' ? (
+          <Button title={user.role === 'admin' ? 'Open admin console' : 'Open organizer dashboard'} icon="grid-outline" onPress={() => openDashboard(user.role)} />
+        ) : null}
 
         <View>
           <Text variant="label" color="muted" style={{ marginBottom: 10 }}>APPEARANCE</Text>

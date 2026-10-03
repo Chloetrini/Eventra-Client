@@ -31,6 +31,10 @@ Copy `.env.example` to `.env` (git-ignored).
 - `VITE_GOOGLE_CLIENT_ID` is needed for Google sign-in.
 - In production `vercel.json` rewrites `/api/v1/*` to the hosted backend and every other path to `index.html`.
 
+## Mobile app
+
+`mobile/` is a separate Expo (React Native) app for attendees, using the same backend via the session cookie. It has its own `package.json`; run `npm run typecheck` there. It is not part of the Vite build or this repo's lint. See `mobile/README.md`.
+
 ## Layout
 
 ```

@@ -1,0 +1,25 @@
+{
+  "name": "eventra-desktop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Eventra desktop app (Electron shell around the web client)",
+  "main": "main.js",
+  "scripts": {
+    "build:web": "npm --prefix .. run build",
+    "start": "npm run build:web && electron .",
+    "dist": "npm run build:web && electron-builder"
+  },
+  "build": {
+    "appId": "com.eventra.desktop",
+    "productName": "Eventra",
+    "files": ["main.js", "server.js", "../dist/**/*"],
+    "extraResources": [{ "from": "../dist", "to": "web" }],
+    "mac": { "category": "public.app-category.business" },
+    "win": { "target": "nsis" },
+    "linux": { "target": "AppImage" }
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  }
+}

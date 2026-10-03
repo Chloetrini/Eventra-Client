@@ -36,6 +36,12 @@
         "projectId": "a2a6427d-b66b-4d34-9974-016d0c07101d"
       }
     },
-    "owner": "chloetrini"
+    "owner": "chloetrini",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a2a6427d-b66b-4d34-9974-016d0c07101d"
+    }
   }
 }

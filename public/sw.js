@@ -1,7 +1,7 @@
 // Minimal service worker so Eventra can be installed (Add to Home Screen /
 // Install app) and still opens its shell when offline. API calls and anything
 // cross-origin are never cached: tickets, sessions and prices must stay live.
-const CACHE = 'eventra-shell-v1'
+const CACHE = 'eventra-shell-v2'
 const SHELL = ['/', '/icons/icon-192.png', '/icons/icon-512.png']
 
 self.addEventListener('install', (event) => {

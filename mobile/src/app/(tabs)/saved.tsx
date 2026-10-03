@@ -1,24 +1,37 @@
-import { useQuery } from '@tanstack/react-query'
-import { FlatList } from 'react-native'
-import { fetchSavedEvents } from '@/api/tickets'
+import { router } from 'expo-router'
+import { FlatList, RefreshControl, View } from 'react-native'
 import { EventCard } from '@/components/event-card'
+import { ScreenHeader } from '@/components/screen-header'
 import { SignInPrompt } from '@/components/sign-in-prompt'
-import { Empty, Loading } from '@/components/ui'
+import { Empty, Skeleton } from '@/components/ui'
 import { useAuth } from '@/lib/auth-context'
+import { useSaved } from '@/lib/saved'
+import { useTheme } from '@/lib/theme-context'
 
 export default function Saved() {
+  const { colors } = useTheme()
   const { user, loading } = useAuth()
-  const q = useQuery({ queryKey: ['saved'], queryFn: fetchSavedEvents, enabled: !!user })
+  const saved = useSaved()
+  const items = (saved.events ?? []).filter((e) => e.slug)
 
-  if (loading || (user && q.isLoading)) return <Loading />
-  if (!user) return <SignInPrompt text="Log in to see events you've saved." />
   return (
-    <FlatList
-      data={q.data ?? []}
-      keyExtractor={(e) => e._id}
-      renderItem={({ item }) => <EventCard event={item} />}
-      contentContainerStyle={{ padding: 16 }}
-      ListEmptyComponent={<Empty title="Nothing saved yet" hint="Tap the heart on an event to save it." />}
-    />
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <ScreenHeader title="Saved" sub="Events you're keeping an eye on" />
+      {!loading && !user ? (
+        <SignInPrompt text="Log in to see events you've saved." />
+      ) : (
+        <FlatList
+          data={items}
+          keyExtractor={(e) => e._id}
+          renderItem={({ item }) => <EventCard event={item} />}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
+          ListEmptyComponent={
+            saved.isLoading ? <Skeleton style={{ height: 240 }} /> : (
+              <Empty icon="heart-outline" title="Nothing saved yet" hint="Tap the heart on any event to save it here." action={{ label: 'Browse events', onPress: () => router.push('/') }} />
+            )
+          }
+        />
+      )}
+    </View>
   )
 }

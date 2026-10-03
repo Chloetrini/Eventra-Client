@@ -17,7 +17,7 @@ Defaults to the hosted backend (`extra.apiUrl` in `app.json`). To use a local ba
 
 ## What's in it
 
-Browse and search events, event detail, save events, free RSVP, paid checkout (Paystack in
+Light and dark mode (follows the phone, switch in Profile), a branded Eventra opening screen, featured carousel, full-bleed event pages, ticket-style passes. Browse and search events, event detail, save events, free RSVP, paid checkout (Paystack in
 an in-app browser, then the order is polled until paid), tickets with QR code, login,
 register and email-OTP verification.
 

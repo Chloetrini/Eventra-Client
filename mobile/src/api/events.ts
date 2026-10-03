@@ -30,3 +30,10 @@ export async function fetchEvent(slug: string) {
 }
 
 export const fetchCategories = () => api.get<Category[]>('/categories')
+
+export async function fetchFeaturedEvents(limit = 6) {
+  const body = await api.get<{ events: EventSummary[]; currency?: EventSummary['currency'] }>(
+    `/events/spotlight?placement=featured&limit=${limit}`,
+  )
+  return (body.events ?? []).map((e) => ({ ...e, currency: body.currency ?? e.currency }))
+}

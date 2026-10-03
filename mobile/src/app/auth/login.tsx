@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Alert } from 'react-native'
 import * as authApi from '@/api/auth'
 import { AuthShell, Link } from '@/components/auth-shell'
+import { GoogleButton } from '@/components/google-button'
 import { Button, Field } from '@/components/ui'
 import { useAuth } from '@/lib/auth-context'
 
@@ -37,6 +38,7 @@ export default function Login() {
       <Field label="Email" icon="mail-outline" value={email} onChangeText={setEmail} keyboardType="email-address" autoComplete="email" placeholder="you@example.com" />
       <Field label="Password" icon="lock-closed-outline" secure value={password} onChangeText={setPassword} autoComplete="password" placeholder="Your password" />
       <Button title="Log in" onPress={submit} loading={busy} disabled={!email || !password} style={{ marginTop: 8 }} />
+      <GoogleButton />
       <Link prefix="New to Eventra?" label="Create an account" onPress={() => router.replace('/auth/register')} />
     </AuthShell>
   )

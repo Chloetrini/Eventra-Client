@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Alert } from 'react-native'
 import * as authApi from '@/api/auth'
 import { AuthShell, Link } from '@/components/auth-shell'
+import { GoogleButton } from '@/components/google-button'
 import { Button, Field } from '@/components/ui'
 
 export default function Register() {
@@ -32,6 +33,7 @@ export default function Register() {
       <Field label="Phone (optional)" icon="call-outline" value={phone} onChangeText={setPhone} keyboardType="phone-pad" placeholder="0801 234 5678" />
       <Field label="Password" icon="lock-closed-outline" secure value={password} onChangeText={setPassword} placeholder="At least 8 characters" error={password && password.length < 8 ? 'Use at least 8 characters' : undefined} />
       <Button title="Create account" onPress={submit} loading={busy} disabled={!fullname || !email || password.length < 8} style={{ marginTop: 8 }} />
+      <GoogleButton />
       <Link prefix="Already have an account?" label="Log in" onPress={() => router.replace('/auth/login')} />
     </AuthShell>
   )

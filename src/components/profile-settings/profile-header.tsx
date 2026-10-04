@@ -29,8 +29,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, onAvatarSelect, isU
 
     return (
         <div >
-            {/* ACCOUNT label */}
-            <div className="flex flex-row justify-start items-center gap-2.5 mb-10">
+            {/* ACCOUNT label (hidden in the installed app, which has its own screen title) */}
+            <div className="flex flex-row justify-start items-center gap-2.5 mb-10 [.app-mode_&]:hidden">
                 <span className='bg-[#0F6E56] dark:bg-[#4ADE80] ml-1 h-[3px] w-[30px] sm:w-[20px] inline'></span>
                 <p className="font-grotesk font-[600] text-[20px] md:text-[22px] text-[#0F6E56] dark:text-[#4ADE80] leading-7.5 tracking-[-1%]">
                      ACCOUNT
@@ -38,7 +38,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, onAvatarSelect, isU
             </div>
 
             {/* Title & description */}
-            <div className="flex flex-col justify-center items-start gap-6 mt-4">
+            <div className="flex flex-col justify-center items-start gap-6 mt-4 [.app-mode_&]:hidden">
                 <h1 className="font-grotesk font-[700] text-[30px] md:text-[64px] text-foreground leading-7.5 tracking-[-6%]">
                     Profile & Settings
                 </h1>

@@ -22,7 +22,7 @@ export default function EventScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>()
   const { colors } = useTheme()
   const insets = useSafeAreaInsets()
-  const { user } = useAuth()
+  const { user, setUser } = useAuth()
   const qc = useQueryClient()
   const { isSaved, toggle } = useSaved()
   const q = useQuery({ queryKey: ['event', slug], queryFn: () => fetchEvent(slug) })
@@ -57,6 +57,15 @@ export default function EventScreen() {
   const categoryName = typeof e.category === 'object' && e.category ? e.category.name : undefined
   const host = e.organizer?.organizerProfile?.businessName ?? e.organizer?.fullname
 
+  // The server says "log in or give your name" when it didn't receive our session.
+  // Treat that as an expired login instead of a mysterious failure.
+  const sessionLost = (err: unknown) => {
+    if (!(err instanceof Error) || !err.message.toLowerCase().includes('log in, or provide your name')) return false
+    setUser(null)
+    Alert.alert('Please log in again', 'Your login expired. Log in to continue buying.', [{ text: 'Log in', onPress: () => router.push('/auth/login') }])
+    return true
+  }
+
   const needLogin = () => {
     if (user) return false
     router.push('/auth/login')
@@ -74,7 +83,7 @@ export default function EventScreen() {
         { text: 'OK' },
       ])
     } catch (err) {
-      Alert.alert('Could not reserve', (err as Error).message)
+      if (!sessionLost(err)) Alert.alert('Could not reserve', (err as Error).message)
     } finally {
       setBusy(false)
     }
@@ -103,7 +112,7 @@ export default function EventScreen() {
         Alert.alert('Payment not confirmed', 'If you were charged, your tickets will appear in the Tickets tab shortly.')
       }
     } catch (err) {
-      Alert.alert('Checkout failed', (err as Error).message)
+      if (!sessionLost(err)) Alert.alert('Checkout failed', (err as Error).message)
     } finally {
       setBusy(false)
     }

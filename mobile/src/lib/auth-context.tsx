@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import * as authApi from '@/api/auth'
+import { clearSession } from '@/api/client'
 import type { User } from '@/api/types'
 
 type AuthState = {
@@ -15,7 +16,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Restore the session: the native cookie jar persists the session cookie,
+  // Restore the session from the saved cookie (the request layer attaches it),
   // so /auth/me tells us whether it's still valid.
   useEffect(() => {
     authApi
@@ -29,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await authApi.logout()
     } finally {
+      await clearSession()
       setUser(null)
     }
   }, [])

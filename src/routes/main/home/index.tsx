@@ -34,8 +34,16 @@ import {
 import { useEventSearchSuggestions } from "@/hooks/events/use-event-search-suggestions";
 import { EventSearchSuggestions } from "@/components/search/event-search-suggestions";
 import { useViewerCity } from "@/hooks/events/use-viewer-city";
+import { useAppMode } from "@/hooks/shared/use-app-mode";
+import AppHome from "@/components/app/app-home";
 
+// Installed-app mode swaps the marketing homepage for the app's Discover screen.
 const Home: React.FC = () => {
+  const appMode = useAppMode();
+  return appMode ? <AppHome /> : <WebsiteHome />;
+};
+
+const WebsiteHome: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const navigate = useNavigate();
   const [heroSearch, setHeroSearch] = useState("");

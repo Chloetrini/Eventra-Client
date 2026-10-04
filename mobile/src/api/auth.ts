@@ -13,3 +13,6 @@ export const verifyEmail = (email: string, otp: string) =>
 export const resendOtp = (email: string) => api.post('/auth/resend-otp', { email })
 export const logout = () => api.post('/auth/logout')
 export const fetchMe = () => api.get<User>('/auth/me')
+
+export const googleLogin = (idToken: string, role: 'attendee' | 'organizer' = 'attendee') =>
+  api.post<User>('/auth/google', { idToken, role })

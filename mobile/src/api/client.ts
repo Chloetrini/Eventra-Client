@@ -1,10 +1,33 @@
 import axios from 'axios'
 import Constants from 'expo-constants'
+import * as SecureStore from 'expo-secure-store'
 
 // The backend authenticates with an httpOnly session cookie (`_evtSessionId`).
-// On iOS/Android the native networking stack keeps that cookie in its own jar
-// and replays it automatically, so `withCredentials` is all that's needed —
-// no token handling and no backend changes.
+// The phone's cookie jar normally keeps and replays it (`withCredentials`), but
+// that proved unreliable on some Android phones: the app showed the person as
+// logged in while requests reached the server with no session. So the app also
+// keeps its own copy of the session cookie (in secure storage) and sends it
+// explicitly on every request. No backend change is needed.
+const SESSION_KEY = 'eventra-session-cookie'
+const COOKIE_NAME = '_evtSessionId'
+let sessionCookie: string | null = null
+
+const sessionReady: Promise<void> = SecureStore.getItemAsync(SESSION_KEY)
+  .then((v) => { sessionCookie = v })
+  .catch(() => {})
+
+async function setSessionCookie(value: string | null) {
+  sessionCookie = value
+  try {
+    if (value) await SecureStore.setItemAsync(SESSION_KEY, value)
+    else await SecureStore.deleteItemAsync(SESSION_KEY)
+  } catch {
+    // Storage unavailable: the in-memory copy still works for this launch.
+  }
+}
+
+/** Forget the stored session (used on log out). */
+export const clearSession = () => setSessionCookie(null)
 const raw: string =
   process.env.EXPO_PUBLIC_API_URL ?? (Constants.expoConfig?.extra?.apiUrl as string)
 
@@ -12,6 +35,21 @@ const trimmed = raw.replace(/\/+$/, '')
 export const BASE_URL = trimmed.endsWith('/api/v1') ? trimmed : `${trimmed}/api/v1`
 
 const http = axios.create({ baseURL: BASE_URL, withCredentials: true, timeout: 20000 })
+
+http.interceptors.request.use(async (config) => {
+  await sessionReady
+  if (sessionCookie) config.headers.set('Cookie', `${COOKIE_NAME}=${sessionCookie}`)
+  return config
+})
+
+http.interceptors.response.use((res) => {
+  // Pick up a new / refreshed / cleared session from Set-Cookie.
+  const raw = res.headers?.['set-cookie'] as string | string[] | undefined
+  const header = Array.isArray(raw) ? raw.join(', ') : raw
+  const match = header?.match(new RegExp(`${COOKIE_NAME}=([^;,\\s]*)`))
+  if (match) void setSessionCookie(match[1] || null)
+  return res
+})
 
 type Envelope<T> = { success: boolean; message: string; body: T }
 

@@ -72,6 +72,10 @@ Work on feature branches and open PRs into `devbranch`. Do not push straight to 
 
 Author every commit as `Chloetrini <trinityegbukwu1@gmail.com>`, never as "Claude" or "Claude with Trini". Set it before committing: `git config user.name "Chloetrini" && git config user.email trinityegbukwu1@gmail.com`.
 
+## Installed-app mode
+
+When the site is opened from a phone's home screen (standalone display mode, screen up to 820px wide), `useAppMode()` (`src/hooks/shared/use-app-mode.ts`) switches `MainLayout` to `components/app/app-shell.tsx`: a bottom tab bar instead of the navbar and footer, plus app-style Discover, Saved, Tickets and Profile screens. A normal browser tab, tablet or desktop is unchanged. Preview it in any browser with `?app=1` (`?app=0` turns it off). Put app-only styling behind `useAppMode()` or the `.app-mode` class on `<html>`.
+
 ## Gotchas
 
 - The dev server is on **4001** and the backend on **4000**. They were once mixed up so every local call proxied to itself. Check `vite.config.ts` before touching the proxy.

@@ -253,3 +253,21 @@
     transition: none;
   }
 }
+
+/* Installed-app mode (phone, opened from the home screen): see hooks/shared/use-app-mode.ts */
+html.app-mode {
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+html.app-mode body {
+  background-color: #f6f8f7;
+}
+html.app-mode.dark body {
+  background-color: #08100d;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

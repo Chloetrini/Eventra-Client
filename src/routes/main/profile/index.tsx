@@ -5,8 +5,11 @@ import { CurrencyPreference } from '@/components/profile-settings/currency-prefe
 import NToggles from '@/components/profile-settings/notification-toggles';
 import { ProfileSkeleton } from '@/components/skeletons/profile-skeleton';
 import { useAuth, type User } from '@/context/auth-context';
+import { useTheme } from '@/context/theme-context';
 import { toast } from 'react-toastify';
 import PageWrapper from '@/components/layout/page-wrapper';
+import { useAppMode } from '@/hooks/shared/use-app-mode';
+import { AppScreenHeader } from '@/components/app/app-screen-header';
 import { useUpdateProfile, useUploadAvatar } from '@/hooks/shared/use-profile';
 import { z } from 'zod';
 import { profileSchema } from '@/lib/schema';
@@ -14,7 +17,9 @@ import { profileSchema } from '@/lib/schema';
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function SettingsPage() {
-  const { user, isLoading, setUser } = useAuth();
+  const { user, isLoading, setUser, logout } = useAuth();
+  const appMode = useAppMode();
+  const { theme, setTheme } = useTheme();
   const updateProfileMutation = useUpdateProfile();
   const uploadAvatarMutation = useUploadAvatar();
 
@@ -66,7 +71,24 @@ const memberSince = typeof user.createdAt === "string"
   return (
     <>
 
-      <PageWrapper className='p-[20px]'>
+      <PageWrapper className={appMode ? 'max-w-xl px-5 pb-6' : 'p-[20px]'}>
+          {appMode ? (
+            <>
+              <div className="-mx-5"><AppScreenHeader title="Profile" /></div>
+              <div className="mb-6 flex rounded-[14px] bg-[#EEF3F1] p-1 dark:bg-[#1A2621]" role="group" aria-label="Appearance">
+                {(['light', 'dark'] as const).map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setTheme(t)}
+                    className={`flex-1 rounded-[10px] py-2.5 text-[13px] font-semibold capitalize transition-colors ${theme === t ? 'bg-white text-[#0B1F1A] shadow-sm dark:bg-[#111A16] dark:text-[#EEF5F2]' : 'text-[#5F7068] dark:text-[#9BAAA3]'}`}
+                  >
+                    {t} mode
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : null}
           <ProfileHeader
             user={{
               fullName: user.fullname,
@@ -96,6 +118,15 @@ const memberSince = typeof user.createdAt === "string"
             />
           </div>
           <NToggles />
+          {appMode ? (
+            <button
+              type="button"
+              onClick={() => logout()}
+              className="mt-2 w-full rounded-[14px] bg-[#FDE8E8] py-3.5 text-base font-semibold text-[#DC2626] active:scale-[0.99] dark:bg-[#3A1818] dark:text-[#F87171]"
+            >
+              Log out
+            </button>
+          ) : null}
 
       </PageWrapper>
 

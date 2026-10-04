@@ -7,8 +7,12 @@ import { useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
 import { useAuthGate } from "@/context/auth-gate";
 import { useNavigate } from "react-router";
+import { useAppMode } from "@/hooks/shared/use-app-mode";
+import { AppScreenHeader } from "@/components/app/app-screen-header";
+import { AppEventCard, AppEventCardSkeleton } from "@/components/app/app-event-card";
 
 export default function SavedEvent() {
+    const appMode = useAppMode();
     const { data, isLoading } = useEvents(DEFAULT_FILTERS);
     const events = data?.events ?? [];
     const { savedIds, toggleSave } = useSavedEvents();
@@ -28,6 +32,28 @@ export default function SavedEvent() {
     if (!isUserLoading && !user) {
         return null;
     }
+    if (appMode) {
+        return (
+            <div className="mx-auto max-w-xl pb-6">
+                <AppScreenHeader title="Saved" sub="Events you're keeping an eye on" />
+                <div className="space-y-[18px] px-5">
+                    {isLoading ? (
+                        <><AppEventCardSkeleton /><AppEventCardSkeleton /></>
+                    ) : savedEvents.length === 0 ? (
+                        <div className="rounded-2xl bg-white p-8 text-center dark:bg-[#111A16]">
+                            <p className="font-semibold text-[#0B1F1A] dark:text-[#EEF5F2]">Nothing saved yet</p>
+                            <p className="mt-1 text-sm text-[#5F7068] dark:text-[#9BAAA3]">Tap the heart on any event to save it here.</p>
+                        </div>
+                    ) : (
+                        savedEvents.map((e) => (
+                            <AppEventCard key={e._id} event={e} isSaved onToggleSave={toggleSave} />
+                        ))
+                    )}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <PageWrapper className="py-8  px-[20px] min-h-screen " >
             <header className="flex items-center   mt-5">

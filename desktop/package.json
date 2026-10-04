@@ -5,8 +5,8 @@
   "description": "Eventra desktop app (Electron shell around the web client)",
   "main": "main.js",
   "scripts": {
-    "build:web": "npm --prefix .. run build",
-    "start": "npm run build:web && electron .",
+    "build:web": "node init && npm --prefix .. run build",
+    "start": "node init && npm run build:web && electron .",
     "dist": "npm run build:web && electron-builder --publish never"
   },
   "build": {

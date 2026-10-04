@@ -7,6 +7,8 @@ import { useAuth } from "@/context/auth-context";
 import { useAuthGate } from "@/context/auth-gate";
 import { useMyTickets } from "@/hooks/events/use-event";
 import { TicketsSkeleton } from "@/components/skeletons/tickets-skeleton";
+import { useAppMode } from "@/hooks/shared/use-app-mode";
+import { AppScreenHeader } from "@/components/app/app-screen-header";
 
 const TABS = [
     { value: "upcoming", label: "Upcoming" },
@@ -71,6 +73,7 @@ export default function Tickets() {
         setSearchParams({ tab });
     };
 
+    const appMode = useAppMode();
     const { user, isLoading } = useAuth();
     const { requireAuth } = useAuthGate();
     const navigate = useNavigate();
@@ -104,37 +107,61 @@ export default function Tickets() {
     }
 
     return (
-        <PageWrapper className="p-[20px] min-h-screen " >
-            <header className="flex items-center   mt-5">
-                <div className="mb-5 flex items-center gap-2">
-                    <span className="h-[1px] w-[12px] bg-[#F5A524]" />
-                    <span className="text-[10px] md:text-[12px] font-[400] leading-[16px] text-[#0F6E56] dark:text-[#4ADE80] tracking-wide uppercase font-sans ">Your Account</span>
-                </div>
-            </header>
-            <div>
-                <h1 className="text-2xl min-[400px]:text-4xl lg:text-[54px] font-bold text-foreground lg:font-[700] mb-6 font-grotesk">
-                    my tickets
-                </h1>
-            </div>
+        <PageWrapper className={cn("min-h-screen", appMode ? "max-w-xl px-0 pb-4" : "p-[20px]")} >
+            {appMode ? (
+                <>
+                    <AppScreenHeader title="Tickets" sub="Your passes in one place" />
+                    <div className="mb-4 flex gap-2 px-5">
+                        {TABS.map((tab) => (
+                            <button
+                                key={tab.value}
+                                onClick={() => handleTabChange(tab.value)}
+                                className={cn(
+                                    "rounded-full border px-4 py-2 text-[13px] font-semibold transition-colors active:scale-95",
+                                    activeTab === tab.value
+                                        ? "border-[#0F6E56] bg-[#0F6E56] text-white dark:border-[#3CCB9C] dark:bg-[#3CCB9C] dark:text-[#04140E]"
+                                        : "border-[#E2E9E6] bg-white text-[#0B1F1A] dark:border-[#22302A] dark:bg-[#111A16] dark:text-[#EEF5F2]",
+                                )}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+                </>
+            ) : (
+                <>
+                    <header className="flex items-center   mt-5">
+                        <div className="mb-5 flex items-center gap-2">
+                            <span className="h-[1px] w-[12px] bg-[#F5A524]" />
+                            <span className="text-[10px] md:text-[12px] font-[400] leading-[16px] text-[#0F6E56] dark:text-[#4ADE80] tracking-wide uppercase font-sans ">Your Account</span>
+                        </div>
+                    </header>
+                    <div>
+                        <h1 className="text-2xl min-[400px]:text-4xl lg:text-[54px] font-bold text-foreground lg:font-[700] mb-6 font-grotesk">
+                            my tickets
+                        </h1>
+                    </div>
 
-            <div className="flex justify-between min-[400px]:justify-start min-[400px]:gap-[84px] mb-6 ">
-                {TABS.map((tab) => (
-                    <button
-                        key={tab.value}
-                        onClick={() => handleTabChange(tab.value)}
-                        className={cn(
-                            "text-sm min-[400px]:text-[16px] font-medium border-b-2 text-foreground -mb-px transition-colors",
-                            activeTab === tab.value
-                                ? "border-foreground text-foreground"
-                                : "border-transparent text-muted-foreground hover:text-foreground",
-                        )}
-                    >
-                        {tab.label}
-                    </button>
-                ))}
-            </div>
+                    <div className="flex justify-between min-[400px]:justify-start min-[400px]:gap-[84px] mb-6 ">
+                        {TABS.map((tab) => (
+                            <button
+                                key={tab.value}
+                                onClick={() => handleTabChange(tab.value)}
+                                className={cn(
+                                    "text-sm min-[400px]:text-[16px] font-medium border-b-2 text-foreground -mb-px transition-colors",
+                                    activeTab === tab.value
+                                        ? "border-foreground text-foreground"
+                                        : "border-transparent text-muted-foreground hover:text-foreground",
+                                )}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+                </>
+            )}
 
-            <div className="space-y-6">
+            <div className={cn("space-y-6", appMode && "px-5")}>
                 {ticketsLoading ? (
                     <TicketsSkeleton />
                 ) : filteredTickets.length > 0 ? (
